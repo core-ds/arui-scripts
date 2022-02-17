@@ -443,7 +443,7 @@ arui-scripts bundle-analyze
 Если вам не хватает гибкости при использовании `arui-scripts`, например вы хотите добавить свой плагин для вебпака -
 вы можете воспользоваться механизмом `overrides`.
 
-Для этого вам необходимо создать в корне вашего проекта файл `arui-scripts.overrides.js`, из которого вы сможете управлять
+Для этого вам необходимо создать в корне вашего проекта файл `arui-scripts.overrides.js` или `arui-scripts.overrides.ts`, из которого вы сможете управлять
 конфигурацией почти всех инструментов, используемых в `arui-scripts`.
 
 Принцип работы тут следующий. Для всех конфигураций определен набор ключей, которые они будут искать в `arui-scripts.overrides.js`,
@@ -451,7 +451,7 @@ arui-scripts bundle-analyze
 существующая конфигурация и полный конфиг приложения (см [AppConfig](./src/configs/app-configs/types.ts)).
 Возвращать такая функция должна так же конфигурацию.
 
-Например такое содержимое `arui-scripts.overrides.js`:
+Пример `arui-scripts.overrides.js`:
 ```javascript
 const path = require('path');
 module.exports = {
@@ -462,6 +462,23 @@ module.exports = {
         return config;
     }
 };
+```
+
+Пример `arui-scripts.overrides.ts`:
+```ts
+import type { OverrideFile } from 'arui-scripts';
+import path from 'path';
+
+const overrides: OverrideFile = {
+    webpack: (config, applicationConfig) => {
+        config.resolve.alias = {
+            components: path.resolve(__dirname, 'src/components')
+        };
+        return config;
+    }
+};
+
+export default overrides;
 ```
 
 С помощью этой конфигурации ко всем настройкам вебпака будет добавлен `alias` *components*.
@@ -532,15 +549,26 @@ module.exports = {
 от папки, содержащей package.json. Так что это может быть как папка в проекте, так и пакет из node_modules).
 
 Сам пакет с пресетами может содержать два файла:
-- `arui-scirpts.config.js`
-- `arui-scripts.overrides.js`
+- `arui-scirpts.config.js` (или `arui-scripts.config.ts`)
+- `arui-scripts.overrides.js` (или `arui-scirpts.overrides.ts`)
 
-### arui-scripts.config.js
+### arui-scripts.config (js | ts)
 С помощью этого файла можно задать любые ключи [конфигурации](#настройки).
 ```js
 module.exports = {
     baseDockerImage: 'my-company-artifactory.com/arui-scripts-base:11.2'
 };
+```
+
+Или в виде ts:
+```ts
+import type { PackageSettings } from 'arui-scripts';
+
+const settings: PackageSettings = {
+    baseDockerImage: 'my-company-artifactory.com/arui-scripts-base:11.2'
+};
+
+export default settings;
 ```
 
 На проекте конфиурация будет загружаться в следующем порядке:
@@ -555,7 +583,7 @@ module.exports = {
 они будут вычисляться относительно корня проекта, а не вашей конфигурации.
 Вы можете использовать абсолютные пути при необходимости задать путь до файла внутри пакета с пресетами.
 
-### arui-scripts.overrides.js
+### arui-scripts.overrides (js | ts)
 С помощью этого файла можно задать базовые оверрайды проекта, аналогично [заданию оверрайдов на проекте](#тонкая-настройка).
 ```js
 module.exports = {

@@ -1,6 +1,7 @@
+import type { WebpackOptionsNormalized } from 'webpack';
 import applyOverrides from './util/apply-overrides';
 
-const statsOptions = applyOverrides('stats', {
+const statsOptions: WebpackOptionsNormalized['stats'] = applyOverrides('stats', {
     // Add asset Information
     assets: false,
     // Add information about cached (not built) modules
@@ -25,8 +26,6 @@ const statsOptions = applyOverrides('stats', {
     hash: false,
     // Add built modules information
     modules: true,
-    // Set the maximum number of modules to be shown
-    maxModules: 0,
     // Show dependencies and origin of warnings/errors (since webpack 2.5.0)
     moduleTrace: true,
     // Show performance hint when file size exceeds `performance.maxAssetSize`

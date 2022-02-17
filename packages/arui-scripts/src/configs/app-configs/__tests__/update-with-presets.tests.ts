@@ -16,7 +16,7 @@ describe('update-with-presets', () => {
 
     it('should add overrides path if preset contain overrides', () => {
         mockedTryResolve.mockImplementation((path: string) => {
-            if (path.includes('/arui-scripts.config.js')) {
+            if (path.includes('/arui-scripts.config')) {
                 return undefined;
             }
             return path as any;
@@ -30,7 +30,7 @@ describe('update-with-presets', () => {
         const updatedConfig = updateWithPresets(baseConfig);
 
         expect(updatedConfig.overridesPath)
-            .toEqual(['presets/arui-scripts.overrides.js', 'package-overrides-path.js']);
+            .toEqual(['presets/arui-scripts.overrides', 'package-overrides-path.js']);
     });
 
     it('should merge config with config from presets', () => {
@@ -40,7 +40,7 @@ describe('update-with-presets', () => {
             };
         }, { virtual: true });
         mockedTryResolve.mockImplementation((path: string) => {
-            if (path.includes('/arui-scripts.config.js')) {
+            if (path.includes('/arui-scripts.config')) {
                 return 'virtual-presets' as any;
             }
             return undefined;

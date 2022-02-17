@@ -1,10 +1,9 @@
 import path from 'path';
-import { Configuration } from 'webpack-dev-server';
 import configs from './app-configs';
 import applyOverrides from './util/apply-overrides';
 import http from "http";
 
-const devServerConfig = applyOverrides<Configuration>('devServer', {
+const devServerConfig = applyOverrides('devServer', {
     port: configs.clientServerPort,
     liveReload: false,
     client: {

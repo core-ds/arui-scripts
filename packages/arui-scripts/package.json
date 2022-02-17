@@ -1,7 +1,8 @@
 {
     "name": "arui-scripts",
     "version": "",
-    "main": "index.js",
+    "main": "build/index.js",
+    "types": "buiild/index.d.ts",
     "license": "MPL-2.0",
     "repository": {
         "type": "git",
@@ -136,7 +137,8 @@
     },
     "scripts": {
         "build": "tsc --project tsconfig-local.json",
-        "test": "jest"
+        "test": "jest",
+        "st": "node foo.js"
     },
     "peerDependencies": {
         "react": ">=16.3.0",

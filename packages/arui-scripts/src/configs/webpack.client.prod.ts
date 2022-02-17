@@ -34,7 +34,7 @@ function getSingleEntry(entryPoint: string[]) {
 }
 
 // This is the production configuration.
-const config  = applyOverrides<webpack.Configuration>(['webpack', 'webpackClient', 'webpackProd', 'webpackClientProd'], {
+const config  = applyOverrides(['webpack', 'webpackClient', 'webpackProd', 'webpackClientProd'], {
     mode: 'production',
     // You may want 'eval' instead if you prefer to see the compiled output in DevTools.
     devtool: 'cheap-module-source-map',

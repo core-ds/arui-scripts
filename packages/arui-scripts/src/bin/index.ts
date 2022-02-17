@@ -1,5 +1,11 @@
 #! /usr/bin/env node
 /* eslint import/no-dynamic-require: 0 */
+import tsNode from 'ts-node';
+
+// Мы используем ts-node для работы c конфигами, описаными на ts
+tsNode.register({
+    transpileOnly: true,
+});
 
 const commands = [
     'start',
