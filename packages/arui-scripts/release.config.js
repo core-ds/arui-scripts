@@ -9,7 +9,6 @@ module.exports = {
         '@semantic-release/commit-analyzer',
         '@semantic-release/release-notes-generator',
         '@semantic-release/changelog',
-        '@semantic-release/github',
         '@semantic-release/npm',
     ],
     branches: [
@@ -17,5 +16,5 @@ module.exports = {
         { name: '*', channel: betaChannelName, prerelease: true },
         { name: '*/*', channel: betaChannelName, prerelease: '${name.replace(/[^0-9A-Za-z-]/g, "-")}' },
     ],
-    repositoryUrl: 'https://github.com/alfa-laboratory/arui-scripts',
+    repositoryUrl: 'ssh://git@git.moscow.alfaintra.net/ef/arui-scripts.git',
 };
