@@ -37,7 +37,7 @@ function getSingleEntry(clientEntry: string[]) {
 // This is the development configuration.
 // It is focused on developer experience and fast rebuilds.
 // The production configuration is different and lives in a separate file.
-const webpackClientDev = applyOverrides<webpack.Configuration>(['webpack', 'webpackClient', 'webpackDev', 'webpackClientDev'], {
+const webpackClientDev = applyOverrides(['webpack', 'webpackClient', 'webpackDev', 'webpackClientDev'], {
     target: 'web',
     mode: 'development',
     // You may want 'eval' instead if you prefer to see the compiled output in DevTools.

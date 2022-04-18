@@ -19,7 +19,7 @@ function build(config: webpack.Configuration, previousFileSizes?: unknown) {
                 return reject(err);
             }
             const messages = formatWebpackMessages(stats?.toJson({}));
-            
+
             if (messages.errors.length) {
                 // Only keep the first error. Others are often indicative
                 // of the same problem, but confuse the reader with noise.

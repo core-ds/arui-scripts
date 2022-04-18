@@ -3,7 +3,7 @@ import { AppConfigs } from './types';
 /**
  * Эти ключи из конфига будут обновляться из package.json при их наличии
  */
-export const availablePackageSettings: Array<keyof AppConfigs> = [
+export const availablePackageSettings = [
     'dockerRegistry',
     'baseDockerImage',
     'serverEntry',
@@ -29,4 +29,8 @@ export const availablePackageSettings: Array<keyof AppConfigs> = [
     'statsOutputFilename',
     'componentsTheme',
     'keepCssVars',
-];
+] as const;
+
+type ArrayElementType<ArrayType extends ReadonlyArray<unknown>> = ArrayType[number];
+
+export type PackageSettings = Partial<Pick<AppConfigs, ArrayElementType<typeof availablePackageSettings>>>;

@@ -1,7 +1,8 @@
 {
     "name": "arui-scripts",
     "version": "",
-    "main": "index.js",
+    "main": "./build/index.js",
+    "typings": "./build/index.d.ts",
     "license": "MPL-2.0",
     "repository": {
         "type": "git",

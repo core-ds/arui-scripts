@@ -29,12 +29,9 @@ it('should throw an error when overrides is not a function', () => {
         };
     }, { virtual: true });
 
-    const consoleError = jest.spyOn(console, 'error');
-
     const applyOverrides = require('../apply-overrides').default;
 
     expect(() => applyOverrides('foo', {})).toThrowError(TypeError);
-    expect(consoleError).toHaveBeenCalled();
 });
 
 it('should call override function and update config', () => {

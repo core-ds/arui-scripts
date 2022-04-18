@@ -3,7 +3,7 @@
  * @param {string[]} availableKeys Массив допустимых настроек
  * @param settingsObject Объект с настройками
  */
-function validateSettingsKeys(availableKeys: string[], settingsObject: Record<string, unknown>) {
+function validateSettingsKeys(availableKeys: ReadonlyArray<string>, settingsObject: Record<string, unknown>) {
     Object.keys(settingsObject).forEach((setting) => {
         if (!availableKeys.includes(setting)) {
             console.warn(

@@ -1,6 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import { AppConfigs } from './types';
+import { tryResolve } from '../util/try-resolve';
 
 export function getDefaults(): AppConfigs {
     const CWD = process.cwd();
@@ -14,7 +15,7 @@ export function getDefaults(): AppConfigs {
     const absoluteNodeModulesPath = path.resolve(CWD, 'node_modules');
     const projectTsConfigPath = path.join(CWD, 'tsconfig.json');
     const yarnLockFilePath = path.join(CWD, 'yarn.lock');
-    const overridesPath = path.join(CWD, 'arui-scripts.overrides.js');
+    const overridesPath = tryResolve(path.join(CWD, 'arui-scripts.overrides'));
     const nginxConfFilePath = path.join(CWD, 'nginx.conf');
     const dockerfileFilePath = path.join(CWD, 'Dockerfile');
 
@@ -57,7 +58,7 @@ export function getDefaults(): AppConfigs {
         serverPort: 3000,
 
         debug: false,
-        overridesPath: [overridesPath],
+        overridesPath: overridesPath ? [overridesPath] : [],
         statsOutputFilename: 'stats.json',
 
         componentsTheme: undefined,

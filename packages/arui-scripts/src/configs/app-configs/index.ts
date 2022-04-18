@@ -1,3 +1,5 @@
+import '../util/register-ts-node';
+
 import { AppConfigs } from './types';
 import { getDefaults } from './get-defaults';
 import { updateWithEnv } from './update-with-env';

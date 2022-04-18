@@ -27,7 +27,7 @@ function getSingleEntry(entryPoint: string[]) {
 // This is the production configuration.
 // It compiles slowly and is focused on producing a fast and minimal bundle.
 // The development configuration is different and lives in a separate file.
-const config = applyOverrides<webpack.Configuration>(['webpack', 'webpackServer', 'webpackProd', 'webpackServerProd'], {
+const config = applyOverrides(['webpack', 'webpackServer', 'webpackProd', 'webpackServerProd'], {
     mode: 'production',
     // Don't attempt to continue if there are any errors.
     bail: true,
