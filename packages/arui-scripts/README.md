@@ -51,7 +51,8 @@ npm install arui-scripts --save-dev
 ---
 
 Несмотря на то, что все работает из коробки, вы можете захотеть поменять некоторые настройки сборщиков.
-Сделать это можно в `package.json`, определив там свойство `aruiScripts`.
+Сделать это можно в `package.json`, определив там свойство `aruiScripts`, или положить в корень проекта файл
+`arui-scripts.config.(js|ts)`.
 
 Доступные настройки:
 
@@ -82,6 +83,24 @@ ARUI_SCRIPTS_CONFIG="{\"serverPort\":3333}" yarn start
 
 Так же, читаются настройки jest (см. [документацию](https://facebook.github.io/jest/docs/en/configuration.html))
 и `proxy` (см. [документацию](https://github.com/facebook/create-react-app/blob/master/packages/react-scripts/template/README.md#proxying-api-requests-in-development)).
+
+Использование отдельных конфигурационных файлов
+---
+Для сложных конфигураций может быть удобно вынести их из package.json в отдельный файл. Конфигурация будет загружаться из файла
+`arui-scripts.config.js` или `arui-scripts.config.ts`
+Пример `arui-scripts.config.ts`:
+```ts
+import { PackageSettings } from 'arui-scripts';
+
+const settings: PackageSettings = {
+    clientEntry: {
+        mobile: './src/mobile',
+        desktop: './src/desktop',
+    },
+};
+
+export default settings;
+```
 
 Несколько entry point
 ---
