@@ -12,5 +12,13 @@ alpine-node-nginx
 Если вы хотите собрать локально, выполните
 
 ```sh
-docker build --build-arg NODE_VERSION=14.17.6 ALPINE_VERSION=3.14 .
+docker build --build-arg NODE_VERSION=14.17.6 --build-arg ALPINE_VERSION=3.14 -t alfabankui/arui-scripts:14.17.6 .
+```
+
+### Локальная сборка на arm-процессорах
+Если у вас ноутбук на M1 - по умолчанию docker build будет собирать контейнер именно под arm архитектуру, и запустить
+его на наших серверах будет невозможно. Поэтому собирать нужно немного иначе:
+
+```sh
+docker buildx build --platform linux/amd64 --build-arg NODE_VERSION=14.17.6 --build-arg ALPINE_VERSION=3.14 -t alfabankui/arui-scripts:14.17.6 .
 ```
