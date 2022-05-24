@@ -37,6 +37,8 @@ export type AppConfigs = {
     overridesPath: string[];
     statsOutputFilename: string;
 
+    removeDevDependenciesDuringDockerBuild: boolean;
+
     componentsTheme: string | undefined;
     keepCssVars: boolean;
 

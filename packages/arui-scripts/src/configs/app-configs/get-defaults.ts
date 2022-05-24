@@ -61,6 +61,8 @@ export function getDefaults(): AppConfigs {
         overridesPath: overridesPath ? [overridesPath] : [],
         statsOutputFilename: 'stats.json',
 
+        removeDevDependenciesDuringDockerBuild: true,
+
         componentsTheme: undefined,
         keepCssVars: false,
 
