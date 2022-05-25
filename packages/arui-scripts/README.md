@@ -74,6 +74,7 @@ npm install arui-scripts --save-dev
 - `useTscLoader` -  использовать ts-loader вместо babel-loader для обработки ts файлов. У babel-loader есть [ряд ограничений](https://blogs.msdn.microsoft.com/typescript/2018/08/27/typescript-and-babel-7/). По умолчанию `false`.
 - `componentsTheme` - путь к css файлу с темой для [core-components](https://alfa-laboratory.github.io/core-components). Используется для настройки [postcss-custom-properties](https://github.com/postcss/postcss-custom-properties#importfrom).
 - `keepCssVars` - отключает `postcss-custom-properties`, css переменные будут оставаться в бандле.
+- `removeDevDependenciesDuringDockerBuild` - отключает удаление devDependencies из node_modules при сборке докер образа. Используется когда вам не нужно удалять devDependencies, т.к. в своём Dockerfile вы не переносите node_modules в докер-контейнер
 
 В целях отладки все эти настройки можно переопределить не изменяя package.json
 Просто передайте необходимые настройки в environment переменной ARUI_SCRIPTS_CONFIG

@@ -70,15 +70,19 @@ const imageFullName = `${dockerRegistry ? `${dockerRegistry}/` : ''}${imageName}
         await exec('npm run build');
 
         console.timeEnd('Build application time');
-        console.time('Remove dev dependencies time');
-        // if yarn is available prune dev dependencies with yarn, otherwise use npm
-        if (configs.useYarn && shell.which('yarn')) {
-            await exec('yarn install --production --ignore-optional --frozen-lockfile --ignore-scripts --prefer-offline');
-        } else {
-            await exec('npm prune --production');
+
+        if (configs.removeDevDependenciesDuringDockerBuild) {
+            console.time('Remove dev dependencies time');
+            // if yarn is available prune dev dependencies with yarn, otherwise use npm
+            if (configs.useYarn && shell.which('yarn')) {
+                await exec('yarn install --production --ignore-optional --frozen-lockfile --ignore-scripts --prefer-offline');
+            } else {
+                await exec('npm prune --production');
+            }
+            console.timeEnd('Remove dev dependencies time');
         }
 
-        console.timeEnd('Remove dev dependencies time');
+
         console.time('Build docker image time');
         await exec(`docker build -f "./${tempDirName}/Dockerfile" \\
  --build-arg START_SH_LOCATION="./${tempDirName}/start.sh" \\
