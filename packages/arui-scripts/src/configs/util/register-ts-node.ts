@@ -12,4 +12,5 @@ require('ts-node')
             moduleResolution: 'node',
             esModuleInterop: true,
         },
+        skipProject: true,
     });
