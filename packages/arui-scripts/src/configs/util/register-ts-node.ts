@@ -7,6 +7,7 @@ require('ts-node')
             target: 'ES2016',
             module: 'CommonJS',
             skipLibCheck: true,
+            allowJs: false,
             allowSyntheticDefaultImports: true,
             moduleResolution: 'node',
             esModuleInterop: true,
