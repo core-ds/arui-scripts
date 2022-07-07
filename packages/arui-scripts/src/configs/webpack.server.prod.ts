@@ -187,7 +187,7 @@ const config = applyOverrides(['webpack', 'webpackServer', 'webpackProd', 'webpa
             raw: true,
             entryOnly: false
         }),
-        new webpack.BannerPlugin({
+        configs.installServerSourceMaps && new webpack.BannerPlugin({
             banner: sourceMapSupportBanner,
             raw: true,
             entryOnly: false

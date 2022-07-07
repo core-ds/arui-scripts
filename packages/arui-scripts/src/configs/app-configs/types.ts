@@ -32,6 +32,7 @@ export type AppConfigs = {
 
     clientServerPort: number;
     serverPort: number;
+    installServerSourceMaps: boolean;
 
     debug: boolean;
     overridesPath: string[];

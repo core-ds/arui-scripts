@@ -66,6 +66,7 @@ npm install arui-scripts --save-dev
 - `useServerHMR` - использовать ли HotModuleReplacement для сервера. По умолчанию `false`.
 - `clientServerPort` - порт WebpackDevServer и nginx итогового контейнера. По умолчанию `8080`.
 - `serverPort` - порт нодового сервера. Нужен для правильного проксирования запросов от дев сервера и nginx. По умолчанию `3000`.
+- `installServerSourceMaps` - добавлять ли в серверную сборку пакет `source-map-support`. По умолчанию `false`.
 - `additionalBuildPath` - массив путей, которые попадут в архив при использовании команды `archive-build`. По умолчанию `['config']`.
 - `archiveName` - имя архива, который будет создан при использовании команды `archive-build`. По умолчанию `build.tar`.
 - `keepPropTypes` - если `true`, пакеты с prop-types не будут удалены из production билда.
