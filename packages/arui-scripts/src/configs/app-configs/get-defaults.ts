@@ -56,6 +56,7 @@ export function getDefaults(): AppConfigs {
         useYarn: fs.existsSync(yarnLockFilePath),
         clientServerPort: 8080,
         serverPort: 3000,
+        installServerSourceMaps: false,
 
         debug: false,
         overridesPath: overridesPath ? [overridesPath] : [],

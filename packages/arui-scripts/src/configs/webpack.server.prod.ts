@@ -70,6 +70,9 @@ const config = applyOverrides(['webpack', 'webpackServer', 'webpackProd', 'webpa
         // dependencies list from package.json
         modulesFromFile: true,
     })],
+    optimization: {
+        minimize: false,
+    },
     resolve: {
         // This allows you to set a fallback for where Webpack should look for modules.
         // We placed these paths second because we want `node_modules` to "win"
@@ -184,7 +187,7 @@ const config = applyOverrides(['webpack', 'webpackServer', 'webpackProd', 'webpa
             raw: true,
             entryOnly: false
         }),
-        new webpack.BannerPlugin({
+        configs.installServerSourceMaps && new webpack.BannerPlugin({
             banner: sourceMapSupportBanner,
             raw: true,
             entryOnly: false
