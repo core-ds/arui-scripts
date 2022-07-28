@@ -1,3 +1,10 @@
+# [13.1.0-yarn2.1](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v13.0.0...v13.1.0-yarn2.1) (2022-07-28)
+
+
+### Features
+
+* **commands:** add yarn 2 support ([7773e38](https://git.moscow.alfaintra.net/ef/arui-scripts/commit/7773e38864652805e6e3bc672b36a04298915123))
+
 # [13.0.0](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v12.5.0...v13.0.0) (2022-07-11)
 
 
