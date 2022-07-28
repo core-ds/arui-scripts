@@ -44,7 +44,13 @@ const packageJsonPath = path.join(configs.cwd, packageJsonFileName);
         console.time('Remove build dependencies time');
         // if yarn is available prune dev dependencies with yarn, otherwise use npm
         if (configs.useYarn && shell.which('yarn')) {
-            await exec('yarn install --production --ignore-optional --frozen-lockfile --ignore-scripts --prefer-offline');
+            try {
+                // if yarn 1 is used
+                await exec('yarn install --production --ignore-optional --frozen-lockfile --ignore-scripts --prefer-offline');
+            } catch {
+                // if yarn 2 is used
+                await exec('yarn workspaces focus --production --all');
+            }
         } else {
             await exec('npm prune --production');
         }
