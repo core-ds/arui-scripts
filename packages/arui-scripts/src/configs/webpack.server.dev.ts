@@ -57,6 +57,13 @@ const config: webpack.Configuration = {
                 .relative(configs.appSrc, info.absoluteResourcePath)
                 .replace(/\\/g, '/'),
     },
+    cache: {
+        type: 'filesystem',
+        name: 'server',
+        buildDependencies: {
+            config: [__filename],
+        },
+    },
     externalsPresets: { node: true },
     externals: [nodeExternals({
         allowlist: [
@@ -221,6 +228,9 @@ const config: webpack.Configuration = {
     performance: {
         hints: false,
     },
+    watchOptions: {
+        ignored: /node_modules/,
+    }
 };
 
 const webpackServerDev = applyOverrides(['webpack', 'webpackServer', 'webpackDev', 'webpackServerDev'], config);

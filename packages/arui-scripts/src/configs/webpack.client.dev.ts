@@ -4,11 +4,9 @@ import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import AssetsPlugin from 'assets-webpack-plugin';
 import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
-import WatchMissingNodeModulesPlugin from 'react-dev-utils/WatchMissingNodeModulesPlugin';
 import getCSSModuleLocalIdent from 'react-dev-utils/getCSSModuleLocalIdent';
 const PnpWebpackPlugin = require('pnp-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const ReactRefreshTypeScript = require('react-refresh-typescript');
 
@@ -84,6 +82,12 @@ const webpackClientDev = applyOverrides(['webpack', 'webpackClient', 'webpackDev
             PnpWebpackPlugin.moduleLoader(module),
         ],
     },
+    cache: {
+        type: 'filesystem',
+        buildDependencies: {
+            config: [__filename],
+        },
+    },
     module: {
         // typescript interface will be removed from modules, and we will get an error on correct code
         // see https://github.com/webpack/webpack/issues/7378
@@ -141,6 +145,7 @@ const webpackClientDev = applyOverrides(['webpack', 'webpackClient', 'webpackDev
                                     // It enables caching results in ./node_modules/.cache/babel-loader/
                                     // directory for faster rebuilds.
                                     cacheDirectory: true,
+                                    cacheCompression: false,
                                     plugins: require.resolve('react-refresh/babel')
                                 }, babelConf)
                             },
@@ -259,17 +264,6 @@ const webpackClientDev = applyOverrides(['webpack', 'webpackClient', 'webpackDev
         // a plugin that prints an error when you attempt to do this.
         // See https://github.com/facebookincubator/create-react-app/issues/240
         new CaseSensitivePathsPlugin(),
-        // If you require a missing module and then `npm install` it, you still have
-        // to restart the development server for Webpack to discover it. This plugin
-        // makes the discovery automatic so you don't have to restart.
-        // See https://github.com/facebookincubator/create-react-app/issues/186
-        new WatchMissingNodeModulesPlugin(configs.appNodeModules),
-        // new CopyWebpackPlugin([
-        //     {
-        //         from: configs.staticFilesLocation,
-        //         to: configs.clientOutputPath
-        //     }
-        // ])
         configs.tsconfig !== null && new ForkTsCheckerWebpackPlugin(),
         new MiniCssExtractPlugin(),
     ].filter(Boolean)),
@@ -280,34 +274,16 @@ const webpackClientDev = applyOverrides(['webpack', 'webpackClient', 'webpackDev
         hints: false,
     },
     optimization: {
-        minimize: true,
+        minimize: false,
         nodeEnv: false,
-        minimizer: [
-            new CssMinimizerPlugin({
-                minimizerOptions: {
-                    processorOptions: {
-                        map: {
-                            // `inline: false` generates the source map in a separate file.
-                            // Otherwise, the CSS file is needlessly large.
-                            inline: false,
-                            // `annotation: false` skips appending the `sourceMappingURL`
-                            // to the end of the CSS file. Webpack already handles this.
-                            annotation: false,
-                        },
-                    },
-                    preset: () => ({
-                        plugins: [
-                            // eslint-disable-next-line global-require
-                            require('postcss-discard-duplicates'),
-                        ],
-                    }),
-                },
-            }),
-        ],
+        // Оптимизации времени билда, см https://webpack.js.org/guides/build-performance/
+        removeAvailableModules: false,
+        removeEmptyChunks: false,
+        splitChunks: false
     },
     // Без этого комиляция трирегилась на изменение в node_modules и приводила к утечке памяти
     watchOptions: {
-        ignored: '**/node_modules',
+        ignored: /node_modules/,
     }
 });
 
