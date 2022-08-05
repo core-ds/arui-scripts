@@ -1,9 +1,16 @@
-## [13.0.1-feat-speadup.1](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v13.0.0...v13.0.1-feat-speadup.1) (2022-08-03)
+# [13.1.0](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v13.0.0...v13.1.0) (2022-08-05)
 
 
-### Performance Improvements
+### Features
 
-* **webpack-dev:** add caching ([ed76817](https://git.moscow.alfaintra.net/ef/arui-scripts/commit/ed7681710130e6d0716114b11c5b698a15eb4b45))
+* add yarn 2 support ([5d4bb8c](https://git.moscow.alfaintra.net/ef/arui-scripts/commit/5d4bb8c5e4debb3d0db430c094effbedd9b7bcc3))
+
+# [13.1.0-feature-yarn2.1](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v13.0.0...v13.1.0-feature-yarn2.1) (2022-08-04)
+
+
+### Features
+
+* add yarn 2 support ([5d4bb8c](https://git.moscow.alfaintra.net/ef/arui-scripts/commit/5d4bb8c5e4debb3d0db430c094effbedd9b7bcc3))
 
 # [13.0.0](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v12.5.0...v13.0.0) (2022-07-11)
 
