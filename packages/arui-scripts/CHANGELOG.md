@@ -1,3 +1,10 @@
+## [13.1.1](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v13.1.0...v13.1.1) (2022-08-05)
+
+
+### Performance Improvements
+
+* **webpack-dev:** add caching ([ed76817](https://git.moscow.alfaintra.net/ef/arui-scripts/commit/ed7681710130e6d0716114b11c5b698a15eb4b45))
+
 # [13.1.0](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v13.0.0...v13.1.0) (2022-08-05)
 
 
