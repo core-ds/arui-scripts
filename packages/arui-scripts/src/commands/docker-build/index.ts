@@ -75,7 +75,14 @@ const imageFullName = `${dockerRegistry ? `${dockerRegistry}/` : ''}${imageName}
             console.time('Remove dev dependencies time');
             // if yarn is available prune dev dependencies with yarn, otherwise use npm
             if (configs.useYarn && shell.which('yarn')) {
-                await exec('yarn install --production --ignore-optional --frozen-lockfile --ignore-scripts --prefer-offline');
+                const yarnVersion = shell.exec('yarn -v', { silent: true });
+                const yarnMajorVersion = Number(yarnVersion.split('.')[0]);
+
+                if (yarnMajorVersion > 1) {
+                    await exec('yarn workspaces focus --production --all');
+                } else {
+                    await exec('yarn install --production --ignore-optional --frozen-lockfile --ignore-scripts --prefer-offline');
+                }
             } else {
                 await exec('npm prune --production');
             }
