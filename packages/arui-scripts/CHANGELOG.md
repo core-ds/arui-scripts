@@ -1,3 +1,10 @@
+## [13.1.2](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v13.1.1...v13.1.2) (2022-09-21)
+
+
+### Bug Fixes
+
+* **bundle-analyze:** support multiple client configs ([8c9bc77](https://git.moscow.alfaintra.net/ef/arui-scripts/commit/8c9bc771d10c1bf038106f7bb83bd582b45394ac))
+
 ## [13.1.1](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v13.1.0...v13.1.1) (2022-08-05)
 
 
