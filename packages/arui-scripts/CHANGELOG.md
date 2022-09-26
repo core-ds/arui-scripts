@@ -1,3 +1,10 @@
+## [13.1.3](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v13.1.2...v13.1.3) (2022-09-26)
+
+
+### Bug Fixes
+
+* changed warnings display ([24c341a](https://git.moscow.alfaintra.net/ef/arui-scripts/commit/24c341ad79b59edb869dc1063657be1b220ac931))
+
 ## [13.1.2](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v13.1.1...v13.1.2) (2022-09-21)
 
 
