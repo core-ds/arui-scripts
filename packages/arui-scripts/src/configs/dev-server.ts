@@ -1,13 +1,16 @@
 import path from 'path';
+import http from 'http';
 import configs from './app-configs';
 import applyOverrides from './util/apply-overrides';
-import http from "http";
 
 const devServerConfig = applyOverrides('devServer', {
     port: configs.clientServerPort,
     liveReload: false,
     client: {
-        overlay: true,
+        overlay: {
+            errors: true,
+            warnings: false,
+        },
     },
     devMiddleware: {
         publicPath: `/${configs.publicPath}`,
