@@ -19,6 +19,7 @@ type Overrides = {
     babel: any; // TODO: где взять typedef-ы для бабеля?
     babelClient: any;
     babelServer: any;
+    babelDependencies: any;
 
     postcss: any[]; // TODO: где взять typedef-ы для postcss
     browsers: string[];
