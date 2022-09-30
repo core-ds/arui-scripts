@@ -1,6 +1,6 @@
 {
     "name": "arui-scripts",
-    "version": "13.2.0-feat-babel-config-update.1",
+    "version": "13.2.0-feat-babel-config-update.2",
     "main": "./build/index.js",
     "typings": "./build/index.d.ts",
     "license": "MPL-2.0",
