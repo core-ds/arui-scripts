@@ -4845,6 +4845,7 @@ __metadata:
     case-sensitive-paths-webpack-plugin: 2.4.0
     chalk: ^2.3.1
     compression-webpack-plugin: 9.0.0
+    core-js: ^3.25.3
     css-loader: 5.1.3
     css-minimizer-webpack-plugin: 3.1.1
     enzyme: 3.11.0
@@ -7037,6 +7038,13 @@ __metadata:
   version: 3.16.1
   resolution: "core-js-pure@npm:3.16.1"
   checksum: efdec39af1d0b807a355c7ae42229433a9f8fda053251f91e117eb82d380a5cc56f535ed80fa2a37a941d88c692d12bf3be1309c28ac6ba6f0a6e78576525666
+  languageName: node
+  linkType: hard
+
+"core-js@npm:^3.25.3":
+  version: 3.25.3
+  resolution: "core-js@npm:3.25.3"
+  checksum: 26ca0a5e575e6da03dc30099f48bc00db50a1c0a3f81299165f111cb163869ae453de5e345f2cb7bc8be85a9adcee11fca94f0fbdbdf6d483c68e1c55a9efc5a
   languageName: node
   linkType: hard
 
