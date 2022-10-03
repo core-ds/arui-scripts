@@ -1,3 +1,17 @@
+# [13.2.0-feat-babel-config-update.2](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v13.2.0-feat-babel-config-update.1...v13.2.0-feat-babel-config-update.2) (2022-09-30)
+
+
+### Bug Fixes
+
+* **babel:** add core-js as dependency ([e08d8c8](https://git.moscow.alfaintra.net/ef/arui-scripts/commit/e08d8c801181a5e4eda0ac73024d4685001e3ab7))
+
+# [13.2.0-feat-babel-config-update.1](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v13.1.3...v13.2.0-feat-babel-config-update.1) (2022-09-29)
+
+
+### Features
+
+* update babel config, add partial processing of node_modules ([8e2cd71](https://git.moscow.alfaintra.net/ef/arui-scripts/commit/8e2cd71fa0dbd299555a5872378cfe1dc6507c81))
+
 ## [13.1.3](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v13.1.2...v13.1.3) (2022-09-26)
 
 

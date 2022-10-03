@@ -12,6 +12,7 @@ const ReactRefreshTypeScript = require('react-refresh-typescript');
 
 import configs from './app-configs';
 import babelConf from './babel-client';
+import { babelDependencies } from './babel-dependencies';
 import postcssConf from './postcss';
 import applyOverrides from './util/apply-overrides';
 import getEntry from './util/get-entry';
@@ -120,7 +121,7 @@ const webpackClientDev = applyOverrides(['webpack', 'webpackClient', 'webpackDev
                     },
                     // Process JS with Babel.
                     {
-                        test: configs.useTscLoader ? /\.(js|jsx|mjs)$/ : /\.(js|jsx|mjs|ts|tsx)$/,
+                        test: configs.useTscLoader ? /\.(js|jsx|mjs|cjs)$/ : /\.(js|jsx|mjs|ts|tsx|cjs)$/,
                         include: configs.appSrc,
                         use: [
                             {
@@ -162,6 +163,21 @@ const webpackClientDev = applyOverrides(['webpack', 'webpackClient', 'webpackDev
                                 }
                             }
                         ]
+                    },
+                    // Process any JS outside of the app with Babel.
+                    // Unlike the application JS, we only compile the standard ES features.
+                    {
+                        test: /\.(js|mjs)$/,
+                        exclude: /@babel(?:\/|\\{1,2})runtime/,
+                        loader: require.resolve('babel-loader'),
+                        options: {
+                            ...babelDependencies,
+                            babelrc: false,
+                            configFile: false,
+                            compact: false,
+                            cacheDirectory: true,
+                            cacheCompression: false,
+                        },
                     },
                     // "postcss" loader applies autoprefixer to our CSS.
                     // "css" loader resolves paths in CSS and adds assets as dependencies.

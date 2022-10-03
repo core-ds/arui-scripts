@@ -16,6 +16,6 @@
         }
     },
     "scripts": {
-        "test": "yarn workspace arui-scripts run build && yarn workspace arui-scripts-test run ci"
+        "test": "yarn workspace arui-scripts run build && yarn workspace arui-scripts-test run build"
     }
 }

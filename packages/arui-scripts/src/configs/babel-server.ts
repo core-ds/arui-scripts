@@ -15,6 +15,8 @@ const config = applyOverrides(['babel', 'babelServer'], {
         require.resolve('@babel/plugin-transform-proto-to-assign'),
         [require.resolve('@babel/plugin-proposal-decorators'), { legacy: true }],
         [require.resolve('@babel/plugin-proposal-class-properties'), { loose: true }],
+        [require.resolve('@babel/plugin-proposal-private-methods'), { loose: true }],
+        [require.resolve('@babel/plugin-proposal-private-property-in-object'), { loose: true }],
         require.resolve('@babel/plugin-proposal-numeric-separator'),
         require.resolve('@babel/plugin-proposal-export-default-from'),
         require.resolve('@babel/plugin-proposal-export-namespace-from'),

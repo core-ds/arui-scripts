@@ -16,6 +16,7 @@ import babelConf from './babel-server';
 import postcssConf from './postcss';
 import applyOverrides from './util/apply-overrides';
 import getEntry from './util/get-entry';
+import { babelDependencies } from './babel-dependencies';
 
 const ReloadServerPlugin = require('../plugins/reload-server-webpack-plugin');
 
@@ -140,6 +141,21 @@ const config: webpack.Configuration = {
                                 }
                             }
                         ]
+                    },
+                    // Process any JS outside of the app with Babel.
+                    // Unlike the application JS, we only compile the standard ES features.
+                    {
+                        test: /\.(js|mjs)$/,
+                        exclude: /@babel(?:\/|\\{1,2})runtime/,
+                        loader: require.resolve('babel-loader'),
+                        options: {
+                            ...babelDependencies,
+                            babelrc: false,
+                            configFile: false,
+                            compact: false,
+                            cacheDirectory: true,
+                            cacheCompression: false,
+                        },
                     },
                     // replace css imports with empty files
                     {

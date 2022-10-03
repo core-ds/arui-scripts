@@ -17,6 +17,7 @@ import configs from './app-configs';
 import babelConf from './babel-client';
 import postcssConf from './postcss';
 import checkNodeVersion from './util/check-node-version';
+import { babelDependencies } from './babel-dependencies';
 
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 
@@ -174,7 +175,7 @@ const config  = applyOverrides(['webpack', 'webpackClient', 'webpackProd', 'webp
                     },
                     // Process JS with Babel.
                     {
-                        test: configs.useTscLoader ? /\.(js|jsx|mjs)$/ : /\.(js|jsx|mjs|ts|tsx)$/,
+                        test: configs.useTscLoader ? /\.(js|jsx|mjs|cjs)$/ : /\.(js|jsx|mjs|ts|tsx|cjs)$/,
                         include: configs.appSrc,
                         loader: require.resolve('babel-loader'),
                         options: babelConf,
@@ -200,6 +201,21 @@ const config  = applyOverrides(['webpack', 'webpackClient', 'webpackProd', 'webp
                                 }
                             }
                         ]
+                    },
+                    // Process any JS outside of the app with Babel.
+                    // Unlike the application JS, we only compile the standard ES features.
+                    {
+                        test: /\.(js|mjs)$/,
+                        exclude: /@babel(?:\/|\\{1,2})runtime/,
+                        loader: require.resolve('babel-loader'),
+                        options: {
+                            ...babelDependencies,
+                            babelrc: false,
+                            configFile: false,
+                            compact: false,
+                            cacheDirectory: true,
+                            cacheCompression: false,
+                        },
                     },
                     // The notation here is somewhat confusing.
                     // "postcss" loader applies autoprefixer to our CSS.
