@@ -299,7 +299,8 @@ const webpackClientDev = applyOverrides(['webpack', 'webpackClient', 'webpackDev
     },
     // Без этого комиляция трирегилась на изменение в node_modules и приводила к утечке памяти
     watchOptions: {
-        ignored: /node_modules/,
+        ignored: new RegExp(`node_modules|${configs.buildPath}`),
+        aggregateTimeout: 100,
     }
 });
 
