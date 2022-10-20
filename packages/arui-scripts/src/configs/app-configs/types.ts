@@ -14,6 +14,7 @@ export type AppConfigs = {
     nginxRootPath: string;
     runFromNonRootUser: boolean;
     archiveName: string;
+    babelRuntimeVersion: string;
 
     serverEntry: string | string[] | Record<string, string | string[]>;
     serverOutput: string;

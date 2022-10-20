@@ -1,5 +1,5 @@
 import applyOverrides from './util/apply-overrides';
-import browsers from './supporting-browsers';
+import configs from './app-configs';
 
 export const babelDependencies = applyOverrides('babelDependencies', {
     sourceType: 'unambiguous',
@@ -26,7 +26,7 @@ export const babelDependencies = applyOverrides('babelDependencies', {
                 // By default, babel assumes babel/runtime version 7.0.0-beta.0,
                 // explicitly resolving to match the provided helper functions.
                 // https://github.com/babel/babel/issues/10261
-                version: require('@babel/runtime/package.json').version,
+                version: configs.babelRuntimeVersion,
                 regenerator: true,
             },
         ]

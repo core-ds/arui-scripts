@@ -36,6 +36,7 @@ export function getDefaults(): AppConfigs {
         nginxRootPath: '/src',
         runFromNonRootUser: false,
         archiveName: 'build.tar',
+        babelRuntimeVersion: '7.0.0-beta.0',
 
         // server compilation configs
         serverEntry: path.resolve(absoluteSrcPath, 'server/index'),
