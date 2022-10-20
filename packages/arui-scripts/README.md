@@ -73,6 +73,7 @@ npm install arui-scripts --save-dev
 - `keepPropTypes` - если `true`, пакеты с prop-types не будут удалены из production билда.
 - `debug` - режим отладки, в котором не выполняются некоторые нежелательные операции и выводится больше сообщений об ошибках, по умолчанию `false`.
 - `statsOutputFilename` - имя [stats-файла](https://webpack.js.org/api/stats/), которое будет использоваться в [bundle-analyze](#анализ-бандла) команде
+- `devSourceMaps` - какой вид source-map использовать в режиме разработки. По умолчанию `eval`. Эта настройка может сильно влиять на время сборки. Подробнее можно почитать [здесь](https://webpack.js.org/configuration/devtool/).
 - `useTscLoader` -  использовать ts-loader вместо babel-loader для обработки ts файлов. У babel-loader есть [ряд ограничений](https://blogs.msdn.microsoft.com/typescript/2018/08/27/typescript-and-babel-7/). По умолчанию `false`.
 - `componentsTheme` - путь к css файлу с темой для [core-components](https://alfa-laboratory.github.io/core-components). Используется для настройки [postcss-custom-properties](https://github.com/postcss/postcss-custom-properties#importfrom).
 - `keepCssVars` - отключает `postcss-custom-properties`, css переменные будут оставаться в бандле.

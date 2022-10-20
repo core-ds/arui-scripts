@@ -36,8 +36,7 @@ function getSingleEntry(entryPoint: string[]): string[] {
 // The production configuration is different and lives in a separate file.
 const config: webpack.Configuration = {
     mode: 'development',
-    // You may want 'eval' instead if you prefer to see the compiled output in DevTools.
-    devtool: 'cheap-module-source-map',
+    devtool: configs.devSourceMaps,
     target: 'node',
     node: {
         __filename: true,

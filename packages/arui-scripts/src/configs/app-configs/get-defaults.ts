@@ -52,6 +52,7 @@ export function getDefaults(): AppConfigs {
         localNginxConf: fs.existsSync(nginxConfFilePath) ? nginxConfFilePath : null,
         localDockerfile: fs.existsSync(dockerfileFilePath) ? dockerfileFilePath : null,
 
+        devSourceMaps: 'eval',
         useTscLoader: false,
         useServerHMR: false,
         webpack4Compatibility: false,

@@ -27,6 +27,7 @@ export type AppConfigs = {
     localNginxConf: string | null;
     localDockerfile: string | null;
 
+    devSourceMaps: string;
     useTscLoader: boolean;
     useServerHMR: boolean;
     webpack4Compatibility: boolean;

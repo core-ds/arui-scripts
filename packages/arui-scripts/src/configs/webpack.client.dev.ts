@@ -39,8 +39,7 @@ function getSingleEntry(clientEntry: string[]) {
 const webpackClientDev = applyOverrides(['webpack', 'webpackClient', 'webpackDev', 'webpackClientDev'], {
     target: 'web',
     mode: 'development',
-    // You may want 'eval' instead if you prefer to see the compiled output in DevTools.
-    devtool: 'cheap-module-source-map',
+    devtool: configs.devSourceMaps,
     // These are the "entry points" to our application.
     // This means they will be the "root" imports that are included in JS bundle.
     entry: getEntry(configs.clientEntry, getSingleEntry),
