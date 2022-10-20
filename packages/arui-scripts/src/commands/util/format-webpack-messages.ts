@@ -15,13 +15,13 @@
 const chalk = require('chalk');
 const friendlySyntaxErrorLabel = 'Syntax error:';
 
-function isLikelyASyntaxError(message) {
+function isLikelyASyntaxError(message: string) {
   return message.includes(friendlySyntaxErrorLabel);
 }
 
 // Cleans up webpack error messages.
 // eslint-disable-next-line no-unused-vars
-function formatMessage(message) {
+function formatMessage(message: string | { message: string }) {
     if (typeof message !== 'string') {
         message = message.message;
     }
@@ -30,7 +30,7 @@ function formatMessage(message) {
     // Strip webpack-added headers off errors/warnings
     // https://github.com/webpack/webpack/blob/master/lib/ModuleError.js
     lines = lines.filter(line => !/Module [A-z ]+\(from/.test(line));
-  
+
     // Transform parsing error into syntax error
     // TODO: move this to our ESLint formatter?
     lines = lines.map(line => {
@@ -43,7 +43,7 @@ function formatMessage(message) {
       const [, errorLine, errorColumn, errorMessage] = parsingError;
       return `${friendlySyntaxErrorLabel} ${errorMessage} (${errorLine}:${errorColumn})`;
     });
-  
+
     message = lines.join('\n');
     // Smoosh syntax errors (commonly found in CSS)
     message = message.replace(
@@ -64,14 +64,14 @@ function formatMessage(message) {
       `Attempted import error: '$1' is not exported from '$3' (imported as '$2').`
     );
     lines = message.split('\n');
-  
+
     // Remove leading newline
     if (lines.length > 2 && lines[1].trim() === '') {
       lines.splice(1, 1);
     }
     // Clean up file name
     lines[0] = lines[0].replace(/^(.*) \d+:\d+-\d+$/, '$1');
-  
+
     // Cleans up verbose "module not found" messages for files and packages.
     if (lines[1] && lines[1].indexOf('Module not found: ') === 0) {
       lines = [
@@ -81,16 +81,16 @@ function formatMessage(message) {
           .replace('Module not found: Cannot find file:', 'Cannot find file:'),
       ];
     }
-  
+
     // Add helpful message for users trying to use Sass for the first time
     if (lines[1] && lines[1].match(/Cannot find module.+node-sass/)) {
       lines[1] = 'To import Sass files, you first need to install node-sass.\n';
       lines[1] +=
         'Run `npm install node-sass` or `yarn add node-sass` inside your workspace.';
     }
-  
+
     lines[0] = chalk.inverse(lines[0]);
-  
+
     message = lines.join('\n');
     // Internal stacks are generally useless so we strip them... with the
     // exception of stacks containing `webpack:` because they're normally
@@ -102,19 +102,19 @@ function formatMessage(message) {
     ); // at ... ...:x:y
     message = message.replace(/^\s*at\s<anonymous>(\n|$)/gm, ''); // at <anonymous>
     lines = message.split('\n');
-  
+
     // Remove duplicated newlines
     lines = lines.filter(
       (line, index, arr) =>
         index === 0 || line.trim() !== '' || line.trim() !== arr[index - 1].trim()
     );
-  
+
     // Reassemble the message
     message = lines.join('\n');
     return message.trim();
 }
 
-function formatWebpackMessages(json){
+function formatWebpackMessages(json: any){
     const formattedErrors = json.errors.map(formatMessage);
     const formattedWarnings = json.warnings.map(formatMessage);
     const result = { errors: formattedErrors, warnings: formattedWarnings };
@@ -125,4 +125,4 @@ function formatWebpackMessages(json){
     return result;
 }
 
-module.exports = formatWebpackMessages;
+export default formatWebpackMessages;
