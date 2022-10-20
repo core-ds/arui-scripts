@@ -351,6 +351,9 @@ const config  = applyOverrides(['webpack', 'webpackClient', 'webpackProd', 'webp
                 )
             ]
     )) as webpack.WebpackPluginInstance[],
+    experiments: {
+        backCompat: configs.webpack4Compatibility,
+    },
 });
 
 export default config;

@@ -29,6 +29,7 @@ export type AppConfigs = {
 
     useTscLoader: boolean;
     useServerHMR: boolean;
+    webpack4Compatibility: boolean;
     useYarn: boolean;
 
     clientServerPort: number;

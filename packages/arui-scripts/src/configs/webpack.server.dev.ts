@@ -244,6 +244,9 @@ const config: webpack.Configuration = {
     performance: {
         hints: false,
     },
+    experiments: {
+        backCompat: configs.webpack4Compatibility,
+    },
     watchOptions: {
         ignored: /node_modules/,
     }

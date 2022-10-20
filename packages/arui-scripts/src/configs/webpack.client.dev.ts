@@ -297,6 +297,9 @@ const webpackClientDev = applyOverrides(['webpack', 'webpackClient', 'webpackDev
         removeEmptyChunks: false,
         splitChunks: false
     },
+    experiments: {
+        backCompat: configs.webpack4Compatibility,
+    },
     // Без этого комиляция трирегилась на изменение в node_modules и приводила к утечке памяти
     watchOptions: {
         ignored: new RegExp(`node_modules|${configs.buildPath}`),

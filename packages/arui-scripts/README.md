@@ -64,6 +64,7 @@ npm install arui-scripts --save-dev
 - `clientPolyfillsEntry` - точка входа для полифилов. Будет подключаться до основной точки входа. По умолчанию подтягивает полифилы из `arui-feather`, если он установлен.
 - `clientEntry` - точка входа для клиентского приложения. По умолчанию `src/index.js`.
 - `useServerHMR` - использовать ли HotModuleReplacement для сервера. По умолчанию `false`.
+- `webpack4Compatibility` - включить ли режим совместимости с webpack 4. По умолчанию `false`. Подробнее можно почитать в [этом issue](https://github.com/webpack/webpack/issues/14580).
 - `clientServerPort` - порт WebpackDevServer и nginx итогового контейнера. По умолчанию `8080`.
 - `serverPort` - порт нодового сервера. Нужен для правильного проксирования запросов от дев сервера и nginx. По умолчанию `3000`.
 - `installServerSourceMaps` - добавлять ли в серверную сборку пакет `source-map-support`. По умолчанию `false`.

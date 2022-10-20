@@ -54,6 +54,7 @@ export function getDefaults(): AppConfigs {
 
         useTscLoader: false,
         useServerHMR: false,
+        webpack4Compatibility: false,
         useYarn: fs.existsSync(yarnLockFilePath),
         clientServerPort: 8080,
         serverPort: 3000,

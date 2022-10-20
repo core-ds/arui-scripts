@@ -22,6 +22,7 @@ export const availablePackageSettings = [
 
     'useTscLoader',
     'useServerHMR',
+    'webpack4Compatibility',
     'clientServerPort',
     'serverPort',
 
