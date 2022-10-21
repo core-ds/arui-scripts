@@ -27,7 +27,18 @@ const devServerConfig = applyOverrides('devServer', {
                 }
 
                 return null;
-            }
+            },
+            // Для дев режима, когда мы используем в качестве соурсмапов что-то, основанное на eval - нужно
+            // разрешить браузеру исполнять наш код, даже когда content-security-policy приложения не позволяет этого делать.
+            ...(configs.devSourceMaps.includes('eval') ? {
+                onProxyRes: (proxyRes: http.IncomingMessage) => {
+                    const cspHeader = proxyRes.headers['content-security-policy'];
+                    if (cspHeader && !cspHeader.includes('unsafe-eval') && typeof cspHeader === 'string') {
+                        proxyRes.headers['content-security-policy'] = cspHeader
+                            .replace(/script-src/, "script-src 'unsafe-eval'");
+                    }
+                }
+            } : {}),
         }
     })
 });
