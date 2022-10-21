@@ -1,3 +1,10 @@
+# [13.2.0-feat-further-speedup.2](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v13.2.0-feat-further-speedup.1...v13.2.0-feat-further-speedup.2) (2022-10-21)
+
+
+### Bug Fixes
+
+* update babel runtime ([562d988](https://git.moscow.alfaintra.net/ef/arui-scripts/commit/562d98824af4b78a2593fe25a51855ecd0db93bc))
+
 # [13.2.0-feat-further-speedup.1](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v13.1.3...v13.2.0-feat-further-speedup.1) (2022-10-21)
 
 
