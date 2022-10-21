@@ -1,3 +1,10 @@
+# [13.2.0-feat-further-speedup.4](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v13.2.0-feat-further-speedup.3...v13.2.0-feat-further-speedup.4) (2022-10-21)
+
+
+### Bug Fixes
+
+* **babel:** determine babel-runtime version from app ([c5f0533](https://git.moscow.alfaintra.net/ef/arui-scripts/commit/c5f0533aafc9f248dcfff20cafc986f0fb54c106))
+
 # [13.2.0-feat-further-speedup.3](https://git.moscow.alfaintra.net/projects/EF/repos/arui-scripts/compare/v13.1.3...v13.2.0-feat-further-speedup.3) (2022-10-21)
 
 
