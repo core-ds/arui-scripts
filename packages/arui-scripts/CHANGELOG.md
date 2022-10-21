@@ -1,3 +1,11 @@
+# [13.2.0-feat-further-speedup.3](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v13.2.0-feat-further-speedup.2...v13.2.0-feat-further-speedup.3) (2022-10-21)
+
+
+### Bug Fixes
+
+* **babel:** update to latest runtime version ([b698ca4](https://git.moscow.alfaintra.net/ef/arui-scripts/commit/b698ca416f233ec938c639eac37701cef7b95cd2))
+* **dev-server:** allow unsafe-eval script src when using eval-based source maps ([ef31821](https://git.moscow.alfaintra.net/ef/arui-scripts/commit/ef31821c1b60da27be2bbe4c6bc9ade0e5910ee9))
+
 # [13.2.0-feat-further-speedup.2](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v13.2.0-feat-further-speedup.1...v13.2.0-feat-further-speedup.2) (2022-10-21)
 
 
