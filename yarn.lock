@@ -1752,12 +1752,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:7.12.0":
-  version: 7.12.0
-  resolution: "@babel/runtime@npm:7.12.0"
+"@babel/runtime@npm:7.19.4":
+  version: 7.19.4
+  resolution: "@babel/runtime@npm:7.19.4"
   dependencies:
     regenerator-runtime: ^0.13.4
-  checksum: 2d2991e21f6a799b10a27702832dfb84ceab0a989e29afa82e82489228c96452672ef39c74adcca8ac929a26f7a241b3bb549fb8d33e87a1e00745345e929da1
+  checksum: 66b7e3c13e9ee1d2c9397ea89144f29a875edee266a0eb2d9971be51b32fdbafc85808c7a45e011e6681899bb804b4e2ee2aed6dc07108dbbd6b11b6cc2afba6
   languageName: node
   linkType: hard
 
@@ -4815,7 +4815,7 @@ __metadata:
     "@babel/preset-env": 7.19.3
     "@babel/preset-react": 7.18.6
     "@babel/preset-typescript": 7.18.6
-    "@babel/runtime": 7.12.0
+    "@babel/runtime": 7.19.4
     "@pmmmwh/react-refresh-webpack-plugin": 0.5.1
     "@semantic-release/changelog": 6.0.0
     "@semantic-release/commit-analyzer": 9.0.1

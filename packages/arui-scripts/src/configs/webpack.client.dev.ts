@@ -268,8 +268,6 @@ const webpackClientDev = applyOverrides(['webpack', 'webpackClient', 'webpackDev
             // Tell Webpack to provide empty mocks for process.env.
             'process.env': '{}'
         }),
-        // This is necessary to emit hot updates (currently CSS only):
-        new webpack.HotModuleReplacementPlugin(),
         new ReactRefreshWebpackPlugin({
             overlay: {
                 sockIntegration: 'whm',
