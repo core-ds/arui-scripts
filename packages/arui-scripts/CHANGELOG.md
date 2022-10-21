@@ -1,3 +1,19 @@
+# [13.2.0-feat-further-speedup.1](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v13.1.3...v13.2.0-feat-further-speedup.1) (2022-10-21)
+
+
+### Bug Fixes
+
+* **babel:** add core-js as dependency ([e08d8c8](https://git.moscow.alfaintra.net/ef/arui-scripts/commit/e08d8c801181a5e4eda0ac73024d4685001e3ab7))
+* **babel:** correctly determine babel-runtime version ([4dea00f](https://git.moscow.alfaintra.net/ef/arui-scripts/commit/4dea00fe98d4ea8a168542abab37ef1998df4808))
+* **dev:** ignore build dir in watch mode ([185d61d](https://git.moscow.alfaintra.net/ef/arui-scripts/commit/185d61dc180f723f4750f57acc41edfa547f2492))
+
+
+### Features
+
+* update babel config, add partial processing of node_modules ([8e2cd71](https://git.moscow.alfaintra.net/ef/arui-scripts/commit/8e2cd71fa0dbd299555a5872378cfe1dc6507c81))
+* **webpack:** change default dev source-map mode ([d184d6e](https://git.moscow.alfaintra.net/ef/arui-scripts/commit/d184d6e614014e0671d224ccb706322c1d284bee))
+* **webpack:** disable webpack 4 compatibility by default ([9cba80d](https://git.moscow.alfaintra.net/ef/arui-scripts/commit/9cba80d7c990ad84ec7335f096cc422d558f81be))
+
 # [13.2.0-feat-babel-config-update.2](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v13.2.0-feat-babel-config-update.1...v13.2.0-feat-babel-config-update.2) (2022-09-30)
 
 
