@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import { AppConfigs } from './types';
-import { tryResolve } from '../util/try-resolve';
+import { tryResolve } from '../util/resolve';
 
 export function getDefaults(): AppConfigs {
     const CWD = process.cwd();
