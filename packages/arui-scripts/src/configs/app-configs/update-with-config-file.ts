@@ -1,6 +1,6 @@
 import path from 'path';
 import merge from 'lodash.merge';
-import { tryResolve } from '../util/try-resolve';
+import { tryResolve } from '../util/resolve';
 import { AppConfigs } from './types';
 import validateSettingsKeys from './validate-settings-keys';
 import { availablePackageSettings } from './available-package-settings';

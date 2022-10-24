@@ -64,6 +64,7 @@ npm install arui-scripts --save-dev
 - `clientPolyfillsEntry` - точка входа для полифилов. Будет подключаться до основной точки входа. По умолчанию подтягивает полифилы из `arui-feather`, если он установлен.
 - `clientEntry` - точка входа для клиентского приложения. По умолчанию `src/index.js`.
 - `useServerHMR` - использовать ли HotModuleReplacement для сервера. По умолчанию `false`.
+- `webpack4Compatibility` - включить ли режим совместимости с webpack 4. По умолчанию `false`. Подробнее можно почитать в [этом issue](https://github.com/webpack/webpack/issues/14580).
 - `clientServerPort` - порт WebpackDevServer и nginx итогового контейнера. По умолчанию `8080`.
 - `serverPort` - порт нодового сервера. Нужен для правильного проксирования запросов от дев сервера и nginx. По умолчанию `3000`.
 - `installServerSourceMaps` - добавлять ли в серверную сборку пакет `source-map-support`. По умолчанию `false`.
@@ -72,6 +73,8 @@ npm install arui-scripts --save-dev
 - `keepPropTypes` - если `true`, пакеты с prop-types не будут удалены из production билда.
 - `debug` - режим отладки, в котором не выполняются некоторые нежелательные операции и выводится больше сообщений об ошибках, по умолчанию `false`.
 - `statsOutputFilename` - имя [stats-файла](https://webpack.js.org/api/stats/), которое будет использоваться в [bundle-analyze](#анализ-бандла) команде
+- `devSourceMaps` - какой вид source-map использовать в режиме разработки. По умолчанию `eval`. Эта настройка может сильно влиять на время сборки. Подробнее можно почитать [здесь](https://webpack.js.org/configuration/devtool/).
+**Внимание**. При использовании любых source-map на основании `eval` webpack-dev-server будет модифицировать заголовок `Content-Security-Policy` (при наличии) и добавлять в него `unsafe-eval`. [Подробнее тут](#dev-csp).
 - `useTscLoader` -  использовать ts-loader вместо babel-loader для обработки ts файлов. У babel-loader есть [ряд ограничений](https://blogs.msdn.microsoft.com/typescript/2018/08/27/typescript-and-babel-7/). По умолчанию `false`.
 - `componentsTheme` - путь к css файлу с темой для [core-components](https://alfa-laboratory.github.io/core-components). Используется для настройки [postcss-custom-properties](https://github.com/postcss/postcss-custom-properties#importfrom).
 - `keepCssVars` - отключает `postcss-custom-properties`, css переменные будут оставаться в бандле.
@@ -463,6 +466,15 @@ webpack и перезапустить сборку. Кеши хранятся в
 ```
 rm -rf ./node_modules/.cache
 ```
+
+<a name="dev-csp"></a>
+Модификация CSP для разработки
+---
+Если в дев-режиме используются любой тип source-map, основанный на eval (это дефолтное поведение) - то
+webpack-dev-server автоматически будет добавлять в CSP заголовок `script-src` значение `unsafe-eval` (при наличии заголовка).
+Это необходимо для того, чтобы код вообще запускался в браузере. Это не влияет на реальную безопасность приложения, так
+как используется ТОЛЬКО в дев-режиме. Если по каким-то причинам вас такое поведение не устраивает - вы можете поменять
+тип source-map на любой другой, не использующий eval.
 
 
 Анализ бандла

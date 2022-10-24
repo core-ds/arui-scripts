@@ -20,8 +20,10 @@ export const availablePackageSettings = [
     'clientEntry',
     'keepPropTypes',
 
+    'devSourceMaps',
     'useTscLoader',
     'useServerHMR',
+    'webpack4Compatibility',
     'clientServerPort',
     'serverPort',
 

@@ -39,8 +39,7 @@ function getSingleEntry(clientEntry: string[]) {
 const webpackClientDev = applyOverrides(['webpack', 'webpackClient', 'webpackDev', 'webpackClientDev'], {
     target: 'web',
     mode: 'development',
-    // You may want 'eval' instead if you prefer to see the compiled output in DevTools.
-    devtool: 'cheap-module-source-map',
+    devtool: configs.devSourceMaps,
     // These are the "entry points" to our application.
     // This means they will be the "root" imports that are included in JS bundle.
     entry: getEntry(configs.clientEntry, getSingleEntry),
@@ -269,8 +268,6 @@ const webpackClientDev = applyOverrides(['webpack', 'webpackClient', 'webpackDev
             // Tell Webpack to provide empty mocks for process.env.
             'process.env': '{}'
         }),
-        // This is necessary to emit hot updates (currently CSS only):
-        new webpack.HotModuleReplacementPlugin(),
         new ReactRefreshWebpackPlugin({
             overlay: {
                 sockIntegration: 'whm',
@@ -297,9 +294,13 @@ const webpackClientDev = applyOverrides(['webpack', 'webpackClient', 'webpackDev
         removeEmptyChunks: false,
         splitChunks: false
     },
+    experiments: {
+        backCompat: configs.webpack4Compatibility,
+    },
     // Без этого комиляция трирегилась на изменение в node_modules и приводила к утечке памяти
     watchOptions: {
-        ignored: /node_modules/,
+        ignored: new RegExp(configs.watchIgnorePath.join('|')),
+        aggregateTimeout: 100,
     }
 });
 

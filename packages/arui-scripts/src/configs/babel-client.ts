@@ -37,7 +37,7 @@ const babelClientConfig = applyOverrides(['babel', 'babelClient'], {
             // By default, babel assumes babel/runtime version 7.0.0-beta.0,
             // explicitly resolving to match the provided helper functions.
             // https://github.com/babel/babel/issues/10261
-            version: require('@babel/runtime/package.json').version,
+            version: configs.babelRuntimeVersion,
             regenerator: true,
         }],
         require.resolve('@babel/plugin-proposal-nullish-coalescing-operator'),

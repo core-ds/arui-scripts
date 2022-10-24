@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import { AppConfigs } from './types';
-import { tryResolve } from '../util/try-resolve';
+import { tryResolve } from '../util/resolve';
 
 export function getDefaults(): AppConfigs {
     const CWD = process.cwd();
@@ -36,6 +36,7 @@ export function getDefaults(): AppConfigs {
         nginxRootPath: '/src',
         runFromNonRootUser: false,
         archiveName: 'build.tar',
+        babelRuntimeVersion: '7.0.0-beta.0',
 
         // server compilation configs
         serverEntry: path.resolve(absoluteSrcPath, 'server/index'),
@@ -51,8 +52,10 @@ export function getDefaults(): AppConfigs {
         localNginxConf: fs.existsSync(nginxConfFilePath) ? nginxConfFilePath : null,
         localDockerfile: fs.existsSync(dockerfileFilePath) ? dockerfileFilePath : null,
 
+        devSourceMaps: 'eval',
         useTscLoader: false,
         useServerHMR: false,
+        webpack4Compatibility: false,
         useYarn: fs.existsSync(yarnLockFilePath),
         clientServerPort: 8080,
         serverPort: 3000,
@@ -72,5 +75,6 @@ export function getDefaults(): AppConfigs {
         serverOutputPath: '',
         clientOutputPath: '',
         statsOutputPath: '',
+        watchIgnorePath: [],
     };
 }

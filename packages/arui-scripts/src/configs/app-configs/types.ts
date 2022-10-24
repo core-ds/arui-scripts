@@ -14,6 +14,7 @@ export type AppConfigs = {
     nginxRootPath: string;
     runFromNonRootUser: boolean;
     archiveName: string;
+    babelRuntimeVersion: string;
 
     serverEntry: string | string[] | Record<string, string | string[]>;
     serverOutput: string;
@@ -26,8 +27,10 @@ export type AppConfigs = {
     localNginxConf: string | null;
     localDockerfile: string | null;
 
+    devSourceMaps: string;
     useTscLoader: boolean;
     useServerHMR: boolean;
+    webpack4Compatibility: boolean;
     useYarn: boolean;
 
     clientServerPort: number;
@@ -47,4 +50,5 @@ export type AppConfigs = {
     serverOutputPath: string;
     clientOutputPath: string;
     statsOutputPath: string;
+    watchIgnorePath: string[];
 };

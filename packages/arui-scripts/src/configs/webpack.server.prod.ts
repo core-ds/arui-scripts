@@ -210,6 +210,9 @@ const config = applyOverrides(['webpack', 'webpackServer', 'webpackProd', 'webpa
         }),
         configs.tsconfig !== null && new ForkTsCheckerWebpackPlugin()
     ].filter(Boolean)) as webpack.WebpackPluginInstance[],
+    experiments: {
+        backCompat: configs.webpack4Compatibility,
+    },
 });
 
 export default config;

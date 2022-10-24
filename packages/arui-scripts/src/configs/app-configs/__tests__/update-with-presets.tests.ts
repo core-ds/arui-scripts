@@ -1,8 +1,8 @@
 import { AppConfigs } from '../types';
 import { updateWithPresets } from '../update-with-presets';
-import { tryResolve } from '../../util/try-resolve';
+import { tryResolve } from '../../util/resolve';
 
-jest.mock('../../util/try-resolve');
+jest.mock('../../util/resolve');
 const mockedTryResolve = (tryResolve as unknown) as jest.Mock<typeof tryResolve>;
 
 describe('update-with-presets', () => {
