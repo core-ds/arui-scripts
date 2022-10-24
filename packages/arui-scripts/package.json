@@ -1,6 +1,6 @@
 {
     "name": "arui-scripts",
-    "version": "13.2.0-feat-further-speedup.4",
+    "version": "13.2.0",
     "main": "./build/index.js",
     "typings": "./build/index.d.ts",
     "license": "MPL-2.0",
