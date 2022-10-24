@@ -28,6 +28,7 @@ export function calculateDependentConfig(config: AppConfigs) {
         clientOutputPath: path.resolve(config.cwd, config.buildPath, config.assetsPath),
         clientPolyfillsEntry: getPolyfills(config),
         statsOutputPath: path.resolve(config.cwd, config.buildPath, config.statsOutputFilename),
+        watchIgnorePath: ['node_modules', config.buildPath],
         babelRuntimeVersion,
     });
 }

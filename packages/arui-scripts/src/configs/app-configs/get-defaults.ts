@@ -75,5 +75,6 @@ export function getDefaults(): AppConfigs {
         serverOutputPath: '',
         clientOutputPath: '',
         statsOutputPath: '',
+        watchIgnorePath: [],
     };
 }

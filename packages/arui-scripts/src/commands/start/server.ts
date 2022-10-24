@@ -11,5 +11,5 @@ serverCompiler.hooks.done.tap('server', (stats: any) => printCompilerOutput('Ser
 
 serverCompiler.watch({
     aggregateTimeout: 50, // Делаем это значение меньше чем у клиента, чтобы сервер пересобирался быстрее
-    ignored: new RegExp(`node_modules|${configs.buildPath}`),
+    ignored: new RegExp(configs.watchIgnorePath.join('|')),
 }, () => {});

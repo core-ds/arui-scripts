@@ -50,4 +50,5 @@ export type AppConfigs = {
     serverOutputPath: string;
     clientOutputPath: string;
     statsOutputPath: string;
+    watchIgnorePath: string[];
 };

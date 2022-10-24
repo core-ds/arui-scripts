@@ -33,7 +33,7 @@ const devServerConfig = applyOverrides('devServer', {
             ...(configs.devSourceMaps.includes('eval') ? {
                 onProxyRes: (proxyRes: http.IncomingMessage) => {
                     const cspHeader = proxyRes.headers['content-security-policy'];
-                    if (cspHeader && !cspHeader.includes('unsafe-eval') && typeof cspHeader === 'string') {
+                    if (typeof cspHeader === 'string' && !cspHeader.includes('unsafe-eval')) {
                         proxyRes.headers['content-security-policy'] = cspHeader
                             .replace(/script-src/, "script-src 'unsafe-eval'");
                     }
