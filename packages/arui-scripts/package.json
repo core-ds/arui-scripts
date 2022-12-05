@@ -157,7 +157,7 @@
             "^.+\\.tsx?$": "ts-jest"
         }
     },
-    "author": "Good guys from Alfa Laboratory",
+    "author": "Good guys from AlfaBank",
     "maintainers": [
         {
             "email": "akitov@alfabank.ru",
