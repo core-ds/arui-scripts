@@ -1,3 +1,10 @@
+## [13.2.1](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v13.2.0...v13.2.1) (2022-12-05)
+
+
+### Bug Fixes
+
+* **package:** update tar package ([a9fab3d](https://git.moscow.alfaintra.net/ef/arui-scripts/commit/a9fab3d6c7e4effe2287d068b9d3ee19a325069e))
+
 # [13.2.0](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v13.1.3...v13.2.0) (2022-10-24)
 
 
