@@ -1,6 +1,6 @@
 {
     "name": "arui-scripts",
-    "version": "13.3.0-feat-fast-docker-build.1",
+    "version": "13.3.0-feat-fast-docker-build.2",
     "main": "./build/index.js",
     "typings": "./build/index.d.ts",
     "license": "MPL-2.0",

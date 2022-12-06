@@ -1,3 +1,10 @@
+# [13.3.0-feat-fast-docker-build.2](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v13.3.0-feat-fast-docker-build.1...v13.3.0-feat-fast-docker-build.2) (2022-12-06)
+
+
+### Features
+
+* **docker-fast:** don't build anything inside of container ([8f255bd](https://git.moscow.alfaintra.net/ef/arui-scripts/commit/8f255bd8fb9818a8498bddee71ef83ce4a7ba11b))
+
 # [13.3.0-feat-fast-docker-build.1](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v13.2.1...v13.3.0-feat-fast-docker-build.1) (2022-12-05)
 
 
