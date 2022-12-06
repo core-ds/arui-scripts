@@ -59,7 +59,6 @@ const imageFullName = `${dockerRegistry ? `${dockerRegistry}/` : ''}${imageName}
             fs.writeFile(path.join(pathToTempDir, 'Dockerfile'), dockerfile, 'utf8'),
             fs.writeFile(path.join(pathToTempDir, 'nginx.conf'), nginxConf, 'utf8'),
             fs.writeFile(path.join(pathToTempDir, 'start.sh'), startScript, { encoding: 'utf8', mode: 0o555 }),
-            fs.remove(configs.buildPath),
         ]);
 
         console.timeEnd('Setting up time');

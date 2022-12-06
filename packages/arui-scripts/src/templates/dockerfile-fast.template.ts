@@ -6,7 +6,6 @@ FROM ${configs.baseDockerImage}
 ARG START_SH_LOCATION
 ARG NGINX_CONF_LOCATION
 
-USER nginx
 WORKDIR /src
 RUN mkdir -p /var/lib/nginx && \
     chown -R nginx:nginx /var/lib/nginx && \
@@ -23,6 +22,8 @@ ADD --chown=nginx:nginx package.json /src/package.json
 RUN yarn install --production --ignore-optional --frozen-lockfile --ignore-scripts --prefer-offline  && \\
     yarn cache clean
 ADD --chown=nginx:nginx . /src
+
+USER nginx
 `;
 
 export default applyOverrides('Dockerfile-fast', dockerfileTemplate);
