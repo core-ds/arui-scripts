@@ -26,7 +26,7 @@ type Overrides = {
     supportingBrowsers: string[];
 
     Dockerfile: string;
-    'Dockerfile-fast': string;
+    'DockerfileCompiled': string;
     nginx: string;
     'start.sh': string;
 };

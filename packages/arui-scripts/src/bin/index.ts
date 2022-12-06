@@ -5,7 +5,7 @@ const commands = [
     'start',
     'build',
     'docker-build',
-    'docker-build-fast',
+    'docker-build-compiled',
     'test',
     'ensure-yarn',
     'archive-build',
