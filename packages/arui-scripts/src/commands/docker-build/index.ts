@@ -22,6 +22,7 @@ import { getPruningCommand } from '../util/yarn';
             dockerfileTemplate,
             nginxConfTemplate,
             startScript,
+            allowLocalDockerfile: true,
         });
 
         await fs.remove(configs.buildPath);

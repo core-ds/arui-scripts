@@ -43,13 +43,15 @@ type PrepareFilesForDockerParams = {
     nginxConfTemplate: string;
     startScript: string;
     pathToTempDir: string;
+    allowLocalDockerfile: boolean;
 }
 
 export async function prepareFilesForDocker({
     dockerfileTemplate,
     nginxConfTemplate,
     startScript,
-    pathToTempDir
+    pathToTempDir,
+    allowLocalDockerfile,
 }: PrepareFilesForDockerParams) {
     await fs.emptyDir(pathToTempDir);
 
@@ -57,7 +59,7 @@ export async function prepareFilesForDocker({
         ? await fs.readFile(configs.localNginxConf, 'utf8')
         : nginxConfTemplate;
 
-    const dockerfile = configs.localDockerfile
+    const dockerfile = configs.localDockerfile && allowLocalDockerfile
         ? await fs.readFile(configs.localDockerfile, 'utf8')
         : dockerfileTemplate;
 

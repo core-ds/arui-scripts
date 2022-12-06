@@ -20,6 +20,7 @@ import { getBuildParamsFromArgs, prepareFilesForDocker } from '../util/docker-bu
             dockerfileTemplate,
             nginxConfTemplate,
             startScript,
+            allowLocalDockerfile: false,
         });
 
         await exec(`docker build -f "./${tempDirName}/Dockerfile" \\
