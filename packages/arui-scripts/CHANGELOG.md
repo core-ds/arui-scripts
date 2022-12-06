@@ -1,3 +1,10 @@
+# [13.3.0-feat-fast-docker-build.3](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v13.3.0-feat-fast-docker-build.2...v13.3.0-feat-fast-docker-build.3) (2022-12-06)
+
+
+### Bug Fixes
+
+* **docker-build-fast:** don't remove build directory ([0909182](https://git.moscow.alfaintra.net/ef/arui-scripts/commit/09091820f10fffc54702ae6572f6c9a716fe0784))
+
 # [13.3.0-feat-fast-docker-build.2](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v13.3.0-feat-fast-docker-build.1...v13.3.0-feat-fast-docker-build.2) (2022-12-06)
 
 
