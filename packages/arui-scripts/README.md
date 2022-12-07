@@ -42,6 +42,7 @@ npm install arui-scripts --save-dev
 - `arui-scripts start` - запускает WebpackDevServer для фронтенда и webpack в режиме `--watch` для сервера.
 - `arui-scripts build` - компилирует клиент и сервер для использования в production
 - `arui-scripts docker-build` - собирает docker контейнер c production билдом и загружает его в артифактори
+- `arui-scripts docker-build:compiled` - собирает docker контейнер c production билдом, предполагая что код приложения уже скомпилирован
 - `arui-scripts test` - запускает jest тесты.
 - `arui-scripts archive-build` - собирает архив с production билдом
 - `arui-scripts bundle-analyze` - запускает [webpack-bundle-analyzer](https://www.npmjs.com/package/webpack-bundle-analyzer) для prod версии клиентского кода
@@ -318,6 +319,18 @@ docker run -p 8080:8080 container-name:version ./start.sh
 
 `Dockerfile` в корне проекта имеет приоритет над overrides.
 
+docker compiled
+---
+Команда `arui-scripts docker-build:compiled` во многом аналогична `docker-build`, но вместо сборки проекта использует уже скомпилированный в папку `.build` код.
+При этом в контейнер будут устанавливаться только production зависимости.
+Команду предполагается использовать в CI/CD, когда проект собирается в отдельном шаге и результат сборки уже доступен.
+За счет того, что в контейнер папки node_modules не копируются, а устанавливаются только production зависимости, скорость сборки контейнера значительно увеличивается.
+В процессе сборки так же будет модифицироваться файл `.dockerignore` для того чтобы гарантировано исключить папку `node_modules` из контекста сборки докера.
+
+`arui-scripts docker-build:compiled` имеет те же опции, что и `arui-scripts docker-build`.
+Dockerfile при этом будет сгенерирован автоматически, но вы можете переопределить его используя механизм [overrides](#тонкая-настройка).
+Локальный `Dockerfile` в корне проекта в данном случае полностью игнорируется.
+
 archive
 ---
 
@@ -575,6 +588,7 @@ export default overrides;
 - `Dockerfile` - докерфайл, который будет использоваться для сборки контейнера.
   Базовый шаблон [тут](./src/templates/dockerfile.template.ts).
   [`Dockerfile` в корне проекта](#docker) имеет приоритет над overrides.
+- `DockerfileCompiled` - докерфайл, который будет использоваться для сборки контейнера при использовании команды `arui-scripts docker-build:compiled`
 - `nginx` - шаблон конфигурации для nginx внутри контейнера.
   Базовый шаблон [тут](./src/templates/nginx.conf.template.ts).
   [Файл `nginx.conf`](#конфигурация-nginx) в корне имеет приоритет над оверрайдами.
