@@ -1,4 +1,3 @@
-import shell from 'shelljs';
 import tar from 'tar';
 import path from 'path';
 import fs from 'fs-extra';
@@ -6,6 +5,7 @@ import configs from '../../configs/app-configs';
 import exec from '../util/exec';
 import nginxConfTemplate from '../../templates/nginx.conf.template';
 import startScript from '../../templates/start.template';
+import { getPruningCommand } from '../util/yarn';
 
 const tempDirName = '.archive-build';
 const nginxConfFileName = 'nginx.conf';
@@ -42,19 +42,9 @@ const packageJsonPath = path.join(configs.cwd, packageJsonFileName);
 
         console.timeEnd('Build application time');
         console.time('Remove build dependencies time');
-        // if yarn is available prune dev dependencies with yarn, otherwise use npm
-        if (configs.useYarn && shell.which('yarn')) {
-            const yarnVersion = shell.exec('yarn -v', { silent: true });
-            const yarnMajorVersion = Number(yarnVersion.split('.')[0]);
+        const pruneCommand = getPruningCommand();
 
-            if (yarnMajorVersion > 1) {
-                await exec('yarn workspaces focus --production --all');
-            } else {
-                await exec('yarn install --production --ignore-optional --frozen-lockfile --ignore-scripts --prefer-offline');
-            }
-        } else {
-            await exec('npm prune --production');
-        }
+        await exec(pruneCommand);
 
         console.timeEnd('Remove build dependencies time');
         console.time('Archive build time');

@@ -3,7 +3,7 @@ process.env.BABEL_ENV = 'test';
 process.env.NODE_ENV = 'test';
 process.env.PUBLIC_URL = '';
 
-const jest = require('jest');
+const jestRunner = require('jest');
 const jestConfig = require('../../configs/jest');
 
 // Makes the script crash on unhandled rejections instead of silently
@@ -21,4 +21,4 @@ argv.push(
     JSON.stringify(jestConfig)
 );
 
-jest.run(argv);
+jestRunner.run(argv);
