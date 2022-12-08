@@ -1,3 +1,19 @@
+# [13.3.0](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v13.2.1...v13.3.0) (2022-12-08)
+
+
+### Bug Fixes
+
+* **commands:** use correct naming for docker-build:compiled ([26144f9](https://git.moscow.alfaintra.net/ef/arui-scripts/commit/26144f9a91b94f5c1063fe6e7cfa9c962fca3dbc))
+* **docker-build-compiled:** don't use local dockerfile ([eca88a0](https://git.moscow.alfaintra.net/ef/arui-scripts/commit/eca88a0efef79fd68c349e5e71add934b2f162c2))
+* **docker-build-fast:** don't remove build directory ([0909182](https://git.moscow.alfaintra.net/ef/arui-scripts/commit/09091820f10fffc54702ae6572f6c9a716fe0784))
+
+
+### Features
+
+* **docker:** add fast docker build command ([82301a8](https://git.moscow.alfaintra.net/ef/arui-scripts/commit/82301a8d912476fd5516f94083ccd7c5363f4509))
+* **docker-build-compiled:** ignore node_modules automatically ([35b4955](https://git.moscow.alfaintra.net/ef/arui-scripts/commit/35b49550e73472eb6d38af1af832708c7f0bc271))
+* **docker-fast:** don't build anything inside of container ([8f255bd](https://git.moscow.alfaintra.net/ef/arui-scripts/commit/8f255bd8fb9818a8498bddee71ef83ce4a7ba11b))
+
 # [13.3.0-feat-fast-docker-build.3](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v13.3.0-feat-fast-docker-build.2...v13.3.0-feat-fast-docker-build.3) (2022-12-06)
 
 
