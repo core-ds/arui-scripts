@@ -1,8 +1,18 @@
 import configs from '../configs/app-configs';
 import applyOverrides from '../configs/util/apply-overrides';
-import { getPruningCommand } from '../commands/util/yarn';
+import { getInstallProductionCommand, getPruningCommand, getYarnVersion } from '../commands/util/yarn';
 
-const pruneCommand = getPruningCommand();
+const installProductionCommand = getInstallProductionCommand();
+const yarnVersion = getYarnVersion();
+
+// В зависимости от используемого мендежера зависимостей для их установки нужно копировать разный набор файлов
+const filesRequiredToInstallDependencies = [
+    'package.json',
+    'yarn.lock',
+    yarnVersion === '2+' && '.yarnrc.yml',
+    yarnVersion === '2+' && '.yarn',
+    yarnVersion === 'unavailable' && 'package-lock.json',
+].filter(Boolean);
 
 const dockerfileTemplate = `
 FROM ${configs.baseDockerImage}
@@ -16,10 +26,10 @@ ADD $START_SH_LOCATION /src/start.sh
 ADD $NGINX_CONF_LOCATION /src/nginx.conf
 
 # Зависимости. При некоторой удаче могут кешироваться и соответственно кешировать установку зависимостей
-ADD --chown=nginx:nginx yarn.lock /src/yarn.lock
-ADD --chown=nginx:nginx package.json /src/package.json
-RUN ${pruneCommand}  && \\
-    yarn cache clean
+${filesRequiredToInstallDependencies.map((file) => `ADD --chown=nginx:nginx ${file} /src/${file}`).join('\n')}
+
+RUN ${installProductionCommand}  && \\
+    ${yarnVersion === 'unavailable' ? 'npm cache clean --force' : 'yarn cache clean'}
 
 ADD --chown=nginx:nginx . /src
 
