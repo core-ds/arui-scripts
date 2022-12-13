@@ -1,3 +1,11 @@
+## [13.3.1](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v13.3.0...v13.3.1) (2022-12-13)
+
+
+### Bug Fixes
+
+* **docker-build-compiled:** add yarn2 required files before build ([c252535](https://git.moscow.alfaintra.net/ef/arui-scripts/commit/c2525358e7573e599bbdb20160453cc077f5a083))
+* **docker-build-compiled:** don't override existing .dockerignore ([b0c20c2](https://git.moscow.alfaintra.net/ef/arui-scripts/commit/b0c20c25792edbb5b73cd2bb36725b214cb4aadd))
+
 # [13.3.0](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v13.2.1...v13.3.0) (2022-12-08)
 
 
