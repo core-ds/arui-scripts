@@ -15,6 +15,8 @@ yarn build
 yarn semantic-release --no-ci
 ```
 
+Вам так же нужен доступ до нашего публичного npm, узнать у кого есть доступы можно вот тут: http://confluence.moscow.alfaintra.net/pages/viewpage.action?pageId=1061766661
+
 
 ~~Для публикации тестовых релизов из веток можно пользоваться ручным запуском
 github action [Create new library package](https://github.com/alfa-laboratory/arui-scripts/actions?query=workflow%3A%22Create+new+library+package%22).
@@ -26,4 +28,3 @@ github action [Create new library package](https://github.com/alfa-laboratory/ar
 - [arui-scripts](./packages/arui-scripts/) - непосредственно код конфигураций сборщиков
 - [arui-scripts-test](./packages/arui-scripts-test/) - тестовый проект, на котором проводится проверка сборщиковъ
 - [alpine-node-nginx](./packages/alpine-node-nginx/) - Базовый образ docker контейнера, на котором будут основываться контейнеры проектов
-
