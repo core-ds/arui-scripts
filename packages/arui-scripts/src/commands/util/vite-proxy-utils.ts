@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from 'axios/index';
+import axios, { AxiosResponse } from 'axios';
 import { Request, Response } from 'express-serve-static-core';
 import fs from 'fs';
 import configs from '../../configs/app-configs';
@@ -88,3 +88,10 @@ export function generateFakeWebpackAssets() {
         'utf8',
     );
 }
+
+export const reloadHtmlResponse = `<html>
+<script type="text/javascript">setTimeout(() => {window.location.reload()}, 300)</script>
+<body>
+    <h1>Getting things ready...</h1>
+</body>
+</html>`;

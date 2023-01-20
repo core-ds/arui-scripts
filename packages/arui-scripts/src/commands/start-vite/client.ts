@@ -8,15 +8,15 @@ import { startHttp2ProxyServer } from '../util/start-http2-proxy-server';
 import {
     checkIfIsAssetsRequest,
     checkIfIsHtmlResponse,
-    fetchDataFromServer, generateFakeWebpackAssets,
-    processAssetsRequests,
+    fetchDataFromServer,
+    generateFakeWebpackAssets,
+    processAssetsRequests, reloadHtmlResponse,
     updateHtmlResponse
 } from '../util/vite-proxy-utils';
 
 (async function() {
     const app = express();
     const vite = await createViteServer(viteConfig);
-    generateFakeWebpackAssets();
 
     app.use(vite.middlewares);
 
@@ -25,6 +25,14 @@ import {
     const templateScripts = parsedTemplate.querySelectorAll('script');
 
     app.use('/', async (req, res) => {
+        try {
+            generateFakeWebpackAssets();
+        } catch (e) {
+            res
+                .status(200)
+                .end(reloadHtmlResponse)
+            return
+        }
         const isAssetsRequest = checkIfIsAssetsRequest(req);
 
         if (isAssetsRequest) {
