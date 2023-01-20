@@ -1,3 +1,11 @@
+# [13.4.0-feat-vite-dev-build.3](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v13.4.0-feat-vite-dev-build.2...v13.4.0-feat-vite-dev-build.3) (2023-01-20)
+
+
+### Bug Fixes
+
+* **vite:** correct module resolution ([e8332ed](https://git.moscow.alfaintra.net/ef/arui-scripts/commit/e8332ed13d964ba4c190554aa69ff5f4d109ca99))
+* **vite:** increase reload timeout ([93568f0](https://git.moscow.alfaintra.net/ef/arui-scripts/commit/93568f0eaf62be5029edf6d568078c3911b46960))
+
 # [13.4.0-feat-vite-dev-build.2](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v13.4.0-feat-vite-dev-build.1...v13.4.0-feat-vite-dev-build.2) (2023-01-20)
 
 
