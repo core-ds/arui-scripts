@@ -3,12 +3,22 @@ import configs from './app-configs';
 import react from '@vitejs/plugin-react';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import postcssConfig from './postcss';
+import { createLogger, LogOptions } from 'vite';
 
 export const viteConfig = applyOverrides('vite', {
     server: {
         middlewareMode: true,
         hmr: {
             protocol: 'ws',
+        }
+    },
+    customLogger: {
+        ...createLogger('info'),
+        warn(msg: string) {
+            // ignore warning about css import, they are created incorrectly
+            if (!msg.includes('Default and named imports from CSS files are deprecated.')) {
+                console.log(msg);
+            }
         }
     },
     appType: 'custom',

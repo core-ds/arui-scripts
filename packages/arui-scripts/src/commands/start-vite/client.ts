@@ -63,12 +63,18 @@ import {
     })
 
     app.listen({
-        port: configs.viteDevPort,
+        port: configs.clientServerPort,
     });
+
+    console.log(
+        `Client dev server is running:
+http://localhost:${configs.clientServerPort}
+https://localhost:${configs.viteDevPort}`
+    );
 })();
 
 startHttp2ProxyServer({
-    originalPort: configs.viteDevPort,
+    originalPort: configs.clientServerPort,
     originalHost: 'localhost',
-    port: configs.clientServerPort,
+    port: configs.viteDevPort,
 });
