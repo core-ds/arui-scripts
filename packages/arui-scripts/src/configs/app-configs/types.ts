@@ -37,6 +37,8 @@ export type AppConfigs = {
     serverPort: number;
     installServerSourceMaps: boolean;
 
+    viteDevPort: number;
+
     debug: boolean;
     overridesPath: string[];
     statsOutputFilename: string;

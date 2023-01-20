@@ -2,6 +2,7 @@ import type { Configuration as WebpackConfiguration, WebpackOptionsNormalized } 
 import type { Configuration as WebpackDevServerConfiguration } from 'webpack-dev-server';
 import appConfigs from '../app-configs';
 import { AppConfigs } from '../app-configs/types';
+import { InlineConfig } from 'vite';
 
 type Overrides = {
     webpack: WebpackConfiguration;
@@ -15,6 +16,10 @@ type Overrides = {
     webpackServerProd: WebpackConfiguration;
     devServer: WebpackDevServerConfiguration;
     stats: WebpackOptionsNormalized['stats'];
+
+    vite: InlineConfig;
+    // Фейковый html документ, который будет подаваться на вход vite-у для генерации конфигурации
+    viteHtml: string;
 
     babel: any; // TODO: где взять typedef-ы для бабеля?
     babelClient: any;

@@ -60,6 +60,7 @@ export function getDefaults(): AppConfigs {
         clientServerPort: 8080,
         serverPort: 3000,
         installServerSourceMaps: false,
+        viteDevPort: 23891,
 
         debug: false,
         overridesPath: overridesPath ? [overridesPath] : [],
