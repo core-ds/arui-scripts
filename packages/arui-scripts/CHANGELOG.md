@@ -1,3 +1,10 @@
+# [13.4.0-feat-vite-dev-build.2](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v13.4.0-feat-vite-dev-build.1...v13.4.0-feat-vite-dev-build.2) (2023-01-20)
+
+
+### Bug Fixes
+
+* **vite:** small fixes in start up process ([aa1588e](https://git.moscow.alfaintra.net/ef/arui-scripts/commit/aa1588e186dafb93a9169f64f71a93fb0741448a))
+
 # [13.4.0-feat-vite-dev-build.1](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v13.3.1...v13.4.0-feat-vite-dev-build.1) (2023-01-20)
 
 
