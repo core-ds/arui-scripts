@@ -14,7 +14,7 @@ import {
     updateHtmlResponse
 } from '../util/vite-proxy-utils';
 
-(async function() {
+(async function () {
     const app = express();
     const vite = await createViteServer(viteConfig);
 
@@ -27,38 +27,39 @@ import {
     app.use('/', async (req, res) => {
         try {
             generateFakeWebpackAssets();
+            const isAssetsRequest = checkIfIsAssetsRequest(req);
+
+            if (isAssetsRequest) {
+                processAssetsRequests(req, res);
+
+                return;
+            }
+
+            const fetchRes = await fetchDataFromServer(req);
+            const isHtmlResponse = checkIfIsHtmlResponse(fetchRes);
+
+            if (!isHtmlResponse) {
+                res
+                    .status(fetchRes.status)
+                    .set(fetchRes.headers)
+                    .end(fetchRes.data);
+
+                return;
+            }
+
+
+            const { responseRoot, headers } = updateHtmlResponse(fetchRes, templateScripts);
+            res
+                .status(fetchRes.status)
+                .set(headers)
+                .end(responseRoot.toString());
+
         } catch (e) {
             res
                 .status(200)
                 .end(reloadHtmlResponse)
             return
         }
-        const isAssetsRequest = checkIfIsAssetsRequest(req);
-
-        if (isAssetsRequest) {
-            processAssetsRequests(req, res);
-
-            return;
-        }
-
-        const fetchRes = await fetchDataFromServer(req);
-        const isHtmlResponse = checkIfIsHtmlResponse(fetchRes);
-
-        if (!isHtmlResponse) {
-            res
-                .status(fetchRes.status)
-                .set(fetchRes.headers)
-                .end(fetchRes.data);
-
-            return;
-        }
-
-
-        const { responseRoot, headers } = updateHtmlResponse(fetchRes, templateScripts);
-        res
-            .status(fetchRes.status)
-            .set(headers)
-            .end(responseRoot.toString());
     })
 
     app.listen({

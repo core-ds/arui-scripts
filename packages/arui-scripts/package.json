@@ -100,6 +100,7 @@
         "tsconfig-paths-webpack-plugin": "3.5.1",
         "url-loader": "4.1.1",
         "vite": "^4.0.4",
+        "vite-tsconfig-paths": "^4.0.5",
         "webpack": "5.62.0",
         "webpack-bundle-analyzer": "4.5.0",
         "webpack-dev-server": "4.3.1",
