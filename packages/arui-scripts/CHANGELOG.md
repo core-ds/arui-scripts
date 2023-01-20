@@ -1,3 +1,10 @@
+# [13.4.0-feat-vite-dev-build.1](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v13.3.1...v13.4.0-feat-vite-dev-build.1) (2023-01-20)
+
+
+### Features
+
+* add vite as dev build server ([7a2059e](https://git.moscow.alfaintra.net/ef/arui-scripts/commit/7a2059e00c86c3cb21fb5e23bb29574c2360007f))
+
 ## [13.3.1](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v13.3.0...v13.3.1) (2022-12-13)
 
 
