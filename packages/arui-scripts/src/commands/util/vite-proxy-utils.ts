@@ -90,7 +90,7 @@ export function generateFakeWebpackAssets() {
 }
 
 export const reloadHtmlResponse = `<html>
-<script type="text/javascript">setTimeout(() => {window.location.reload()}, 300)</script>
+<script type="text/javascript">setTimeout(() => {window.location.reload()}, 1000)</script>
 <body>
     <h1>Getting things ready...</h1>
 </body>
