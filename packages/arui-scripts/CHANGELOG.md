@@ -1,3 +1,10 @@
+# [13.4.0-feat-vite-dev-build.4](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v13.4.0-feat-vite-dev-build.3...v13.4.0-feat-vite-dev-build.4) (2023-01-20)
+
+
+### Bug Fixes
+
+* **vite:** hide warnings about css imports ([e21cd2c](https://git.moscow.alfaintra.net/ef/arui-scripts/commit/e21cd2cce47f4c8e9a212183f4ff9bab90a267fe))
+
 # [13.4.0-feat-vite-dev-build.3](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v13.4.0-feat-vite-dev-build.2...v13.4.0-feat-vite-dev-build.3) (2023-01-20)
 
 
