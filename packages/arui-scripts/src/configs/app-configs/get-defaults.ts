@@ -34,7 +34,7 @@ export function getDefaults(): AppConfigs {
         assetsPath: 'assets',
         additionalBuildPath: ['config'],
         nginxRootPath: '/src',
-        runFromNonRootUser: false,
+        runFromNonRootUser: true,
         archiveName: 'build.tar',
         babelRuntimeVersion: '7.0.0-beta.0',
 
