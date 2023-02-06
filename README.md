@@ -18,6 +18,14 @@ yarn semantic-release --no-ci
 Вам так же нужен доступ до нашего публичного npm, узнать у кого есть доступы можно вот тут: http://confluence.moscow.alfaintra.net/pages/viewpage.action?pageId=1061766661
 
 
+## Выпуск пререлизной версии
+
+Для того, чтобы выпустить прерилизную ветку, нужно выполнить следующие действия:
+
+1. Создать ветку, из которой вы ее будете выпускать.
+2. Запушить эту ветку в репозиторий. Если ветка будет не запушена - semantic-release не даст ее зарелизить
+3. Выполнить все те же действия, что и для релиза, но последнюю команду заменить на `NPM_CHANNEL="{NAME_OF_YOUR_BRANCH}" yarn semantic-release --no-ci`
+
 ~~Для публикации тестовых релизов из веток можно пользоваться ручным запуском
 github action [Create new library package](https://github.com/alfa-laboratory/arui-scripts/actions?query=workflow%3A%22Create+new+library+package%22).
 Выберите нужную вам ветку и введите название тега для публикации. Релиз автоматически попадет в npm.~~
