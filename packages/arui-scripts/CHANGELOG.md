@@ -1,3 +1,15 @@
+# [13.4.0](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v13.3.1...v13.4.0) (2023-02-06)
+
+
+### Bug Fixes
+
+* **dockerfile:** reduce image size ([13fc2f8](https://git.moscow.alfaintra.net/ef/arui-scripts/commit/13fc2f894569db24d362e3aaf13bc9a15f34378f))
+
+
+### Features
+
+* **get-defaults.ts:** run from non root by default ([b9130b7](https://git.moscow.alfaintra.net/ef/arui-scripts/commit/b9130b7c518ad6023fa0d3f8bf6818af7d7e9081))
+
 ## [13.3.1](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v13.3.0...v13.3.1) (2022-12-13)
 
 
