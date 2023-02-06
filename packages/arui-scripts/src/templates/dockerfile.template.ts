@@ -2,7 +2,7 @@ import configs from '../configs/app-configs';
 import applyOverrides from '../configs/util/apply-overrides';
 
 const nginxNonRootPart = configs.runFromNonRootUser ?
-  `RUN chown -R nginx:nginx /src && chmod -R 755 /src && \\
+    `RUN chown -R nginx:nginx /src && \\
        mkdir -p /var/lib/nginx && \\
        chown -R nginx:nginx /var/lib/nginx && \\
        chown -R nginx:nginx /var/log/nginx && \\
@@ -12,7 +12,7 @@ const nginxNonRootPart = configs.runFromNonRootUser ?
        chown -R nginx:nginx /var/run/nginx.pid
 
    USER nginx`
-  : '';
+    : '';
 
 const dockerfileTemplate = `
 FROM ${configs.baseDockerImage}
@@ -22,9 +22,9 @@ ARG NGINX_CONF_LOCATION
 WORKDIR /src
 ADD $START_SH_LOCATION /src/start.sh
 ADD $NGINX_CONF_LOCATION /src/nginx.conf
-ADD . /src
-
 ${nginxNonRootPart}
+${configs.runFromNonRootUser ? 'ADD --chown=nginx:nginx . /src' : 'ADD . /src'}
+
 `;
 
 export default applyOverrides('Dockerfile', dockerfileTemplate);
