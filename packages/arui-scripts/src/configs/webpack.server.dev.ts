@@ -17,6 +17,7 @@ import postcssConf from './postcss';
 import applyOverrides from './util/apply-overrides';
 import getEntry from './util/get-entry';
 import { babelDependencies } from './babel-dependencies';
+import { serverExternalsExemptions } from './server-externals-exemptions';
 
 const ReloadServerPlugin = require('../plugins/reload-server-webpack-plugin');
 
@@ -66,17 +67,7 @@ const config: webpack.Configuration = {
     },
     externalsPresets: { node: true },
     externals: [nodeExternals({
-        allowlist: [
-            /^arui-feather/,
-            /^arui-ft-private/,
-            /^arui-private/,
-            /^alfaform-core-ui/,
-            /^@alfa-bank\/newclick-composite-components/,
-            /^#/,
-            /^@alfalab\/icons/,
-            /^@alfalab\/core-components/,
-            /^date-fns/,
-        ],
+        allowlist: serverExternalsExemptions,
         modulesFromFile: true,
     })],
     resolve: {

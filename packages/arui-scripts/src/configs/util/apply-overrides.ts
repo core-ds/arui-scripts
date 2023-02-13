@@ -29,6 +29,7 @@ type Overrides = {
     'DockerfileCompiled': string;
     nginx: string;
     'start.sh': string;
+    serverExternalsExemptions: Array<string | RegExp>;
 };
 
 type OverrideFunction<K extends keyof Overrides> = (config: Overrides[K], appConfig: AppConfigs) => Overrides[K];
