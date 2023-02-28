@@ -1,6 +1,6 @@
 {
     "name": "arui-scripts",
-    "version": "13.4.0",
+    "version": "13.5.0-feat-NEWCLICKUI-1746.1",
     "main": "./build/index.js",
     "typings": "./build/index.d.ts",
     "license": "MPL-2.0",
