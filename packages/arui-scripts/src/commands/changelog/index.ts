@@ -12,20 +12,19 @@ const {
 } = require('fs');
 const { resolve } = require('path');
 const readline = require('readline');
+const nodeModulesBinPath = resolve(process.cwd(), './node_modules/.bin');
 
-const nodeModulesBinPath = resolve(__dirname, './node_modules/.bin');
-
-const changelogPath = resolve(__dirname, './CHANGELOG.md');
-const changelogTmpPath = resolve(__dirname, './CHANGELOG_TMP.md');
+const changelogPath = resolve(process.cwd(), './CHANGELOG.md');
+const changelogTmpPath = resolve(process.cwd(), './CHANGELOG_TMP.md');
 
 /**
  * Сюда пайплайн Jenkins складывает соответствующие части описания версии. Не получается использовать
  * переменные окружения, т.к. `standard-version` запускает хуки через `child_process.exec`, не передавая туда
  * ни аргументы ни переменные окружения.
  */
-const changelogFeaturesPath = resolve(__dirname, './changelog_features.tmp');
-const changelogBugfixesPath = resolve(__dirname, './changelog_bugfixes.tmp');
-const changelogBreakingChangesPath = resolve(__dirname, './changelog_breaking_changes.tmp');
+const changelogFeaturesPath = resolve(process.cwd(), './changelog_features.tmp');
+const changelogBugfixesPath = resolve(process.cwd(), './changelog_bugfixes.tmp');
+const changelogBreakingChangesPath = resolve(process.cwd(), './changelog_breaking_changes.tmp');
 
 // Пример заголовка – `## [50.1.0](http://git.moscow.alfaintra.net/...) (2022-07-27)`.
 const changelogHeaderRegExp = /^###? \[\d+\.\d+\.\d+]\([^)]+\) \(\d{4}-\d{2}-\d{2}\)/;
@@ -37,6 +36,16 @@ const changelogHeaderRegExp = /^###? \[\d+\.\d+\.\d+]\([^)]+\) \(\d{4}-\d{2}-\d{
     const ws = createWriteStream(changelogTmpPath);
 
     let modifyingStatus = 'PENDING'; // 'PENDING' | 'MODIFYING' | 'MODIFIED'
+
+    const addVersionDescription = async () => {
+        const [features, bugFixes, breakingChanges] = await Promise.all([
+            readFile(changelogFeaturesPath, 'utf-8'),
+            readFile(changelogBugfixesPath, 'utf-8'),
+            readFile(changelogBreakingChangesPath, 'utf-8'),
+        ]).then((files) => files.map((content) => content.trim()));
+
+        ws.write(getVersionDescription({ features, bugFixes, breakingChanges }));
+    }
 
     // eslint-disable-next-line no-restricted-syntax
     for await (const line of rl) {
@@ -55,13 +64,7 @@ const changelogHeaderRegExp = /^###? \[\d+\.\d+\.\d+]\([^)]+\) \(\d{4}-\d{2}-\d{
                 if (changelogHeaderRegExp.test(line)) {
                     modifyingStatus = 'MODIFIED';
 
-                    const [features, bugFixes, breakingChanges] = await Promise.all([
-                        readFile(changelogFeaturesPath, 'utf-8'),
-                        readFile(changelogBugfixesPath, 'utf-8'),
-                        readFile(changelogBreakingChangesPath, 'utf-8'),
-                    ]).then((files) => files.map((content) => content.trim()));
-
-                    ws.write(getVersionDescription({ features, bugFixes, breakingChanges }));
+                    await addVersionDescription();
                     ws.write(`${line}\n`);
                 }
                 break;
@@ -73,11 +76,16 @@ const changelogHeaderRegExp = /^###? \[\d+\.\d+\.\d+]\([^)]+\) \(\d{4}-\d{2}-\d{
         }
     }
 
+    if(modifyingStatus !== 'MODIFIED') {
+        await addVersionDescription();
+    }
+
     ws.close();
 
-    execSync(`${nodeModulesBinPath}/prettier -w "${changelogTmpPath}"`);
     await unlink(changelogPath);
     await rename(changelogTmpPath, changelogPath);
+    execSync(`${nodeModulesBinPath}/prettier -w "${changelogPath}"`);
+
     process.exit(0);
 })();
 
