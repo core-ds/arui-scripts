@@ -46,6 +46,7 @@ npm install arui-scripts --save-dev
 - `arui-scripts test` - запускает jest тесты.
 - `arui-scripts archive-build` - собирает архив с production билдом
 - `arui-scripts bundle-analyze` - запускает [webpack-bundle-analyzer](https://www.npmjs.com/package/webpack-bundle-analyzer) для prod версии клиентского кода
+- `arui-scripts changelog` - запускает скрипт changelog через standard-version, который добавляет новое описание в `CHANGELOG.MD`, которое указали при сборке нового билда в Jenkins
 
 
 Настройки

@@ -1,3 +1,10 @@
+# [13.5.0-feat-NEWCLICKUI-1746.1](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v13.4.0...v13.5.0-feat-NEWCLICKUI-1746.1) (2023-02-28)
+
+
+### Features
+
+* added a new command "changelog" ([95d5a34](https://git.moscow.alfaintra.net/ef/arui-scripts/commit/95d5a34558322108a7f8afab7608491291f4d4aa))
+
 # [13.4.0](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v13.3.1...v13.4.0) (2023-02-06)
 
 

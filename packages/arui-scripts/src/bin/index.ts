@@ -10,6 +10,7 @@ const commands: Record<string, () => void> = {
     'ensure-yarn': () => require('../commands/ensure-yarn'),
     'archive-build': () => require('../commands/archive-build'),
     'bundle-analyze': () => require('../commands/bundle-analyze'),
+    changelog: () => require('../commands/changelog'),
 };
 
 const command = process.argv[2] as string;
