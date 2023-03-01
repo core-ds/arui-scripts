@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { pathsToModuleNameMapper } = require('ts-jest/utils');
+const { pathsToModuleNameMapper } = require('ts-jest');
 const { parseConfigFileTextToJson } = require('typescript');
 const merge = require('lodash.merge');
 const configs = require('../app-configs').default;
