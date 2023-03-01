@@ -8,6 +8,7 @@ export type AppConfigs = {
     cwd: string;
     appSrc: string;
     appNodeModules: string;
+    appNodeModulesBin: string;
     buildPath: string;
     assetsPath: string;
     additionalBuildPath: string[];
@@ -51,4 +52,10 @@ export type AppConfigs = {
     clientOutputPath: string;
     statsOutputPath: string;
     watchIgnorePath: string[];
+
+    changelogPath: string;
+    changelogTmpPath: string;
+    changelogFeaturesPath: string;
+    changelogBugfixesPath: string;
+    changelogBreakingChangesPath: string;
 };
