@@ -13,6 +13,7 @@ import postcssConf from './postcss';
 import applyOverrides from './util/apply-overrides';
 import getEntry from './util/get-entry';
 import { babelDependencies } from './babel-dependencies';
+import { serverExternalsExemptions } from './server-externals-exemptions';
 
 const assetsIgnoreBanner = fs.readFileSync(require.resolve('./util/node-assets-ignore'), 'utf8');
 const sourceMapSupportBanner = fs.readFileSync(require.resolve('./util/install-sourcemap-support'), 'utf8');
@@ -56,17 +57,7 @@ const config = applyOverrides(['webpack', 'webpackServer', 'webpackProd', 'webpa
     },
     externalsPresets: { node: true },
     externals: [nodeExternals({
-        allowlist: [
-            /^arui-feather/,
-            /^arui-ft-private/,
-            /^arui-private/,
-            /^alfaform-core-ui/,
-            /^@alfa-bank\/newclick-composite-components/,
-            /^#/,
-            /^@alfalab\/icons/,
-            /^@alfalab\/core-components/,
-            /^date-fns/,
-        ],
+        allowlist: serverExternalsExemptions,
         // we cannot determine node_modules location before arui-scripts installation, so just load
         // dependencies list from package.json
         modulesFromFile: true,
