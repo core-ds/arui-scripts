@@ -1,3 +1,13 @@
+# [13.5.0](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v13.4.0...v13.5.0) (2023-03-02)
+
+
+### Features
+
+* added a new command "changelog" ([95d5a34](https://git.moscow.alfaintra.net/ef/arui-scripts/commit/95d5a34558322108a7f8afab7608491291f4d4aa))
+* refactor changelog script ([a4b0f34](https://git.moscow.alfaintra.net/ef/arui-scripts/commit/a4b0f3444fdc2e2593105488059357eaa717d5db))
+* refactor changelog script ([ae54ce8](https://git.moscow.alfaintra.net/ef/arui-scripts/commit/ae54ce877dea6ec5b3840e6fa366c7ead15bf1bf))
+* **webpack-server:** add serverExternalsExemptions override ([8cb8479](https://git.moscow.alfaintra.net/ef/arui-scripts/commit/8cb847914632e806725c84d73678bdc88c17534e))
+
 # [13.5.0](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v13.4.0...v13.5.0) (2023-03-01)
 
 
