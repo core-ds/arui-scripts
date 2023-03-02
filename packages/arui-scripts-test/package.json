@@ -24,6 +24,7 @@
         ]
     },
     "dependencies": {
+        "@hapi/hapi": "^21.3.0",
         "arui-scripts": "workspace:*",
         "express": "^4.16.4",
         "lodash": "^4.17.20",
