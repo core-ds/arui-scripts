@@ -1,3 +1,19 @@
+# [14.0.0](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v13.5.0...v14.0.0) (2023-03-02)
+
+
+### Features
+
+* update jest to 28 ([14d1af7](https://git.moscow.alfaintra.net/ef/arui-scripts/commit/14d1af7c4502e20adaf200716f6ed941784643ef))
+* update minimal ts version to 4.3 ([ce4910a](https://git.moscow.alfaintra.net/ef/arui-scripts/commit/ce4910afb2efc0cc351e73a07a286afe58f621fd))
+
+
+### BREAKING CHANGES
+
+* minimal supported version of ts it now 4.3
+* now we use jest@28
+
+For complete list of breaking changes see https://jestjs.io/docs/28.x/upgrading-to-jest28
+
 # [13.5.0](https://git.moscow.alfaintra.net/ef/arui-scripts/compare/v13.4.0...v13.5.0) (2023-03-02)
 
 
