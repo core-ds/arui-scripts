@@ -17,5 +17,5 @@ module.exports = {
         { name: '*', channel: betaChannelName, prerelease: true },
         { name: '*/*', channel: betaChannelName, prerelease: '${name.replace(/[^0-9A-Za-z-]/g, "-")}' },
     ],
-    repositoryUrl: 'ssh://git@git.moscow.alfaintra.net/ef/arui-scripts.git',
+    repositoryUrl: 'git@github.com:core-ds/arui-scripts.git',
 };
