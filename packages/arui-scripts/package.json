@@ -6,8 +6,12 @@
     "license": "MPL-2.0",
     "repository": {
         "type": "git",
-        "url": "https://git.moscow.alfaintra.net/projects/EF/repos/arui-scripts"
+        "url": "git+https://github.com/core-ds/arui-scripts.git"
     },
+    "bugs": {
+        "url": "https://github.com/core-ds/arui-scripts/issues"
+    },
+    "homepage": "https://github.com/core-ds/arui-scripts#readme",
     "bin": "./build/bin/index.js",
     "dependencies": {
         "@alfalab/postcss-custom-properties": "^9.1.2",
@@ -156,12 +160,5 @@
         "transform": {
             "^.+\\.tsx?$": "ts-jest"
         }
-    },
-    "author": "Good guys from AlfaBank",
-    "maintainers": [
-        {
-            "email": "akitov@alfabank.ru",
-            "name": "Alexander Kitov"
-        }
-    ]
+    }
 }

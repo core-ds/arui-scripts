@@ -1,10 +1,7 @@
 ARUI-scripts
 ===
 
-Приложение на нашем стеке без какой либо конфигурации билдеров.
-
-Во многом пакет аналогичен `react-scripts` из `create-react-app`, разница заключается
-в немного отличающихся настройках для `babel`, поддержки `ts` и возможности работы с серверным кодом.
+Простой и гибкий инструмент для одновременной сборки клиентской и серверной части react-приложений.
 
 Использование
 ===
@@ -78,7 +75,7 @@ npm install arui-scripts --save-dev
 - `devSourceMaps` - какой вид source-map использовать в режиме разработки. По умолчанию `eval`. Эта настройка может сильно влиять на время сборки. Подробнее можно почитать [здесь](https://webpack.js.org/configuration/devtool/).
 **Внимание**. При использовании любых source-map на основании `eval` webpack-dev-server будет модифицировать заголовок `Content-Security-Policy` (при наличии) и добавлять в него `unsafe-eval`. [Подробнее тут](#dev-csp).
 - `useTscLoader` -  использовать ts-loader вместо babel-loader для обработки ts файлов. У babel-loader есть [ряд ограничений](https://blogs.msdn.microsoft.com/typescript/2018/08/27/typescript-and-babel-7/). По умолчанию `false`.
-- `componentsTheme` - путь к css файлу с темой для [core-components](https://alfa-laboratory.github.io/core-components). Используется для настройки [postcss-custom-properties](https://github.com/postcss/postcss-custom-properties#importfrom).
+- `componentsTheme` - путь к css файлу с темой для [core-components](https://github.com/core-ds/core-components). Используется для настройки [postcss-custom-properties](https://github.com/postcss/postcss-custom-properties#importfrom).
 - `keepCssVars` - отключает `postcss-custom-properties`, css переменные будут оставаться в бандле.
 - `removeDevDependenciesDuringDockerBuild` - отключает удаление devDependencies из node_modules при сборке докер образа. Используется когда вам не нужно удалять devDependencies, т.к. в своём Dockerfile вы не переносите node_modules в докер-контейнер
 
@@ -294,7 +291,7 @@ docker
 
 Команда `arui-scripts docker-build` запускает компиляцию продакшн версии и сборку докер образа.
 
-Образ основан на [alpine-node-nginx](https://github.com/alfa-laboratory/arui-scripts/blob/master/packages/alpine-node-nginx/).
+Образ основан на [alpine-node-nginx](../alpine-node-nginx).
 
 Имя контейнера определяется как `{configs.dockerRegistry}/{name}:{version}`. Переменные `name` и `version` по умолчанию берутся из package.json,
 но вы так же можете переопределить их из командной строки, например
