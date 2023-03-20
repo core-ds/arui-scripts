@@ -218,11 +218,11 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
         configs.tsconfig !== null && new ForkTsCheckerWebpackPlugin(),
 
         // dev plugins:
-        mode === 'dev' && configs.useServerHMR
+        mode === 'dev' && (configs.useServerHMR
             ? new RunScriptWebpackPlugin({
                 name: configs.serverOutput
             })
-            : new ReloadServerPlugin({ script: path.join(configs.serverOutputPath, configs.serverOutput) }),
+            : new ReloadServerPlugin({ script: path.join(configs.serverOutputPath, configs.serverOutput) })),
         mode === 'dev' && new webpack.NoEmitOnErrorsPlugin(),
         // Watcher doesn't work well if you mistype casing in a path so we use
         // a plugin that prints an error when you attempt to do this.
