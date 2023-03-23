@@ -19,8 +19,9 @@ import { getBuildParamsFromArgs, prepareFilesForDocker } from '../util/docker-bu
             pathToTempDir,
             dockerfileTemplate,
             nginxConfTemplate,
-            startScript,
+            startScriptTemplate: startScript,
             allowLocalDockerfile: false,
+            allowLocalStartScript: false,
         });
 
         await exec('echo "node_modules" >> .dockerignore');

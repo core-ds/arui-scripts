@@ -21,8 +21,9 @@ import { getPruningCommand } from '../util/yarn';
             pathToTempDir,
             dockerfileTemplate,
             nginxConfTemplate,
-            startScript,
+            startScriptTemplate: startScript,
             allowLocalDockerfile: true,
+            allowLocalStartScript: true,
         });
 
         await fs.remove(configs.buildPath);

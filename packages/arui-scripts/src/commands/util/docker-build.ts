@@ -41,17 +41,19 @@ export function getBuildParamsFromArgs() {
 type PrepareFilesForDockerParams = {
     dockerfileTemplate: string;
     nginxConfTemplate: string;
-    startScript: string;
+    startScriptTemplate: string;
     pathToTempDir: string;
     allowLocalDockerfile: boolean;
+    allowLocalStartScript: boolean;
 }
 
 export async function prepareFilesForDocker({
     dockerfileTemplate,
     nginxConfTemplate,
-    startScript,
+    startScriptTemplate,
     pathToTempDir,
     allowLocalDockerfile,
+    allowLocalStartScript
 }: PrepareFilesForDockerParams) {
     await fs.emptyDir(pathToTempDir);
 
@@ -62,6 +64,10 @@ export async function prepareFilesForDocker({
     const dockerfile = configs.localDockerfile && allowLocalDockerfile
         ? await fs.readFile(configs.localDockerfile, 'utf8')
         : dockerfileTemplate;
+
+    const startScript = configs.localStartScript && allowLocalStartScript
+        ? await fs.readFile(configs.localStartScript, 'utf8')
+        : startScriptTemplate;
 
     await Promise.all([
         fs.writeFile(path.join(pathToTempDir, 'Dockerfile'), dockerfile, 'utf8'),

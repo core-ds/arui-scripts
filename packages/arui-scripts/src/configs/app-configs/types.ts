@@ -27,6 +27,7 @@ export type AppConfigs = {
     tsconfig: string | null;
     localNginxConf: string | null;
     localDockerfile: string | null;
+    localStartScript: string | null;
 
     devSourceMaps: string;
     useTscLoader: boolean;
