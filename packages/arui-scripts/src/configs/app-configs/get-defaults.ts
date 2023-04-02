@@ -19,6 +19,7 @@ export function getDefaults(): AppConfigs {
     const overridesPath = tryResolve(path.join(CWD, 'arui-scripts.overrides'));
     const nginxConfFilePath = path.join(CWD, 'nginx.conf');
     const dockerfileFilePath = path.join(CWD, 'Dockerfile');
+    const startScriptFilePath = path.join(CWD, 'start.sh');
 
     return {
         appPackage,
@@ -53,6 +54,7 @@ export function getDefaults(): AppConfigs {
         tsconfig: fs.existsSync(projectTsConfigPath) ? projectTsConfigPath : null,
         localNginxConf: fs.existsSync(nginxConfFilePath) ? nginxConfFilePath : null,
         localDockerfile: fs.existsSync(dockerfileFilePath) ? dockerfileFilePath : null,
+        localStartScript: fs.existsSync(startScriptFilePath) ? startScriptFilePath : null,
 
         devSourceMaps: 'eval',
         useTscLoader: false,

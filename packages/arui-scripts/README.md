@@ -317,6 +317,12 @@ docker run -p 8080:8080 container-name:version ./start.sh
 
 `Dockerfile` в корне проекта имеет приоритет над overrides.
 
+Чтобы переопределить скрипт запуска, воспользуйтесь механизмом [overrides](#тонкая-настройка)
+или создайте в корневой директории проекта `start.sh` файл содержащий необходимый набор инструкций.
+Пример [start.sh](src/templates/start.template.ts).
+
+`start.sh` в корне проекта имеет приоритет над overrides.
+
 docker compiled
 ---
 Команда `arui-scripts docker-build:compiled` во многом аналогична `docker-build`, но вместо сборки проекта использует уже скомпилированный в папку `.build` код.
