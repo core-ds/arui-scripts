@@ -1,3 +1,10 @@
+# [14.1.0](https://github.com/core-ds/arui-scripts/compare/v14.0.0...v14.1.0) (2023-04-02)
+
+
+### Features
+
+* **docker-build, docker-build-compiled:** can override start.sh ([a563cf4](https://github.com/core-ds/arui-scripts/commit/a563cf4682a41fe110a680b7c7e6c22b8396dcf9))
+
 # [14.0.0](https://github.com/core-ds/arui-scripts/compare/v13.5.0...v14.0.0) (2023-03-02)
 
 
@@ -1233,6 +1240,3 @@ source-map-support significantly slow down code, especially if you use exception
 ### Features
 
 * allow to pass options with 'arui-scripts' property ([ae5f4ad](https://github.com/core-ds/arui-scripts/commit/ae5f4adb6fb876e5869150ca1e08dfab96afea93))
-
-
-
