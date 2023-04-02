@@ -1,3 +1,10 @@
+## [14.1.1](https://github.com/core-ds/arui-scripts/compare/v14.1.0...v14.1.1) (2023-04-02)
+
+
+### Bug Fixes
+
+* **webpack-server:** use dev plugins only in dev mode ([e04b27d](https://github.com/core-ds/arui-scripts/commit/e04b27d6efb7ba3169f8e010ac1ad75fb7a3c8f3))
+
 # [14.1.0](https://github.com/core-ds/arui-scripts/compare/v14.0.0...v14.1.0) (2023-04-02)
 
 
