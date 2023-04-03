@@ -1,3 +1,10 @@
+## [14.1.2](https://github.com/core-ds/arui-scripts/compare/v14.1.1...v14.1.2) (2023-04-03)
+
+
+### Bug Fixes
+
+* **webpack-client:** add NODE_ENV variable in dev mode ([a5ae943](https://github.com/core-ds/arui-scripts/commit/a5ae9433c37747ce1fd7dd04d90cc566c6bc6136))
+
 ## [14.1.1](https://github.com/core-ds/arui-scripts/compare/v14.1.0...v14.1.1) (2023-04-02)
 
 
