@@ -323,7 +323,13 @@ export const createClientWebpackConfig = (mode: 'dev' | 'prod'): Configuration =
         new AssetsPlugin({ path: configs.serverOutputPath }),
         new webpack.DefinePlugin({
             // Tell Webpack to provide empty mocks for process.env.
-            'process.env': '{}'
+            'process.env': '{}',
+            // В прод режиме webpack автоматически подставляет NODE_ENV=production, но нам нужно чтобы эта переменная
+            // была доступна всегда. При этом мы не хотим давать возможность переопределять ее в production режиме.
+            ...(mode === 'dev'
+                ? { 'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV) }
+                : {}
+            ),
         }),
         new MiniCssExtractPlugin({
             filename: '[name].[contenthash:8].css',
