@@ -198,7 +198,10 @@ export const createClientWebpackConfig = (mode: 'dev' | 'prod'): Configuration =
                             ...babelConf,
                             cacheDirectory: mode === 'dev',
                             cacheCompression: false,
-                            plugins: mode === 'dev' ? require.resolve('react-refresh/babel') : undefined,
+                            plugins: [
+                                ...babelConf.plugins,
+                                mode === 'dev' ? require.resolve('react-refresh/babel') : undefined
+                            ].filter(Boolean),
                         },
                     },
                     (configs.tsconfig && configs.useTscLoader) && {
