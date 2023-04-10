@@ -1,3 +1,10 @@
+## [14.1.3](https://github.com/core-ds/arui-scripts/compare/v14.1.2...v14.1.3) (2023-04-10)
+
+
+### Bug Fixes
+
+* **webpack.client.ts:** fix core-ds/arui-scripts[#6](https://github.com/core-ds/arui-scripts/issues/6) ([1863022](https://github.com/core-ds/arui-scripts/commit/186302261938acd6fed56a294685d4388cb26a94))
+
 ## [14.1.2](https://github.com/core-ds/arui-scripts/compare/v14.1.1...v14.1.2) (2023-04-03)
 
 
