@@ -200,7 +200,7 @@ export const createClientWebpackConfig = (mode: 'dev' | 'prod'): Configuration =
                             cacheCompression: false,
                             plugins: [
                                 ...babelConf.plugins,
-                                mode === 'dev' ? require.resolve('react-refresh/babel') : undefined
+                                mode === 'dev' ? [require.resolve('react-refresh/babel'), {skipEnvCheck: true}] : undefined
                             ].filter(Boolean),
                         },
                     },
@@ -212,7 +212,7 @@ export const createClientWebpackConfig = (mode: 'dev' | 'prod'): Configuration =
                                 options: Object.assign({
                                     cacheDirectory: mode === 'dev',
                                     cacheCompression: false,
-                                    plugins: mode === 'dev' ? require.resolve('react-refresh/babel') : undefined,
+                                    plugins: mode === 'dev' ? [require.resolve('react-refresh/babel'), {skipEnvCheck: true}] : undefined,
                                 }, babelConf)
                             },
                             {
