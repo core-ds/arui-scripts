@@ -12,7 +12,7 @@
     },
     "scripts": {
         "build": "arui-scripts build",
-        "start": "arui-scripts start",
+        "start": "NODE_ENV=localhost arui-scripts start",
         "test": "arui-scripts test",
         "bundle-analyze": "arui-scripts bundle-analyze",
         "ci": "yarn run test && yarn run build"
