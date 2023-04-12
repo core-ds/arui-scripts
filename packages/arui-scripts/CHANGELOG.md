@@ -1,3 +1,15 @@
+# [14.2.0](https://github.com/core-ds/arui-scripts/compare/v14.1.3...v14.2.0) (2023-04-12)
+
+
+### Bug Fixes
+
+* **webpack.client.ts:** fix [#13](https://github.com/core-ds/arui-scripts/issues/13) ([8338f19](https://github.com/core-ds/arui-scripts/commit/8338f1926fa152e77771d5847690cf4d0728f475))
+
+
+### Features
+
+* **arui-scripts-test/package.json:** add NODE_ENV ([bfa565d](https://github.com/core-ds/arui-scripts/commit/bfa565dae3026a94537098c785cd2e10f795bf35))
+
 ## [14.1.3](https://github.com/core-ds/arui-scripts/compare/v14.1.2...v14.1.3) (2023-04-10)
 
 
