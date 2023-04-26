@@ -335,8 +335,8 @@ export const createClientWebpackConfig = (mode: 'dev' | 'prod'): Configuration =
             ),
         }),
         new MiniCssExtractPlugin({
-            filename: '[name].[contenthash:8].css',
-            chunkFilename: '[name].[contenthash:8].chunk.css',
+            filename: mode === 'dev' ? '[name].css' : '[name].[contenthash:8].css',
+            chunkFilename: mode === 'dev' ? '[id].css' : '[name].[contenthash:8].chunk.css',
         }),
         configs.tsconfig !== null && new ForkTsCheckerWebpackPlugin(),
 

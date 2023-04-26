@@ -1,8 +1,11 @@
 import express from 'express';
+import path from 'path';
 import { readAssetsManifest } from './read-assets';
 import { constObject } from './utils';
 
 const app = express();
+
+app.use('/assets', express.static(path.join(process.cwd(), '.build', 'assets')))
 
 app.get('/', (req, res) => {
     const assets = readAssetsManifest();
@@ -10,6 +13,7 @@ app.get('/', (req, res) => {
     const response = `
 <html>
 <head>
+<base href="/" />
 ${assets.css.map(c => `<link rel='stylesheet' href='/${c}' />`)}
 </head>
 <body>
