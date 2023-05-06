@@ -1,3 +1,15 @@
+# [14.4.0](https://github.com/core-ds/arui-scripts/compare/v14.3.0...v14.4.0) (2023-05-06)
+
+
+### Bug Fixes
+
+* **docker:** missing step ([922f7ae](https://github.com/core-ds/arui-scripts/commit/922f7aeeb085fc77b9501080b65c3f7bffc66ea0))
+
+
+### Features
+
+* **docker:** update to latest nginx, alpine and nging-brotli ([322193f](https://github.com/core-ds/arui-scripts/commit/322193fb66bcba885f12c97e2d250ca7c4550e9d))
+
 # [14.3.0](https://github.com/core-ds/arui-scripts/compare/v14.2.1...v14.3.0) (2023-05-06)
 
 
