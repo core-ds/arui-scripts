@@ -35,6 +35,3 @@ jobs:
             NODE_VERSION=${{ matrix.version }}
             ALPINE_VERSION=3.16
           context: ./packages/alpine-node-nginx
-      - name: Inspect
-        run: |
-          docker image inspect alfabankui/arui-scripts:${{ matrix.version }}
