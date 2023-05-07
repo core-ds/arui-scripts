@@ -6,7 +6,7 @@ import dockerfileTemplate from '../../templates/dockerfile-compiled.template';
 import nginxConfTemplate from '../../templates/nginx.conf.template';
 import startScript from '../../templates/start.template';
 import exec from '../util/exec';
-import { getBuildParamsFromArgs, prepareFilesForDocker } from '../util/docker-build';
+import { getBuildParamsFromArgs, getDockerBuildCommand, prepareFilesForDocker } from '../util/docker-build';
 
 
 (async () => {
@@ -26,9 +26,7 @@ import { getBuildParamsFromArgs, prepareFilesForDocker } from '../util/docker-bu
 
         await exec('echo "node_modules" >> .dockerignore');
 
-        await exec(`docker build -f "./${tempDirName}/Dockerfile" \\
- --build-arg START_SH_LOCATION="./${tempDirName}/start.sh" \\
- --build-arg NGINX_CONF_LOCATION="./${tempDirName}/nginx.conf" -t ${imageFullName} .`);
+        await exec(getDockerBuildCommand({ tempDirName, imageFullName }));
         await fs.remove(pathToTempDir);
 
         // guard against pushing the image during tests

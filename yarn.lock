@@ -4163,6 +4163,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/semver@npm:^7.3.13":
+  version: 7.3.13
+  resolution: "@types/semver@npm:7.3.13"
+  checksum: 00c0724d54757c2f4bc60b5032fe91cda6410e48689633d5f35ece8a0a66445e3e57fa1d6e07eb780f792e82ac542948ec4d0b76eb3484297b79bd18b8cf1cb0
+  languageName: node
+  linkType: hard
+
 "@types/serve-index@npm:*":
   version: 1.9.1
   resolution: "@types/serve-index@npm:1.9.1"
@@ -5232,6 +5239,7 @@ __metadata:
     "@types/mini-css-extract-plugin": 1.2.2
     "@types/node": 12
     "@types/react-dev-utils": 9.0.8
+    "@types/semver": ^7.3.13
     "@types/shelljs": ^0.8.11
     "@types/start-server-webpack-plugin": 2.2.0
     "@types/strip-ansi": ^5.2.1
@@ -5294,6 +5302,7 @@ __metadata:
     rimraf: ^2.6.2
     run-script-webpack-plugin: 0.0.11
     semantic-release: ^17.3.4
+    semver: ^7.5.0
     shelljs: 0.8.5
     strip-ansi: 6.0.1
     style-loader: 1.1.3
@@ -17987,6 +17996,17 @@ __metadata:
   bin:
     semver: bin/semver.js
   checksum: 96451bfd7cba9b60ee87571959dc47e87c95b2fe58a9312a926340fee9907fc7bc062c352efdaf5bb24b2dff59c145e14faf7eb9d718a84b4751312531b39f43
+  languageName: node
+  linkType: hard
+
+"semver@npm:^7.5.0":
+  version: 7.5.0
+  resolution: "semver@npm:7.5.0"
+  dependencies:
+    lru-cache: ^6.0.0
+  bin:
+    semver: bin/semver.js
+  checksum: 2d266937756689a76f124ffb4c1ea3e1bbb2b263219f90ada8a11aebebe1280b13bb76cca2ca96bdee3dbc554cbc0b24752eb895b2a51577aa644427e9229f2b
   languageName: node
   linkType: hard
 

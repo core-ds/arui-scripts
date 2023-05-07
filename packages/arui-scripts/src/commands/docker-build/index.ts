@@ -1,4 +1,3 @@
-
 import fs from 'fs-extra';
 
 import configs from '../../configs/app-configs';
@@ -7,7 +6,11 @@ import dockerfileTemplate from '../../templates/dockerfile.template';
 import nginxConfTemplate from '../../templates/nginx.conf.template';
 import startScript from '../../templates/start.template';
 import exec from '../util/exec';
-import { getBuildParamsFromArgs, prepareFilesForDocker } from '../util/docker-build';
+import {
+    getBuildParamsFromArgs,
+    getDockerBuildCommand,
+    prepareFilesForDocker,
+} from '../util/docker-build';
 import { getPruningCommand } from '../util/yarn';
 
 (async () => {
@@ -46,9 +49,8 @@ import { getPruningCommand } from '../util/yarn';
 
 
         console.time('Build docker image time');
-        await exec(`docker build -f "./${tempDirName}/Dockerfile" \\
- --build-arg START_SH_LOCATION="./${tempDirName}/start.sh" \\
- --build-arg NGINX_CONF_LOCATION="./${tempDirName}/nginx.conf" -t ${imageFullName} .`);
+
+        await exec(getDockerBuildCommand({ tempDirName, imageFullName }));
 
         console.timeEnd('Build docker image time');
         console.time('Cleanup time');

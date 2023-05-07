@@ -1,6 +1,8 @@
 import configs from '../../configs/app-configs';
 import path from 'path';
 import fs from 'fs-extra';
+import shell from 'shelljs';
+import satisfies from 'semver/functions/satisfies';
 
 export function getBuildParamsFromArgs() {
     let imageVersion = configs.version;
@@ -74,4 +76,27 @@ export async function prepareFilesForDocker({
         fs.writeFile(path.join(pathToTempDir, 'nginx.conf'), nginxConf, 'utf8'),
         fs.writeFile(path.join(pathToTempDir, 'start.sh'), startScript, { encoding: 'utf8', mode: 0o555 }),
     ]);
+}
+
+export function dockerVersionSatisfies(request: string) {
+    const dockerVersion = shell.exec('docker version --format \'{{.Server.Version}}\'', { silent: true });
+
+    return satisfies(dockerVersion.toString(), request);
+}
+
+type DockerBuildCommandParams = {
+    tempDirName: string;
+    imageFullName: string;
+}
+
+export function getDockerBuildCommand({ tempDirName, imageFullName }: DockerBuildCommandParams) {
+    // если пытаться собрать проект на маках с m1, докер будет пытаться вытянуть базовый образ под свою платформу и
+    // упадет с ошибкой. Чтобы этого избежать - достаточно использовать флаг --platform. Но он поддерживается только начиная
+    // с docker 17.12, а на многих серверах, используемых для сборки до сих пор живет докер 1.13.1
+    // Соответственно они будут падать при наличии этого флага.
+    const canUsePlatformFlag = dockerVersionSatisfies('>=17.12');
+
+    return `docker build ${canUsePlatformFlag ? '--platform linux/x86_64' : ''} -f "./${tempDirName}/Dockerfile" \\
+ --build-arg START_SH_LOCATION="./${tempDirName}/start.sh" \\
+ --build-arg NGINX_CONF_LOCATION="./${tempDirName}/nginx.conf" -t ${imageFullName} .`;
 }
