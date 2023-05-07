@@ -1,3 +1,10 @@
+## [14.4.1](https://github.com/core-ds/arui-scripts/compare/v14.4.0...v14.4.1) (2023-05-07)
+
+
+### Bug Fixes
+
+* **docker:** allow to build x86 images on arm machines ([a115a71](https://github.com/core-ds/arui-scripts/commit/a115a717ef61e076cca3639485d32f9e71218041))
+
 # [14.4.0](https://github.com/core-ds/arui-scripts/compare/v14.3.0...v14.4.0) (2023-05-06)
 
 
