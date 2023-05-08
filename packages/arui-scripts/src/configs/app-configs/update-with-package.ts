@@ -1,11 +1,12 @@
-import merge from 'lodash.merge';
-import { AppConfigs } from './types';
-import validateSettingsKeys from './validate-settings-keys';
-import { availablePackageSettings } from './available-package-settings';
+import { AppConfigs, AppContext } from './types';
+import { validateSettingsKeys } from './validate-settings-keys';
 
-export function updateWithPackage(config: AppConfigs) {
-    const packageSettings = config.appPackage.aruiScripts || {};
+export function updateWithPackage(config: AppConfigs, context: AppContext) {
+    const packageSettings = context.appPackage.aruiScripts || {};
 
-    validateSettingsKeys(availablePackageSettings, packageSettings);
-    return merge(config, packageSettings);
+    validateSettingsKeys(config, packageSettings, 'package.json');
+    return {
+        ...config,
+        ...packageSettings,
+    };
 }

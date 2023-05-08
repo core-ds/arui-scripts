@@ -6,7 +6,7 @@
 import {execSync} from 'child_process';
 import {createReadStream, createWriteStream, promises} from 'fs';
 import readline from 'readline';
-import {getDefaults} from "../../configs/app-configs/get-defaults";
+import configs from "../../configs/app-configs";
 
 const {readFile, rename, unlink} = promises;
 
@@ -30,7 +30,7 @@ const {
     changelogFeaturesPath,
     changelogBugfixesPath,
     changelogBreakingChangesPath
-} = getDefaults();
+} = configs;
 
 // Пример заголовка – `## [50.1.0](http://git.moscow.alfaintra.net/...) (2022-07-27)`.
 const changelogHeaderRegExp = /^###? \[\d+\.\d+\.\d+]\([^)]+\) \(\d{4}-\d{2}-\d{2}\)/;

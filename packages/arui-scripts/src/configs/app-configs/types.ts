@@ -1,21 +1,15 @@
+/**
+ * Конфигурация arui-scripts, которая может быть переопределена приложением
+ */
 export type AppConfigs = {
-    appPackage: any; // todo;
-    name: string;
-    version: string;
     dockerRegistry: string;
     baseDockerImage: string;
-
-    cwd: string;
-    appSrc: string;
-    appNodeModules: string;
-    appNodeModulesBin: string;
     buildPath: string;
     assetsPath: string;
     additionalBuildPath: string[];
     nginxRootPath: string;
     runFromNonRootUser: boolean;
     archiveName: string;
-    babelRuntimeVersion: string;
 
     serverEntry: string | string[] | Record<string, string | string[]>;
     serverOutput: string;
@@ -24,29 +18,45 @@ export type AppConfigs = {
     clientEntry: string;
     keepPropTypes: boolean;
 
-    tsconfig: string | null;
-    localNginxConf: string | null;
-    localDockerfile: string | null;
-    localStartScript: string | null;
-
     devSourceMaps: string;
     useTscLoader: boolean;
     useServerHMR: boolean;
     webpack4Compatibility: boolean;
-    useYarn: boolean;
 
     clientServerPort: number;
     serverPort: number;
     installServerSourceMaps: boolean;
 
     debug: boolean;
-    overridesPath: string[];
-    statsOutputFilename: string;
 
     removeDevDependenciesDuringDockerBuild: boolean;
 
     componentsTheme: string | undefined;
     keepCssVars: boolean;
+    statsOutputFilename: string;
+};
+
+/**
+ * Внутренний контекст arui-scripts
+ */
+export type AppContext = {
+    appPackage: any;
+    name: string;
+    version: string;
+
+    cwd: string;
+    appSrc: string;
+    appNodeModules: string;
+    appNodeModulesBin: string;
+    babelRuntimeVersion: string;
+    useYarn: boolean;
+
+    tsconfig: string | null;
+    localNginxConf: string | null;
+    localDockerfile: string | null;
+    localStartScript: string | null;
+
+    overridesPath: string[];
 
     publicPath: string;
     serverOutputPath: string;
@@ -60,3 +70,5 @@ export type AppConfigs = {
     changelogBugfixesPath: string;
     changelogBreakingChangesPath: string;
 };
+
+export type AppContextWithConfigs = AppContext & AppConfigs;
