@@ -2,38 +2,42 @@
  * Конфигурация arui-scripts, которая может быть переопределена приложением
  */
 export type AppConfigs = {
-    dockerRegistry: string;
-    baseDockerImage: string;
+    // general settings
+    clientServerPort: number;
+    serverPort: number;
+    debug: boolean;
+    devSourceMaps: string;
+    useServerHMR: boolean;
+
+    // paths
     buildPath: string;
     assetsPath: string;
     additionalBuildPath: string[];
-    nginxRootPath: string;
-    runFromNonRootUser: boolean;
-    archiveName: string;
-
+    statsOutputFilename: string;
     serverEntry: string | string[] | Record<string, string | string[]>;
     serverOutput: string;
-
     clientPolyfillsEntry: null | string | string[];
     clientEntry: string;
+
+    // docker compilation configs
+    dockerRegistry: string;
+    baseDockerImage: string;
+    nginxRootPath: string;
+    runFromNonRootUser: boolean;
+    removeDevDependenciesDuringDockerBuild: boolean;
+    // archive compilation configs
+    archiveName: string;
+
+    // build tuning
     keepPropTypes: boolean;
-
-    devSourceMaps: string;
     useTscLoader: boolean;
-    useServerHMR: boolean;
     webpack4Compatibility: boolean;
-
-    clientServerPort: number;
-    serverPort: number;
     installServerSourceMaps: boolean;
 
-    debug: boolean;
-
-    removeDevDependenciesDuringDockerBuild: boolean;
-
+    // CSS
     componentsTheme: string | undefined;
     keepCssVars: boolean;
-    statsOutputFilename: string;
+
 };
 
 /**
