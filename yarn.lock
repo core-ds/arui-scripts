@@ -4080,6 +4080,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/postcss-prefix-selector@npm:^1.15.0":
+  version: 1.15.0
+  resolution: "@types/postcss-prefix-selector@npm:1.15.0"
+  checksum: ee66c1c17b8a9ae01444d59827101212dbe9a6c07517c1e3228adc559f7bc398ceaddeafe415e5764f10d15ceaa0d4e7305fb4fe458fe8cda3604a1b579501b6
+  languageName: node
+  linkType: hard
+
 "@types/prettier@npm:^2.1.5":
   version: 2.7.2
   resolution: "@types/prettier@npm:2.7.2"
@@ -5238,6 +5245,7 @@ __metadata:
     "@types/lodash.merge": ^4.6.6
     "@types/mini-css-extract-plugin": 1.2.2
     "@types/node": 12
+    "@types/postcss-prefix-selector": ^1.15.0
     "@types/react-dev-utils": 9.0.8
     "@types/semver": ^7.3.13
     "@types/shelljs": ^0.8.11
@@ -5293,6 +5301,7 @@ __metadata:
     postcss-mixins: ^6.2.0
     postcss-nested: ^3.0.0
     postcss-omit-import-tilde: ^1.0.1
+    postcss-prefix-selector: ^1.16.0
     postcss-strip-units: ^2.0.1
     postcss-url: 7.3.1
     react-dev-utils: 11.0.4
@@ -16236,6 +16245,15 @@ __metadata:
   peerDependencies:
     postcss: ^8.2.15
   checksum: 80b1cab96e3e9caf23de9b5436b36d7dc1efdd7ff9ee7b02c5ddc88c3564ec5adfa08e66f64c3b335beeb74a8c690a89e1594be14f2d5b708deb2c259de69619
+  languageName: node
+  linkType: hard
+
+"postcss-prefix-selector@npm:^1.16.0":
+  version: 1.16.0
+  resolution: "postcss-prefix-selector@npm:1.16.0"
+  peerDependencies:
+    postcss: ">4 <9"
+  checksum: 8bdf10628ec8b1679a4dbb9cd736a4742c5d9b8a878c35cebaad43d67e50a18ffeb34d15860374f18a89fe4c43f818f3386bdb3321f92bb35eec9ef640a46a76
   languageName: node
   linkType: hard
 

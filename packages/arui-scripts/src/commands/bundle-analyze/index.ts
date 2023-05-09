@@ -11,13 +11,9 @@ import config from '../../configs/app-configs';
         statsFilename: config.statsOutputPath,
     });
     let clientWebpackConfig = clientConfig;
-    if (Array.isArray(clientConfig)) {
-        // В случае, если у пользователя несколько конфигов для клиента - запускаем bundle analyzer только для первого
-        clientWebpackConfig = clientConfig[0];
-    }
-    clientWebpackConfig.plugins?.push(plugin as unknown as webpack.WebpackPluginInstance);
-    clientWebpackConfig!.output!.path = tmpDir;
-    webpack(clientWebpackConfig).run(() => {});
+    // В случае, если у пользователя несколько конфигов для клиента - запускаем bundle analyzer только для первого
+    let singleClientConfig = Array.isArray(clientConfig) ? clientConfig[0] : clientConfig;
+    singleClientConfig.plugins?.push(plugin as unknown as webpack.WebpackPluginInstance);
+    singleClientConfig!.output!.path = tmpDir;
+    webpack(singleClientConfig).run(() => {});
 })();
-
-

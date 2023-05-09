@@ -1,3 +1,5 @@
+export type Entry = string | string[] | Record<string, string | string[]>;
+
 /**
  * @param {string|string[]|object} entryPoint Строка, массив строк или объект с энтрипоинтами
  * @param {Function} getSingleEntry Функция, возвращающая конфигурацию для одного entryPoint
@@ -5,7 +7,7 @@
  * @returns {*}
  */
 function getEntry<AdditionalArgs extends unknown[]>(
-    entryPoint: string | string[] | Record<string, string | string[]>,
+    entryPoint: Entry,
     getSingleEntry: (entry: string[], ...args: AdditionalArgs) => string[],
     ...args: AdditionalArgs
 ): string[] | Record<string, string | string[]> {

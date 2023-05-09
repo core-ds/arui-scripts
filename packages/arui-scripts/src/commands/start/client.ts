@@ -1,4 +1,4 @@
 import clientConfig from '../../configs/webpack.client.dev';
-import { runClientDevDerver } from '../util/run-client-dev-derver';
+import { runClientDevServer } from '../util/run-client-dev-derver';
 
-runClientDevDerver(clientConfig);
+runClientDevServer(clientConfig);

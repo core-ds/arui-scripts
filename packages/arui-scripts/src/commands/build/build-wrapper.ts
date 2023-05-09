@@ -11,8 +11,8 @@ type BuildResult = {
     previousFileSizes: unknown;
 }
 
-function build(config: webpack.Configuration, previousFileSizes?: unknown) {
-    let compiler = webpack(config);
+function build(config: webpack.Configuration | webpack.Configuration[], previousFileSizes?: unknown) {
+    let compiler = webpack(config as webpack.Configuration);
     return new Promise<BuildResult>((resolve, reject) => {
         compiler.run((err: any, stats: any) => {
             if (err) {

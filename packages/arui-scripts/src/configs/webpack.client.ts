@@ -10,8 +10,9 @@ import AssetsPlugin from 'assets-webpack-plugin';
 import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
 import getCSSModuleLocalIdent from 'react-dev-utils/getCSSModuleLocalIdent';
 const PnpWebpackPlugin = require('pnp-webpack-plugin');
+import cssPrefix from 'postcss-prefix-selector';
 
-import getEntry from './util/get-entry';
+import getEntry, { Entry } from './util/get-entry';
 import configs from './app-configs';
 import babelConf from './babel-client';
 import postcssConf from './postcss';
@@ -20,6 +21,7 @@ import { babelDependencies } from './babel-dependencies';
 import ReactRefreshTypeScript from 'react-refresh-typescript';
 import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
+import { EmbeddedModuleConfig } from './app-configs/types';
 
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 
@@ -33,13 +35,31 @@ function getSingleEntry(entryPoint: string[], mode: 'dev' | 'prod') {
     ].filter(Boolean) as string[];
 }
 
-// This is the production configuration.
+// Нам важно шарить assets plugin между разными сборками, чтобы файл не перезаписывался
+const assetsPlugin = new AssetsPlugin({ path: configs.serverOutputPath });
 
-export const createClientWebpackConfig = (mode: 'dev' | 'prod'): Configuration => ({
+function getCssPrefixForModule(module: EmbeddedModuleConfig) {
+    if (module.cssPrefix) {
+        return module.cssPrefix;
+    }
+    if (module.cssPrefix === false) {
+        return undefined;
+    }
+    return `.module-${module.name}`;
+}
+
+function getChunkNamePrefix(module?: EmbeddedModuleConfig) {
+    if (!module) {
+        return '';
+    }
+    return `${module.name}-`;
+}
+
+export const createSingleClientWebpackConfig = (mode: 'dev' | 'prod', entry: Entry, module?: EmbeddedModuleConfig): Configuration => ({
     target: 'web',
     mode: mode === 'dev' ? 'development' : 'production',
     devtool: mode === 'dev' ? configs.devSourceMaps : 'source-map',
-    entry: getEntry(configs.clientEntry, getSingleEntry, mode),
+    entry: getEntry(entry, getSingleEntry, mode),
     // in production mode we need to fail on first error
     bail: mode === 'prod',
     context: configs.cwd,
@@ -47,14 +67,23 @@ export const createClientWebpackConfig = (mode: 'dev' | 'prod'): Configuration =
         // Add /* filename */ comments to generated require()s in the output.
         pathinfo: mode === 'dev',
         path: configs.clientOutputPath,
-        publicPath: configs.publicPath,
+        publicPath: configs.mfModules
+            ? 'auto' // Для того чтобы модули могли подключаться из разных мест, нам необходимо использовать auto. Для корректной работы в IE надо подключaть https://github.com/amiller-gh/currentScript-polyfill
+            : configs.publicPath,
         filename: mode === 'dev' ? '[name].js' : '[name].[chunkhash:8].js',
-        chunkFilename: mode === 'dev' ? '[name].js' : '[name].[chunkhash:8].chunk.js',
+        chunkFilename: mode === 'dev'
+            ? `${getChunkNamePrefix(module)}[name].js`
+            : `${getChunkNamePrefix(module)}[name].[chunkhash:8].chunk.js`,
         // Point sourcemap entries to original disk location (format as URL on Windows)
         devtoolModuleFilenameTemplate: (info: any) =>
             path
                 .relative(configs.appSrc, info.absoluteResourcePath)
                 .replace(/\\/g, '/'),
+        // для модулей нам надо переопределять глобальную переменную webpack, чтобы несколько модулей из одного бандла могли работать в одном окружении
+        uniqueName: module ? module.name : undefined
+    },
+    externals: {
+        ...(module?.embeddedConfig ? module.embeddedConfig : {}),
     },
     optimization: {
         splitChunks: mode === 'prod'
@@ -266,7 +295,11 @@ export const createClientWebpackConfig = (mode: 'dev' | 'prod'): Configuration =
                                     // Necessary for external CSS imports to work
                                     // https://github.com/facebookincubator/create-react-app/issues/2677
                                     ident: 'postcss',
-                                    plugins: () => postcssConf,
+                                    plugins: () => {
+                                        const prefix = module ? getCssPrefixForModule(module) : undefined;
+                                        return [...postcssConf]
+                                            .concat(prefix ? cssPrefix({ prefix }) : []);
+                                    },
                                 },
                             },
                         ],
@@ -295,7 +328,11 @@ export const createClientWebpackConfig = (mode: 'dev' | 'prod'): Configuration =
                                     // Necessary for external CSS imports to work
                                     // https://github.com/facebookincubator/create-react-app/issues/2677
                                     ident: 'postcss',
-                                    plugins: () => postcssConf,
+                                    plugins: () => {
+                                        const prefix = module ? getCssPrefixForModule(module) : undefined;
+                                        return [...postcssConf]
+                                            .concat(prefix ? cssPrefix({ prefix: `:global(${prefix})` }) : []);
+                                    },
                                 },
                             },
                         ],
@@ -323,7 +360,7 @@ export const createClientWebpackConfig = (mode: 'dev' | 'prod'): Configuration =
         ],
     },
     plugins: ([
-        new AssetsPlugin({ path: configs.serverOutputPath }),
+        assetsPlugin,
         new webpack.DefinePlugin({
             // Tell Webpack to provide empty mocks for process.env.
             'process.env': '{}',
@@ -377,7 +414,13 @@ export const createClientWebpackConfig = (mode: 'dev' | 'prod'): Configuration =
         mode === 'prod' && !configs.keepPropTypes && new webpack.NormalModuleReplacementPlugin(
             /^thrift-services\/proptypes/,
             noopPath
-        )
+        ),
+        configs.mfModules && new webpack.container.ModuleFederationPlugin({
+            name: configs.normalizedName,
+            filename: 'remoteEntry.js',
+            shared: configs.mfModules.shared,
+            exposes: configs.mfModules.exposes,
+        }),
     ].filter(Boolean)),
     experiments: {
         backCompat: configs.webpack4Compatibility,
@@ -394,3 +437,19 @@ export const createClientWebpackConfig = (mode: 'dev' | 'prod'): Configuration =
         hints: mode === 'dev' ? false : 'warning',
     },
 });
+
+export const createClientWebpackConfig = (mode: 'dev' | 'prod') => {
+    const appWebpackConfig = createSingleClientWebpackConfig(mode, configs.clientEntry);
+
+    if (configs.applicationModules.length === 0) {
+        return appWebpackConfig;
+    }
+
+    const modulesWebpackConfigs = configs.applicationModules.map((module) => {
+        return createSingleClientWebpackConfig(mode, {
+            [module.name]: module.entry,
+        }, module);
+    });
+
+    return [appWebpackConfig, ...modulesWebpackConfigs];
+}
