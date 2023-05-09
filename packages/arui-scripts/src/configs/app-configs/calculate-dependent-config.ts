@@ -17,7 +17,7 @@ export function calculateDependentConfig(config: AppConfigs) {
 /**
  * Обновление контекста в зависимости от ключей конфига
  */
-export function calculateDependentContext(config: AppConfigs, context: AppContext) {
+export function calculateDependentContext(config: AppConfigs, context: AppContext): AppContext {
     let babelRuntimeVersion: string;
     try {
         // В проекте может стоять babel/runtime отличный от того, что установлен как зависимость arui-scripts.

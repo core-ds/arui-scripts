@@ -8,6 +8,7 @@ export type AppConfigs = {
     debug: boolean;
     devSourceMaps: string;
     useServerHMR: boolean;
+    presets: string | null;
 
     // paths
     buildPath: string;
@@ -38,7 +39,21 @@ export type AppConfigs = {
     componentsTheme: string | undefined;
     keepCssVars: boolean;
 
+    // Modules
+    applicationModules: EmbeddedModuleConfig[];
+    mfModules: {
+        shared: any; // webpack don't expose this type
+        exposes: Record<string, string>;
+    } | null;
 };
+
+export type EmbeddedModuleConfig = {
+    name: string;
+    entry: string;
+    embeddedConfig?: Record<string, string>;
+    cssPrefix?: false | string;
+};
+
 
 /**
  * Внутренний контекст arui-scripts
@@ -46,6 +61,7 @@ export type AppConfigs = {
 export type AppContext = {
     appPackage: any;
     name: string;
+    normalizedName: string;
     version: string;
 
     cwd: string;
@@ -76,3 +92,5 @@ export type AppContext = {
 };
 
 export type AppContextWithConfigs = AppContext & AppConfigs;
+
+export type PackageSettings = Partial<AppConfigs>;

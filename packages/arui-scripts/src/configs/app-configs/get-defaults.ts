@@ -14,6 +14,7 @@ export function getDefaultAppConfig(): AppConfigs {
         debug: false,
         devSourceMaps: 'eval',
         useServerHMR: false,
+        presets: null,
 
         // paths
         buildPath: '.build',
@@ -43,6 +44,10 @@ export function getDefaultAppConfig(): AppConfigs {
         // CSS
         componentsTheme: undefined,
         keepCssVars: false,
+
+        // Modules
+        applicationModules: [],
+        mfModules: null,
     };
 }
 
@@ -65,6 +70,7 @@ export function getDefaultAppContext(): AppContext {
     return {
         appPackage,
         name: appPackage.name,
+        normalizedName: appPackage.name.replace(/-/g, '_'), // для использования в качестве имени переменной
         version: appPackage.version,
 
         // general paths
