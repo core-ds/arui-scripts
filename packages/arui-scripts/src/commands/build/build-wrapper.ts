@@ -6,7 +6,7 @@ import webpack from 'webpack';
 import formatWebpackMessages from '../util/format-webpack-messages';
 
 type BuildResult = {
-    stats: webpack.Stats;
+    stats: webpack.Stats | webpack.MultiStats;
     warnings: string[];
     previousFileSizes: unknown;
 }

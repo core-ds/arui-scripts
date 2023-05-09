@@ -5178,30 +5178,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"arui-scripts-test@workspace:packages/arui-scripts-test":
-  version: 0.0.0-use.local
-  resolution: "arui-scripts-test@workspace:packages/arui-scripts-test"
-  dependencies:
-    "@hapi/hapi": ^21.3.0
-    "@types/enzyme": ^3.10.5
-    "@types/express": ^4.17.7
-    "@types/jest": ^23.3.9
-    "@types/lodash": ^4.14.161
-    "@types/node": ^14.0.23
-    "@types/react": ^16.9.43
-    "@types/react-dom": ^16.9.8
-    "@types/webpack-env": ^1.15.2
-    arui-scripts: "workspace:*"
-    enzyme: 3.11.0
-    enzyme-adapter-react-16: ^1.15.4
-    express: ^4.16.4
-    lodash: ^4.17.20
-    react: ^16.6.3
-    react-dom: ^16.6.3
-    typescript: ^4.0.2
-  languageName: unknown
-  linkType: soft
-
 "arui-scripts@workspace:*, arui-scripts@workspace:packages/arui-scripts":
   version: 0.0.0-use.local
   resolution: "arui-scripts@workspace:packages/arui-scripts"
@@ -8907,6 +8883,30 @@ __metadata:
   checksum: f6f487ad2198aa41d878fa31452f1a3c00958f46e9019286ff4787c84aac329332ab45c9cdc8c445928fc6d7ded294b9e005a7fce9426488518017831b272780
   languageName: node
   linkType: hard
+
+"example@workspace:packages/example":
+  version: 0.0.0-use.local
+  resolution: "example@workspace:packages/example"
+  dependencies:
+    "@hapi/hapi": ^21.3.0
+    "@types/enzyme": ^3.10.5
+    "@types/express": ^4.17.7
+    "@types/jest": ^23.3.9
+    "@types/lodash": ^4.14.161
+    "@types/node": ^14.0.23
+    "@types/react": ^16.9.43
+    "@types/react-dom": ^16.9.8
+    "@types/webpack-env": ^1.15.2
+    arui-scripts: "workspace:*"
+    enzyme: 3.11.0
+    enzyme-adapter-react-16: ^1.15.4
+    express: ^4.16.4
+    lodash: ^4.17.20
+    react: ^16.6.3
+    react-dom: ^16.6.3
+    typescript: ^4.0.2
+  languageName: unknown
+  linkType: soft
 
 "execa@npm:^0.7.0":
   version: 0.7.0

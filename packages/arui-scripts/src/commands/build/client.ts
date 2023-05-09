@@ -2,10 +2,11 @@
 /* eslint no-console: 0 */
 import chalk from 'chalk';
 import printBuildError from 'react-dev-utils/printBuildError';
-import { Configuration } from 'webpack';
+import { Configuration, Stats } from 'webpack';
 import build from './build-wrapper';
 import { calculateAssetsSizes, printAssetsSizes } from '../util/client-assets-sizes';
 import config from '../../configs/webpack.client.prod';
+import { MultiStats } from 'webpack';
 
 console.log(chalk.magenta('Building client...'));
 
@@ -24,15 +25,16 @@ build(config)
             console.log(chalk.green('Client compiled successfully.\n'));
         }
 
-        function printOutputSizes(webpackConfig: Configuration) {
+        function printOutputSizes(webpackConfig: Configuration, stats: Stats) {
             const sizes = calculateAssetsSizes(stats, webpackConfig?.output?.path);
             printAssetsSizes(sizes);
         }
 
+
         if (Array.isArray(config)) {
-            config.forEach(printOutputSizes)
+            config.forEach((conf, index) => printOutputSizes(conf, (stats as MultiStats).stats[index]));
         } else {
-            printOutputSizes(config);
+            printOutputSizes(config, stats as Stats);
         }
     })
     .catch((err) => {
