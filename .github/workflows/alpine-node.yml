@@ -30,6 +30,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           push: true
+          outputs: type=docker
           tags: ${{ matrix.version == env.LATEST_VERSION && format('alfabankui/arui-scripts:{0},alfabankui/arui-scripts:latest', matrix.version) || format('alfabankui/arui-scripts:{0}', matrix.version) }}
           build-args: |
             NODE_VERSION=${{ matrix.version }}
