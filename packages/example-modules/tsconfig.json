@@ -8,8 +8,7 @@
     "compilerOptions": {
         "baseUrl": "./",
         "paths": {
-            "Src/*": ["src/*"]
-        },
-        "moduleResolution": "NodeNext"
+            "#/*": ["src/*"]
+        }
     }
 }

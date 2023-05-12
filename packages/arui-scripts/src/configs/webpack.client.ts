@@ -30,13 +30,75 @@ const noopPath = require.resolve('./util/noop');
 function getSingleEntry(entryPoint: string[], mode: 'dev' | 'prod') {
     return [
         ...(Array.isArray(configs.clientPolyfillsEntry) ? configs.clientPolyfillsEntry : [configs.clientPolyfillsEntry]),
-        mode === 'dev' ? require.resolve('webpack/hot/dev-server') : false,
+        // mode === 'dev' ? require.resolve('webpack/hot/dev-server') : false,
         ...entryPoint
     ].filter(Boolean) as string[];
 }
 
 // Нам важно шарить assets plugin между разными сборками, чтобы файл не перезаписывался
-const assetsPlugin = new AssetsPlugin({ path: configs.serverOutputPath });
+const assetsPlugin = new AssetsPlugin({
+    path: configs.serverOutputPath,
+    processOutput: (assets) => {
+        let adjustedAssets = assets;
+        if (haveExposedMfModules()) { // для mf модулей мы делаем publicPath 'auto', но в самом манифесте нам все равно хочется видеть нормальный путь
+            Object.keys(adjustedAssets).forEach((key) => {
+                adjustedAssets[key] = {
+                    css: replaceAutoPath(adjustedAssets[key].css) as any,
+                    js: replaceAutoPath(adjustedAssets[key].js) as any
+                };
+            });
+        }
+
+        const result = {
+            ...adjustedAssets,
+            __metadata__: {
+                version: configs.version
+            }
+        };
+
+        return JSON.stringify(result);
+    },
+});
+
+function replaceAutoPath(assets: string | string[] | undefined) {
+    if (!assets) {
+        return assets;
+    }
+    if (Array.isArray(assets)) {
+        return assets.map((asset) => asset.replace(/^auto\//, configs.publicPath));
+    }
+    return assets.replace(/^auto\//, configs.publicPath);
+}
+
+function haveExposedMfModules() {
+    return configs.mfModules?.exposes;
+}
+
+// Этот плагин нужен для того, чтобы клиентский код так же могу получить информацию о сборке.
+// Это позволяет нам делать виджеты, работающие только на клиенте
+const clientAssetsPlugin = new AssetsPlugin({
+    path: configs.clientOutputPath,
+    processOutput: (assets) => {
+        let adjustedAssets = assets;
+        if (haveExposedMfModules()) { // для mf модулей мы делаем publicPath 'auto', но в самом манифесте нам все равно хочется видеть нормальный путь
+            Object.keys(adjustedAssets).forEach((key) => {
+                adjustedAssets[key] = {
+                    css: replaceAutoPath(adjustedAssets[key].css) as any,
+                    js: replaceAutoPath(adjustedAssets[key].js) as any
+                };
+            });
+        }
+
+        const result = {
+            ...adjustedAssets,
+            __metadata__: {
+                version: configs.version
+            }
+        };
+
+        return JSON.stringify(result);
+    }
+});
 
 function getCssPrefixForModule(module: EmbeddedModuleConfig) {
     if (module.cssPrefix) {
@@ -67,7 +129,7 @@ export const createSingleClientWebpackConfig = (mode: 'dev' | 'prod', entry: Ent
         // Add /* filename */ comments to generated require()s in the output.
         pathinfo: mode === 'dev',
         path: configs.clientOutputPath,
-        publicPath: configs.mfModules
+        publicPath: haveExposedMfModules()
             ? 'auto' // Для того чтобы модули могли подключаться из разных мест, нам необходимо использовать auto. Для корректной работы в IE надо подключaть https://github.com/amiller-gh/currentScript-polyfill
             : configs.publicPath,
         filename: mode === 'dev' ? '[name].js' : '[name].[chunkhash:8].js',
@@ -99,7 +161,18 @@ export const createSingleClientWebpackConfig = (mode: 'dev' | 'prod', entry: Ent
                     vendor: {
                         test: /node_modules/,
                         chunks: "initial",
-                        name: "vendor",
+                        name: (
+                            _: unknown,
+                            chunks: any[],
+                            cacheGroupKey: string,
+                        ) => {
+                            if (!module) {
+                                return 'vendor';
+                            }
+                            // Нам нужно сделать так, чтобы у модулей vendor файл назывался иначе, чем просто vendor
+                            const allChunksNames = chunks.map((item) => item.name).join('~');
+                            return `${cacheGroupKey}-${allChunksNames}`;
+                        },
                         priority: 10,
                         enforce: true
                     }
@@ -361,6 +434,7 @@ export const createSingleClientWebpackConfig = (mode: 'dev' | 'prod', entry: Ent
     },
     plugins: ([
         assetsPlugin,
+        clientAssetsPlugin,
         new webpack.DefinePlugin({
             // Tell Webpack to provide empty mocks for process.env.
             'process.env': '{}',
@@ -415,13 +489,13 @@ export const createSingleClientWebpackConfig = (mode: 'dev' | 'prod', entry: Ent
             /^thrift-services\/proptypes/,
             noopPath
         ),
-        configs.mfModules && new webpack.container.ModuleFederationPlugin({
-            name: configs.normalizedName,
-            filename: 'remoteEntry.js',
+        configs.mfModules && !module && new webpack.container.ModuleFederationPlugin({
+            name: configs.mfModules.name || configs.normalizedName,
+            filename: configs.mfModules.exposes ? 'remoteEntry.js' : undefined,
             shared: configs.mfModules.shared,
             exposes: configs.mfModules.exposes,
         }),
-    ].filter(Boolean)),
+    ].filter(Boolean)) as any[],
     experiments: {
         backCompat: configs.webpack4Compatibility,
     },

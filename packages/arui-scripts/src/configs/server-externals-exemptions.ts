@@ -12,4 +12,5 @@ export const serverExternalsExemptions = applyOverrides('serverExternalsExemptio
     /^date-fns/,
     /^@corp-front\//,
     /^corp-sign-ui-react/,
+    /^arui-sciprts-utils/,
 ]);

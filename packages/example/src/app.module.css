@@ -1,7 +1,0 @@
-.root {
-    padding: 10px;
-}
-
-:global .btn:hover {
-    animation-duration: .5s;
-}

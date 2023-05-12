@@ -1,0 +1,14 @@
+{
+    "extends": "../arui-scripts/tsconfig.json",
+    "compilerOptions": {
+        "target": "ES2016",
+        "module": "esnext",
+        "skipLibCheck": true,
+        "outDir": "./build",
+        "declaration": true
+    },
+    "include": [
+        "src/**/*.ts",
+    ],
+    "exclude": ["build"]
+}

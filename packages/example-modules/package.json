@@ -1,12 +1,10 @@
 {
-    "name": "example",
+    "name": "example-modules",
     "version": "1.0.0",
     "private": true,
     "scripts": {
         "build": "arui-scripts build",
         "start": "NODE_ENV=localhost arui-scripts start",
-        "test": "arui-scripts test",
-        "bundle-analyze": "arui-scripts bundle-analyze",
         "ci": "yarn run test && yarn run build"
     },
     "jest": {
@@ -16,19 +14,18 @@
         ]
     },
     "dependencies": {
-        "@alfalab/core-components": "^41.6.0",
         "@arui-scripts/server": "workspace:*",
         "@arui-scripts/widgets": "workspace:*",
-        "@hapi/hapi": "^21.3.0",
         "arui-scripts": "workspace:*",
-        "express": "^4.16.4",
+        "body-parser": "^1.20.2",
+        "express": "^4.18.2",
         "lodash": "^4.17.20",
         "react": "17.0.2",
         "react-dom": "17.0.2"
     },
     "devDependencies": {
         "@types/enzyme": "^3.10.5",
-        "@types/express": "^4.17.7",
+        "@types/express": "^4.17.17",
         "@types/jest": "^23.3.9",
         "@types/lodash": "^4.14.161",
         "@types/node": "^14.0.23",

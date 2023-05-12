@@ -42,8 +42,9 @@ export type AppConfigs = {
     // Modules
     applicationModules: EmbeddedModuleConfig[];
     mfModules: {
+        name?: string;
         shared: any; // webpack don't expose this type
-        exposes: Record<string, string>;
+        exposes?: Record<string, string>;
     } | null;
 };
 

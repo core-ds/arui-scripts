@@ -1,0 +1,60 @@
+{
+    "name": "@arui-scripts/server",
+    "version": "14.4.1",
+    "main": "./build/index.js",
+    "typings": "./build/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./build/index.d.ts",
+            "default": "./build/index.js"
+        },
+        "./build/express": {
+            "require": "./build/express.js",
+            "types": "./build/express.d.ts"
+        },
+        "./build/hapi-16": {
+            "require": "./build/hapi-16.js",
+            "types": "./build/hapi-16.d.ts"
+        },
+        "./build/hapi-20": {
+            "require": "./build/hapi-20.js",
+            "types": "./build/hapi-20.d.ts"
+        }
+    },
+    "license": "MPL-2.0",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/core-ds/arui-scripts.git"
+    },
+    "bugs": {
+        "url": "https://github.com/core-ds/arui-scripts/issues"
+    },
+    "homepage": "https://github.com/core-ds/arui-scripts#readme",
+    "scripts": {
+        "build": "tsc --project tsconfig.json",
+        "test": "jest"
+    },
+    "devDependencies": {
+        "@arui-scripts/widgets": "workspace:*",
+        "@types/express": "^4.17.17",
+        "@types/hapi16": "npm:@types/hapi@16.1.12",
+        "@types/hapi20": "npm:@types/hapi__hapi@20",
+        "express": "^4.18.2"
+    },
+    "peerDependencies": {
+        "express": "^4.0.0",
+        "hapi": "^16.0.0",
+        "@hapi/hapi": ">20.0.0"
+    },
+    "peerDependenciesMeta": {
+        "express": {
+            "optional": true
+        },
+        "hapi": {
+            "optional": true
+        },
+        "@hapi/hapi": {
+            "optional": true
+        }
+    }
+}

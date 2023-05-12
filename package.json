@@ -16,6 +16,7 @@
         }
     },
     "scripts": {
-        "test": "yarn workspace arui-scripts run build && yarn workspace arui-scripts-test run build"
+        "test": "yarn workspaces foreach -v -p --include '{arui-scripts,@arui-scripts/*}' run test",
+        "build": "yarn workspaces foreach -v -p --include '{arui-scripts,@arui-scripts/*}' run build"
     }
 }
