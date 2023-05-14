@@ -40,7 +40,14 @@ export type AppConfigs = {
     keepCssVars: boolean;
 
     // Modules
-    applicationModules: EmbeddedModuleConfig[];
+    embeddedModules: {
+        shared?: {
+            [libraryName: string]: string;
+        }
+        exposes?: {
+            [moduleId: string]: EmbeddedModuleConfigBase;
+        };
+    } | null;
     mfModules: {
         name?: string;
         shared: any; // webpack don't expose this type
@@ -48,11 +55,14 @@ export type AppConfigs = {
     } | null;
 };
 
-export type EmbeddedModuleConfig = {
-    name: string;
+type EmbeddedModuleConfigBase = {
     entry: string;
     embeddedConfig?: Record<string, string>;
     cssPrefix?: false | string;
+}
+
+export type EmbeddedModuleConfig = EmbeddedModuleConfigBase & {
+    name: string;
 };
 
 

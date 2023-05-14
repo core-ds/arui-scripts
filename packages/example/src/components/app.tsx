@@ -7,7 +7,7 @@ import './style.css';
 import { Typography } from '@alfalab/core-components/typography';
 import { Button } from '@alfalab/core-components/button';
 import { Gap } from '@alfalab/core-components/gap';
-import { WidgetsTabs } from 'Src/components/widgets-tabs';
+import { ModulesTabs } from '#/components/modules-tabs';
 
 export class App extends React.Component {
     state = {
@@ -37,9 +37,9 @@ export class App extends React.Component {
                 </Button>
 
                 <Typography.Title tag='h2' defaultMargins={true}>
-                    Примеры разных способов подключения виджетов
+                    Примеры разных способов подключения модулей
                 </Typography.Title>
-                <WidgetsTabs />
+                <ModulesTabs />
             </div>
         )
     }

@@ -1,7 +1,7 @@
 import express from 'express';
 import path from 'path';
-import { readAssetsManifest, WidgetsConfig } from '@arui-scripts/server';
-import { createGetWidgetsExpress } from '@arui-scripts/server/build/express';
+import { readAssetsManifest } from '@arui-scripts/server';
+import { createGetModulesExpress } from '@arui-scripts/server/build/express';
 import bodyParser from 'body-parser';
 
 const app = express();
@@ -29,20 +29,21 @@ ${assets.js.map(c => `<script type='text/javascript' src='/${c}'></script>`).joi
 });
 
 
-
-const widgets: WidgetsConfig = {
-    'ServerWidgetLegacy': {
-        mountMode: 'legacy',
-        mountFunctionName: '__mountServerWidgetLegacy',
-        unmountFunctionName: '__unmountServerWidgetLegacy',
+const moduleRouter = createGetModulesExpress({
+    'ServerModuleEmbedded': {
+        mountMode: 'embedded',
         version: '1.0.0',
-        getRunParams: async () => ({
-            paramFromServer: 'This can be any data from server',
-            asyncData: 'It can be constructed from async data, so you may perform some service calls here',
-            contextRoot: 'http://localhost:8081',
-        }),
+        getRunParams: async (getResourcesRequest, request) => {
+            console.log('We can get some data from resource request here', getResourcesRequest);
+            console.log('Or even from express request', request.path);
+            return ({
+                paramFromServer: 'This can be any data from server',
+                asyncData: 'It can be constructed from async data, so you may perform some service calls here',
+                contextRoot: 'http://localhost:8081',
+            });
+        },
     },
-    'ServerWidgetMF': {
+    'ServerModuleMF': {
         mountMode: 'mf',
         version: '1.0.0',
         getRunParams: async () => ({
@@ -51,10 +52,8 @@ const widgets: WidgetsConfig = {
             contextRoot: 'http://localhost:8081',
         }),
     },
-};
-
-const widgetRouter = createGetWidgetsExpress(widgets);
-app.use(widgetRouter);
+});
+app.use(moduleRouter);
 
 
 app.listen(3001, () => {

@@ -1,22 +1,22 @@
-import { createGetWidgetsMethod, WidgetsConfig } from './widgets';
-import type { Plugin } from 'hapi20';
+import { createGetModulesMethod, ModulesConfig } from './modules';
+import type { Plugin, Request } from 'hapi20';
 
-export function createGetWidgetsHapi20Plugin(widgets: WidgetsConfig, routeParams?: Record<string, unknown>) {
-    const widgetMethodSettings = createGetWidgetsMethod(widgets);
+export function createGetModulesHapi20Plugin(modules: ModulesConfig<[Request]>, routeParams?: Record<string, unknown>) {
+    const modulesMethodSettings = createGetModulesMethod(modules);
 
     const plugin: Plugin<{}> = {
-        name: `@arui-scripts/server${widgetMethodSettings.path}`,
+        name: `@arui-scripts/server${modulesMethodSettings.path}`,
         version: '1.0.0',
         register: (server, options) => {
             server.route({
-                method: widgetMethodSettings.method,
-                path: widgetMethodSettings.path,
+                method: modulesMethodSettings.method,
+                path: modulesMethodSettings.path,
                 options: {
                     ...routeParams,
                 },
                 handler: async (request, h) => {
                     try {
-                        return await widgetMethodSettings.handler(request.payload as any, request);
+                        return await modulesMethodSettings.handler(request.payload as any, request);
                     } catch (e: any) {
                         h
                             .response({

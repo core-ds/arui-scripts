@@ -9,24 +9,28 @@ const aruiScriptsConfig: PackageSettings = {
     clientEntry: "./src/client",
     keepCssVars: false,
     debug: true,
-    applicationModules: [
-        {
-            name: 'ClientWidgetLegacy',
-            entry: './src/widgets/client-widget-legacy/index',
-        },
-        {
-            name: 'ServerWidgetLegacy',
-            entry: './src/widgets/server-widget-legacy/index',
+    embeddedModules: {
+        exposes: {
+            'ClientModuleEmbedded': {
+                entry: './src/modules/client-module-embedded/index',
+            },
+            'ServerModuleEmbedded': {
+                entry: './src/modules/server-module-embedded/index',
+                embeddedConfig: {
+                    react: 'react',
+                    'react-dom': 'reactDOM',
+                }
+            }
         }
-    ],
+    },
     mfModules: {
         shared: {
             'react': '^17.0.0',
             'react-dom': '^17.0.0',
         },
         exposes: {
-            'ClientWidgetMF': './src/widgets/client-widget-mf/index',
-            'ServerWidgetMF': './src/widgets/server-widget-mf/index',
+            'ClientModuleMF': './src/modules/client-module-mf/index',
+            'ServerModuleMF': './src/modules/server-module-mf/index',
         }
     }
 }

@@ -46,7 +46,7 @@ export function getDefaultAppConfig(): AppConfigs {
         keepCssVars: false,
 
         // Modules
-        applicationModules: [],
+        embeddedModules: null,
         mfModules: null,
     };
 }

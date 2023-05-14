@@ -9,7 +9,6 @@ import CompressionPlugin from 'compression-webpack-plugin';
 import AssetsPlugin from 'assets-webpack-plugin';
 import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
 import getCSSModuleLocalIdent from 'react-dev-utils/getCSSModuleLocalIdent';
-const PnpWebpackPlugin = require('pnp-webpack-plugin');
 import cssPrefix from 'postcss-prefix-selector';
 
 import getEntry, { Entry } from './util/get-entry';
@@ -22,6 +21,14 @@ import ReactRefreshTypeScript from 'react-refresh-typescript';
 import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import { EmbeddedModuleConfig } from './app-configs/types';
+import {
+    getChunkNamePrefix,
+    getCssPrefixForModule,
+    haveExposedMfModules,
+    processAssetsPluginOutput,
+} from './modules';
+
+const PnpWebpackPlugin = require('pnp-webpack-plugin');
 
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 
@@ -30,7 +37,6 @@ const noopPath = require.resolve('./util/noop');
 function getSingleEntry(entryPoint: string[], mode: 'dev' | 'prod') {
     return [
         ...(Array.isArray(configs.clientPolyfillsEntry) ? configs.clientPolyfillsEntry : [configs.clientPolyfillsEntry]),
-        // mode === 'dev' ? require.resolve('webpack/hot/dev-server') : false,
         ...entryPoint
     ].filter(Boolean) as string[];
 }
@@ -38,84 +44,14 @@ function getSingleEntry(entryPoint: string[], mode: 'dev' | 'prod') {
 // Нам важно шарить assets plugin между разными сборками, чтобы файл не перезаписывался
 const assetsPlugin = new AssetsPlugin({
     path: configs.serverOutputPath,
-    processOutput: (assets) => {
-        let adjustedAssets = assets;
-        if (haveExposedMfModules()) { // для mf модулей мы делаем publicPath 'auto', но в самом манифесте нам все равно хочется видеть нормальный путь
-            Object.keys(adjustedAssets).forEach((key) => {
-                adjustedAssets[key] = {
-                    css: replaceAutoPath(adjustedAssets[key].css) as any,
-                    js: replaceAutoPath(adjustedAssets[key].js) as any
-                };
-            });
-        }
-
-        const result = {
-            ...adjustedAssets,
-            __metadata__: {
-                version: configs.version
-            }
-        };
-
-        return JSON.stringify(result);
-    },
+    processOutput: processAssetsPluginOutput,
 });
-
-function replaceAutoPath(assets: string | string[] | undefined) {
-    if (!assets) {
-        return assets;
-    }
-    if (Array.isArray(assets)) {
-        return assets.map((asset) => asset.replace(/^auto\//, configs.publicPath));
-    }
-    return assets.replace(/^auto\//, configs.publicPath);
-}
-
-function haveExposedMfModules() {
-    return configs.mfModules?.exposes;
-}
-
 // Этот плагин нужен для того, чтобы клиентский код так же могу получить информацию о сборке.
 // Это позволяет нам делать виджеты, работающие только на клиенте
 const clientAssetsPlugin = new AssetsPlugin({
     path: configs.clientOutputPath,
-    processOutput: (assets) => {
-        let adjustedAssets = assets;
-        if (haveExposedMfModules()) { // для mf модулей мы делаем publicPath 'auto', но в самом манифесте нам все равно хочется видеть нормальный путь
-            Object.keys(adjustedAssets).forEach((key) => {
-                adjustedAssets[key] = {
-                    css: replaceAutoPath(adjustedAssets[key].css) as any,
-                    js: replaceAutoPath(adjustedAssets[key].js) as any
-                };
-            });
-        }
-
-        const result = {
-            ...adjustedAssets,
-            __metadata__: {
-                version: configs.version
-            }
-        };
-
-        return JSON.stringify(result);
-    }
+    processOutput: processAssetsPluginOutput,
 });
-
-function getCssPrefixForModule(module: EmbeddedModuleConfig) {
-    if (module.cssPrefix) {
-        return module.cssPrefix;
-    }
-    if (module.cssPrefix === false) {
-        return undefined;
-    }
-    return `.module-${module.name}`;
-}
-
-function getChunkNamePrefix(module?: EmbeddedModuleConfig) {
-    if (!module) {
-        return '';
-    }
-    return `${module.name}-`;
-}
 
 export const createSingleClientWebpackConfig = (mode: 'dev' | 'prod', entry: Entry, module?: EmbeddedModuleConfig): Configuration => ({
     target: 'web',
@@ -266,6 +202,7 @@ export const createSingleClientWebpackConfig = (mode: 'dev' | 'prod', entry: Ent
         // see https://github.com/webpack/webpack/issues/7378
         strictExportPresence: !configs.tsconfig,
         rules: [
+            // TODO: add expose loader for !module && configs.embeddedModules?.exposes
             {
                 // "oneOf" will traverse all following loaders until one will
                 // match the requirements. When no loader matches it will fall
@@ -515,14 +452,19 @@ export const createSingleClientWebpackConfig = (mode: 'dev' | 'prod', entry: Ent
 export const createClientWebpackConfig = (mode: 'dev' | 'prod') => {
     const appWebpackConfig = createSingleClientWebpackConfig(mode, configs.clientEntry);
 
-    if (configs.applicationModules.length === 0) {
+    const exposedModules = configs.embeddedModules?.exposes;
+
+    if (!exposedModules || Object.keys(exposedModules).length === 0) {
         return appWebpackConfig;
     }
 
-    const modulesWebpackConfigs = configs.applicationModules.map((module) => {
+    const modulesWebpackConfigs = Object.keys(exposedModules).map((moduleId) => {
         return createSingleClientWebpackConfig(mode, {
-            [module.name]: module.entry,
-        }, module);
+            [moduleId]: exposedModules[moduleId].entry,
+        }, {
+            name: moduleId,
+            ...exposedModules[moduleId],
+        });
     });
 
     return [appWebpackConfig, ...modulesWebpackConfigs];

@@ -1,0 +1,26 @@
+{
+    "name": "@arui-scripts/modules",
+    "version": "14.4.1",
+    "main": "./build/index.js",
+    "typings": "./build/index.d.ts",
+    "license": "MPL-2.0",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/core-ds/arui-scripts.git"
+    },
+    "bugs": {
+        "url": "https://github.com/core-ds/arui-scripts/issues"
+    },
+    "homepage": "https://github.com/core-ds/arui-scripts#readme",
+    "scripts": {
+        "build": "tsc --project tsconfig.json",
+        "test": "jest"
+    },
+    "peerDependencies": {
+        "react": ">16.18.0"
+    },
+    "devDependencies": {
+        "@types/react": "17.0.59",
+        "react": "17.0.2"
+    }
+}
