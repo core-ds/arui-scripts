@@ -24,6 +24,7 @@ import { EmbeddedModuleConfig } from './app-configs/types';
 import {
     getChunkNamePrefix,
     getCssPrefixForModule,
+    getExposeLoadersFormEmbeddedModules,
     haveExposedMfModules,
     processAssetsPluginOutput,
 } from './modules';
@@ -202,7 +203,7 @@ export const createSingleClientWebpackConfig = (mode: 'dev' | 'prod', entry: Ent
         // see https://github.com/webpack/webpack/issues/7378
         strictExportPresence: !configs.tsconfig,
         rules: [
-            // TODO: add expose loader for !module && configs.embeddedModules?.exposes
+            ...getExposeLoadersFormEmbeddedModules(module),
             {
                 // "oneOf" will traverse all following loaders until one will
                 // match the requirements. When no loader matches it will fall

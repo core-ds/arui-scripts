@@ -54,3 +54,25 @@ export function getChunkNamePrefix(module?: EmbeddedModuleConfig) {
     }
     return `${module.name}-`;
 }
+
+export function getExposeLoadersFormEmbeddedModules(module?: EmbeddedModuleConfig) {
+    const shared = configs.embeddedModules?.shared;
+    if (!shared || module) {
+        return [];
+    }
+
+    return Object.keys(shared).map((libraryName) => {
+        const globalVarName = shared[libraryName];
+        return {
+            test: require.resolve(libraryName),
+            use: [
+                {
+                    loader: require.resolve('expose-loader'),
+                    options: {
+                        exposes: [globalVarName],
+                    },
+                },
+            ],
+        };
+    });
+}
