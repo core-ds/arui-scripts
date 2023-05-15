@@ -13,17 +13,27 @@ on:
 
 jobs:
   build:
+    env:
+      GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      WORK_SPACE: ${{ github.workspace }}
+      NPM_CHANNEL: ${{ github.event.inputs.channel }}
+      CI: true
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      - name: create new version
+      - name: create new arui-scripts version
         run: |
           yarn --immutable
           yarn build
           yarn workspace arui-scripts run semantic-release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          WORK_SPACE: ${{ github.workspace }}
-          NPM_CHANNEL: ${{ github.event.inputs.channel }}
-          CI: true
+      - name: create @alfalab/scripts-modules version
+        working-directory: ./packages/arui-scripts-modules
+        run: |
+          npm version --git-tag-version=false $(node -p "require('../arui-scripts/package.json').version")
+          npm publish --tag $NPM_CHANNEL
+      - name: create @alfalab/scripts-server version
+        working-directory: ./packages/arui-scripts-server
+        run: |
+          npm version --git-tag-version=false $(node -p "require('../arui-scripts/package.json').version")
+          npm publish --tag $NPM_CHANNEL
