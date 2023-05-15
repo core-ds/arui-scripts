@@ -146,6 +146,7 @@ __metadata:
     "@types/hapi16": "npm:@types/hapi@16.1.12"
     "@types/hapi20": "npm:@types/hapi__hapi@20"
     express: ^4.18.2
+    jest: 28.1.3
     ts-jest: 28.0.8
   peerDependencies:
     "@hapi/hapi": ">20.0.0"
@@ -9801,9 +9802,11 @@ __metadata:
     enzyme: 3.11.0
     enzyme-adapter-react-16: ^1.15.4
     express: ^4.18.2
+    jest: 28.1.3
     lodash: ^4.17.20
     react: 17.0.2
     react-dom: 17.0.2
+    ts-jest: 28.0.8
     typescript: ^4.0.2
   languageName: unknown
   linkType: soft
