@@ -27,11 +27,14 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
+          registry-url: 'https://registry.npmjs.org'
       - name: create new arui-scripts version
         run: |
           yarn --immutable
           yarn build
           yarn workspace arui-scripts run semantic-release
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: create @alfalab/scripts-modules version
         working-directory: ./packages/arui-scripts-modules
         run: |
