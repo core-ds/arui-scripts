@@ -18,8 +18,9 @@ jobs:
       - uses: actions/checkout@v1
       - name: create new version
         run: |
-          cd packages/arui-scripts
-          yarn --immutable && yarn build && yarn semantic-release
+          yarn --immutable
+          yarn build
+          yarn workspace arui-scripts run semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -1,5 +1,5 @@
 {
-    "name": "@arui-scripts/modules",
+    "name": "@alfalab/scripts-modules",
     "version": "14.4.1",
     "main": "./build/index.js",
     "typings": "./build/index.d.ts",

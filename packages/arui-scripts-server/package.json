@@ -1,5 +1,5 @@
 {
-    "name": "@arui-scripts/server",
+    "name": "@alfalab/scripts-server",
     "version": "14.4.1",
     "main": "./build/index.js",
     "typings": "./build/index.d.ts",
@@ -35,7 +35,7 @@
         "test": "jest"
     },
     "devDependencies": {
-        "@arui-scripts/modules": "workspace:*",
+        "@alfalab/scripts-modules": "workspace:*",
         "@types/express": "^4.17.17",
         "@types/hapi16": "npm:@types/hapi@16.1.12",
         "@types/hapi20": "npm:@types/hapi__hapi@20",

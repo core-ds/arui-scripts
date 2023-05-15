@@ -1,4 +1,4 @@
-import type { GetResourcesRequest, GetResourcesResponse } from '@arui-scripts/modules';
+import type { GetResourcesRequest, GetResourcesResponse } from '@alfalab/scripts-modules';
 import { readAssetsManifest, getAppManifest } from '../read-assets-manifest';
 import { ModulesConfig } from './types';
 

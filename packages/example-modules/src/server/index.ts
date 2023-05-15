@@ -1,7 +1,7 @@
 import express from 'express';
 import path from 'path';
-import { readAssetsManifest } from '@arui-scripts/server';
-import { createGetModulesExpress } from '@arui-scripts/server/build/express';
+import { readAssetsManifest } from '@alfalab/scripts-server';
+import { createGetModulesExpress } from '@alfalab/scripts-server/build/express';
 import bodyParser from 'body-parser';
 
 const app = express();

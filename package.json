@@ -16,10 +16,10 @@
         }
     },
     "scripts": {
-        "test:libs": "yarn workspaces foreach -v -p --include '{arui-scripts,@arui-scripts/*}' run test",
+        "test:libs": "yarn workspaces foreach -v -p --include '{arui-scripts,@alfalab/*}' run test",
         "test:example": "yarn workspaces foreach -v -p --include 'example*' run test",
         "test": "yarn test:libs && yarn test:example",
-        "build:libs": "yarn workspaces foreach -v -p --include '{arui-scripts,@arui-scripts/*}' run build",
+        "build:libs": "yarn workspaces foreach -v -p --include '{arui-scripts,@alfalab/*}' run build",
         "build:example": "yarn workspaces foreach -v -p --include 'example*' run build",
         "build": "yarn build:libs && yarn build:example"
     },

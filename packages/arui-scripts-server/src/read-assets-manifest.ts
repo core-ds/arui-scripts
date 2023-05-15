@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { promisify } from 'util';
-import type { AruiAppManifest } from '@arui-scripts/modules';
+import type { AruiAppManifest } from '@alfalab/scripts-modules';
 
 const readFile = promisify(fs.readFile);
 

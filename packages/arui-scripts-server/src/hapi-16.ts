@@ -27,7 +27,7 @@ export function createGetModulesHapi16Plugin(modules: ModulesConfig<[Request]>, 
     };
 
     register.attributes = {
-        name: `@arui-scripts/server${modulesMethodSettings.path}`,
+        name: `@alfalab/scripts-server${modulesMethodSettings.path}`,
     };
 
     return register;

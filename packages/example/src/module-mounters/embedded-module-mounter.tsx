@@ -1,5 +1,5 @@
 import React from 'react';
-import { createClientLoader, useModuleLoader } from '@arui-scripts/modules';
+import { createClientLoader, useModuleLoader } from '@alfalab/scripts-modules';
 import { Underlay } from '@alfalab/core-components/underlay';
 import { Spinner } from '@alfalab/core-components/spinner';
 

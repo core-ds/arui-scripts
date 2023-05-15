@@ -1,4 +1,4 @@
-import type { MountMode, GetResourcesRequest, GetResourcesResponse, BaseModuleParams } from '@arui-scripts/modules';
+import type { MountMode, GetResourcesRequest, GetResourcesResponse, BaseModuleParams } from '@alfalab/scripts-modules';
 
 export type ModuleDescriptor<FrameworkParams extends unknown[] = []> = {
     mountMode: MountMode;

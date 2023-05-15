@@ -1,5 +1,5 @@
 import React from 'react';
-import type { ModuleMountFunction, ModuleUnmountFunction } from '@arui-scripts/modules';
+import type { ModuleMountFunction, ModuleUnmountFunction } from '@alfalab/scripts-modules';
 import ReactDOM from 'react-dom';
 import { ServerModuleMf } from './ServerModuleMf';
 

@@ -128,7 +128,7 @@ import type { // Обратите внимание на `import type` - наш �
     ModuleMountFunction,
     ModuleUnmountFunction,
     WindowWithMountableModule
-} from '@arui-scripts/modules';
+} from '@alfalab/scripts-modules';
 
 const mountModule: ModuleMountFunction = (moduleId, params, targetNode) => {
     // здесь мы можем отрендерить наш модуль в targetNode
@@ -157,7 +157,7 @@ const unmountModule: ModuleUnmountFunction = (targetNode) => {
 экспортировать функции `mount` и `unmount`:
 
 ```tsx
-import type { ModuleMountFunction, ModuleUnmountFunction } from '@arui-scripts/modules';
+import type { ModuleMountFunction, ModuleUnmountFunction } from '@alfalab/scripts-modules';
 
 export const mount: ModuleMountFunction = (moduleId, params, targetNode) => {
     // здесь мы можем отрендерить наш модуль в targetNode
@@ -177,7 +177,7 @@ export const unmount: ModuleUnmountFunction = (targetNode) => {
 определить серверный эндпоинт для модуля. Для этого вам нужно определить объект, описывающий ваши модули:
 
 ```ts
-import type { ModulesConfig } from '@arui-scripts/server';
+import type { ModulesConfig } from '@alfalab/scripts-server';
 
 const modules: ModulesConfig = {
     'ServerModuleEmbedded': {
@@ -207,7 +207,7 @@ const modules: ModulesConfig = {
 соответствующий хендлер. Например, для express это будет выглядеть так:
 
 ```ts
-import { createGetModulesExpress } from '@arui-scripts/server/build/express';
+import { createGetModulesExpress } from '@alfalab/scripts-server/build/express';
 
 const modulesRouter = createGetModulesExpress(modules);
 
@@ -217,7 +217,7 @@ app.use(modulesRouter);
 Для hapi@16:
 
 ```ts
-import { createGetModulesHapi16Plugin } from '@arui-scripts/server/build/hapi16';
+import { createGetModulesHapi16Plugin } from '@alfalab/scripts-server/build/hapi16';
 
 const modulesPlugin = createGetModulesHapi16Plugin(modules);
 
@@ -227,7 +227,7 @@ server.register(modulesPlugin);
 Для hapi@20:
 
 ```ts
-import { createGetModulesHapi20Plugin } from '@arui-scripts/server/build/hapi20';
+import { createGetModulesHapi20Plugin } from '@alfalab/scripts-server/build/hapi20';
 
 const modulesPlugin = createGetModulesHapi20Plugin(modules);
 
@@ -237,7 +237,7 @@ server.register(modulesPlugin);
 Если вы хотите использовать другой серверный фреймворк, вы можете использовать общий хелпер:
 
 ```ts
-import { createGetModulesMethod } from '@arui-scripts/server';
+import { createGetModulesMethod } from '@alfalab/scripts-server';
 
 const getModules = createGetModulesMethod(modules);
 
@@ -314,7 +314,7 @@ const aruiScriptsConfig: PackageSettings = {
 
 ```tsx
 import React, { useMemo } from 'react';
-import { createLoader, useModuleLoader, getModuleResourcesPath } from '@arui-scripts/modules';
+import { createLoader, useModuleLoader, getModuleResourcesPath } from '@alfalab/scripts-modules';
 
 // Это просто функция, которая должна обратиться к серверу модуля.
 // Скорее всего у вас уже есть хелпер, который создает подобные функции
@@ -366,7 +366,7 @@ export const ServerModuleMounter = () => {
 
 ```tsx
 import React from 'react';
-import { createClientLoader, useModuleLoader } from '@arui-scripts/modules';
+import { createClientLoader, useModuleLoader } from '@alfalab/scripts-modules';
 import { Underlay } from '@alfalab/core-components/underlay';
 import { Spinner } from '@alfalab/core-components/spinner';
 

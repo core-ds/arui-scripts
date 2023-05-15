@@ -1,4 +1,4 @@
-import type { ModuleMountFunction, ModuleUnmountFunction, WindowWithMountableModule } from '@arui-scripts/modules';
+import type { ModuleMountFunction, ModuleUnmountFunction, WindowWithMountableModule } from '@alfalab/scripts-modules';
 import './styles.css';
 
 const mountModule: ModuleMountFunction = (moduleId, params, targetNode) => {

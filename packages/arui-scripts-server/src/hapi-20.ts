@@ -5,7 +5,7 @@ export function createGetModulesHapi20Plugin(modules: ModulesConfig<[Request]>, 
     const modulesMethodSettings = createGetModulesMethod(modules);
 
     const plugin: Plugin<{}> = {
-        name: `@arui-scripts/server${modulesMethodSettings.path}`,
+        name: `@alfalab/scripts-server${modulesMethodSettings.path}`,
         version: '1.0.0',
         register: (server, options) => {
             server.route({

@@ -1,5 +1,5 @@
 import React from 'react';
-import { BaseModuleParams } from '@arui-scripts/modules';
+import { BaseModuleParams } from '@alfalab/scripts-modules';
 
 export const ServerModuleMf = (props: BaseModuleParams) => (
     <div>

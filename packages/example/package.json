@@ -16,8 +16,8 @@
     },
     "dependencies": {
         "@alfalab/core-components": "^41.6.0",
-        "@arui-scripts/modules": "workspace:*",
-        "@arui-scripts/server": "workspace:*",
+        "@alfalab/scripts-modules": "workspace:*",
+        "@alfalab/scripts-server": "workspace:*",
         "@hapi/hapi": "^21.3.0",
         "arui-scripts": "workspace:*",
         "express": "^4.16.4",

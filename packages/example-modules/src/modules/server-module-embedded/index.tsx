@@ -1,4 +1,4 @@
-import type { ModuleMountFunction, ModuleUnmountFunction, WindowWithMountableModule } from '@arui-scripts/modules';
+import type { ModuleMountFunction, ModuleUnmountFunction, WindowWithMountableModule } from '@alfalab/scripts-modules';
 import ReactDOM from 'react-dom';
 import React from 'react';
 import { ServerModuleEmbedded } from '#/modules/server-module-embedded/server-module-embedded';

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { createLoader, GetResourcesRequest, useModuleLoader, getModuleResourcesPath } from '@arui-scripts/modules';
+import { createLoader, GetResourcesRequest, useModuleLoader, getModuleResourcesPath } from '@alfalab/scripts-modules';
 import { Underlay } from '@alfalab/core-components/underlay';
 import { Spinner } from '@alfalab/core-components/spinner';
 

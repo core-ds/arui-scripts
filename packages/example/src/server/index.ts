@@ -1,6 +1,6 @@
 import express from 'express';
 import path from 'path';
-import { readAssetsManifest } from '@arui-scripts/server';
+import { readAssetsManifest } from '@alfalab/scripts-server';
 
 const app = express();
 

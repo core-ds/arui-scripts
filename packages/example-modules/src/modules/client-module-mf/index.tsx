@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import type { ModuleMountFunction, ModuleUnmountFunction } from '@arui-scripts/modules';
+import type { ModuleMountFunction, ModuleUnmountFunction } from '@alfalab/scripts-modules';
 import { ClientModuleMf } from './ClientModuleMf';
 
 export const mount: ModuleMountFunction = (moduleId, params, targetNode) => {
