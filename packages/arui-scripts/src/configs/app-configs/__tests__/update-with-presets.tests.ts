@@ -22,6 +22,7 @@ describe('update-with-presets', () => {
             return path as any;
         });
         const baseConfig = {
+            presets: 'presets',
             dockerRegistry: 'docker.my-company.com',
         } as AppConfigs;
         const context = {
@@ -48,6 +49,7 @@ describe('update-with-presets', () => {
             return undefined;
         });
         const baseConfig = {
+            presets: 'presets',
             dockerRegistry: 'docker.my-company.com',
         } as AppConfigs;
         const context = {
