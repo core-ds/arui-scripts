@@ -39,13 +39,13 @@ jobs:
         working-directory: ./packages/arui-scripts-modules
         run: |
           npm version --git-tag-version=false $(node -p "require('../arui-scripts/package.json').version")
-          npm publish --tag $NPM_CHANNEL
+          npm publish --tag $NPM_CHANNEL --access=public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: create @alfalab/scripts-server version
         working-directory: ./packages/arui-scripts-server
         run: |
           npm version --git-tag-version=false $(node -p "require('../arui-scripts/package.json').version")
-          npm publish --tag $NPM_CHANNEL
+          npm publish --tag $NPM_CHANNEL --access=public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
