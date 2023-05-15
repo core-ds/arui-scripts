@@ -442,11 +442,9 @@ export const createSingleClientWebpackConfig = (mode: 'dev' | 'prod', entry: Ent
         ignored: new RegExp(configs.watchIgnorePath.join('|')),
         aggregateTimeout: 100,
     },
-    // Turn off performance hints during development because we don't do any
-    // splitting or minification in interest of speed. These warnings become
-    // cumbersome.
+    // Выключаем performance hints, т.к. размеры бандлов контролируются не в рамках arui-scripts
     performance: {
-        hints: mode === 'dev' ? false : 'warning',
+        hints: false,
     },
 });
 
