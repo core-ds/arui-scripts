@@ -130,6 +130,7 @@ __metadata:
   resolution: "@alfalab/scripts-modules@workspace:packages/arui-scripts-modules"
   dependencies:
     "@types/react": 17.0.59
+    jest: 28.1.3
     react: 17.0.2
     ts-jest: 28.0.8
   peerDependencies:

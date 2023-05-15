@@ -1,4 +1,5 @@
 import { readAssetsManifest } from '../read-assets-manifest';
+import { readFile } from 'fs';
 
 jest.mock('fs', () => ({
     readFile: jest.fn(),
@@ -6,14 +7,14 @@ jest.mock('fs', () => ({
 
 describe('readAssetsManifest', () => {
     it('should throw error if manifest file not found', async () => {
-        (require('fs') as any).readFile.mockImplementationOnce(() => {
+        (readFile as any).mockImplementationOnce(() => {
             throw new Error('File not found');
         });
         await expect(readAssetsManifest(['vendor', 'main'])).rejects.toThrowError();
     });
 
     it('should return js and css assets', async () => {
-        (require('fs') as any).readFile.mockImplementationOnce((path: any, options: any, done: any) => done(null, JSON.stringify({
+        (readFile as any).mockImplementationOnce((path: any, options: any, done: any) => done(null, JSON.stringify({
             vendor: {
                 js: 'vendor.js',
                 css: 'vendor.css',
