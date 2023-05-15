@@ -1,3 +1,10 @@
+# [14.5.0-feat-modules.2](https://github.com/core-ds/arui-scripts/compare/v14.5.0-feat-modules.1...v14.5.0-feat-modules.2) (2023-05-15)
+
+
+### Bug Fixes
+
+* correctly pass auth token to publish jobs ([da5a0fd](https://github.com/core-ds/arui-scripts/commit/da5a0fd03f6945fb2ca1b0a1dad2b2d725373a11))
+
 # [14.5.0-feat-modules.1](https://github.com/core-ds/arui-scripts/compare/v14.4.1...v14.5.0-feat-modules.1) (2023-05-15)
 
 
