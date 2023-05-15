@@ -1,3 +1,19 @@
+# [14.5.0-feat-modules.1](https://github.com/core-ds/arui-scripts/compare/v14.4.1...v14.5.0-feat-modules.1) (2023-05-15)
+
+
+### Bug Fixes
+
+* **build:** correctly report build sized for multiple entrypoints ([cc41419](https://github.com/core-ds/arui-scripts/commit/cc414195915bdbd24867c45e291991568ac6e741))
+* **webpack:** turn off performance hints from webpack ([d43f2c8](https://github.com/core-ds/arui-scripts/commit/d43f2c88b73176a173de570da8321b1f8cccc611))
+
+
+### Features
+
+* add initial modules implementation ([0e2093e](https://github.com/core-ds/arui-scripts/commit/0e2093e350af3a3abb557d15b075b43ce96efe67))
+* add modules build support ([2a0f5c1](https://github.com/core-ds/arui-scripts/commit/2a0f5c10ee8fb496228e7b2e42d1a94727c895e5))
+* add new `start:prod` command ([2944887](https://github.com/core-ds/arui-scripts/commit/2944887758527e65fdd0e11ea5bb7e59afa213c1))
+* **modules:** automaticaly generate expose for embedded modules ([5ecadfc](https://github.com/core-ds/arui-scripts/commit/5ecadfca7ebfbb15a0b65331c1db27f091f4173c))
+
 ## [14.4.1](https://github.com/core-ds/arui-scripts/compare/v14.4.0...v14.4.1) (2023-05-07)
 
 
