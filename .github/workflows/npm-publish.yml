@@ -24,6 +24,9 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
       - name: create new arui-scripts version
         run: |
           yarn --immutable
@@ -34,8 +37,12 @@ jobs:
         run: |
           npm version --git-tag-version=false $(node -p "require('../arui-scripts/package.json').version")
           npm publish --tag $NPM_CHANNEL
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: create @alfalab/scripts-server version
         working-directory: ./packages/arui-scripts-server
         run: |
           npm version --git-tag-version=false $(node -p "require('../arui-scripts/package.json').version")
           npm publish --tag $NPM_CHANNEL
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
