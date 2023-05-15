@@ -79,6 +79,8 @@ npm install arui-scripts --save-dev
 - `componentsTheme` - путь к css файлу с темой для [core-components](https://github.com/core-ds/core-components). Используется для настройки [postcss-custom-properties](https://github.com/postcss/postcss-custom-properties#importfrom).
 - `keepCssVars` - отключает `postcss-custom-properties`, css переменные будут оставаться в бандле.
 - `removeDevDependenciesDuringDockerBuild` - отключает удаление devDependencies из node_modules при сборке докер образа. Используется когда вам не нужно удалять devDependencies, т.к. в своём Dockerfile вы не переносите node_modules в докер-контейнер
+- `devServerCors` - включает добавление cors-заголовков в dev-server. Может быть полезным при локальном тестировании модулей.
+- `embeddedModules`, `mfModules` - позволяет настраивать работу с модулями, подробнее в разделе [Модули](./docs/modules.md).
 
 В целях отладки все эти настройки можно переопределить не изменяя package.json
 Просто передайте необходимые настройки в environment переменной ARUI_SCRIPTS_CONFIG

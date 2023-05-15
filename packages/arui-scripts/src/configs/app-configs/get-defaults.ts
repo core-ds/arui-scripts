@@ -13,6 +13,7 @@ export function getDefaultAppConfig(): AppConfigs {
         serverPort: 3000,
         debug: false,
         devSourceMaps: 'eval',
+        devServerCors: false,
         useServerHMR: false,
         presets: null,
 
@@ -42,7 +43,7 @@ export function getDefaultAppConfig(): AppConfigs {
         installServerSourceMaps: false,
 
         // CSS
-        componentsTheme: undefined,
+        componentsTheme: null,
         keepCssVars: false,
 
         // Modules

@@ -7,6 +7,7 @@ export type AppConfigs = {
     serverPort: number;
     debug: boolean;
     devSourceMaps: string;
+    devServerCors: boolean;
     useServerHMR: boolean;
     presets: string | null;
 
@@ -36,7 +37,7 @@ export type AppConfigs = {
     installServerSourceMaps: boolean;
 
     // CSS
-    componentsTheme: string | undefined;
+    componentsTheme: string | null;
     keepCssVars: boolean;
 
     // Modules

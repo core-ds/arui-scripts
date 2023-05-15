@@ -3,13 +3,18 @@ import { PackageSettings } from 'arui-scripts';
 const aruiScriptsConfig: PackageSettings = {
     presets: "./presets",
     serverPort: 3001,
-    clientServerPort: 8081,
+    clientServerPort: 8082,
+    devServerCors: true,
     clientPolyfillsEntry: null,
     serverEntry: "./src/server/index",
     clientEntry: "./src/client",
     keepCssVars: false,
     debug: true,
     embeddedModules: {
+        shared: {
+            react: 'react',
+            'react-dom': 'reactDOM',
+        },
         exposes: {
             'ClientModuleEmbedded': {
                 entry: './src/modules/client-module-embedded/index',
