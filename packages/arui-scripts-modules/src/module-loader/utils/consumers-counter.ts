@@ -26,3 +26,8 @@ export class ConsumersCounter {
     }
 }
 
+export const resetConsumersCounter = () => {
+    Object.keys(counters).forEach((moduleId) => {
+        counters[moduleId] = 0;
+    });
+}

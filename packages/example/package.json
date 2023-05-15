@@ -6,8 +6,7 @@
         "build": "arui-scripts build",
         "start": "NODE_ENV=localhost arui-scripts start",
         "test": "arui-scripts test",
-        "bundle-analyze": "arui-scripts bundle-analyze",
-        "ci": "yarn run test && yarn run build"
+        "bundle-analyze": "arui-scripts bundle-analyze"
     },
     "jest": {
         "preset": "arui-scripts",

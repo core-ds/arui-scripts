@@ -4,8 +4,7 @@
     "private": true,
     "scripts": {
         "build": "arui-scripts build",
-        "start": "NODE_ENV=localhost arui-scripts start",
-        "ci": "yarn run test && yarn run build"
+        "start": "NODE_ENV=localhost arui-scripts start"
     },
     "jest": {
         "preset": "arui-scripts",
