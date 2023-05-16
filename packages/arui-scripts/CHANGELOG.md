@@ -1,3 +1,10 @@
+# [14.5.0](https://github.com/core-ds/arui-scripts/compare/v14.4.1...v14.5.0) (2023-05-16)
+
+
+### Features
+
+* add new `start:prod` command ([2944887](https://github.com/core-ds/arui-scripts/commit/2944887758527e65fdd0e11ea5bb7e59afa213c1))
+
 ## [14.4.1](https://github.com/core-ds/arui-scripts/compare/v14.4.0...v14.4.1) (2023-05-07)
 
 
