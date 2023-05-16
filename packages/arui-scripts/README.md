@@ -37,6 +37,7 @@ npm install arui-scripts --save-dev
 ---
 
 - `arui-scripts start` - запускает WebpackDevServer для фронтенда и webpack в режиме `--watch` для сервера.
+- `arui-scripts start:prod` - аналогична команде start, но использует production версию конфигурации для webpack. Может быть полезна для сбора метрик производительности.
 - `arui-scripts build` - компилирует клиент и сервер для использования в production
 - `arui-scripts docker-build` - собирает docker контейнер c production билдом и загружает его в артифактори
 - `arui-scripts docker-build:compiled` - собирает docker контейнер c production билдом, предполагая что код приложения уже скомпилирован
