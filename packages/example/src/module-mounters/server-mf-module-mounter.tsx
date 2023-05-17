@@ -1,29 +1,18 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import {
     createModuleLoader,
-    getServerFetcherParams,
-    GetResourcesRequest,
     useModuleMounter,
-    MountableModule, BaseModuleState,
+    MountableModule,
+    BaseModuleState,
+    createServerResourcesFetcher,
 } from '@alfalab/scripts-modules';
 import { Underlay } from '@alfalab/core-components/underlay';
 import { Spinner } from '@alfalab/core-components/spinner';
 
-const customFetch = (loaderParams: GetResourcesRequest) => {
-    const fetchParams = getServerFetcherParams();
-    return fetch(`http://localhost:8081/${fetchParams.relativePath}`, {
-        method: fetchParams.method,
-        body: JSON.stringify(loaderParams),
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    }).then((response) => response.json());
-};
-
 const loader = createModuleLoader<MountableModule<{ some: string }, BaseModuleState>>({
     hostAppId: 'example',
     moduleId: 'ServerModuleMF',
-    getModuleResources: customFetch,
+    getModuleResources: createServerResourcesFetcher({ baseUrl: 'http://localhost:8081' }),
 });
 
 export const ServerMfModuleMounter = () => {
