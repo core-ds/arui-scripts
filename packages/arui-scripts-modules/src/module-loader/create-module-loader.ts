@@ -40,7 +40,7 @@ export function createModuleLoader<ModuleExportType, GetResourcesParams = undefi
     moduleId,
     hostAppId,
     getModuleResources,
-    resourcesTargetNode = document.head,
+    resourcesTargetNode,
     onBeforeResourcesMount,
     onBeforeModuleMount,
     onAfterModuleMount,
@@ -52,6 +52,7 @@ export function createModuleLoader<ModuleExportType, GetResourcesParams = undefi
     const moduleConsumersCounter = new ConsumersCounter(moduleId);
 
     return async (params) => {
+        resourcesTargetNode = resourcesTargetNode || document.head; // определяем дефолт тут, а не в сигнатуре функции, чтобы не было проблем с при импорте модуля в nodejs
         // Загружаем описание модуля
         const moduleResources = await getModuleResources({
             moduleId,
@@ -107,7 +108,7 @@ export function createModuleLoader<ModuleExportType, GetResourcesParams = undefi
 
                 if (moduleConsumersCounter.isAbsent()) {
                     // Если на странице больше нет потребителей модуля, то удаляем его ресурсы - скрипты, стили и глобальные переменные
-                    removeModuleResources({ moduleId: moduleId, targetNode: resourcesTargetNode });
+                    removeModuleResources({ moduleId: moduleId, targetNode: resourcesTargetNode || document.head });
                     cleanGlobal(moduleId);
                 }
 
