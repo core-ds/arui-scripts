@@ -1,3 +1,12 @@
+# [14.5.0-feat-modules.3](https://github.com/core-ds/arui-scripts/compare/v14.5.0-feat-modules.2...v14.5.0-feat-modules.3) (2023-05-17)
+
+
+### Features
+
+* **dev-server:** add configuration to set CORS headers ([db54131](https://github.com/core-ds/arui-scripts/commit/db54131481e40434e8e9a695629fab4965578fb0))
+* **widgets:** add server resources fetcher ([5faccc5](https://github.com/core-ds/arui-scripts/commit/5faccc56f0f4d58323df7d320da5345fbd136ff4))
+* **widgets:** massive api changes ([6b8366d](https://github.com/core-ds/arui-scripts/commit/6b8366d5261a9f8f56dd93f1c7834cb41f4afa20))
+
 # [14.5.0-feat-modules.2](https://github.com/core-ds/arui-scripts/compare/v14.5.0-feat-modules.1...v14.5.0-feat-modules.2) (2023-05-15)
 
 
