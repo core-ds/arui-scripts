@@ -121,7 +121,7 @@ export function createModuleLoader<ModuleExportType, GetResourcesParams = undefi
 }
 
 function validateUsedWebpackVersion() {
-    if (typeof (window as any).webpackJsonp !== 'undefined' && process.env.NODE_ENV !== 'production') {
+    if (typeof window !== 'undefined' && typeof (window as any).webpackJsonp !== 'undefined' && process.env.NODE_ENV !== 'production') {
         console.warn('Если вы хотите использовать модули - вам надо обновиться до webpack 5/arui-scripts 12.' +
             'в противном случае вы можете получить совершенно неожиданные ошибки');
     }
