@@ -47,7 +47,7 @@ describe('createGetModulesMethod', () => {
             moduleVersion: '1.0.0',
             scripts: ['vendor.js', 'main.js'],
             styles: ['vendor.css', 'main.css'],
-            moduleRunParams: { contextRoot: '' },
+            moduleState: { baseUrl: '' },
             appName: 'module-app-name',
         });
 
@@ -77,7 +77,7 @@ describe('createGetModulesMethod', () => {
             moduleVersion: '1.0.0',
             scripts: ['assets/remoteEntry.js'],
             styles: [],
-            moduleRunParams: { contextRoot: '' },
+            moduleState: { baseUrl: '' },
             appName: 'module-app-name',
         });
 
