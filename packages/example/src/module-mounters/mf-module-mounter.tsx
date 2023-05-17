@@ -1,15 +1,25 @@
 import React from 'react';
-import { createClientLoader, useModuleLoader } from '@alfalab/scripts-modules';
+import {
+    BaseModuleState,
+    createClientResourcesFetcher,
+    createModuleLoader,
+    MountableModule,
+    useModuleMounter,
+} from '@alfalab/scripts-modules';
 import { Underlay } from '@alfalab/core-components/underlay';
 import { Spinner } from '@alfalab/core-components/spinner';
 
-const loader = createClientLoader({
-    baseUrl: 'http://localhost:8081/',
-    mountMode: 'mf',
+const loader = createModuleLoader<MountableModule<void, BaseModuleState>>({
+    hostAppId: 'example',
+    moduleId: 'ClientModuleMF',
+    getModuleResources: createClientResourcesFetcher({
+        baseUrl: 'http://localhost:8081',
+        mountMode: 'mf',
+    })
 });
 
 export const MfModuleMounter = () => {
-    const { loadingState, targetElementRef } = useModuleLoader("ClientModuleMF", loader);
+    const { loadingState, targetElementRef } = useModuleMounter({ loader: loader });
 
     return (
         <Underlay padding='m' backgroundColor='info' shadow='shadow-s' borderSize={1} borderRadius='m'>

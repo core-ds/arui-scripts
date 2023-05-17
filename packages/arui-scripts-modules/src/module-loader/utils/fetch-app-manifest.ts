@@ -1,5 +1,5 @@
-import { urlSegmentWithoutEndSlash } from './utils/normalize-url-segment';
-import { AruiAppManifest } from './types';
+import { urlSegmentWithoutEndSlash } from './normalize-url-segment';
+import { AruiAppManifest } from '../types';
 
 export function fetchAppManifest(baseUrl: string) {
     return new Promise<AruiAppManifest>((resolve, reject) => {

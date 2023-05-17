@@ -1,8 +1,8 @@
-import type { ModuleMountFunction, ModuleUnmountFunction, WindowWithMountableModule } from '@alfalab/scripts-modules';
+import type { ModuleMountFunction, ModuleUnmountFunction } from '@alfalab/scripts-modules';
 import './styles.css';
 
-const mountModule: ModuleMountFunction = (moduleId, params, targetNode) => {
-    console.log('ClientModuleEmbedded: mount', params);
+const mountModule: ModuleMountFunction<any, any> = (targetNode, runParams) => {
+    console.log('ClientModuleEmbedded: mount', { runParams });
 
     if (targetNode) {
         targetNode.innerHTML = `
@@ -26,7 +26,7 @@ const unmountModule: ModuleUnmountFunction = (targetNode) => {
     }
 };
 
-(window as WindowWithMountableModule).ClientModuleEmbedded = {
+(window as any).ClientModuleEmbedded = {
     mount: mountModule,
     unmount: unmountModule,
 };

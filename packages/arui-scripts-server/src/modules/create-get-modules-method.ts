@@ -1,4 +1,4 @@
-import type { GetResourcesRequest, GetResourcesResponse } from '@alfalab/scripts-modules';
+import type { GetResourcesRequest, ModuleResources } from '@alfalab/scripts-modules';
 import { readAssetsManifest, getAppManifest } from '../read-assets-manifest';
 import { ModulesConfig } from './types';
 
@@ -10,7 +10,7 @@ export function createGetModulesMethod<FrameworkParams extends unknown[] = []>(
     return {
         method: 'POST',
         path: '/api/getModuleResources',
-        handler: async (getResourcesRequest: GetResourcesRequest, ...params: FrameworkParams): Promise<GetResourcesResponse> => {
+        handler: async (getResourcesRequest: GetResourcesRequest, ...params: FrameworkParams): Promise<ModuleResources> => {
             const appManifest = await getAppManifest();
             const moduleName = getResourcesRequest.moduleId;
 
@@ -34,7 +34,7 @@ export function createGetModulesMethod<FrameworkParams extends unknown[] = []>(
 
             const moduleAssets = assets[moduleName];
 
-            const moduleRunParams = await module.getRunParams(
+            const moduleRunParams = await module.getModuleState(
                 getResourcesRequest,
                 ...params,
             );
@@ -44,7 +44,7 @@ export function createGetModulesMethod<FrameworkParams extends unknown[] = []>(
                 moduleVersion: module.version ?? 'unknown',
                 scripts: moduleAssets.js,
                 styles: moduleAssets.css,
-                moduleRunParams,
+                moduleState: moduleRunParams,
                 appName: appManifest.__metadata__.name,
             };
         }

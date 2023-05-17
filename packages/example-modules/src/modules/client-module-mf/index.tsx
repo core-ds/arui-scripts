@@ -3,10 +3,10 @@ import ReactDOM from 'react-dom';
 import type { ModuleMountFunction, ModuleUnmountFunction } from '@alfalab/scripts-modules';
 import { ClientModuleMf } from './ClientModuleMf';
 
-export const mount: ModuleMountFunction = (moduleId, params, targetNode) => {
-    console.log('ClientModuleMf: mount', params);
+export const mount: ModuleMountFunction<any, any> = (targetNode, runParams, serverState) => {
+    console.log('ClientModuleMf: mount', { runParams, serverState });
     if (!targetNode) {
-        throw new Error(`Target node is not defined for module ${moduleId}`);
+        throw new Error(`Target node is not defined for module`);
     }
 
     ReactDOM.render(<ClientModuleMf />, targetNode);

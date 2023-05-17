@@ -1,21 +1,3 @@
-export const getModuleResourcesPath = 'api/getModuleResources';
-
-/**
- * Базовый запрос к ручке для получения информации о модуле
- */
-export interface GetResourcesRequest<Params = Record<string, unknown>> {
-    /** идентификатор запрашиваемого модуля. */
-    moduleId: string;
-    /**
-     * Идентификатор приложения, которое может загружать модули.
-     * В формате {system-name}-{package.json.name}
-     * @example 'nib-corp-shared-ui'
-     **/
-    hostAppId: string;
-    /** Дополнительные параметры, которые могут понадобиться определенному виду приложений при загрузке */
-    params?: Params;
-}
-
 /**
  * То, как подключать модуль на страницу.
  * embedded - режим подключения без использования module-federation. В этом случае мы сами подключаем все скрипты и стили.
@@ -24,141 +6,20 @@ export interface GetResourcesRequest<Params = Record<string, unknown>> {
 export type MountMode = 'embedded' | 'mf';
 
 /**
- * Базовые параметры запуска модуля на странице
+ * Запрос, который будет отправлен на сервер для получения ресурсов модуля
  */
-export type BaseModuleParams = {
-    /** Предзагруженное состояние модуля, будет передано в mountFunction */
-    preloadedState?: unknown;
-    /**
-     * Базовый адрес загружаемого модуля.
-     * Он может быть как относительным, так и абсолютным.
-     * Это свойство должно называться baseUrl, но оставлено в таком виде для совместимости с module-loader корпоратов
-     * @example https://foo.bar.com, /foo/bar
-     **/
-    contextRoot: string;
-};
-
-/**
- * Ответ от ручки с информацией о загружаемом модуле
- */
-export interface GetResourcesResponse<
-    ModuleParams extends BaseModuleParams = BaseModuleParams,
-> {
-    /** пути до js скриптов модуля */
-    scripts: string[];
-    /** пути до css стилей модуля */
-    styles: string[];
-    /** версия модуля */
-    moduleVersion: string;
-    /** название приложения, которое предоставляет модуль */
-    appName: string;
-    /** то, как подключать модуль на страницу. Базово предполагается только один режим. Но он может расширятся */
-    mountMode: MountMode;
-    /** кастомные параметры, которые должны быть использованы при вызове mount функции */
-    moduleRunParams: ModuleParams;
-}
-
-/**
-  * Параметры, настраивающие загрузчик
-  */
-export type CreateLoaderParams<
-    ResourcesRequest extends GetResourcesRequest,
-    ResourcesResponse extends GetResourcesResponse,
-> = {
-    /** Идентификатор приложения, которое будет загружать модули. */
+export type GetResourcesRequest<GetResourcesParams = void> = {
+    /** id загружаемого модуля */
+    moduleId: string;
+    /** id приложения-хоста */
     hostAppId: string;
-    /**
-     * Функция, которая будет вызвана для формирования параметров обращения к getResources
-     */
-    getModuleRequestParams?: (moduleId: string) => Promise<ResourcesRequest['params']>;
-    /**
-     * Функция-фетчер, которая должна обращаться к ручке getResources. По какой логике она будет формировать запрос к нему - это ее дело
-     */
-    fetchFunction: (params: ResourcesRequest) => Promise<ResourcesResponse>;
-    /**
-     * Функция, которая будет вызвана перед подключением ресурсов приложения на страницу
-     */
-    onBeforeResourcesMount?: (
-        moduleId: string,
-        moduleParams: ResourcesResponse,
-    ) => Promise<void>;
-    /**
-     * Функция, которая будет вызвана после получения ответа от getResources для преобразования параметров (GetResourcesResponse.moduleParams) в формат нужный для работы конкретного модуля
-     */
-    getModuleRunParams?: (
-        moduleId: string,
-        moduleParams: ResourcesResponse
-    ) => Promise<BaseModuleParams>;
-    /**
-     * Функция, которая будет вызвана перед запуском кода модуля
-     */
-    onBeforeModuleMount?: (
-        moduleId: string, moduleParams: ResourcesResponse, targetNode?: HTMLElement,
-    ) => void;
-    /**
-     * Функция, которая будет вызвана сразу после запуска кода модуля
-     */
-    onAfterModuleMount?: (moduleId: string, moduleParams: ResourcesResponse) => void;
-    /**
-     * Функция, которая будут вызвана при анмаунте модуля
-     * Она не может быть асинхронной, так как может быть использована прямо перед уничтожением целевого элемента
-     */
-    onBeforeModuleUnmount?: (
-        moduleId: string, moduleParams: ResourcesResponse, targetNode?: HTMLElement,
-    ) => void;
+    /** параметры, которые передаются в функцию получения ресурсов модуля */
+    params: GetResourcesParams,
 };
 
 /**
- * Функция, которая возвращается из загрузчика, и позволяет отмонтировать приложение
+ * Клиентский манифест приложения. Генерируется во время сборки.
  */
-export type UnmountFunction = () => void;
-
-/**
- * Основная функция загрузчика
- */
-export type LoaderFunction<ResultType = ReturnType<ModuleMountFunction>> = (
-    moduleId: string, // id загружаемого модуля
-    targetNode?: HTMLElement, // html элемент, в который должен примонтироваться модуль
-) => { unmount: UnmountFunction; result: Promise<ResultType> };
-
-export type ModuleMountFunction<
-    Params extends BaseModuleParams = BaseModuleParams,
-    ModuleMountFunctionResult = any,
-> = (
-    /** id модуля */
-    moduleId: string,
-    /**  */
-    params: Params,
-    targetNode?: HTMLElement,
-) => ModuleMountFunctionResult;
-
-export type ModuleUnmountFunction = (targetNode?: HTMLElement) => void;
-
-export type MountableModule = {
-    mount: ModuleMountFunction;
-    unmount: ModuleUnmountFunction;
-};
-
-export type WindowWithMountableModule = typeof window & {
-    [key: string]: MountableModule | undefined;
-};
-
-export type LoadingState = 'unknown' | 'pending' | 'rejected' | 'fulfilled';
-
-export type SyncPreload<P, R = Record<string, unknown>> = (parameter: P) => R;
-
-export type AsyncPreload<P, R = Record<string, unknown>> = (parameter: P) => Promise<R>;
-
-export interface BaseModuleRunParams {
-    preloadedState: Record<string, unknown>;
-    contextRoot: string;
-}
-
-export type ModuleFederationContainer = {
-    init: (...args: unknown[]) => Promise<void>;
-    get<T>(id: string): Promise<() => T>;
-};
-
 export type AruiAppManifest = {
     [moduleId: string]: {
         js?: string;
@@ -170,6 +31,83 @@ export type AruiAppManifest = {
         name: string;
     };
 }
+/**
+ * "состояние" модуля полученное от сервера
+ */
+export type BaseModuleState = {
+    baseUrl: string;
+};
+/**
+ * Ресурсы, которые нужны модулю для запуска
+ */
+export type ModuleResources<ModuleState extends BaseModuleState = BaseModuleState> = {
+    /** пути до js скриптов модуля */
+    scripts: string[];
+    /** пути до css стилей модуля */
+    styles: string[];
+    /** версия модуля */
+    moduleVersion: string;
+    /** название приложения, которое предоставляет модуль */
+    appName: string;
+    /** то, как подключать модуль на страницу. */
+    mountMode: MountMode;
+    /** предподготовленное "состояние" модуля, которое он получит при монтировании на страницу */
+    moduleState: ModuleState;
+};
+
+type LoaderResult<ModuleExportType> = {
+    unmount: () => void;
+    module: ModuleExportType;
+    moduleResources: ModuleResources;
+}
+
+// Для того чтобы пользователям не приходилось передавать undefined если их загрузчик не принимает параметры
+// мы делаем такой мини-хак
+export type LoaderParams<GetResourcesParams> = {
+    getResourcesParams: GetResourcesParams;
+};
+
+/**
+ * Функция, которая загружает модуль и подключает его на страницу.
+ * Может принимать дополнительные параметры, которые будут переданы в функцию получения ресурсов модуля.
+ * Возвращает промис, содержащий сам модуль и функцию, которая удаляет ресурсы модуля со страницы.
+ */
+export type Loader<GetResourcesParams, ModuleExportType = unknown> =
+    (params: LoaderParams<GetResourcesParams>) => Promise<LoaderResult<ModuleExportType>>;
+
+// Описание типов модулей
+
+export type ModuleMountFunction<RunParams, ServerState extends BaseModuleState> =
+    (targetNode: HTMLElement, runParams: RunParams, serverState: ServerState) => void;
+
+export type ModuleUnmountFunction = (targetNode: HTMLElement) => void;
+
+// Специальный тип модуля, который можно монтировать на страницу
+export type MountableModule<RunParams, ServerState extends BaseModuleState> = {
+    /**
+     * Метод, с помощью которого модуль может прикрепиться к DOM
+     * @param targetNode DOM-нода, к которой нужно прикрепить модуль
+     * @param runParams параметры, которые передаются в модуль с клиента
+     * @param serverState состояние модуля, которое пришло с сервера
+     */
+    mount: ModuleMountFunction<RunParams, ServerState>;
+    /**
+     * Метод, с помощью которого модуль должен открепиться от DOM
+     * @param targetNode DOM-нода, от которой нужно открепить модуль
+     */
+    unmount: ModuleUnmountFunction;
+};
+
+// Специальный тип модуля, который экспортирует только одну функцию
+export type FunctionalModule<RunParams, ServerState extends BaseModuleState, Return = void> = {
+    run: (serverState: ServerState, runParams: RunParams) => Return;
+};
+
+export type ModuleFederationContainer = {
+    init: (...args: unknown[]) => Promise<void>;
+    get<T>(id: string): Promise<() => T>;
+};
+
 
 declare global {
     /* eslint-disable @typescript-eslint/naming-convention,no-underscore-dangle */

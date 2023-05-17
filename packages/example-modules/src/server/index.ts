@@ -33,23 +33,24 @@ const moduleRouter = createGetModulesExpress({
     'ServerModuleEmbedded': {
         mountMode: 'embedded',
         version: '1.0.0',
-        getRunParams: async (getResourcesRequest, request) => {
+        getModuleState: async (getResourcesRequest, request) => {
             console.log('We can get some data from resource request here', getResourcesRequest);
             console.log('Or even from express request', request.path);
             return ({
                 paramFromServer: 'This can be any data from server',
                 asyncData: 'It can be constructed from async data, so you may perform some service calls here',
-                contextRoot: 'http://localhost:8081',
+                baseUrl: 'http://localhost:8081',
+                stuffFromClient: getResourcesRequest.params
             });
         },
     },
     'ServerModuleMF': {
         mountMode: 'mf',
         version: '1.0.0',
-        getRunParams: async () => ({
+        getModuleState: async () => ({
             paramFromServer: 'This can be any data from server',
             asyncData: 'It can be constructed from async data, so you may perform some service calls here',
-            contextRoot: 'http://localhost:8081',
+            baseUrl: 'http://localhost:8081',
         }),
     },
 });

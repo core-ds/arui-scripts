@@ -1,7 +1,19 @@
+import { BaseModuleState, Loader, MountableModule } from '../types';
 import { useCallback, useEffect, useState } from 'react';
-import { LoaderFunction, LoadingState } from './types';
+import { LoadingState } from './types';
+import { useModuleLoader } from './use-module-loader';
 
-export function useModuleLoader(moduleId: string, loader: LoaderFunction) {
+type UseModuleLoaderParams<LoaderParams, RunParams, ServerState extends BaseModuleState> = {
+    loader: Loader<LoaderParams, MountableModule<RunParams, ServerState>>;
+    loaderParams?: LoaderParams;
+    runParams?: RunParams;
+}
+
+export function useModuleMounter<LoaderParams, RunParams, ServerState extends BaseModuleState>({
+    loader,
+    loaderParams,
+    runParams,
+}: UseModuleLoaderParams<LoaderParams, RunParams, ServerState>) {
     const [targetDiv, setTargetDiv] = useState<undefined | HTMLDivElement>();
     const [loadingState, setLoadingState] = useState<LoadingState>('unknown');
     // Мы не можем использовать useRef тут, useRef не будет тригерить ререндер, так как он не меняет ничего
@@ -27,10 +39,16 @@ export function useModuleLoader(moduleId: string, loader: LoaderFunction) {
             }
             setLoadingState('pending');
             try {
-                const { unmount, result } = loader(moduleId, targetDiv);
+                const result = await loader({
+                    getResourcesParams: loaderParams as LoaderParams,
+                });
 
-                unmountFn = unmount;
-                await result;
+                result.module.mount(targetDiv, runParams as RunParams, result.moduleResources.moduleState as ServerState);
+
+                unmountFn = () => {
+                    result.unmount();
+                    result.module.unmount(targetDiv);
+                };
             } catch (error) {
                 setLoadingState('rejected');
                 // eslint-disable-next-line no-console
@@ -43,10 +61,11 @@ export function useModuleLoader(moduleId: string, loader: LoaderFunction) {
 
         run();
 
-        return function appCleanUp() {
+        return function moduleCleanUp() {
+            console.log('unmounting...');
             unmountFn?.();
         };
-    }, [targetDiv, moduleId, loader]);
+    }, [targetDiv, loader]);
 
     return {
         loadingState,

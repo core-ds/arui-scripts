@@ -17,7 +17,7 @@ describe('createGetModulesMethod', () => {
         const { handler } = createGetModulesMethod({});
 
         await expect(
-            handler({ moduleId: 'test', hostAppId: 'test' }),
+            handler({ moduleId: 'test', hostAppId: 'test', params: undefined }),
         ).rejects.toThrowError('Module test not found');
     });
 
@@ -31,16 +31,16 @@ describe('createGetModulesMethod', () => {
                 name: 'module-app-name',
             },
         }));
-        const getRunParams = jest.fn(() => Promise.resolve({ contextRoot: '' }));
+        const getModuleState = jest.fn(() => Promise.resolve({ baseUrl: '' }));
         const { handler } = createGetModulesMethod({
             test: {
                 mountMode: 'embedded',
-                getRunParams: getRunParams,
+                getModuleState,
                 version: '1.0.0',
             },
         });
 
-        const result = await handler({ moduleId: 'test', hostAppId: 'test' });
+        const result = await handler({ moduleId: 'test', hostAppId: 'test', params: undefined });
 
         expect(result).toEqual({
             mountMode: 'embedded',
@@ -51,7 +51,7 @@ describe('createGetModulesMethod', () => {
             appName: 'module-app-name',
         });
 
-        expect(getRunParams).toBeCalledWith({ moduleId: 'test', hostAppId: 'test' });
+        expect(getModuleState).toBeCalledWith({ moduleId: 'test', hostAppId: 'test' });
     });
 
     it('should return correct response for mf module', async () => {
@@ -61,16 +61,16 @@ describe('createGetModulesMethod', () => {
             },
         }));
 
-        const getRunParams = jest.fn(() => Promise.resolve({ contextRoot: '' }));
+        const getModuleState = jest.fn(() => Promise.resolve({ baseUrl: '' }));
         const { handler } = createGetModulesMethod({
             test: {
                 mountMode: 'mf',
-                getRunParams: getRunParams,
+                getModuleState,
                 version: '1.0.0',
             },
         });
 
-        const result = await handler({ moduleId: 'test', hostAppId: 'test' });
+        const result = await handler({ moduleId: 'test', hostAppId: 'test', params: undefined });
 
         expect(result).toEqual({
             mountMode: 'mf',
@@ -81,6 +81,6 @@ describe('createGetModulesMethod', () => {
             appName: 'module-app-name',
         });
 
-        expect(getRunParams).toBeCalledWith({ moduleId: 'test', hostAppId: 'test' });
+        expect(getModuleState).toBeCalledWith({ moduleId: 'test', hostAppId: 'test' });
     });
 });
