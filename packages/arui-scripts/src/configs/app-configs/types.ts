@@ -54,7 +54,6 @@ export type AppConfigs = {
         shared: any; // webpack don't expose this type
         exposes?: Record<string, string>;
     } | null;
-    disableModuleTesting: boolean;
 };
 
 type EmbeddedModuleConfigBase = {
