@@ -2,7 +2,15 @@ import { useEffect, useState } from 'react';
 import { Loader, ModuleResources } from '../types';
 import { LoadingState } from './types';
 
-export function useModuleLoader<ModuleExportType, GetResourcesParams>(loader: Loader<GetResourcesParams, ModuleExportType>, loaderParams?: GetResourcesParams) {
+export type UseModuleLoaderResult<ModuleExportType> = {
+    loadingState: LoadingState;
+    module: ModuleExportType | undefined;
+    resources: ModuleResources | undefined;
+}
+
+export function useModuleLoader<ModuleExportType, GetResourcesParams>(
+    loader: Loader<GetResourcesParams, ModuleExportType>, loaderParams?: GetResourcesParams
+): UseModuleLoaderResult<ModuleExportType> {
     const [loadingState, setLoadingState] = useState<LoadingState>('unknown');
 
     const [moduleAndResources, setModuleAndResources] = useState<{ module: ModuleExportType, resources: ModuleResources } | undefined>();

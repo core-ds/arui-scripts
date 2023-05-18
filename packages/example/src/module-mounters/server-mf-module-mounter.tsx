@@ -12,7 +12,7 @@ import { Spinner } from '@alfalab/core-components/spinner';
 const loader = createModuleLoader<MountableModule<{ some: string }, BaseModuleState>>({
     hostAppId: 'example',
     moduleId: 'ServerModuleMF',
-    getModuleResources: createServerResourcesFetcher({ baseUrl: 'http://localhost:8081' }),
+    getModuleResources: createServerResourcesFetcher({ baseUrl: 'http://localhost:8082' }),
 });
 
 export const ServerMfModuleMounter = () => {

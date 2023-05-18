@@ -172,10 +172,57 @@ export const publicConstant = 3.14;
 
 **Монтируемый модуль, mf**
 
-```ts
+```tsx
 // src/modules/client-module-mf/index.ts
 
+import React from 'react';
+import ReactDOM from 'react-dom';
+import type { ModuleMountFunction, ModuleUnmountFunction } from '@alfalab/scripts-modules';
+import { ClientModuleMf } from './ClientModuleMf';
+
+export const mount: ModuleMountFunction<any, any> = (targetNode, runParams, serverState) => {
+    console.log('ClientModuleMf: mount', { runParams, serverState });
+    if (!targetNode) {
+        throw new Error(`Target node is not defined for module`);
+    }
+
+    ReactDOM.render(<ClientModuleMf />, targetNode);
+};
+export const unmount: ModuleUnmountFunction = (targetNode) => {
+    console.log('ClientModuleMf: unmount');
+    if (!targetNode) {
+        return;
+    }
+
+    ReactDOM.unmountComponentAtNode(targetNode);
+};
 ```
+
+**Монтируемый модуль, embedded**
+
+```tsx
+// src/modules/client-module-embedded/index.ts
+import React from 'react';
+import ReactDOM from 'react-dom';
+import type { ModuleMountFunction, ModuleUnmountFunction, WindowWithMountableModule } from '@alfalab/scripts-modules';
+import { ClientModuleMf } from './ClientModuleMf';
+
+const mount: ModuleMountFunction<any, any> = (targetNode, runParams, serverState) => {
+    console.log('ClientModuleEmbedded: mount', { runParams, serverState });
+    ReactDOM.render(<ClientModuleMf />, targetNode);
+};
+const unmount: ModuleUnmountFunction = (targetNode) => {
+    console.log('ClientModuleEmbedded: unmount');
+
+    ReactDOM.unmountComponentAtNode(targetNode);
+};
+
+(window as WindowWithMountableModule).ClientModuleEmbedded = {
+    mount: mountModule,
+    unmount: unmountModule,
+};
+```
+
 
 ### (Опционально) Определить серверный эндпоинт для модуля
 Если вы хотите, чтобы ваш модуль имел серверную часть, которая сможет подготовить данные для модуля, то вам необходимо
@@ -273,11 +320,19 @@ type ModulesMethod = {
 
 Если ваше react-приложение использует порталы, вам так же надо не забыть добавить префикс к элементу-порталу.
 
+**Важно** - изоляция стилей работает только в одном направлении - стили модуля не будут применены к элементам
+хост-приложения. Но стили хост-приложения могут быть применены к элементам модуля.
+
 #### MF модули
 Никакого встроенного механизма изоляции стилей для MF модулей нет. Если хост-приложение и модуль используют css-modules,
 то конфликтов возникнуть не должно. Если же это не так - вы можете попробовать решить эту проблему используя shadow-dom.
 
-### TODO: тестирование модулей
+### Тестирование модулей
+Поскольку в общем случае модули представляют собой простой js код - для тестирования вы можете пользоваться любыми привычными вам инструментами.
+
+Для тестирования модулей в cypress или playwright вы можете создать отдельный эндпоинт в вашем приложении, который будет
+подключать модуль в ваше же приложение.
+
 
 # Подключение модулей
 

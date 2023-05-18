@@ -3,24 +3,6 @@
     "version": "14.4.1",
     "main": "./build/index.js",
     "typings": "./build/index.d.ts",
-    "exports": {
-        ".": {
-            "types": "./build/index.d.ts",
-            "default": "./build/index.js"
-        },
-        "./build/express": {
-            "require": "./build/express.js",
-            "types": "./build/express.d.ts"
-        },
-        "./build/hapi-16": {
-            "require": "./build/hapi-16.js",
-            "types": "./build/hapi-16.d.ts"
-        },
-        "./build/hapi-20": {
-            "require": "./build/hapi-20.js",
-            "types": "./build/hapi-20.d.ts"
-        }
-    },
     "license": "MPL-2.0",
     "repository": {
         "type": "git",

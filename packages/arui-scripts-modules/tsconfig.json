@@ -2,7 +2,7 @@
     "extends": "../arui-scripts/tsconfig.json",
     "compilerOptions": {
         "target": "ES2016",
-        "module": "esnext",
+        "module": "commonjs",
         "skipLibCheck": true,
         "outDir": "./build",
         "declaration": true

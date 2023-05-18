@@ -1,4 +1,4 @@
-import type { ModuleMountFunction, ModuleUnmountFunction } from '@alfalab/scripts-modules';
+import type { ModuleMountFunction, ModuleUnmountFunction, WindowWithMountableModule } from '@alfalab/scripts-modules';
 import './styles.css';
 
 const mountModule: ModuleMountFunction<any, any> = (targetNode, runParams) => {
@@ -10,7 +10,7 @@ const mountModule: ModuleMountFunction<any, any> = (targetNode, runParams) => {
     Это модуль ClientModuleEmbedded, который был загружен в режиме embedded.
 
     Embedded в данном случае не обозначает чего-либо плохого, просто это модуль, который не использует module-federation.
-    <div class="content">
+    <div class="primary">
       У виджета могут быть свои стили, которые автоматически будут изолированы от других стилей на странице.
       Единственное условие - виджет сам должен добавлять class="module-{ID виджета}" к корневому элементу.
     </div>
@@ -26,7 +26,7 @@ const unmountModule: ModuleUnmountFunction = (targetNode) => {
     }
 };
 
-(window as any).ClientModuleEmbedded = {
+(window as WindowWithMountableModule).ClientModuleEmbedded = {
     mount: mountModule,
     unmount: unmountModule,
 };

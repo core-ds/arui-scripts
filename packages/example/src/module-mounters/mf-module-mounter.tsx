@@ -13,7 +13,7 @@ const loader = createModuleLoader<MountableModule<void, BaseModuleState>>({
     hostAppId: 'example',
     moduleId: 'ClientModuleMF',
     getModuleResources: createClientResourcesFetcher({
-        baseUrl: 'http://localhost:8081',
+        baseUrl: 'http://localhost:8082',
         mountMode: 'mf',
     })
 });

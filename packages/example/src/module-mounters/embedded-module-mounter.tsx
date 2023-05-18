@@ -13,7 +13,7 @@ const loader = createModuleLoader<MountableModule<any, BaseModuleState>>({
     hostAppId: 'example',
     moduleId: 'ClientModuleEmbedded',
     getModuleResources: createClientResourcesFetcher({
-        baseUrl: 'http://localhost:8081',
+        baseUrl: 'http://localhost:8082',
         mountMode: 'embedded',
     })
 });

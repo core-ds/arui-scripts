@@ -35,11 +35,11 @@ const moduleRouter = createGetModulesExpress({
         version: '1.0.0',
         getModuleState: async (getResourcesRequest, request) => {
             console.log('We can get some data from resource request here', getResourcesRequest);
-            console.log('Or even from express request', request.path);
+            console.log('Or even from express request', request.url);
             return ({
                 paramFromServer: 'This can be any data from server',
                 asyncData: 'It can be constructed from async data, so you may perform some service calls here',
-                baseUrl: 'http://localhost:8081',
+                baseUrl: 'http://localhost:8082',
                 stuffFromClient: getResourcesRequest.params
             });
         },
@@ -50,7 +50,7 @@ const moduleRouter = createGetModulesExpress({
         getModuleState: async () => ({
             paramFromServer: 'This can be any data from server',
             asyncData: 'It can be constructed from async data, so you may perform some service calls here',
-            baseUrl: 'http://localhost:8081',
+            baseUrl: 'http://localhost:8082',
         }),
     },
 });

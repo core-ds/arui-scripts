@@ -1,19 +1,23 @@
 import { BaseModuleState, Loader, MountableModule } from '../types';
 import { useCallback, useEffect, useState } from 'react';
 import { LoadingState } from './types';
-import { useModuleLoader } from './use-module-loader';
 
-type UseModuleLoaderParams<LoaderParams, RunParams, ServerState extends BaseModuleState> = {
+export type UseModuleLoaderParams<LoaderParams, RunParams, ServerState extends BaseModuleState> = {
     loader: Loader<LoaderParams, MountableModule<RunParams, ServerState>>;
     loaderParams?: LoaderParams;
     runParams?: RunParams;
 }
 
+export type UseModuleLoaderResult = {
+    loadingState: LoadingState;
+    targetElementRef: (node: HTMLDivElement | null) => void;
+};
+
 export function useModuleMounter<LoaderParams, RunParams, ServerState extends BaseModuleState>({
     loader,
     loaderParams,
     runParams,
-}: UseModuleLoaderParams<LoaderParams, RunParams, ServerState>) {
+}: UseModuleLoaderParams<LoaderParams, RunParams, ServerState>): UseModuleLoaderResult {
     const [targetDiv, setTargetDiv] = useState<undefined | HTMLDivElement>();
     const [loadingState, setLoadingState] = useState<LoadingState>('unknown');
     // Мы не можем использовать useRef тут, useRef не будет тригерить ререндер, так как он не меняет ничего

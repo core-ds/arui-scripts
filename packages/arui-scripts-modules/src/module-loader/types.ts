@@ -77,13 +77,13 @@ export type Loader<GetResourcesParams, ModuleExportType = unknown> =
 
 // Описание типов модулей
 
-export type ModuleMountFunction<RunParams, ServerState extends BaseModuleState> =
+export type ModuleMountFunction<RunParams = void, ServerState extends BaseModuleState = BaseModuleState> =
     (targetNode: HTMLElement, runParams: RunParams, serverState: ServerState) => void;
 
 export type ModuleUnmountFunction = (targetNode: HTMLElement) => void;
 
 // Специальный тип модуля, который можно монтировать на страницу
-export type MountableModule<RunParams, ServerState extends BaseModuleState> = {
+export type MountableModule<RunParams = void, ServerState extends BaseModuleState = BaseModuleState> = {
     /**
      * Метод, с помощью которого модуль может прикрепиться к DOM
      * @param targetNode DOM-нода, к которой нужно прикрепить модуль
@@ -98,10 +98,18 @@ export type MountableModule<RunParams, ServerState extends BaseModuleState> = {
     unmount: ModuleUnmountFunction;
 };
 
-// Специальный тип модуля, который экспортирует только одну функцию
-export type FunctionalModule<RunParams, ServerState extends BaseModuleState, Return = void> = {
-    run: (serverState: ServerState, runParams: RunParams) => Return;
-};
+/**
+ * Хелпер для удобного описания типов embeded модулей
+ * @example (window as WindowWithModule).myAwesomeModule = { ... };
+ */
+export type WindowWithModule<ModuleType = unknown> = typeof window & {
+    [key: string]: ModuleType;
+}
+
+/**
+ * Хелпер для удобного описания embeded модулей
+ */
+export type WindowWithMountableModule = WindowWithModule<MountableModule>
 
 export type ModuleFederationContainer = {
     init: (...args: unknown[]) => Promise<void>;
