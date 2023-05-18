@@ -1,3 +1,13 @@
+# [14.5.0-feat-modules.4](https://github.com/core-ds/arui-scripts/compare/v14.5.0-feat-modules.3...v14.5.0-feat-modules.4) (2023-05-18)
+
+
+### Bug Fixes
+
+* **arui-scripts:** remove unused config property ([86ca568](https://github.com/core-ds/arui-scripts/commit/86ca56873fc7e0fa957a30d50bc4ff38c935ba8a))
+* **module-loader:** don't access window on server ([63b8a35](https://github.com/core-ds/arui-scripts/commit/63b8a35a399fe6eb9f6ed33888dc4f19ffb12e7b))
+* **modules:** correctly compile esm version of packages ([69bf5b3](https://github.com/core-ds/arui-scripts/commit/69bf5b31b3a83e184f44cb23312febb18b4d4100))
+* **webpack:** mark all scripts modules as internal ([8ac0c8a](https://github.com/core-ds/arui-scripts/commit/8ac0c8a422a540e481c5ad96b9903538264033a4))
+
 # [14.5.0-feat-modules.3](https://github.com/core-ds/arui-scripts/compare/v14.5.0-feat-modules.2...v14.5.0-feat-modules.3) (2023-05-17)
 
 
