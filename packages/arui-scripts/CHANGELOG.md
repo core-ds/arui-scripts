@@ -1,3 +1,11 @@
+## [14.5.1](https://github.com/core-ds/arui-scripts/compare/v14.5.0...v14.5.1) (2023-05-18)
+
+
+### Bug Fixes
+
+* **docker:** build with older docker version to work correctly with old clients ([b2d4298](https://github.com/core-ds/arui-scripts/commit/b2d429845b1f39ce8495a932e47405d19e820e1b))
+* **docker:** chagne output format for docker build to support older clients ([0055923](https://github.com/core-ds/arui-scripts/commit/0055923428e6cb84096b99b3240678414f382340))
+
 # [14.5.0](https://github.com/core-ds/arui-scripts/compare/v14.4.1...v14.5.0) (2023-05-16)
 
 
