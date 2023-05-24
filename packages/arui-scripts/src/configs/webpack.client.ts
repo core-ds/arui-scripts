@@ -263,10 +263,9 @@ export const createClientWebpackConfig = (mode: 'dev' | 'prod'): Configuration =
                             {
                                 loader: require.resolve('postcss-loader'),
                                 options: {
-                                    // Necessary for external CSS imports to work
-                                    // https://github.com/facebookincubator/create-react-app/issues/2677
-                                    ident: 'postcss',
-                                    plugins: () => postcssConf,
+                                    postcssOptions: {
+                                        plugins: postcssConf,
+                                    }
                                 },
                             },
                         ],
@@ -292,10 +291,9 @@ export const createClientWebpackConfig = (mode: 'dev' | 'prod'): Configuration =
                             {
                                 loader: require.resolve('postcss-loader'),
                                 options: {
-                                    // Necessary for external CSS imports to work
-                                    // https://github.com/facebookincubator/create-react-app/issues/2677
-                                    ident: 'postcss',
-                                    plugins: () => postcssConf,
+                                    postcssOptions: {
+                                        plugins: postcssConf,
+                                    }
                                 },
                             },
                         ],
@@ -339,7 +337,13 @@ export const createClientWebpackConfig = (mode: 'dev' | 'prod'): Configuration =
             chunkFilename: mode === 'dev' ? '[id].css' : '[name].[contenthash:8].chunk.css',
         }),
         configs.tsconfig !== null && new ForkTsCheckerWebpackPlugin(),
-
+        // moment.js очень большая библиотека, которая включает в себя массу локализаций, которые мы не используем.
+        // Поэтому мы их просто игнорируем, чтобы не включать в сборку.
+        // https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
+        new webpack.IgnorePlugin({
+            resourceRegExp: /^\.\/locale$/,
+            contextRegExp: /moment$/,
+        }),
         // dev plugins:
         mode === 'dev' && new ReactRefreshWebpackPlugin({
             overlay: false,

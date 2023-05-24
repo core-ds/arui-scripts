@@ -70,7 +70,7 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
         // we cannot determine node_modules location before arui-scripts installation, so just load
         // dependencies list from package.json
         modulesFromFile: true,
-    })],
+    })] as Configuration['externals'],
     optimization: {
         minimize: false,
         nodeEnv: mode === 'dev' ? false : 'production',
