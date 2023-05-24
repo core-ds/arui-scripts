@@ -1,3 +1,10 @@
+# [14.6.0](https://github.com/core-ds/arui-scripts/compare/v14.5.1...v14.6.0) (2023-05-24)
+
+
+### Features
+
+* **webpack:** ignore momentjs locales ([c585b07](https://github.com/core-ds/arui-scripts/commit/c585b07b8dc646c8d2b63cd1ec153247fd87dc8f))
+
 ## [14.5.1](https://github.com/core-ds/arui-scripts/compare/v14.5.0...v14.5.1) (2023-05-18)
 
 
