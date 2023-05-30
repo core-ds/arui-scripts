@@ -45,7 +45,7 @@ export type AppConfigs = {
 
     removeDevDependenciesDuringDockerBuild: boolean;
 
-    componentsTheme: string | undefined;
+    // componentsTheme: string | undefined;
     keepCssVars: boolean;
 
     publicPath: string;

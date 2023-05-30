@@ -29,7 +29,7 @@ export const availablePackageSettings = [
 
     'debug',
     'statsOutputFilename',
-    'componentsTheme',
+    // 'componentsTheme',
     'keepCssVars',
     'removeDevDependenciesDuringDockerBuild'
 ] as const;

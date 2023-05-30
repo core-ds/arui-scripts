@@ -1,5 +1,8 @@
-.root {
-    padding: 10px;
+/* пример комментария, который удалится */
+:root {
+    .root {
+        padding: 10px;
+    }
 }
 
 :global .btn:hover {

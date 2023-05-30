@@ -10,12 +10,11 @@ import config from './app-configs';
  */
 export function createPostcssConfig(plugins: string[], options: Record<string, unknown>) {
     return plugins.map(pluginName => {
-        const plugin = require(pluginName);
-
-        if (options.hasOwnProperty(pluginName)) {
-            return plugin(options[pluginName]);
+        if (pluginName in options) {
+            return [pluginName, options[pluginName]];
         }
-        return plugin();
+
+        return pluginName
     });
 }
 
@@ -35,26 +34,27 @@ export const postcssPlugins = [
     'postcss-nested',
     'autoprefixer',
     'postcss-inherit',
+    'postcss-discard-comments',
+    // '@csstools/postcss-global-data'
 ].filter(Boolean) as string[];
 
 export const postcssPluginsOptions = {
     'postcss-import': {
         path: ['./src'],
-        plugins: [require('postcss-discard-comments')()],
     },
     'postcss-url': {
         url: 'rebase',
     },
-    'postcss-custom-media': {
-        importFrom: path.resolve(__dirname, 'mq.js')
-    },
     'postcss-color-mod-function': {
         unresolved: 'warn',
     },
+    // '@csstools/postcss-global-data': {
+    //     files: [path.resolve(__dirname, 'mq.js')],
+    // },
     ...(config.keepCssVars === false && {
         'postcss-custom-properties': {
             preserve: false,
-            importFrom: config.componentsTheme,
+            // importFrom: config.componentsTheme,
         }
     }),
 };
