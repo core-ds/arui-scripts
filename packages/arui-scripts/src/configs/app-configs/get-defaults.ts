@@ -71,7 +71,7 @@ export function getDefaults(): AppConfigs {
 
         removeDevDependenciesDuringDockerBuild: true,
 
-        componentsTheme: undefined,
+        // componentsTheme: undefined,
         keepCssVars: false,
 
         // Эти пути зависят от других настроек, которые могут быть переопределены пользователем

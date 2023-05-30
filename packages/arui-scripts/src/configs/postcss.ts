@@ -6,4 +6,6 @@ const postcssConfig = applyOverrides(
   createPostcssConfig(postcssPlugins, postcssPluginsOptions)
 );
 
+console.log(postcssConfig)
+
 export default postcssConfig;
