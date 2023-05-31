@@ -1,3 +1,10 @@
+# [14.7.0](https://github.com/core-ds/arui-scripts/compare/v14.6.0...v14.7.0) (2023-05-31)
+
+
+### Features
+
+* compress wasm with gzip ([92827cc](https://github.com/core-ds/arui-scripts/commit/92827ccdd2f44dc24e65c0188c75f843cb2dbaa6))
+
 # [14.6.0](https://github.com/core-ds/arui-scripts/compare/v14.5.1...v14.6.0) (2023-05-24)
 
 

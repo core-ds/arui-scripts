@@ -1,6 +1,6 @@
 {
     "name": "arui-scripts",
-    "version": "14.6.0",
+    "version": "14.7.0",
     "main": "./build/index.js",
     "typings": "./build/index.d.ts",
     "license": "MPL-2.0",
