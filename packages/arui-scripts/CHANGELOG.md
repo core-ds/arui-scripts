@@ -1,3 +1,10 @@
+# [14.8.0](https://github.com/core-ds/arui-scripts/compare/v14.7.0...v14.8.0) (2023-05-31)
+
+
+### Features
+
+* compress wasm with brotli ([c983c4b](https://github.com/core-ds/arui-scripts/commit/c983c4bfa9fcbb36b3cfc1d2c606fff3180c3126))
+
 # [14.7.0](https://github.com/core-ds/arui-scripts/compare/v14.6.0...v14.7.0) (2023-05-31)
 
 
