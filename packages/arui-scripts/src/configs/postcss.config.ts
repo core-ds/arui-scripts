@@ -1,7 +1,5 @@
-import path from 'path';
-
 import config from './app-configs';
-
+import path from 'path';
 /**
  * Функция для создания конфигурационного файла postcss
  * @param {String[]} plugins список плагинов
@@ -10,12 +8,11 @@ import config from './app-configs';
  */
 export function createPostcssConfig(plugins: string[], options: Record<string, unknown>) {
     return plugins.map(pluginName => {
-        const plugin = require(pluginName);
-
-        if (options.hasOwnProperty(pluginName)) {
-            return plugin(options[pluginName]);
+        if (pluginName in options) {
+            return [pluginName, options[pluginName]];
         }
-        return plugin();
+
+        return pluginName
     });
 }
 
@@ -26,8 +23,9 @@ export const postcssPlugins = [
     'postcss-mixins',
     'postcss-for',
     'postcss-each',
-    'postcss-custom-media',
-    config.keepCssVars === false && 'postcss-custom-properties',
+    ( config.componentsTheme || config.keepCssVars ) && '@csstools/postcss-global-data',
+    config.keepCssVars && 'postcss-custom-media',
+    config.componentsTheme && 'postcss-custom-properties',
     'postcss-strip-units',
     'postcss-calc',
     'postcss-color-function',
@@ -35,26 +33,26 @@ export const postcssPlugins = [
     'postcss-nested',
     'autoprefixer',
     'postcss-inherit',
+    'postcss-discard-comments',
 ].filter(Boolean) as string[];
 
 export const postcssPluginsOptions = {
     'postcss-import': {
         path: ['./src'],
-        plugins: [require('postcss-discard-comments')()],
+    },
+    '@csstools/postcss-global-data': {
+        files: [
+            config.keepCssVars && path.join(__dirname,'mq.css'),
+            config.componentsTheme
+        ].filter(Boolean) as string[],
     },
     'postcss-url': {
         url: 'rebase',
     },
-    'postcss-custom-media': {
-        importFrom: path.resolve(__dirname, 'mq.js')
-    },
     'postcss-color-mod-function': {
         unresolved: 'warn',
     },
-    ...(config.keepCssVars === false && {
-        'postcss-custom-properties': {
-            preserve: false,
-            importFrom: config.componentsTheme,
-        }
-    }),
+    'postcss-custom-properties': {
+        preserve: false,
+    }
 };

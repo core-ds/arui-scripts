@@ -21,7 +21,7 @@ export type AppConfigs = {
     serverOutput: string;
 
     clientPolyfillsEntry: null | string | string[];
-    clientEntry: string;
+    clientEntry: string | string[] | Record<string, string | string[]>;
     keepPropTypes: boolean;
 
     tsconfig: string | null;
