@@ -1,3 +1,10 @@
+# [14.9.0](https://github.com/core-ds/arui-scripts/compare/v14.8.0...v14.9.0) (2023-06-07)
+
+
+### Features
+
+* **webpack:** add svgo-loader ([81917c3](https://github.com/core-ds/arui-scripts/commit/81917c3df63e8bce333ff0a688ba113f01ac6318)), closes [#32](https://github.com/core-ds/arui-scripts/issues/32)
+
 # [14.8.0](https://github.com/core-ds/arui-scripts/compare/v14.7.0...v14.8.0) (2023-05-31)
 
 
