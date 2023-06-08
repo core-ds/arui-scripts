@@ -1,3 +1,82 @@
+# [15.0.0-feat-update-postcss-dependencies.1](https://github.com/core-ds/arui-scripts/compare/v14.8.0...v15.0.0-feat-update-postcss-dependencies.1) (2023-06-14)
+
+
+### Features
+
+* update posts dependencies ([011bd16](https://github.com/core-ds/arui-scripts/commit/011bd16387862d39779dd88a80be099d021ad093))
+* update posts dependencies ([ee0bb2f](https://github.com/core-ds/arui-scripts/commit/ee0bb2f71ac3f2ddc1e22d9933463d5ca7d219db))
+* update posts dependencies ([a51fa0d](https://github.com/core-ds/arui-scripts/commit/a51fa0ddf30e5d51bfcfcdd1d86dcc72185a7476))
+* update posts dependencies ([d741302](https://github.com/core-ds/arui-scripts/commit/d741302843e1e2a5fcb8cd1d2ef347e6b3953253))
+* update posts dependencies ([8e16dda](https://github.com/core-ds/arui-scripts/commit/8e16ddaf7a1e83b7393ad86a38f6f7882726c821))
+* **webpack:** add svgo-loader ([81917c3](https://github.com/core-ds/arui-scripts/commit/81917c3df63e8bce333ff0a688ba113f01ac6318)), closes [#32](https://github.com/core-ds/arui-scripts/issues/32)
+
+
+### BREAKING CHANGES
+
+* The postcss plugins has been updated.
+* The postcss plugins has been updated.
+* The postcss plugins has been updated.
+* The postcss plugins has been updated.
+* The postcss plugins has been updated.
+
+# [15.0.0-feat-update-postcss-dependencies.1](https://github.com/core-ds/arui-scripts/compare/v14.9.0...v15.0.0-feat-update-postcss-dependencies.1) (2023-06-14)
+
+
+### Features
+
+* update posts dependencies ([a731cd8](https://github.com/core-ds/arui-scripts/commit/a731cd8bffd8541faf02a7e954816bca10bb93f1))
+* update posts dependencies ([6022c39](https://github.com/core-ds/arui-scripts/commit/6022c396ad0f3da4fb7e05f82ddf2e4ec81ff6e2))
+* update posts dependencies ([d1eb1b5](https://github.com/core-ds/arui-scripts/commit/d1eb1b56fc34d6d99332ed2e3726121ccdb4b2fa))
+
+
+### BREAKING CHANGES
+
+* The postcss plugins has been updated.
+* The postcss plugins has been updated.
+* The postcss plugins has been updated.
+
+# [15.0.0-feat-update-postcss-dependencies.1](https://github.com/core-ds/arui-scripts/compare/v14.9.0...v15.0.0-feat-update-postcss-dependencies.1) (2023-06-14)
+
+
+### Features
+
+* update posts dependencies ([a731cd8](https://github.com/core-ds/arui-scripts/commit/a731cd8bffd8541faf02a7e954816bca10bb93f1))
+* update posts dependencies ([6022c39](https://github.com/core-ds/arui-scripts/commit/6022c396ad0f3da4fb7e05f82ddf2e4ec81ff6e2))
+* update posts dependencies ([d1eb1b5](https://github.com/core-ds/arui-scripts/commit/d1eb1b56fc34d6d99332ed2e3726121ccdb4b2fa))
+
+
+### BREAKING CHANGES
+
+* The postcss plugins has been updated.
+* The postcss plugins has been updated.
+* The postcss plugins has been updated.
+
+# [15.0.0-feat-update-postcss-dependencies.1](https://github.com/core-ds/arui-scripts/compare/v14.9.0...v15.0.0-feat-update-postcss-dependencies.1) (2023-06-14)
+
+
+### Features
+
+* update posts dependencies ([6022c39](https://github.com/core-ds/arui-scripts/commit/6022c396ad0f3da4fb7e05f82ddf2e4ec81ff6e2))
+* update posts dependencies ([d1eb1b5](https://github.com/core-ds/arui-scripts/commit/d1eb1b56fc34d6d99332ed2e3726121ccdb4b2fa))
+
+
+### BREAKING CHANGES
+
+* The postcss plugins has been updated.
+* The postcss plugins has been updated.
+
+# [15.0.0-feat-update-postcss-dependencies.1](https://github.com/core-ds/arui-scripts/compare/v14.9.0...v15.0.0-feat-update-postcss-dependencies.1) (2023-06-14)
+
+
+### Features
+
+* update posts dependencies ([d1eb1b5](https://github.com/core-ds/arui-scripts/commit/d1eb1b56fc34d6d99332ed2e3726121ccdb4b2fa))
+
+
+### BREAKING CHANGES
+
+* The postcss plugins has been updated.
+
 # [14.9.0](https://github.com/core-ds/arui-scripts/compare/v14.8.0...v14.9.0) (2023-06-07)
 
 

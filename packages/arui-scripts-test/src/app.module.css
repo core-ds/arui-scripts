@@ -1,6 +1,26 @@
-.root {
-    padding: 10px;
+@media (--tablet) {
+    .root {
+        padding: 15px;
+    }
+
 }
+
+@media (--desktop) {
+    .root {
+        padding: 30px;
+    }
+
+}
+
+
+
+@media (--mobile) {
+    .root {
+        padding: 5px;
+    }
+
+}
+
 
 :global .btn:hover {
     animation-duration: .5s;

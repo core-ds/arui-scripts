@@ -70,7 +70,7 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
         // we cannot determine node_modules location before arui-scripts installation, so just load
         // dependencies list from package.json
         modulesFromFile: true,
-    })],
+    })] as Configuration['externals'],
     optimization: {
         minimize: false,
         nodeEnv: mode === 'dev' ? false : 'production',
@@ -174,10 +174,9 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
                             {
                                 loader: require.resolve('postcss-loader'),
                                 options: {
-                                    // Necessary for external CSS imports to work
-                                    // https://github.com/facebookincubator/create-react-app/issues/2677
-                                    ident: 'postcss',
-                                    plugins: () => postcssConf,
+                                    postcssOptions: {
+                                        plugins: postcssConf,
+                                    }
                                 },
                             },
                         ],

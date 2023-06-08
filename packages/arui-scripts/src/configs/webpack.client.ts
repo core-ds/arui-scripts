@@ -34,7 +34,6 @@ function getSingleEntry(entryPoint: string[], mode: 'dev' | 'prod') {
 }
 
 // This is the production configuration.
-
 export const createClientWebpackConfig = (mode: 'dev' | 'prod'): Configuration => ({
     target: 'web',
     mode: mode === 'dev' ? 'development' : 'production',
@@ -270,10 +269,9 @@ export const createClientWebpackConfig = (mode: 'dev' | 'prod'): Configuration =
                             {
                                 loader: require.resolve('postcss-loader'),
                                 options: {
-                                    // Necessary for external CSS imports to work
-                                    // https://github.com/facebookincubator/create-react-app/issues/2677
-                                    ident: 'postcss',
-                                    plugins: () => postcssConf,
+                                    postcssOptions: {
+                                        plugins: postcssConf,
+                                    }
                                 },
                             },
                         ],
@@ -299,10 +297,9 @@ export const createClientWebpackConfig = (mode: 'dev' | 'prod'): Configuration =
                             {
                                 loader: require.resolve('postcss-loader'),
                                 options: {
-                                    // Necessary for external CSS imports to work
-                                    // https://github.com/facebookincubator/create-react-app/issues/2677
-                                    ident: 'postcss',
-                                    plugins: () => postcssConf,
+                                    postcssOptions: {
+                                        plugins: postcssConf,
+                                    }
                                 },
                             },
                         ],
