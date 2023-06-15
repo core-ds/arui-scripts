@@ -1,6 +1,6 @@
 {
     "name": "arui-scripts",
-    "version": "15.0.1",
+    "version": "15.0.0-feat-update-postcss-dependencies-pre-release.1",
     "main": "./build/index.js",
     "typings": "./build/index.d.ts",
     "license": "MPL-2.0",

@@ -1,3 +1,20 @@
+# [15.0.0-feat-update-postcss-dependencies-pre-release.1](https://github.com/core-ds/arui-scripts/compare/v14.8.0...v15.0.0-feat-update-postcss-dependencies-pre-release.1) (2023-06-15)
+
+
+### Features
+
+* update posts dependencies ([cfabfac](https://github.com/core-ds/arui-scripts/commit/cfabfac75ae530c1a2ce0f8a445aaffda04cad8f))
+* update posts dependencies ([f48a1cf](https://github.com/core-ds/arui-scripts/commit/f48a1cfb11089e0c8dfdff8ec3535ade0b3fffee)), closes [#32](https://github.com/core-ds/arui-scripts/issues/32)
+* **webpack:** add svgo-loader ([81917c3](https://github.com/core-ds/arui-scripts/commit/81917c3df63e8bce333ff0a688ba113f01ac6318)), closes [#32](https://github.com/core-ds/arui-scripts/issues/32)
+
+
+### BREAKING CHANGES
+
+* The postcss plugins has been updated.
+* The postcss plugins has been updated.
+
+chore(release): 14.9.0 [skip ci]
+
 # [14.9.0](https://github.com/core-ds/arui-scripts/compare/v14.8.0...v14.9.0) (2023-06-07)
 
 
