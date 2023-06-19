@@ -1,3 +1,30 @@
+# [15.0.0](https://github.com/core-ds/arui-scripts/compare/v14.9.0...v15.0.0) (2023-06-19)
+
+
+* Merge pull request #38 from core-ds/feat/update-postcss-dependencies ([7598853](https://github.com/core-ds/arui-scripts/commit/75988531368ba5e873d44f75212433cfb4881ff7)), closes [#38](https://github.com/core-ds/arui-scripts/issues/38)
+* parent 1196ca942e0121c033a7673e30d40bb4ab5f4cb5 ([e1ee221](https://github.com/core-ds/arui-scripts/commit/e1ee221a5b5fbb94ced9c457031bce1db8e00cb8)), closes [#32](https://github.com/core-ds/arui-scripts/issues/32) [#32](https://github.com/core-ds/arui-scripts/issues/32)
+
+
+### Features
+
+* update posts dependencies ([7e6f548](https://github.com/core-ds/arui-scripts/commit/7e6f548423cd0b52f498d06003052182a3a00899))
+* **webpack:** update posts dependencies ([5dd570c](https://github.com/core-ds/arui-scripts/commit/5dd570cc360a76fc8c4a8822a46a99698fc2e905))
+
+
+### BREAKING CHANGES
+
+* The postcss plugins has been updated.
+* **webpack:** The postcss plugins has been updated.
+* The postcss plugins has been updated.
+* The postcss plugins has been updated.
+
+chore(release): 14.9.0 [skip ci]
+* The postcss plugins has been updated.
+
+Update app.module.css
+
+docs(*): update README.md
+
 # [14.9.0](https://github.com/core-ds/arui-scripts/compare/v14.8.0...v14.9.0) (2023-06-07)
 
 
