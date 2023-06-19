@@ -3,11 +3,10 @@
     "version": "1.0.0",
     "private": true,
     "aruiScripts": {
-        "presets": "./presets",
         "clientPolyfillsEntry": "./src/polyfills.js",
         "serverEntry": "./src/server",
         "clientEntry": "./src/client",
-        "keepCssVars": false,
+        "keepCssVars": true,
         "debug": true
     },
     "scripts": {
@@ -42,6 +41,7 @@
         "@types/webpack-env": "^1.15.2",
         "enzyme": "3.11.0",
         "enzyme-adapter-react-16": "^1.15.4",
+        "postcss-preset-env": "^8.4.1",
         "typescript": "^4.0.2"
     }
 }
