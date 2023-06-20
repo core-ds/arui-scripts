@@ -5623,6 +5623,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"app-root-path@npm:^3.0.0":
+  version: 3.1.0
+  resolution: "app-root-path@npm:3.1.0"
+  checksum: e3db3957aee197143a0f6c75e39fe89b19e7244f28b4f2944f7276a9c526d2a7ab2d115b4b2d70a51a65a9a3ca17506690e5b36f75a068a7e5a13f8c092389ba
+  languageName: node
+  linkType: hard
+
 "aproba@npm:^1.0.3 || ^2.0.0, aproba@npm:^1.1.2 || 2, aproba@npm:^2.0.0":
   version: 2.0.0
   resolution: "aproba@npm:2.0.0"
@@ -5999,6 +6006,7 @@ __metadata:
     url-loader: 4.1.1
     webpack: ^5.0.0
     webpack-bundle-analyzer: 4.5.0
+    webpack-deduplication-plugin: ^0.0.8
     webpack-dev-server: ^4.0.0
     webpack-manifest-plugin: 3.2.0
     webpack-node-externals: 3.0.0
@@ -10031,7 +10039,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-glob@npm:^3.2.11":
+"fast-glob@npm:^3.2.11, fast-glob@npm:^3.2.2":
   version: 3.2.12
   resolution: "fast-glob@npm:3.2.12"
   dependencies:
@@ -10207,6 +10215,13 @@ __metadata:
   version: 1.0.2
   resolution: "find-npm-prefix@npm:1.0.2"
   checksum: e9cb72e808ed203f027b8fc0f51a48513c33fd772c1edaa2eae6c4702541bf3aee50dbb17e7863804899a60d289c93265c6bbd7a571d242c2aec87bac7c8d0db
+  languageName: node
+  linkType: hard
+
+"find-package-json@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "find-package-json@npm:1.2.0"
+  checksum: ea3fc597c3b3bbdb93f91d62debe7b58f388d55e71c2879e3bd77472c78ce8f7ac2c38f5a2d314176f05cb54808554203c72518b27689efa76e46284094a4370
   languageName: node
   linkType: hard
 
@@ -21757,6 +21772,20 @@ typescript@^4.0.2:
   bin:
     webpack-bundle-analyzer: lib/bin/analyzer.js
   checksum: 158e96810ec213d5665ca1c0b257097db44e1f11c4befefab8352b9e5b10890fcb3e3fc1f7bb400dd58762a8edce5621c92afeca86eb4687d2eb64e93186bfcb
+  languageName: node
+  linkType: hard
+
+"webpack-deduplication-plugin@npm:^0.0.8":
+  version: 0.0.8
+  resolution: "webpack-deduplication-plugin@npm:0.0.8"
+  dependencies:
+    app-root-path: ^3.0.0
+    enhanced-resolve: ^5.7.0
+    fast-glob: ^3.2.2
+    find-package-json: ^1.2.0
+    lodash: ^4.17.15
+    mkdirp: ^1.0.3
+  checksum: 82b2736d304868e76996c8b4238c8f05b9fb588d3f122785624d4f068005d93cdc30380fcdf55112095c53033b802f146a16a1301dccc8a2d6acf11b1e7109e1
   languageName: node
   linkType: hard
 
