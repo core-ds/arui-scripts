@@ -568,20 +568,20 @@ export default overrides;
 - `postcss` - конфигурация для `postcss`. Ключи: `postcss`.
   > `config` postcss содержит массив с уже инициализированными плагинами, параметры которых уже зафиксированны. Если необходимо изменить параметры плагинов можно пересоздать конфиг, таким образом:
     ```javascript
-    const {
+    import {
         createPostcssConfig, // функция для создания конфигурационного файла postcss
         postcssPlugins, // список плагинов
         postcssPluginsOptions, // коллекция конфигураций плагинов
-    } = require('arui-scripts/build/configs/postcss.config');
+    } from 'arui-scripts/build/configs/postcss.config';
 
     module.exports = {
-        postcss: () => {
+        postcss: (config) => {
+            const { files } = postcssPluginsOptions['@csstools/postcss-global-data'];
             const newOption = {
                 ...postcssPluginsOptions,
-                'postcss-import': {
-                    ...postcssPluginsOptions['postcss-import'],
-                    path: [...postcssPluginsOptions['postcss-import'].path, './src'],
-                },
+                '@csstools/postcss-global-data': { 
+                    files:files.concat(['./vars.css'])
+                }
             };
             return createPostcssConfig(postcssPlugins, newOption);
         },

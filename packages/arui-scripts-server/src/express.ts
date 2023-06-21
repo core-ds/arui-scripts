@@ -1,7 +1,7 @@
 import { Router, Request } from 'express';
 import { createGetModulesMethod, ModulesConfig } from './modules';
 
-export function createGetModulesExpress(modules: ModulesConfig<[Request]>) {
+export function createGetModulesExpress(modules: ModulesConfig<[Request]>): Router {
     const router = Router();
 
     const modulesMethodSettings = createGetModulesMethod(modules);

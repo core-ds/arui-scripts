@@ -19,7 +19,7 @@ export type AppConfigs = {
     serverEntry: string | string[] | Record<string, string | string[]>;
     serverOutput: string;
     clientPolyfillsEntry: null | string | string[];
-    clientEntry: string;
+    clientEntry: string | string[] | Record<string, string | string[]>;
 
     // docker compilation configs
     dockerRegistry: string;

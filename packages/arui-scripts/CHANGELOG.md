@@ -1,44 +1,72 @@
-# [14.5.0-feat-modules.4](https://github.com/core-ds/arui-scripts/compare/v14.5.0-feat-modules.3...v14.5.0-feat-modules.4) (2023-05-18)
+# [15.0.0](https://github.com/core-ds/arui-scripts/compare/v14.9.0...v15.0.0) (2023-06-19)
 
 
-### Bug Fixes
-
-* **arui-scripts:** remove unused config property ([86ca568](https://github.com/core-ds/arui-scripts/commit/86ca56873fc7e0fa957a30d50bc4ff38c935ba8a))
-* **module-loader:** don't access window on server ([63b8a35](https://github.com/core-ds/arui-scripts/commit/63b8a35a399fe6eb9f6ed33888dc4f19ffb12e7b))
-* **modules:** correctly compile esm version of packages ([69bf5b3](https://github.com/core-ds/arui-scripts/commit/69bf5b31b3a83e184f44cb23312febb18b4d4100))
-* **webpack:** mark all scripts modules as internal ([8ac0c8a](https://github.com/core-ds/arui-scripts/commit/8ac0c8a422a540e481c5ad96b9903538264033a4))
-
-# [14.5.0-feat-modules.3](https://github.com/core-ds/arui-scripts/compare/v14.5.0-feat-modules.2...v14.5.0-feat-modules.3) (2023-05-17)
+* Merge pull request #38 from core-ds/feat/update-postcss-dependencies ([7598853](https://github.com/core-ds/arui-scripts/commit/75988531368ba5e873d44f75212433cfb4881ff7)), closes [#38](https://github.com/core-ds/arui-scripts/issues/38)
+* parent 1196ca942e0121c033a7673e30d40bb4ab5f4cb5 ([e1ee221](https://github.com/core-ds/arui-scripts/commit/e1ee221a5b5fbb94ced9c457031bce1db8e00cb8)), closes [#32](https://github.com/core-ds/arui-scripts/issues/32) [#32](https://github.com/core-ds/arui-scripts/issues/32)
 
 
 ### Features
 
-* **dev-server:** add configuration to set CORS headers ([db54131](https://github.com/core-ds/arui-scripts/commit/db54131481e40434e8e9a695629fab4965578fb0))
-* **widgets:** add server resources fetcher ([5faccc5](https://github.com/core-ds/arui-scripts/commit/5faccc56f0f4d58323df7d320da5345fbd136ff4))
-* **widgets:** massive api changes ([6b8366d](https://github.com/core-ds/arui-scripts/commit/6b8366d5261a9f8f56dd93f1c7834cb41f4afa20))
-
-# [14.5.0-feat-modules.2](https://github.com/core-ds/arui-scripts/compare/v14.5.0-feat-modules.1...v14.5.0-feat-modules.2) (2023-05-15)
+* update posts dependencies ([7e6f548](https://github.com/core-ds/arui-scripts/commit/7e6f548423cd0b52f498d06003052182a3a00899))
+* **webpack:** update posts dependencies ([5dd570c](https://github.com/core-ds/arui-scripts/commit/5dd570cc360a76fc8c4a8822a46a99698fc2e905))
 
 
-### Bug Fixes
+### BREAKING CHANGES
 
-* correctly pass auth token to publish jobs ([da5a0fd](https://github.com/core-ds/arui-scripts/commit/da5a0fd03f6945fb2ca1b0a1dad2b2d725373a11))
+* The postcss plugins has been updated.
+* **webpack:** The postcss plugins has been updated.
+* The postcss plugins has been updated.
+* The postcss plugins has been updated.
 
-# [14.5.0-feat-modules.1](https://github.com/core-ds/arui-scripts/compare/v14.4.1...v14.5.0-feat-modules.1) (2023-05-15)
+chore(release): 14.9.0 [skip ci]
+* The postcss plugins has been updated.
 
+Update app.module.css
 
-### Bug Fixes
+docs(*): update README.md
 
-* **build:** correctly report build sized for multiple entrypoints ([cc41419](https://github.com/core-ds/arui-scripts/commit/cc414195915bdbd24867c45e291991568ac6e741))
-* **webpack:** turn off performance hints from webpack ([d43f2c8](https://github.com/core-ds/arui-scripts/commit/d43f2c88b73176a173de570da8321b1f8cccc611))
+# [14.9.0](https://github.com/core-ds/arui-scripts/compare/v14.8.0...v14.9.0) (2023-06-07)
 
 
 ### Features
 
-* add initial modules implementation ([0e2093e](https://github.com/core-ds/arui-scripts/commit/0e2093e350af3a3abb557d15b075b43ce96efe67))
-* add modules build support ([2a0f5c1](https://github.com/core-ds/arui-scripts/commit/2a0f5c10ee8fb496228e7b2e42d1a94727c895e5))
+* **webpack:** add svgo-loader ([81917c3](https://github.com/core-ds/arui-scripts/commit/81917c3df63e8bce333ff0a688ba113f01ac6318)), closes [#32](https://github.com/core-ds/arui-scripts/issues/32)
+
+# [14.8.0](https://github.com/core-ds/arui-scripts/compare/v14.7.0...v14.8.0) (2023-05-31)
+
+
+### Features
+
+* compress wasm with brotli ([c983c4b](https://github.com/core-ds/arui-scripts/commit/c983c4bfa9fcbb36b3cfc1d2c606fff3180c3126))
+
+# [14.7.0](https://github.com/core-ds/arui-scripts/compare/v14.6.0...v14.7.0) (2023-05-31)
+
+
+### Features
+
+* compress wasm with gzip ([92827cc](https://github.com/core-ds/arui-scripts/commit/92827ccdd2f44dc24e65c0188c75f843cb2dbaa6))
+
+# [14.6.0](https://github.com/core-ds/arui-scripts/compare/v14.5.1...v14.6.0) (2023-05-24)
+
+
+### Features
+
+* **webpack:** ignore momentjs locales ([c585b07](https://github.com/core-ds/arui-scripts/commit/c585b07b8dc646c8d2b63cd1ec153247fd87dc8f))
+
+## [14.5.1](https://github.com/core-ds/arui-scripts/compare/v14.5.0...v14.5.1) (2023-05-18)
+
+
+### Bug Fixes
+
+* **docker:** build with older docker version to work correctly with old clients ([b2d4298](https://github.com/core-ds/arui-scripts/commit/b2d429845b1f39ce8495a932e47405d19e820e1b))
+* **docker:** chagne output format for docker build to support older clients ([0055923](https://github.com/core-ds/arui-scripts/commit/0055923428e6cb84096b99b3240678414f382340))
+
+# [14.5.0](https://github.com/core-ds/arui-scripts/compare/v14.4.1...v14.5.0) (2023-05-16)
+
+
+### Features
+
 * add new `start:prod` command ([2944887](https://github.com/core-ds/arui-scripts/commit/2944887758527e65fdd0e11ea5bb7e59afa213c1))
-* **modules:** automaticaly generate expose for embedded modules ([5ecadfc](https://github.com/core-ds/arui-scripts/commit/5ecadfca7ebfbb15a0b65331c1db27f091f4173c))
 
 ## [14.4.1](https://github.com/core-ds/arui-scripts/compare/v14.4.0...v14.4.1) (2023-05-07)
 

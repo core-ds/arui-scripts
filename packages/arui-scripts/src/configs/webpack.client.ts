@@ -28,6 +28,7 @@ import {
     haveExposedMfModules, MF_ENTRY_NAME,
     processAssetsPluginOutput,
 } from './modules';
+import {log} from "util";
 
 const PnpWebpackPlugin = require('pnp-webpack-plugin');
 
@@ -211,12 +212,19 @@ export const createSingleClientWebpackConfig = (mode: 'dev' | 'prod', entry: Ent
                 oneOf: ([
                     {
                         test: [/\.svg$/],
-                        loader: require.resolve('svg-url-loader'),
-                        options: {
-                            limit: 10000,
-                            iesafe: true,
-                            name: '[name].[hash:8].[ext]',
-                        },
+                        use: [
+                            {
+                                loader: require.resolve('svg-url-loader'),
+                                options: {
+                                    limit: 10000,
+                                    iesafe: true,
+                                    name: '[name].[hash:8].[ext]',
+                                },
+                            },
+                            {
+                                loader: require.resolve('svgo-loader')
+                            }
+                        ]
                     },
                     // "url" loader works like "file" loader except that it embeds assets
                     // smaller than specified limit in bytes as data URLs to avoid requests.
@@ -303,13 +311,12 @@ export const createSingleClientWebpackConfig = (mode: 'dev' | 'prod', entry: Ent
                             {
                                 loader: require.resolve('postcss-loader'),
                                 options: {
-                                    // Necessary for external CSS imports to work
-                                    // https://github.com/facebookincubator/create-react-app/issues/2677
-                                    ident: 'postcss',
-                                    plugins: () => {
+                                    postcssOptions: () => {
                                         const prefix = module ? getCssPrefixForModule(module) : undefined;
-                                        return [...postcssConf]
-                                            .concat(prefix ? cssPrefix({ prefix }) : []);
+                                        return {
+                                            plugins: [...postcssConf]
+                                                .concat(prefix ? cssPrefix({ prefix }) : []),
+                                        };
                                     },
                                 },
                             },
@@ -336,14 +343,13 @@ export const createSingleClientWebpackConfig = (mode: 'dev' | 'prod', entry: Ent
                             {
                                 loader: require.resolve('postcss-loader'),
                                 options: {
-                                    // Necessary for external CSS imports to work
-                                    // https://github.com/facebookincubator/create-react-app/issues/2677
-                                    ident: 'postcss',
-                                    plugins: () => {
+                                    postcssOptions: () => {
                                         const prefix = module ? getCssPrefixForModule(module) : undefined;
-                                        return [...postcssConf]
-                                            .concat(prefix ? cssPrefix({ prefix: `:global(${prefix})` }) : []);
-                                    },
+                                        return {
+                                            plugins: [...postcssConf]
+                                                .concat(prefix ? cssPrefix({prefix}) : []),
+                                        };
+                                    }
                                 },
                             },
                         ],
@@ -388,7 +394,13 @@ export const createSingleClientWebpackConfig = (mode: 'dev' | 'prod', entry: Ent
             chunkFilename: mode === 'dev' ? '[id].css' : '[name].[contenthash:8].chunk.css',
         }),
         configs.tsconfig !== null && new ForkTsCheckerWebpackPlugin(),
-
+        // moment.js очень большая библиотека, которая включает в себя массу локализаций, которые мы не используем.
+        // Поэтому мы их просто игнорируем, чтобы не включать в сборку.
+        // https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
+        new webpack.IgnorePlugin({
+            resourceRegExp: /^\.\/locale$/,
+            contextRegExp: /moment$/,
+        }),
         // dev plugins:
         mode === 'dev' && new ReactRefreshWebpackPlugin({
             overlay: false,
