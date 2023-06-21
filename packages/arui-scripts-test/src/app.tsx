@@ -1,4 +1,5 @@
 import React from 'react';
+import { Button } from '@alfalab/core-components/button';
 import image from './clock.svg';
 import { isSmaller } from './utils';
 
@@ -21,6 +22,8 @@ export class App extends React.Component {
                 Button is clicked { this.state.clickCount } times
                 Clicked more than 10 times? <br />
                 { isSmaller(this.state.clickCount, 10) }
+
+                <Button>Button</Button>
 
                 <button
                     className='btn'

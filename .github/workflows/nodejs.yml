@@ -20,8 +20,6 @@ jobs:
     - name: yarn install and test
       run: |
         yarn install --immutable
-        yarn workspace arui-scripts run build
-        yarn workspace arui-scripts run test
-        yarn workspace arui-scripts-test run ci
+        yarn run turbo test build lint
       env:
         CI: true
