@@ -1,5 +1,6 @@
+import path from "path";
+import { Assets } from 'assets-webpack-plugin';
 import configs from './app-configs';
-import AssetsPlugin, { Assets } from 'assets-webpack-plugin';
 import { EmbeddedModuleConfig } from './app-configs/types';
 
 export function processAssetsPluginOutput(assets: Assets) {
@@ -9,6 +10,17 @@ export function processAssetsPluginOutput(assets: Assets) {
             adjustedAssets[key] = {
                 css: replaceAutoPath(adjustedAssets[key].css) as any,
                 js: replaceAutoPath(adjustedAssets[key].js) as any,
+            };
+        });
+
+        // добавляем в манифест js-файлы для mf модулей
+        Object.keys(configs.mfModules?.exposes || {}).forEach((moduleName) => {
+            if (configs.embeddedModules?.exposes?.[moduleName]) {
+                throw new Error(`Модуль ${moduleName} определен как mf и как embedded. Поменяйте название одного из модулей или удалите его`);
+            }
+            adjustedAssets[moduleName] = {
+                mode: 'mf',
+                js: path.join(configs.publicPath, MF_ENTRY_NAME),
             };
         });
     }
@@ -76,3 +88,5 @@ export function getExposeLoadersFormEmbeddedModules(module?: EmbeddedModuleConfi
         };
     });
 }
+
+export const MF_ENTRY_NAME = 'remoteEntry.js';

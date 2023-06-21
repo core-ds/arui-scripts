@@ -1,10 +1,9 @@
-import { urlSegmentWithoutEndSlash } from './normalize-url-segment';
 import { AruiAppManifest } from '../types';
 
-export function fetchAppManifest(baseUrl: string) {
+export function fetchAppManifest(url: string) {
     return new Promise<AruiAppManifest>((resolve, reject) => {
         const xhr = new XMLHttpRequest();
-        xhr.open('GET', `${urlSegmentWithoutEndSlash(baseUrl)}/assets/webpack-assets.json`, true);
+        xhr.open('GET', url, true);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.setRequestHeader('Cache-Control', 'no-cache');
         xhr.onload = () => {

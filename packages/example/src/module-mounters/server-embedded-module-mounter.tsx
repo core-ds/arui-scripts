@@ -18,7 +18,11 @@ const loader = createModuleLoader<MountableModule<any, BaseModuleState>, { somet
 });
 
 export const ServerEmbeddedModuleMounter = () => {
-    const { loadingState, targetElementRef } = useModuleMounter({ loader: loader, runParams: { test: 'test' }, loaderParams: { something: 'foo'} });
+    const { loadingState, targetElementRef } = useModuleMounter({
+        loader,
+        runParams: { test: 'test' },
+        loaderParams: { something: 'foo'}
+    });
 
     return (
         <Underlay padding='m' backgroundColor='info' shadow='shadow-s' borderSize={1} borderRadius='m'>

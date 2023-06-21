@@ -2,15 +2,30 @@ import { useEffect, useState } from 'react';
 import { Loader, ModuleResources } from '../types';
 import { LoadingState } from './types';
 
+export type UseModuleLoaderParams<ModuleExportType, GetResourcesParams> = {
+    loader: Loader<GetResourcesParams, ModuleExportType>;
+    loaderParams?: GetResourcesParams;
+};
+
 export type UseModuleLoaderResult<ModuleExportType> = {
+    /**
+     * Состояние загрузки модуля
+     */
     loadingState: LoadingState;
+    /**
+     * Экспорт модуля
+     */
     module: ModuleExportType | undefined;
+    /**
+     * Полный ответ от модуляб вклю
+     */
     resources: ModuleResources | undefined;
 }
 
-export function useModuleLoader<ModuleExportType, GetResourcesParams>(
-    loader: Loader<GetResourcesParams, ModuleExportType>, loaderParams?: GetResourcesParams
-): UseModuleLoaderResult<ModuleExportType> {
+export function useModuleLoader<ModuleExportType, GetResourcesParams>({
+    loader,
+    loaderParams,
+}: UseModuleLoaderParams<ModuleExportType, GetResourcesParams>): UseModuleLoaderResult<ModuleExportType> {
     const [loadingState, setLoadingState] = useState<LoadingState>('unknown');
 
     const [moduleAndResources, setModuleAndResources] = useState<{ module: ModuleExportType, resources: ModuleResources } | undefined>();
@@ -24,7 +39,6 @@ export function useModuleLoader<ModuleExportType, GetResourcesParams>(
                     getResourcesParams: loaderParams as GetResourcesParams,
                 });
 
-                result.moduleResources
                 setModuleAndResources({
                     module: result.module,
                     resources: result.moduleResources,

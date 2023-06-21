@@ -14,12 +14,13 @@ const loader = createModuleLoader<MountableModule<any, BaseModuleState>>({
     moduleId: 'ClientModuleEmbedded',
     getModuleResources: createClientResourcesFetcher({
         baseUrl: 'http://localhost:8082',
-        mountMode: 'embedded',
     })
 });
 
 export const EmbeddedModuleMounter = () => {
-    const { loadingState, targetElementRef } = useModuleMounter({ loader: loader });
+    const { loadingState, targetElementRef } = useModuleMounter({
+        loader
+    });
 
     return (
         <Underlay padding='m' backgroundColor='info' shadow='shadow-s' borderSize={1} borderRadius='m'>

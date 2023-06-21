@@ -24,6 +24,7 @@ export type AruiAppManifest = {
     [moduleId: string]: {
         js?: string;
         css?: string;
+        mode?: MountMode;
     }
 } & { // мы делаем так, поскольку typescript не позволяет определить доп поля другого типа
     __metadata__: {

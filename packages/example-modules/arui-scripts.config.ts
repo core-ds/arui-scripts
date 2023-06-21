@@ -25,6 +25,9 @@ const aruiScriptsConfig: PackageSettings = {
                     react: 'react',
                     'react-dom': 'reactDOM',
                 }
+            },
+            'ClientModuleAbstract': {
+                entry: './src/modules/client-module-abstract/index',
             }
         }
     },
@@ -36,6 +39,7 @@ const aruiScriptsConfig: PackageSettings = {
         exposes: {
             'ClientModuleMF': './src/modules/client-module-mf/index',
             'ServerModuleMF': './src/modules/server-module-mf/index',
+            'ClientModuleAbstractMF': './src/modules/client-module-abstract/index',
         }
     }
 }

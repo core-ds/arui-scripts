@@ -25,7 +25,7 @@ import {
     getChunkNamePrefix,
     getCssPrefixForModule,
     getExposeLoadersFormEmbeddedModules,
-    haveExposedMfModules,
+    haveExposedMfModules, MF_ENTRY_NAME,
     processAssetsPluginOutput,
 } from './modules';
 
@@ -429,7 +429,7 @@ export const createSingleClientWebpackConfig = (mode: 'dev' | 'prod', entry: Ent
         ),
         configs.mfModules && !module && new webpack.container.ModuleFederationPlugin({
             name: configs.mfModules.name || configs.normalizedName,
-            filename: configs.mfModules.exposes ? 'remoteEntry.js' : undefined,
+            filename: configs.mfModules.exposes ? MF_ENTRY_NAME : undefined,
             shared: configs.mfModules.shared,
             exposes: configs.mfModules.exposes,
         }),

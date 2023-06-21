@@ -45,6 +45,11 @@
 - **+++** Встроенная изоляция стилей. Стили модуля не будут применены к хост-приложению, если только вы не захотите этого.
 - **---** Нет возможности использовать разные версии общих библиотек в разных модулях/хостах, если вы хотите их шарить.
 
+*Как понять какой режим использовать?*
+В целом, если ваше приложение и модули используют только css-modules, то можно использовать `mf` режим. Конфликты в стилях
+вам в таком случае не грозят. Если же вы используете обычный css, или ваши библиотеки используют обычный css, то лучше
+использовать `embedded` режим.
+
 ## Возможность управления модулями с сервера
 Сами модули используются только на клиентской части приложения. Но, в некоторых случаях, может быть полезно иметь возможность
 управлять тем, какой модуль должен быть подключен на странице с сервера, или же иметь модуль, который будет при загрузке
@@ -93,8 +98,8 @@ import { PackageSettings } from 'arui-scripts';
 const aruiScriptsConfig: PackageSettings = {
     embeddedModules: {
         exposes: {
-            'ClientModuleEmbedded': {
-                entry: './src/modules/client-module-embedded/index',
+            'ClientModuleEmbedded': { // имя модуля, будет использоваться приложениями-потребителями
+                entry: './src/modules/client-module-embedded/index', // точка входа модуля
             },
             'ServerModuleEmbedded': {
                 entry: './src/modules/server-module-embedded/index',
@@ -111,7 +116,7 @@ const aruiScriptsConfig: PackageSettings = {
         // MF модули тут смогут переиспользовать react и react-dom из хост-приложения,
         // если хост приложение шарит эти библиотеки, и они совпадают по версии
         shared: {
-            'react': '^17.0.0',
+            'react': '^17.0.0', // так же поддерживаются более сложные версии например { requiredVersion: '^17.0.0', singleton: true }
             'react-dom': '^17.0.0',
         },
         exposes: {
@@ -344,6 +349,7 @@ type ModulesMethod = {
 import { createModuleLoader } from '@alfalab/scripts-modules';
 
 const loader = createModuleLoader({
+    hostAppId: 'my-app', // id вашего приложения, оно будет передаваться в серверную ручку модуля
     moduleId: 'test', // id модуля, который вы хотите подключить
     // функция, которая должна вернуть описание модуля.
     getModuleResources: async ({ moduleId, hostAppId, params }) => ({
@@ -367,10 +373,10 @@ const loader = createModuleLoader({
 import { createModuleLoader, createClientResourcesFetcher } from '@alfalab/scripts-modules';
 
 const loader = createModuleLoader({
+    hostAppId: 'my-app',
     moduleId: 'test',
     getModuleResources: createClientResourcesFetcher({
         baseUrl: 'http://localhost:8081',
-        mountMode: 'mf',
     }),
 });
 ```
@@ -382,6 +388,7 @@ const loader = createModuleLoader({
 import { createModuleLoader, createServerResourcesFetcher } from '@alfalab/scripts-modules';
 
 const loader = createModuleLoader({
+    hostAppId: 'my-app',
     moduleId: 'test',
     getModuleResources: createServerResourcesFetcher({
         baseUrl: 'http://localhost:8081',
@@ -399,7 +406,7 @@ const loader = createModuleLoader({
 
 ```ts
 const { module, unmount, moduleResources } = await loader({
-    getResourcesParams: {}, // параметры, которые будут переданы в getModuleResources
+    getResourcesParams: { foo: 'bar' }, // параметры, которые будут переданы в getModuleResources
 });
 
 console.log(module); // модуль, который вы загрузили. Тут будут доступны всё, что было экспортировано из модуля
@@ -417,14 +424,14 @@ unmount();
 ```ts
 const getModuleResourcesParams = {
     moduleId: 'test', // id модуля, который вы хотите подключить
-    hostAppId: 'hostAppId', // id вашего приложения
-    params: {}, // параметры, которые вы передали в loader как `getResourcesParams`
+    hostAppId: 'my-app', // id вашего приложения
+    params: { foo: 'bar' }, // параметры, которые вы передали в loader как `getResourcesParams`
 }
 ```
 
-На сервер будут отправлены именно эти параметры, они будут доступны как параметр в `getRunParams` в описании вашего модуля.
+При использовании `createServerResourcesFetcher` именно эти данные будут отправлены на сервер и будут доступны в функции `getRunParams` модуля.
 
-При использовании клиентских модулей, вам не нужно беспокоиться о том, какие параметры вы передаете в `getModuleResources` - они
+При использовании `createClientResourcesFetcher` вам не нужно беспокоиться о том, какие параметры вы передаете в `getModuleResources` - они
 никак не используются в клиентских модулях.
 
 ## Использования загрузчика в реакт-приложении
@@ -438,7 +445,6 @@ const loader = createModuleLoader({
     moduleId: 'test',
     getModuleResources: createClientResourcesFetcher({
         baseUrl: 'http://localhost:8081',
-        mountMode: 'mf',
     }),
 });
 
@@ -472,7 +478,6 @@ const loader = createModuleLoader({
     moduleId: 'test',
     getModuleResources: createClientResourcesFetcher({
         baseUrl: 'http://localhost:8081',
-        mountMode: 'embedded',
     }),
 });
 
@@ -490,5 +495,78 @@ const MyComponent = () => {
             <div ref={targetElementRef} /> {/* сюда будет монтироваться модуль */}
         </div>
     );
+};
+```
+
+# Документация API
+
+## Конфигурация модулей
+Типы, которые используются для конфигурирования модулей в `arui-scripts.config.ts`:
+
+### EmbeddedModules
+```ts
+type EmbeddedModules = {
+    shared?: { // библиотеки, которые будут доступны embedded модулям при подключении в этом приложении
+        [libraryName: string]: string; // libraryName - имя библиотеки, которое вы указали в package.json, value - название глобальной переменной, в которой будет доступна библиотека
+    };
+    exposes?: { // модули, которые приложение будет предоставлять
+        [moduleId: string]: EmbeddedModuleConfig;
+    };
+};
+
+type EmbeddedModuleConfig = {
+    entry: string; // путь до точки входа модуля
+    embeddedConfig?: Record<string, string>; // список библиотек, которые модуль будет пытаться получить из приложения, в которое он будет встроен. Аналогично EmbeddedModules.shared
+    cssPrefix?: false | string; // опционально, префикс для css-классов модуля. По-умолчанию будет использовано имя модуля
+};
+```
+
+### MF modules
+```ts
+type MfModules = {
+    name?: string; // имя приложения, которое будет исползоваться как имя MF контейнера. По-умолчанию будет использовано имя из package.json (оно будет преобразовано в snake-case)
+    exposes?: { // модули, которые приложение будет предоставлять
+        [moduleId: string]: string; // moduleId - id модуля, value - путь до точки входа модуля
+    };
+    shared?: (string | SharedObject)[] | SharedObject; // конфигурация shared параметра для ModuleFederationPlugin
+};
+
+type SharedObject = {
+    [index: string]: string | SharedConfig;
+};
+
+type SharedConfig = {
+    eager?: boolean; // включить модуль в сборку приложения
+    import?: string | false; // путь до модуля, который будет предоставлен в share scope
+    packageName?: string; // имя пакета, из которого будет взята версия модуля
+    requiredVersion?: string | false; // версия модуля, которая будет использована для проверки версии модуля в share scope
+    shareKey?: string; // ключ, по которому будет искаться модуль в share scope
+    shareScope?: string; // имя share scope
+    singleton?: boolean; // использовать только одну версию модуля в share scope
+    strictVersion?: boolean; // использовать только версию модуля, которая указана в requiredVersion
+    version?: string | false; // версия модуля, которая будет использована для проверки версии модуля в share scope
+}
+```
+
+## Конфигурация серверной части
+
+### createGetModulesMethod
+```ts
+type ModulesConfig = {
+    [moduleId: string]: {
+        mountMode: 'embedded' | 'mf'; // режим монтирования модуля
+        version?: string; // версия модуля, по умолчанию 'unknown'
+        getModuleState: GetModuleStateMethod; // метод, который будет вызван для получения состояния модуля
+    };
+};
+
+type GetModuleStateMethod = (
+    getResourcesRequest: GetResourcesRequest,
+) => Promise<any>;
+
+type GetResourcesRequest<GetResourcesParams = void> = {
+    moduleId: string; // id загружаемого модуля
+    hostAppId: string; // id приложения-хоста
+    params: GetResourcesParams; // параметры, которые передаются в функцию получения ресурсов модуля
 };
 ```

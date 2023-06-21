@@ -5,6 +5,7 @@ import { Typography } from '@alfalab/core-components/typography';
 import { MfModuleMounter } from '#/module-mounters/mf-module-mounter';
 import { ServerEmbeddedModuleMounter } from '#/module-mounters/server-embedded-module-mounter';
 import { ServerMfModuleMounter } from '#/module-mounters/server-mf-module-mounter';
+import {AbstractModule} from "#/module-mounters/abstract-module";
 
 const tabs = {
     '1': {
@@ -26,6 +27,11 @@ const tabs = {
         title: 'Server MF module',
         description: 'Модуль, подключенный через module-federation режим. У него так же есть серверная часть, которая может отдавать предподготовленные данные на клиент при загрузке',
         component: ServerMfModuleMounter,
+    },
+    '5': {
+        title: 'Abstract module',
+        description: 'НЕ монтируемый модуль, который просто предоставляет какие то функции',
+        component: AbstractModule,
     }
 } as const;
 

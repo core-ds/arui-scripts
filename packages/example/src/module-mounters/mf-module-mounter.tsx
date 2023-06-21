@@ -14,12 +14,13 @@ const loader = createModuleLoader<MountableModule<void, BaseModuleState>>({
     moduleId: 'ClientModuleMF',
     getModuleResources: createClientResourcesFetcher({
         baseUrl: 'http://localhost:8082',
-        mountMode: 'mf',
     })
 });
 
 export const MfModuleMounter = () => {
-    const { loadingState, targetElementRef } = useModuleMounter({ loader: loader });
+    const { loadingState, targetElementRef } = useModuleMounter({
+        loader,
+    });
 
     return (
         <Underlay padding='m' backgroundColor='info' shadow='shadow-s' borderSize={1} borderRadius='m'>

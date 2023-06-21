@@ -1,32 +1,31 @@
 import React from 'react';
 import {
-    createModuleLoader,
-    useModuleMounter,
-    MountableModule,
     BaseModuleState,
-    createServerResourcesFetcher,
+    createClientResourcesFetcher,
+    createModuleLoader,
+    MountableModule, useModuleLoader,
+    useModuleMounter,
 } from '@alfalab/scripts-modules';
 import { Underlay } from '@alfalab/core-components/underlay';
 import { Spinner } from '@alfalab/core-components/spinner';
 
-const loader = createModuleLoader<MountableModule<{ some: string }, BaseModuleState>>({
+const loader = createModuleLoader<any>({
     hostAppId: 'example',
-    moduleId: 'ServerModuleMF',
-    getModuleResources: createServerResourcesFetcher({ baseUrl: 'http://localhost:8082' }),
+    moduleId: 'ClientModuleAbstract',
+    getModuleResources: createClientResourcesFetcher({
+        baseUrl: 'http://localhost:8082',
+    })
 });
 
-export const ServerMfModuleMounter = () => {
-    const { loadingState, targetElementRef } = useModuleMounter({
-        loader,
-        runParams: { some: 'anything that you want' }
-    });
+export const AbstractModule = () => {
+    const { loadingState, module } = useModuleLoader({ loader });
 
     return (
         <Underlay padding='m' backgroundColor='info' shadow='shadow-s' borderSize={1} borderRadius='m'>
             { loadingState === 'pending' && <Spinner size='m' /> }
             { loadingState === 'rejected' && <div>Failed to load module</div> }
 
-            <div ref={ targetElementRef } />
+            {module && (<pre>{JSON.stringify(module, (key, value) => typeof value === 'function' ? `[Function ${value.name}]` : value, 2)}</pre>)}
         </Underlay>
     );
 }
