@@ -26,9 +26,6 @@ const defaultJestConfig = {
         '\\.css$': require.resolve('./css-mock'),
         ...pathsToModuleNameMapper(tsConfigPaths, { prefix: '<rootDir>/' })
     },
-    setupFiles: [
-        require.resolve('./setup')
-    ],
     snapshotSerializers: [
         require.resolve('jest-snapshot-serializer-class-name-to-string')
     ],
