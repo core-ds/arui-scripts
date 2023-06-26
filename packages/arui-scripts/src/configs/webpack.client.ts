@@ -20,6 +20,7 @@ import { babelDependencies } from './babel-dependencies';
 import ReactRefreshTypeScript from 'react-refresh-typescript';
 import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
+import { WebpackDeduplicationPlugin } from 'webpack-deduplication-plugin';
 
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 
@@ -349,6 +350,15 @@ export const createClientWebpackConfig = (mode: 'dev' | 'prod'): Configuration =
         new webpack.IgnorePlugin({
             resourceRegExp: /^\.\/locale$/,
             contextRegExp: /moment$/,
+        }),
+        // Этот плагин позволяет избавиться от одинаковых зависимостей, которые могут появляться из-за того, что одна и та же
+        // библиотека является зависимостью в разных версиях для разных библиотек.
+        // например проект зависит от lodash@1, библиотеки A и B зависят от lodash@2. Тогда lodash@2 будет включен в сборку
+        // дважды, что приведет к увеличению размера бандла (и это не лечится дедубликацией в yarn/npm).
+        // Сама реализация плагина зависит от yarn.lock, поэтому если мы используем npm, то плагин не будет работать.
+        configs.useYarn && new WebpackDeduplicationPlugin({
+            cacheDir: path.join(configs.cwd, 'node_modules/.cache/deduplication-webpack-plugin/'),
+            rootPath: configs.cwd,
         }),
         // dev plugins:
         mode === 'dev' && new ReactRefreshWebpackPlugin({
