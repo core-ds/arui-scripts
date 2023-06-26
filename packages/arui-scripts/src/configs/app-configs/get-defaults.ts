@@ -87,5 +87,14 @@ export function getDefaults(): AppConfigs {
         changelogFeaturesPath: path.resolve(CWD, './changelog_features.tmp'),
         changelogBugfixesPath: path.resolve(CWD, './changelog_bugfixes.tmp'),
         changelogBreakingChangesPath: path.resolve(CWD, './changelog_breaking_changes.tmp'),
+
+        imageMinimizer: {
+            svg: {
+                // TODO: [imagemin] Change to true
+                enabled: false,
+                // TODO: [imagemin] Change to 1536
+                maxInlineFileSize: 10000
+            }
+        }
     };
 }

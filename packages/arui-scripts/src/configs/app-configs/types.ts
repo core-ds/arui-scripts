@@ -59,4 +59,10 @@ export type AppConfigs = {
     changelogFeaturesPath: string;
     changelogBugfixesPath: string;
     changelogBreakingChangesPath: string;
+    imageMinimizer?: {
+        svg?: {
+            enabled?: boolean;
+            maxInlineFileSize?: number;
+        }
+    }
 };

@@ -21,6 +21,7 @@ import ReactRefreshTypeScript from 'react-refresh-typescript';
 import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import { WebpackDeduplicationPlugin } from 'webpack-deduplication-plugin';
+import { getImageMin } from "./config-extras/minimizers";
 
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 
@@ -79,6 +80,7 @@ export const createClientWebpackConfig = (mode: 'dev' | 'prod'): Configuration =
             : false,
         minimize: mode === 'prod',
         minimizer: [
+            ...getImageMin(),
             // This is only used in production mode
             new TerserPlugin({
                 terserOptions: {
@@ -119,7 +121,7 @@ export const createClientWebpackConfig = (mode: 'dev' | 'prod'): Configuration =
                 parallel: true,
             }),
             new CssMinimizerPlugin()
-        ],
+        ].filter(Boolean),
         nodeEnv: mode === 'prod' ? 'production' : false,
 
         // Оптимизации времени билда, см https://webpack.js.org/guides/build-performance/
@@ -175,15 +177,16 @@ export const createClientWebpackConfig = (mode: 'dev' | 'prod'): Configuration =
                             {
                                 loader: require.resolve('svg-url-loader'),
                                 options: {
-                                    limit: 10000,
+                                    limit: configs.imageMinimizer?.svg?.maxInlineFileSize,
                                     iesafe: true,
                                     name: '[name].[hash:8].[ext]',
                                 },
                             },
-                            {
+                            // TODO: [imagemin] Remove svgo-loader
+                            !configs.imageMinimizer?.svg?.enabled && {
                                 loader: require.resolve('svgo-loader')
                             }
-                        ]
+                        ].filter(Boolean)
                     },
                     // "url" loader works like "file" loader except that it embeds assets
                     // smaller than specified limit in bytes as data URLs to avoid requests.
