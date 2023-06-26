@@ -1,3 +1,10 @@
+# [15.1.0](https://github.com/core-ds/arui-scripts/compare/v15.0.0...v15.1.0) (2023-06-26)
+
+
+### Features
+
+* remove component-testing feature ([2859ab6](https://github.com/core-ds/arui-scripts/commit/2859ab613c5f0bef289fc4ae0768465df9f62d8d))
+
 # [15.0.0](https://github.com/core-ds/arui-scripts/compare/v14.9.0...v15.0.0) (2023-06-19)
 
 
