@@ -1,3 +1,10 @@
+# [15.2.0](https://github.com/core-ds/arui-scripts/compare/v15.1.0...v15.2.0) (2023-06-26)
+
+
+### Features
+
+* **webpack:** add deduplication plugin ([0c841a7](https://github.com/core-ds/arui-scripts/commit/0c841a795a621fb509154773f659bac4b819535e))
+
 # [15.1.0](https://github.com/core-ds/arui-scripts/compare/v15.0.0...v15.1.0) (2023-06-26)
 
 
