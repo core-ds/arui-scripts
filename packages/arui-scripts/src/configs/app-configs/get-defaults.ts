@@ -90,10 +90,6 @@ export function getDefaults(): AppConfigs {
 
         imageMinimizer: {
             svg: {
-                // TODO: [imagemin] Change to true
-                enabled: false,
-                // TODO: [imagemin] Change to 1536
-                maxInlineFileSize: 10000
             },
             gif: {
                 enabled: false,

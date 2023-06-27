@@ -62,7 +62,6 @@ export type AppConfigs = {
     imageMinimizer?: {
         svg?: {
             enabled?: boolean;
-            maxInlineFileSize?: number;
         }
         gif?: {
             enabled?: boolean;

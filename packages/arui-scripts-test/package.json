@@ -10,8 +10,7 @@
         "debug": true,
         "imageMinimizer": {
             "svg": {
-                "enabled": true,
-                "maxInlineFileSize": 1536
+                "enabled": true
             },
             "gif": {
                 "enabled": true
