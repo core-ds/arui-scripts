@@ -102,6 +102,13 @@ export function getDefaults(): AppConfigs {
             jpg: {
                 enabled: false,
                 quality: 75
+            },
+            png: {
+                enabled: false,
+                optimizationLevel: 3,
+                bitDepthReduction: false,
+                colorTypeReduction: false,
+                paletteReduction: false
             }
         }
     };

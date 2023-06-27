@@ -18,6 +18,9 @@
             },
             "jpg": {
                 "enabled": true
+            },
+            "png": {
+                "enabled": true
             }
         }
     },
