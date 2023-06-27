@@ -59,6 +59,7 @@
         "image-minimizer-webpack-plugin": "^3.8.3",
         "imagemin": "^8.0.1",
         "imagemin-gifsicle": "^7.0.0",
+        "imagemin-mozjpeg": "^10.0.0",
         "imagemin-svgo": "^10.0.1",
         "jest": "28.1.3",
         "jest-snapshot-serializer-class-name-to-string": "1.0.0",

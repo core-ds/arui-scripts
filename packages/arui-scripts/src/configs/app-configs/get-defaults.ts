@@ -98,6 +98,10 @@ export function getDefaults(): AppConfigs {
             gif: {
                 enabled: false,
                 optimizationLevel: 1,
+            },
+            jpg: {
+                enabled: false,
+                quality: 75
             }
         }
     };

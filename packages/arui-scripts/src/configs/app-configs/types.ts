@@ -67,6 +67,10 @@ export type AppConfigs = {
         gif?: {
             enabled?: boolean;
             optimizationLevel?: number;
+        },
+        jpg?: {
+            enabled?: boolean;
+            quality: number;
         }
     }
 };

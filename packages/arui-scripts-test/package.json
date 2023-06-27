@@ -15,6 +15,9 @@
             },
             "gif": {
                 "enabled": true
+            },
+            "jpg": {
+                "enabled": true
             }
         }
     },
