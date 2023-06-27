@@ -5912,7 +5912,6 @@ __metadata:
     css-loader: 5.1.3
     css-minimizer-webpack-plugin: 3.1.1
     expose-loader: 3.0.0
-    file-loader: 6.2.0
     filesize: ^6.1.0
     fork-ts-checker-webpack-plugin: 6.5.3
     fs-extra: 6.0.1
@@ -5927,6 +5926,7 @@ __metadata:
     jest-snapshot-serializer-class-name-to-string: 1.0.0
     lodash.merge: 4.6.2
     mini-css-extract-plugin: 1.3.8
+    mini-svg-data-uri: ^1.4.4
     null-loader: 0.1.1
     pnp-webpack-plugin: 1.7.0
     postcss: ^7.0.0 || ^8.0.1
@@ -5966,7 +5966,6 @@ __metadata:
     tsconfig-paths-webpack-plugin: 3.5.1
     type-fest: 2.0.0
     typescript: 4.9.5
-    url-loader: 4.1.1
     webpack: ^5.0.0
     webpack-bundle-analyzer: 4.5.0
     webpack-deduplication-plugin: ^0.0.8
@@ -10128,18 +10127,6 @@ __metadata:
   dependencies:
     escape-string-regexp: ^1.0.5
   checksum: 85a6ad29e9aca80b49b817e7c89ecc4716ff14e3779d9835af554db91bac41c0f289c418923519392a1e582b4d10482ad282021330cd045bb7b80c84152f2a2b
-  languageName: node
-  linkType: hard
-
-"file-loader@npm:6.2.0":
-  version: 6.2.0
-  resolution: "file-loader@npm:6.2.0"
-  dependencies:
-    loader-utils: ^2.0.0
-    schema-utils: ^3.0.0
-  peerDependencies:
-    webpack: ^4.0.0 || ^5.0.0
-  checksum: faf43eecf233f4897b0150aaa874eeeac214e4f9de49738a9e0ef734a30b5260059e85b7edadf852b98e415f875bd5f12587768a93fd52aaf2e479ecf95fab20
   languageName: node
   linkType: hard
 
@@ -14812,6 +14799,15 @@ __metadata:
   peerDependencies:
     webpack: ^4.4.0 || ^5.0.0
   checksum: 10ecedbf47898acbfed6a224340e32de6805de0dd892f4beafba1e6aaf60f87ed3749d65de100b4bd454f3850c2daf9e277d182d637cdc50cf07f5191be638cc
+  languageName: node
+  linkType: hard
+
+"mini-svg-data-uri@npm:^1.4.4":
+  version: 1.4.4
+  resolution: "mini-svg-data-uri@npm:1.4.4"
+  bin:
+    mini-svg-data-uri: cli.js
+  checksum: 997f1fbd8d59a70f03761e18626d335197a3479cb9d1ff75678e4b64b864d32a0b8fc18115eabde035e5299b8b4a354a78e57dd6ac10f9d604162a6170898d09
   languageName: node
   linkType: hard
 
@@ -21910,23 +21906,6 @@ typescript@^4.0.2:
   version: 4.0.1
   resolution: "url-join@npm:4.0.1"
   checksum: f74e868bf25dbc8be6a8d7237d4c36bb5b6c62c72e594d5ab1347fe91d6af7ccd9eb5d621e30152e4da45c2e9a26bec21390e911ab54a62d4d82e76028374ee5
-  languageName: node
-  linkType: hard
-
-"url-loader@npm:4.1.1":
-  version: 4.1.1
-  resolution: "url-loader@npm:4.1.1"
-  dependencies:
-    loader-utils: ^2.0.0
-    mime-types: ^2.1.27
-    schema-utils: ^3.0.0
-  peerDependencies:
-    file-loader: "*"
-    webpack: ^4.0.0 || ^5.0.0
-  peerDependenciesMeta:
-    file-loader:
-      optional: true
-  checksum: c1122a992c6cff70a7e56dfc2b7474534d48eb40b2cc75467cde0c6972e7597faf8e43acb4f45f93c2473645dfd803bcbc20960b57544dd1e4c96e77f72ba6fd
   languageName: node
   linkType: hard
 

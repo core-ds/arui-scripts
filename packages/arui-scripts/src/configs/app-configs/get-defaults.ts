@@ -88,8 +88,10 @@ export function getDefaults(): AppConfigs {
         changelogBugfixesPath: path.resolve(CWD, './changelog_bugfixes.tmp'),
         changelogBreakingChangesPath: path.resolve(CWD, './changelog_breaking_changes.tmp'),
 
+        dataUrlMaxSize: 1536,
         imageMinimizer: {
             svg: {
+                enabled: true,
             },
             gif: {
                 enabled: false,

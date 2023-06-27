@@ -33,6 +33,7 @@ export const availablePackageSettings = [
     'keepCssVars',
     'removeDevDependenciesDuringDockerBuild',
 
+    'dataUrlMaxSize',
     'imageMinimizer'
 ] as const;
 

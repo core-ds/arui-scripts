@@ -59,6 +59,8 @@ export type AppConfigs = {
     changelogFeaturesPath: string;
     changelogBugfixesPath: string;
     changelogBreakingChangesPath: string;
+
+    dataUrlMaxSize?: number,
     imageMinimizer?: {
         svg?: {
             enabled?: boolean;
