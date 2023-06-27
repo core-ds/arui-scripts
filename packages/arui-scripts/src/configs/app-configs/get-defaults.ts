@@ -94,6 +94,10 @@ export function getDefaults(): AppConfigs {
                 enabled: false,
                 // TODO: [imagemin] Change to 1536
                 maxInlineFileSize: 10000
+            },
+            gif: {
+                enabled: false,
+                optimizationLevel: 1,
             }
         }
     };

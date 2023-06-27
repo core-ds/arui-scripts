@@ -12,6 +12,9 @@
             "svg": {
                 "enabled": true,
                 "maxInlineFileSize": 1536
+            },
+            "gif": {
+                "enabled": true
             }
         }
     },

@@ -64,5 +64,9 @@ export type AppConfigs = {
             enabled?: boolean;
             maxInlineFileSize?: number;
         }
+        gif?: {
+            enabled?: boolean;
+            optimizationLevel?: number;
+        }
     }
 };
