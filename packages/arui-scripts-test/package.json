@@ -7,7 +7,21 @@
         "serverEntry": "./src/server",
         "clientEntry": "./src/client",
         "keepCssVars": true,
-        "debug": true
+        "debug": true,
+        "imageMinimizer": {
+            "svg": {
+                "enabled": true
+            },
+            "gif": {
+                "enabled": true
+            },
+            "jpg": {
+                "enabled": true
+            },
+            "png": {
+                "enabled": true
+            }
+        }
     },
     "scripts": {
         "build": "arui-scripts build",

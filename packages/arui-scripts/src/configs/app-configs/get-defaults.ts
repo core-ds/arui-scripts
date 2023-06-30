@@ -87,5 +87,27 @@ export function getDefaults(): AppConfigs {
         changelogFeaturesPath: path.resolve(CWD, './changelog_features.tmp'),
         changelogBugfixesPath: path.resolve(CWD, './changelog_bugfixes.tmp'),
         changelogBreakingChangesPath: path.resolve(CWD, './changelog_breaking_changes.tmp'),
+
+        dataUrlMaxSize: 1536,
+        imageMinimizer: {
+            svg: {
+                enabled: true,
+            },
+            gif: {
+                enabled: false,
+                optimizationLevel: 1,
+            },
+            jpg: {
+                enabled: false,
+                quality: 75
+            },
+            png: {
+                enabled: false,
+                optimizationLevel: 3,
+                bitDepthReduction: false,
+                colorTypeReduction: false,
+                paletteReduction: false
+            }
+        }
     };
 }

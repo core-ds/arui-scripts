@@ -59,4 +59,27 @@ export type AppConfigs = {
     changelogFeaturesPath: string;
     changelogBugfixesPath: string;
     changelogBreakingChangesPath: string;
+
+    dataUrlMaxSize?: number,
+    imageMinimizer?: {
+        svg?: {
+            enabled?: boolean;
+        }
+        gif?: {
+            enabled?: boolean;
+            optimizationLevel?: number;
+        },
+        jpg?: {
+            enabled?: boolean;
+            quality: number;
+        },
+        png?: {
+            enabled?: boolean;
+            optimizationLevel?: number;
+            bitDepthReduction?: boolean;
+            colorTypeReduction?: boolean;
+            paletteReduction?: boolean;
+            interlaced?: boolean;
+        }
+    }
 };
