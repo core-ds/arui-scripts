@@ -1,0 +1,35 @@
+name: Create snapshot release of packages
+
+on:
+  workflow_dispatch:
+    inputs:
+      prefix:
+        description: 'Custom prefix for snapshot version'
+        required: true
+        default: 'next'
+
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js 16.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+
+      - name: Install Dependencies
+        run: yarn
+
+      - name: Publish snapshot release
+        id: release
+        run: |
+            yarn run turbo test build
+            yarn run changeset version --snapshot ${{ github.event.inputs.prefix }}
+            yarn run changeset publish --tag next --no-git-tag --snapshot
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

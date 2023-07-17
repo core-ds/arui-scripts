@@ -9,3 +9,5 @@ package-lock.json
 !.yarn/versions
 .pnp.*
 tsconfig.tsbuildinfo
+.turbo
+build
