@@ -4,14 +4,14 @@ import appConfigs from '../app-configs';
 import { AppConfigs } from '../app-configs/types';
 
 type Overrides = {
-    webpack: WebpackConfiguration;
-    webpackClient: WebpackConfiguration;
-    webpackDev: WebpackConfiguration;
-    webpackClientDev: WebpackConfiguration;
+    webpack: WebpackConfiguration | WebpackConfiguration[];
+    webpackClient: WebpackConfiguration | WebpackConfiguration[];
+    webpackDev: WebpackConfiguration | WebpackConfiguration[];
+    webpackClientDev: WebpackConfiguration | WebpackConfiguration[];
     webpackServer: WebpackConfiguration;
     webpackServerDev: WebpackConfiguration;
     webpackProd: WebpackConfiguration;
-    webpackClientProd: WebpackConfiguration;
+    webpackClientProd: WebpackConfiguration | WebpackConfiguration[];
     webpackServerProd: WebpackConfiguration;
     devServer: WebpackDevServerConfiguration;
     stats: WebpackOptionsNormalized['stats'];
@@ -61,7 +61,7 @@ overrides = appConfigs.overridesPath.map(path => {
  * @param {Object} config Конфиг, к которому нужно применить оверрайды
  * @returns {*}
  */
-function applyOverrides<Key extends keyof Overrides>(overridesKey: Key | Key[], config: Overrides[Key]): Overrides[Key] {
+function applyOverrides<T extends Overrides[Key], Key extends keyof Overrides>(overridesKey: Key | Key[], config: T): T {
     if (typeof overridesKey === 'string') {
         overridesKey = [overridesKey];
     }
