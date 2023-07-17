@@ -78,7 +78,20 @@ npm install arui-scripts --save-dev
 - `useTscLoader` -  использовать ts-loader вместо babel-loader для обработки ts файлов. У babel-loader есть [ряд ограничений](https://blogs.msdn.microsoft.com/typescript/2018/08/27/typescript-and-babel-7/). По умолчанию `false`.
 - `componentsTheme` - путь к css файлу с темой для [core-components](https://github.com/core-ds/core-components). Используется для настройки [postcss-custom-properties](https://github.com/postcss/postcss-custom-properties#importfrom).
 - `keepCssVars` - отключает `postcss-custom-properties`, css переменные будут оставаться в бандле.
-- `removeDevDependenciesDuringDockerBuild` - отключает удаление devDependencies из node_modules при сборке докер образа. Используется когда вам не нужно удалять devDependencies, т.к. в своём Dockerfile вы не переносите node_modules в докер-контейнер
+- `removeDevDependenciesDuringDockerBuild` - отключает удаление devDependencies из node_modules при сборке докер образа. Используется когда вам не нужно удалять devDependencies, т.к. в своём Dockerfile вы не переносите node_modules в докер-контейнер.
+- `dataUrlMaxSize` - ресурсы, не превышающие данный размер (в байтах), будут включены в исходники `inline`, иначе вынесены в отдельный файл. По умолчанию `1536`.
+- `imageMinimizer` - раздел настроек, связанных с оптимизацией графики.
+- `imageMinimizer.svg.enabled` - включает/отключает оптимизацию `svg`. По умолчанию `true`.
+- `imageMinimizer.gif.enabled` - включает/отключает оптимизацию `gif`. По умолчанию `false`.
+- `imageMinimizer.gif.optimizationLevel` - уровень сжатия `gif`. От `1` до `3`. По умолчанию `1`.
+- `imageMinimizer.jpg.enabled` - включает/отключает оптимизацию `jpg`. По умолчанию `false`.
+- `imageMinimizer.jpg.quality` - качество выходного файла. От `0` до `100`. По умолчанию `75`.
+- `imageMinimizer.png.enabled` - включает/отключает оптимизацию `png`. По умолчанию `false`. О структуре формата png и влиянии описанных далее оптимизаций можно прочитать [здесь](https://www.w3.org/TR/PNG-Chunks.html)
+- `imageMinimizer.png.optimizationLevel` - уровень сжатия `png`. От `0` до `7`. По умолчанию `3`. [Подробнее](https://github.com/imagemin/imagemin-optipng#optimizationlevel)
+- `imageMinimizer.png.bitDepthReduction` - допускает уменьшение глубины цвета изображения. По умолчанию `false`. [Подробнее](https://github.com/imagemin/imagemin-optipng#bitdepthreduction)
+- `imageMinimizer.png.colorTypeReduction` - допускает изменение представления изображения (оттенки серого / прозрачность / пр.). По умолчанию `false`. [Подробнее](https://github.com/imagemin/imagemin-optipng#colortypereduction)
+- `imageMinimizer.png.paletteReduction` - допускает уменьшение палитры изображения. По умолчанию `false`. [Подробнее](https://github.com/imagemin/imagemin-optipng#palettereduction)
+- `imageMinimizer.png.interlaced` - потоковый порядок передачи изображение. По умолчанию этот параметр идентичен значению из входного изображения. [Подробнее](https://github.com/imagemin/imagemin-optipng#interlaced)
 
 В целях отладки все эти настройки можно переопределить не изменяя package.json
 Просто передайте необходимые настройки в environment переменной ARUI_SCRIPTS_CONFIG

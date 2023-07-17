@@ -20,6 +20,9 @@ import { babelDependencies } from './babel-dependencies';
 import ReactRefreshTypeScript from 'react-refresh-typescript';
 import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
+import { WebpackDeduplicationPlugin } from 'webpack-deduplication-plugin';
+import { getImageMin } from "./config-extras/minimizers";
+import svgToMiniDataURI from "mini-svg-data-uri";
 
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 
@@ -43,6 +46,7 @@ export const createClientWebpackConfig = (mode: 'dev' | 'prod'): Configuration =
     bail: mode === 'prod',
     context: configs.cwd,
     output: {
+        assetModuleFilename: 'static/media/[name].[hash:8][ext]',
         // Add /* filename */ comments to generated require()s in the output.
         pathinfo: mode === 'dev',
         path: configs.clientOutputPath,
@@ -78,6 +82,7 @@ export const createClientWebpackConfig = (mode: 'dev' | 'prod'): Configuration =
             : false,
         minimize: mode === 'prod',
         minimizer: [
+            ...getImageMin(),
             // This is only used in production mode
             new TerserPlugin({
                 terserOptions: {
@@ -118,7 +123,7 @@ export const createClientWebpackConfig = (mode: 'dev' | 'prod'): Configuration =
                 parallel: true,
             }),
             new CssMinimizerPlugin()
-        ],
+        ].filter(Boolean),
         nodeEnv: mode === 'prod' ? 'production' : false,
 
         // Оптимизации времени билда, см https://webpack.js.org/guides/build-performance/
@@ -168,33 +173,6 @@ export const createClientWebpackConfig = (mode: 'dev' | 'prod'): Configuration =
                 // match the requirements. When no loader matches it will fall
                 // back to the "file" loader at the end of the loader list.
                 oneOf: ([
-                    {
-                        test: [/\.svg$/],
-                        use: [
-                            {
-                                loader: require.resolve('svg-url-loader'),
-                                options: {
-                                    limit: 10000,
-                                    iesafe: true,
-                                    name: '[name].[hash:8].[ext]',
-                                },
-                            },
-                            {
-                                loader: require.resolve('svgo-loader')
-                            }
-                        ]
-                    },
-                    // "url" loader works like "file" loader except that it embeds assets
-                    // smaller than specified limit in bytes as data URLs to avoid requests.
-                    // A missing `test` is equivalent to a match.
-                    {
-                        test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
-                        loader: require.resolve('url-loader'),
-                        options: {
-                            limit: 10000,
-                            name: '[name].[hash:8].[ext]',
-                        },
-                    },
                     // Process JS with Babel.
                     {
                         test: configs.useTscLoader ? /\.(js|jsx|mjs|cjs)$/ : /\.(js|jsx|mjs|ts|tsx|cjs)$/,
@@ -304,26 +282,31 @@ export const createClientWebpackConfig = (mode: 'dev' | 'prod'): Configuration =
                             },
                         ],
                     },
-                    // "file" loader makes sure those assets get served by WebpackDevServer.
-                    // When you `import` an asset, you get its (virtual) filename.
-                    // In production, they would get copied to the `build` folder.
-                    // This loader doesn't use a "test" so it will catch all modules
-                    // that fall through the other loaders.
                     {
-                        // Exclude `js` files to keep "css" loader working as it injects
-                        // its runtime that would otherwise processed through "file" loader.
-                        // Also exclude `html` and `json` extensions so they get processed
-                        // by webpacks internal loaders.
-                        exclude: [/\.(js|jsx|mjs|cjs|ts|tsx)$/, /\.(html|ejs)$/, /\.json$/],
-                        loader: require.resolve('file-loader'),
-                        options: {
-                            name: 'static/media/[name].[hash:8].[ext]',
+                        test: /\.svg/,
+                        type: 'asset',
+                        generator: {
+                            dataUrl: (content: Buffer) => svgToMiniDataURI(content.toString())
                         },
+                        parser: {
+                            dataUrlCondition: {
+                                maxSize: configs.dataUrlMaxSize
+                            }
+                        }
+                    },
+                    {
+                        exclude: [/\.(js|jsx|mjs|cjs|ts|tsx)$/, /\.(html|ejs)$/, /\.json$/],
+                        type: 'asset',
+                        parser: {
+                            dataUrlCondition: {
+                                maxSize: configs.dataUrlMaxSize
+                            }
+                        }
                     },
                 ].filter(Boolean)) as webpack.RuleSetRule[],
             },
             // ** STOP ** Are you adding a new loader?
-            // Make sure to add the new loader(s) before the "file" loader.
+            // Make sure to add the new loader(s) before asset modules
         ],
     },
     plugins: ([
@@ -349,6 +332,15 @@ export const createClientWebpackConfig = (mode: 'dev' | 'prod'): Configuration =
         new webpack.IgnorePlugin({
             resourceRegExp: /^\.\/locale$/,
             contextRegExp: /moment$/,
+        }),
+        // Этот плагин позволяет избавиться от одинаковых зависимостей, которые могут появляться из-за того, что одна и та же
+        // библиотека является зависимостью в разных версиях для разных библиотек.
+        // например проект зависит от lodash@1, библиотеки A и B зависят от lodash@2. Тогда lodash@2 будет включен в сборку
+        // дважды, что приведет к увеличению размера бандла (и это не лечится дедубликацией в yarn/npm).
+        // Сама реализация плагина зависит от yarn.lock, поэтому если мы используем npm, то плагин не будет работать.
+        configs.useYarn && new WebpackDeduplicationPlugin({
+            cacheDir: path.join(configs.cwd, 'node_modules/.cache/deduplication-webpack-plugin/'),
+            rootPath: configs.cwd,
         }),
         // dev plugins:
         mode === 'dev' && new ReactRefreshWebpackPlugin({

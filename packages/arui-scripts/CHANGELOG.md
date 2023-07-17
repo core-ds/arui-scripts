@@ -1,3 +1,29 @@
+# [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
+
+
+### Features
+
+* remove svgo-loader in favor of imagemin ([255c16a](https://github.com/core-ds/arui-scripts/commit/255c16ad07f4e224104d4cf6b521110104f3fa99))
+* use asset modules instead of loaders ([713b57e](https://github.com/core-ds/arui-scripts/commit/713b57ed028046f80711d0f7978fb9e57ceb4d35))
+* **imagemin:** process gif with imagemin ([ecc2045](https://github.com/core-ds/arui-scripts/commit/ecc2045fd19ef29427af2882c3ab257542b8bdcc))
+* **imagemin:** process jpg with imagemin ([afffe97](https://github.com/core-ds/arui-scripts/commit/afffe975338e3c1e201494d1eb7c5138df36cafc))
+* **imagemin:** process png with imagemin ([56ab95b](https://github.com/core-ds/arui-scripts/commit/56ab95b42313bd3620443cc2f66ac6cd6e0dbff5))
+* **imagemin:** process svg with imagemin ([8705c64](https://github.com/core-ds/arui-scripts/commit/8705c6456617eee236f8e9991ffad1d077768843))
+
+# [15.2.0](https://github.com/core-ds/arui-scripts/compare/v15.1.0...v15.2.0) (2023-06-26)
+
+
+### Features
+
+* **webpack:** add deduplication plugin ([0c841a7](https://github.com/core-ds/arui-scripts/commit/0c841a795a621fb509154773f659bac4b819535e))
+
+# [15.1.0](https://github.com/core-ds/arui-scripts/compare/v15.0.0...v15.1.0) (2023-06-26)
+
+
+### Features
+
+* remove component-testing feature ([2859ab6](https://github.com/core-ds/arui-scripts/commit/2859ab613c5f0bef289fc4ae0768465df9f62d8d))
+
 # [15.0.0](https://github.com/core-ds/arui-scripts/compare/v14.9.0...v15.0.0) (2023-06-19)
 
 

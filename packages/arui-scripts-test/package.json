@@ -7,7 +7,21 @@
         "serverEntry": "./src/server",
         "clientEntry": "./src/client",
         "keepCssVars": true,
-        "debug": true
+        "debug": true,
+        "imageMinimizer": {
+            "svg": {
+                "enabled": true
+            },
+            "gif": {
+                "enabled": true
+            },
+            "jpg": {
+                "enabled": true
+            },
+            "png": {
+                "enabled": true
+            }
+        }
     },
     "scripts": {
         "build": "arui-scripts build",
@@ -17,10 +31,7 @@
         "ci": "yarn run test && yarn run build"
     },
     "jest": {
-        "preset": "arui-scripts",
-        "setupFiles": [
-            "<rootDir>/__tests__/setup.js"
-        ]
+        "preset": "arui-scripts"
     },
     "dependencies": {
         "@alfalab/core-components": "^41.12.0",
@@ -33,7 +44,6 @@
         "react-dom": "^16.6.3"
     },
     "devDependencies": {
-        "@types/enzyme": "^3.10.5",
         "@types/express": "^4.17.7",
         "@types/jest": "^23.3.9",
         "@types/lodash": "^4.14.161",
@@ -41,8 +51,6 @@
         "@types/react": "^16.9.43",
         "@types/react-dom": "^16.9.8",
         "@types/webpack-env": "^1.15.2",
-        "enzyme": "3.11.0",
-        "enzyme-adapter-react-16": "^1.15.4",
         "postcss-preset-env": "^8.4.1",
         "typescript": "^4.0.2"
     }

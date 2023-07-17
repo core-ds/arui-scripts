@@ -31,7 +31,10 @@ export const availablePackageSettings = [
     'statsOutputFilename',
     'componentsTheme',
     'keepCssVars',
-    'removeDevDependenciesDuringDockerBuild'
+    'removeDevDependenciesDuringDockerBuild',
+
+    'dataUrlMaxSize',
+    'imageMinimizer'
 ] as const;
 
 type ArrayElementType<ArrayType extends ReadonlyArray<unknown>> = ArrayType[number];
