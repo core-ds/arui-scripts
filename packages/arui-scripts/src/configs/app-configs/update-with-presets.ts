@@ -1,22 +1,19 @@
-import merge from 'lodash.merge';
-import { AppConfigs } from './types';
+import { AppConfigs, AppContext } from './types';
 import { tryResolve } from '../util/resolve';
-import validateSettingsKeys from './validate-settings-keys';
-import { availablePackageSettings } from './available-package-settings';
+import { validateSettingsKeys } from './validate-settings-keys';
 
-export function updateWithPresets(config: AppConfigs) {
-    const packageSettings = config.appPackage.aruiScripts || {};
-    if (!packageSettings.presets) {
+export function updateWithPresets(config: AppConfigs, context: AppContext) {
+    if (!config.presets) {
         return config;
     }
 
     const presetsConfigPath = tryResolve(
-        `${packageSettings.presets}/arui-scripts.config`,
-        { paths: [config.cwd] }
+        `${config.presets}/arui-scripts.config`,
+        { paths: [context.cwd] }
     );
     const presetsOverridesPath = tryResolve(
-        `${packageSettings.presets}/arui-scripts.overrides`,
-        { paths: [config.cwd] }
+        `${config.presets}/arui-scripts.overrides`,
+        { paths: [context.cwd] }
     );
     if (presetsConfigPath) {
         let presetsSettings = require(presetsConfigPath);
@@ -24,13 +21,15 @@ export function updateWithPresets(config: AppConfigs) {
             // ts-node импортирует esModules, из них надо вытягивать default именно так
             presetsSettings = presetsSettings.default;
         }
-        validateSettingsKeys(availablePackageSettings, presetsSettings);
-        config = merge(config, presetsSettings);
+        validateSettingsKeys(config, presetsSettings, presetsConfigPath);
+        config = {
+            ...config,
+            ...presetsSettings,
+        }
     }
     if (presetsOverridesPath) {
-        config.overridesPath.unshift(presetsOverridesPath);
+        context.overridesPath.unshift(presetsOverridesPath);
     }
 
-    delete packageSettings.presets;
     return config;
 }

@@ -1,4 +1,4 @@
-import { AppConfigs } from '../types';
+import { AppConfigs, AppContext } from '../types';
 import { updateWithPresets } from '../update-with-presets';
 import { tryResolve } from '../../util/resolve';
 
@@ -7,9 +7,9 @@ const mockedTryResolve = (tryResolve as unknown) as jest.Mock<typeof tryResolve>
 
 describe('update-with-presets', () => {
     it('should return config as is if "appPackage.aruiScripts.presets" field is not set', () => {
-        const baseConfig = { dockerRegistry: 'docker.my-company.com', appPackage: {} } as AppConfigs;
+        const baseConfig = { dockerRegistry: 'docker.my-company.com' } as AppConfigs;
 
-        const updatedConfig = updateWithPresets(baseConfig);
+        const updatedConfig = updateWithPresets(baseConfig, { appPackage: { aruiScripts: {} } } as AppContext);
 
         expect(updatedConfig).toBe(baseConfig);
     });
@@ -22,14 +22,17 @@ describe('update-with-presets', () => {
             return path as any;
         });
         const baseConfig = {
+            presets: 'presets',
             dockerRegistry: 'docker.my-company.com',
-            overridesPath: ['package-overrides-path.js'],
-            appPackage: { aruiScripts: { presets: 'presets' } },
         } as AppConfigs;
+        const context = {
+            appPackage: { aruiScripts: { presets: 'presets' } },
+            overridesPath: ['package-overrides-path.js'],
+        } as AppContext;
 
-        const updatedConfig = updateWithPresets(baseConfig);
+        const updatedConfig = updateWithPresets(baseConfig, context);
 
-        expect(updatedConfig.overridesPath)
+        expect(context.overridesPath)
             .toEqual(['presets/arui-scripts.overrides', 'package-overrides-path.js']);
     });
 
@@ -46,11 +49,14 @@ describe('update-with-presets', () => {
             return undefined;
         });
         const baseConfig = {
+            presets: 'presets',
             dockerRegistry: 'docker.my-company.com',
-            appPackage: { aruiScripts: { presets: 'presets' } },
         } as AppConfigs;
+        const context = {
+            appPackage: { aruiScripts: { presets: 'presets' } },
+        } as AppContext;
 
-        const updatedConfig = updateWithPresets(baseConfig);
+        const updatedConfig = updateWithPresets(baseConfig, context);
 
         expect(updatedConfig.dockerRegistry).toBe('docker.from-presets.com');
     });

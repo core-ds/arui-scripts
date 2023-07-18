@@ -1,4 +1,4 @@
-import validateSettingsKeys from '../validate-settings-keys';
+import { validateSettingsKeys } from '../validate-settings-keys';
 
 describe('validate-settings-keys', () => {
     it('should warn with console.warn if object contains unknown properties', () => {
@@ -6,10 +6,12 @@ describe('validate-settings-keys', () => {
             name: 'vasia',
             country: 'russia',
         };
-        const allowedKeys = ['name'];
+        const baseSettings = {
+            name: 'ivan',
+        };
         jest.spyOn(console, 'warn');
 
-        validateSettingsKeys(allowedKeys, objectWithSettings);
+        validateSettingsKeys(baseSettings, objectWithSettings);
 
         expect(console.warn).toHaveBeenCalledTimes(1);
     });

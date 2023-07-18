@@ -1,12 +1,10 @@
 import path from 'path';
-import merge from 'lodash.merge';
 import { tryResolve } from '../util/resolve';
-import { AppConfigs } from './types';
-import validateSettingsKeys from './validate-settings-keys';
-import { availablePackageSettings } from './available-package-settings';
+import { AppConfigs, AppContext } from './types';
+import { validateSettingsKeys } from './validate-settings-keys';
 
-export function updateWithConfigFile(config: AppConfigs) {
-    const appConfigPath = tryResolve(path.join(config.cwd, '/arui-scripts.config'));
+export function updateWithConfigFile(config: AppConfigs, context: AppContext) {
+    const appConfigPath = tryResolve(path.join(context.cwd, '/arui-scripts.config'));
 
     if (appConfigPath) {
         let appSettings = require(appConfigPath);
@@ -14,8 +12,11 @@ export function updateWithConfigFile(config: AppConfigs) {
             // ts-node импортирует esModules, из них надо вытягивать default именно так
             appSettings = appSettings.default;
         }
-        validateSettingsKeys(availablePackageSettings, appSettings);
-        config = merge(config, appSettings);
+        validateSettingsKeys(config, appSettings, appConfigPath);
+        return {
+            ...config,
+            ...appSettings,
+        };
     }
 
     return config;

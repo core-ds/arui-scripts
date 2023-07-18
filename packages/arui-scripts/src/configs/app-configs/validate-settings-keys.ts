@@ -1,18 +1,14 @@
 /**
- * Функция проверяет что все ключи объекта settingsObject есть в массиве availableKeys
- * @param {string[]} availableKeys Массив допустимых настроек
- * @param settingsObject Объект с настройками
+ * Функция проверяет что все ключи объекта settingsObject есть в уже существующей конфигурации
  */
-function validateSettingsKeys(availableKeys: ReadonlyArray<string>, settingsObject: Record<string, unknown>) {
+export function validateSettingsKeys(
+    existingConfig: Record<string, unknown>,
+    settingsObject: Record<string, unknown>,
+    source?: string
+) {
     Object.keys(settingsObject).forEach((setting) => {
-        if (!availableKeys.includes(setting)) {
-            console.warn(
-                '\x1b[33m', `Setting`,
-                '\x1b[31m', setting,
-                '\x1b[33m', 'is not supported!'
-            );
+        if (typeof existingConfig[setting] === 'undefined') {
+            console.warn(`Неизвестная настройка "${setting}" в ${source || 'конфигурации'}`);
         }
     });
 }
-
-export default validateSettingsKeys;
