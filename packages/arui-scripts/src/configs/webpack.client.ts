@@ -9,9 +9,8 @@ import CompressionPlugin from 'compression-webpack-plugin';
 import AssetsPlugin from 'assets-webpack-plugin';
 import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
 import getCSSModuleLocalIdent from 'react-dev-utils/getCSSModuleLocalIdent';
-const PnpWebpackPlugin = require('pnp-webpack-plugin');
 
-import getEntry from './util/get-entry';
+import getEntry, { Entry } from './util/get-entry';
 import configs from './app-configs';
 import babelConf from './babel-client';
 import postcssConf from './postcss';
@@ -23,6 +22,11 @@ import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import { WebpackDeduplicationPlugin } from 'webpack-deduplication-plugin';
 import { getImageMin } from "./config-extras/minimizers";
 import svgToMiniDataURI from "mini-svg-data-uri";
+import {
+    processAssetsPluginOutput,
+} from './process-assets-plugin-output';
+
+const PnpWebpackPlugin = require('pnp-webpack-plugin');
 
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 
@@ -31,20 +35,37 @@ const noopPath = require.resolve('./util/noop');
 function getSingleEntry(entryPoint: string[], mode: 'dev' | 'prod') {
     return [
         ...(Array.isArray(configs.clientPolyfillsEntry) ? configs.clientPolyfillsEntry : [configs.clientPolyfillsEntry]),
-        mode === 'dev' ? require.resolve('webpack/hot/dev-server') : false,
         ...entryPoint
     ].filter(Boolean) as string[];
 }
 
-// This is the production configuration.
-export const createClientWebpackConfig = (mode: 'dev' | 'prod'): Configuration => ({
+// Нам важно шарить assets plugin между разными сборками, чтобы файл не перезаписывался
+const assetsPlugin = new AssetsPlugin({
+    path: configs.serverOutputPath,
+    processOutput: processAssetsPluginOutput,
+});
+// Этот плагин нужен для того, чтобы клиентский код так же могу получить информацию о сборке.
+// Это позволяет нам использовать данные о сборки на клиенте.
+const clientAssetsPlugin = new AssetsPlugin({
+    path: configs.clientOutputPath,
+    processOutput: processAssetsPluginOutput,
+});
+
+/**
+ * Создает конфигурацию для сборки клиентского кода. Может быть использована для создания дополнительных конфигураций.
+ * @param mode Режим сборки (dev или prod)
+ * @param entry Точка входа, любой валидный вход для webpack
+ * @param configName Имя конфигурации, если не указано, то используется имя по умолчанию
+ */
+const createSingleClientWebpackConfig = (mode: 'dev' | 'prod', entry: Entry, configName?: string): Configuration => ({
     target: 'web',
     mode: mode === 'dev' ? 'development' : 'production',
     devtool: mode === 'dev' ? configs.devSourceMaps : 'source-map',
-    entry: getEntry(configs.clientEntry, getSingleEntry, mode),
+    entry: getEntry(entry, getSingleEntry, mode),
     // in production mode we need to fail on first error
     bail: mode === 'prod',
     context: configs.cwd,
+    name: configName,
     output: {
         assetModuleFilename: 'static/media/[name].[hash:8][ext]',
         // Add /* filename */ comments to generated require()s in the output.
@@ -52,7 +73,9 @@ export const createClientWebpackConfig = (mode: 'dev' | 'prod'): Configuration =
         path: configs.clientOutputPath,
         publicPath: configs.publicPath,
         filename: mode === 'dev' ? '[name].js' : '[name].[chunkhash:8].js',
-        chunkFilename: mode === 'dev' ? '[name].js' : '[name].[chunkhash:8].chunk.js',
+        chunkFilename: mode === 'dev'
+            ? `${configName ? `${configName}-` : ''}[name].js`
+            : `${configName ? `${configName}-` : ''}[name].[chunkhash:8].chunk.js`,
         // Point sourcemap entries to original disk location (format as URL on Windows)
         devtoolModuleFilenameTemplate: (info: any) =>
             path
@@ -73,7 +96,18 @@ export const createClientWebpackConfig = (mode: 'dev' | 'prod'): Configuration =
                     vendor: {
                         test: /node_modules/,
                         chunks: "initial",
-                        name: "vendor",
+                        name: (
+                            _: unknown,
+                            chunks: any[],
+                            cacheGroupKey: string,
+                        ) => {
+                            if (!configName) {
+                                return 'vendor';
+                            }
+                            // Нам нужно сделать так, чтобы у разных конфигураций были разные имена чанков
+                            const allChunksNames = chunks.map((item) => item.name).join('~');
+                            return `${cacheGroupKey}-${allChunksNames}`;
+                        },
                         priority: 10,
                         enforce: true
                     }
@@ -310,7 +344,8 @@ export const createClientWebpackConfig = (mode: 'dev' | 'prod'): Configuration =
         ],
     },
     plugins: ([
-        new AssetsPlugin({ path: configs.serverOutputPath }),
+        assetsPlugin,
+        clientAssetsPlugin,
         new webpack.DefinePlugin({
             // Tell Webpack to provide empty mocks for process.env.
             'process.env': '{}',
@@ -389,10 +424,22 @@ export const createClientWebpackConfig = (mode: 'dev' | 'prod'): Configuration =
         ignored: new RegExp(configs.watchIgnorePath.join('|')),
         aggregateTimeout: 100,
     },
-    // Turn off performance hints during development because we don't do any
-    // splitting or minification in interest of speed. These warnings become
-    // cumbersome.
+    // Выключаем performance hints, т.к. размеры бандлов контролируются не в рамках arui-scripts
     performance: {
-        hints: mode === 'dev' ? false : 'warning',
+        hints: false,
     },
 });
+
+// Для того чтобы предоставить пользователям удобный способ создать свой конфиг, мы предоставляем функцию,
+// которая создает конфиг для клиентской части приложения. При этом мы не хотим заставлять пользователей
+// думать про dev/prod режимы, поэтому мы автоматически определяем режим при инициализации и сохраняем его в переменную.
+let lastUsedMode: 'dev' | 'prod' | null = null;
+
+export const createClientWebpackConfig = (mode: 'dev' | 'prod') => {
+    lastUsedMode = mode;
+    return createSingleClientWebpackConfig(mode, configs.clientEntry);
+}
+
+export const createSingleWebpackConfig = (entry: Entry, configName: string) => {
+    return createSingleClientWebpackConfig(lastUsedMode || 'dev', entry, configName);
+}

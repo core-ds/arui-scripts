@@ -6,7 +6,7 @@ import path from 'path';
  * @param {Object} options коллекция конфигураций плагинов, где ключ - название плагина, а значение - аргумент для инициализации
  * @returns {*}
  */
-export function createPostcssConfig(plugins: string[], options: Record<string, unknown>) {
+export function createPostcssConfig(plugins: string[], options: Record<string, unknown>): string[] | unknown[] {
     return plugins.map(pluginName => {
         if (pluginName in options) {
             return [pluginName, options[pluginName]];
