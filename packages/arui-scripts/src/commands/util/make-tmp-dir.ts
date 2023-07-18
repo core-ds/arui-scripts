@@ -9,8 +9,8 @@ const nodeMakeTmpDir = util.promisify(fs.mkdtemp);
  * Создает и возвращает временную папку
  * @returns {Promise<string>}
  */
-async function makeTmpDir() {
-    return await nodeMakeTmpDir(`${os.tmpdir()}${path.sep}`);
+async function makeTmpDir(prefix?: string) {
+    return await nodeMakeTmpDir(path.join(os.tmpdir(), prefix || ''));
 }
 
 export default makeTmpDir;
