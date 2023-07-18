@@ -626,16 +626,13 @@ export default overrides;
 service worker'а (или любых других кейсов). Для этого можно использовать функцию-хелпер `createSingleWebpackConfig`:
 
 ```ts
-import {
-    OverrideFile,
-    createSingleWebpackConfig,
-} from 'arui-scripts';
+import type { OverrideFile } from 'arui-scripts';
 
 const overrides: OverrideFile = {
-    webpack: (config) => {
+    webpackClient: (config, appConfig, { createSingleClientWebpackConfig }) => {
         return [
             config,
-            createSingleWebpackConfig(
+            createSingleClientWebpackConfig(
                 './src/sw.js', // entrypoint, может быть массивом/объектом
                 'sw', // наименование сборки, влияет на имена чанков
             ),

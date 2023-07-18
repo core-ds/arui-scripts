@@ -57,7 +57,7 @@ const clientAssetsPlugin = new AssetsPlugin({
  * @param entry Точка входа, любой валидный вход для webpack
  * @param configName Имя конфигурации, если не указано, то используется имя по умолчанию
  */
-const createSingleClientWebpackConfig = (mode: 'dev' | 'prod', entry: Entry, configName?: string): Configuration => ({
+export const createSingleClientWebpackConfig = (mode: 'dev' | 'prod', entry: Entry, configName?: string): Configuration => ({
     target: 'web',
     mode: mode === 'dev' ? 'development' : 'production',
     devtool: mode === 'dev' ? configs.devSourceMaps : 'source-map',
@@ -430,16 +430,6 @@ const createSingleClientWebpackConfig = (mode: 'dev' | 'prod', entry: Entry, con
     },
 });
 
-// Для того чтобы предоставить пользователям удобный способ создать свой конфиг, мы предоставляем функцию,
-// которая создает конфиг для клиентской части приложения. При этом мы не хотим заставлять пользователей
-// думать про dev/prod режимы, поэтому мы автоматически определяем режим при инициализации и сохраняем его в переменную.
-let lastUsedMode: 'dev' | 'prod' | null = null;
-
 export const createClientWebpackConfig = (mode: 'dev' | 'prod') => {
-    lastUsedMode = mode;
     return createSingleClientWebpackConfig(mode, configs.clientEntry);
-}
-
-export const createSingleWebpackConfig = (entry: Entry, configName: string) => {
-    return createSingleClientWebpackConfig(lastUsedMode || 'dev', entry, configName);
 }
