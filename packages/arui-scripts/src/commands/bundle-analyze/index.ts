@@ -2,22 +2,27 @@ import webpack from 'webpack';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import makeTmpDir from '../util/make-tmp-dir';
 import clientConfig from '../../configs/webpack.client.prod';
-import config from '../../configs/app-configs';
 
 (async () => {
-    const tmpDir = await makeTmpDir();
-    const plugin = new BundleAnalyzerPlugin({
-        generateStatsFile: true,
-        statsFilename: config.statsOutputPath,
+    let clientWebpackConfigs = Array.isArray(clientConfig) ? clientConfig : [clientConfig];
+
+    const promises = clientWebpackConfigs.map(async (config, i) => {
+        const tmpDir = await makeTmpDir(i.toString());
+
+        config.plugins = [
+            ...config.plugins,
+            new BundleAnalyzerPlugin({
+                generateStatsFile: true,
+                statsFilename: config.statsOutputPath,
+                analyzerPort: 'auto',
+            }),
+        ]
+        config.output = {
+            ...config.output,
+            path: tmpDir,
+        }
     });
-    let clientWebpackConfig = clientConfig;
-    if (Array.isArray(clientConfig)) {
-        // В случае, если у пользователя несколько конфигов для клиента - запускаем bundle analyzer только для первого
-        clientWebpackConfig = clientConfig[0];
-    }
-    clientWebpackConfig.plugins?.push(plugin as unknown as webpack.WebpackPluginInstance);
-    clientWebpackConfig!.output!.path = tmpDir;
-    webpack(clientWebpackConfig).run(() => {});
+    await Promise.all(promises);
+
+    webpack(clientWebpackConfigs).run(() => {});
 })();
-
-
