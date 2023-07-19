@@ -25,6 +25,10 @@ import svgToMiniDataURI from "mini-svg-data-uri";
 import {
     processAssetsPluginOutput,
 } from './process-assets-plugin-output';
+import {
+    patchWebpackConfigForEmbedded,
+    patchMainWebpackConfigForModules,
+} from './modules';
 
 const PnpWebpackPlugin = require('pnp-webpack-plugin');
 
@@ -415,7 +419,7 @@ export const createSingleClientWebpackConfig = (mode: 'dev' | 'prod', entry: Ent
             /^thrift-services\/proptypes/,
             noopPath
         )
-    ].filter(Boolean)),
+    ].filter(Boolean)) as webpack.WebpackPluginInstance[],
     experiments: {
         backCompat: configs.webpack4Compatibility,
     },
@@ -431,5 +435,28 @@ export const createSingleClientWebpackConfig = (mode: 'dev' | 'prod', entry: Ent
 });
 
 export const createClientWebpackConfig = (mode: 'dev' | 'prod') => {
-    return createSingleClientWebpackConfig(mode, configs.clientEntry);
+    const appWebpackConfig = patchMainWebpackConfigForModules(
+        createSingleClientWebpackConfig(mode, configs.clientEntry)
+    );
+
+    const exposedEmbeddedModules = configs.embeddedModules?.exposes;
+
+    if (!exposedEmbeddedModules || Object.keys(exposedEmbeddedModules).length === 0) {
+        return appWebpackConfig;
+    }
+
+    // Добавляем отдельные конфигурации для embedded модулей
+    const modulesWebpackConfigs = Object.keys(exposedEmbeddedModules).map((moduleName) => {
+        const module = {
+            name: moduleName,
+            ...exposedEmbeddedModules[moduleName]
+        };
+        const config = createSingleClientWebpackConfig(mode, {
+            [module.name]: module.entry,
+        }, module.name);
+
+        return patchWebpackConfigForEmbedded(module, config);
+    });
+
+    return [appWebpackConfig, ...modulesWebpackConfigs];
 }
