@@ -63,7 +63,33 @@ export type AppConfigs = {
     // CSS
     componentsTheme: string | null;
     keepCssVars: boolean;
+
+    // Modules
+    embeddedModules: {
+        shared?: {
+            [libraryName: string]: string;
+        }
+        exposes?: {
+            [moduleId: string]: EmbeddedModuleConfigBase;
+        };
+    } | null;
+    mfModules: {
+        name?: string;
+        shared: any; // webpack don't expose this type
+        exposes?: Record<string, string>;
+    } | null;
 };
+
+type EmbeddedModuleConfigBase = {
+    entry: string;
+    embeddedConfig?: Record<string, string>;
+    cssPrefix?: false | string;
+}
+
+export type EmbeddedModuleConfig = EmbeddedModuleConfigBase & {
+    name: string;
+};
+
 
 /**
  * Внутренний контекст arui-scripts

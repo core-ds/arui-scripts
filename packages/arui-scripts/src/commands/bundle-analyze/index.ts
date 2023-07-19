@@ -2,23 +2,24 @@ import webpack from 'webpack';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import makeTmpDir from '../util/make-tmp-dir';
 import clientConfig from '../../configs/webpack.client.prod';
+import configs from "../../configs/app-configs";
 
 (async () => {
     let clientWebpackConfigs = Array.isArray(clientConfig) ? clientConfig : [clientConfig];
 
-    const promises = clientWebpackConfigs.map(async (config, i) => {
+    const promises = clientWebpackConfigs.map(async (webpackConfig, i) => {
         const tmpDir = await makeTmpDir(i.toString());
 
-        config.plugins = [
-            ...config.plugins,
+        webpackConfig.plugins = [
+            ...(webpackConfig.plugins || []),
             new BundleAnalyzerPlugin({
                 generateStatsFile: true,
-                statsFilename: config.statsOutputPath,
+                statsFilename: configs.statsOutputPath,
                 analyzerPort: 'auto',
             }),
         ]
-        config.output = {
-            ...config.output,
+        webpackConfig.output = {
+            ...webpackConfig.output,
             path: tmpDir,
         }
     });

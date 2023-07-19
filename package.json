@@ -19,6 +19,7 @@
         }
     },
     "scripts": {
-        "publish-packages": "turbo run build lint test && changeset version && changeset publish"
+        "publish-packages": "turbo run build lint test && changeset version && changeset publish",
+        "build": "turbo run build"
     }
 }
