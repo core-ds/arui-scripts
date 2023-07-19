@@ -1,4 +1,4 @@
-import type { OverrideFile } from "arui-scripts";
+import { OverrideFile } from "arui-scripts";
 
 const overrides: OverrideFile = {
     webpackServer: (config) => ({
@@ -8,6 +8,18 @@ const overrides: OverrideFile = {
             { express: "commonjs express" },
         ],
     }),
+    webpackClient: (config, appConfig, { createSingleClientWebpackConfig }) => {
+        const workerConfig = createSingleClientWebpackConfig(
+            { worker: './src/worker.ts' },
+            'worker',
+        );
+        workerConfig.output.filename = 'worker.js';
+
+        return [
+            config,
+            workerConfig,
+        ];
+    },
     postcss(config) {
         return [
             ...config,

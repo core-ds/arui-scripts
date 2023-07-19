@@ -2,6 +2,7 @@ import type { Configuration as WebpackConfiguration, WebpackOptionsNormalized } 
 import type { Configuration as WebpackDevServerConfiguration } from 'webpack-dev-server';
 import appConfigs from '../app-configs';
 import { AppConfigs } from '../app-configs/types';
+import { createSingleClientWebpackConfig } from "../webpack.client";
 
 type Overrides = {
     webpack: WebpackConfiguration | WebpackConfiguration[];
@@ -32,7 +33,28 @@ type Overrides = {
     serverExternalsExemptions: Array<string | RegExp>;
 };
 
-type OverrideFunction<K extends keyof Overrides> = (config: Overrides[K], appConfig: AppConfigs) => Overrides[K];
+type OmitFirstArg<F> = F extends (x: any, ...args: infer P) => infer R ? (...args: P) => R : never;
+type BoundCreateSingleClientWebpackConfig = OmitFirstArg<typeof createSingleClientWebpackConfig>;
+
+type ClientWebpackAdditionalArgs = {
+    createSingleClientWebpackConfig: BoundCreateSingleClientWebpackConfig;
+}
+
+/**
+ * Дополнительные аргументы, которые будут переданы в функцию оверрайда
+ */
+type OverridesAdditionalArgs = {
+    webpack: ClientWebpackAdditionalArgs;
+    webpackClient: ClientWebpackAdditionalArgs;
+    webpackDev: ClientWebpackAdditionalArgs;
+    webpackClientDev: ClientWebpackAdditionalArgs;
+}
+
+type OverrideFunction<K extends keyof Overrides, AdditionalArgs = K extends keyof OverridesAdditionalArgs ? OverridesAdditionalArgs[K] : undefined> = (
+    config: Overrides[K],
+    appConfig: AppConfigs,
+    additionalArgs: AdditionalArgs
+) => Overrides[K];
 
 export type OverrideFile = {
     [K in keyof Overrides]?: OverrideFunction<K>;
@@ -59,9 +81,14 @@ overrides = appConfigs.overridesPath.map(path => {
  *
  * @param {String|String[]} overridesKey Ключи оверрайда
  * @param {Object} config Конфиг, к которому нужно применить оверрайды
+ * @param args Дополнительные аргументы, которые будут переданы в функцию оверрайда
  * @returns {*}
  */
-function applyOverrides<T extends Overrides[Key], Key extends keyof Overrides>(overridesKey: Key | Key[], config: T): T {
+function applyOverrides<
+    T extends Overrides[Key],
+    Key extends keyof Overrides,
+    Args = Key extends keyof OverridesAdditionalArgs ? OverridesAdditionalArgs[Key] : undefined
+>(overridesKey: Key | Key[], config: T, args?: any): T {
     if (typeof overridesKey === 'string') {
         overridesKey = [overridesKey];
     }
@@ -72,7 +99,7 @@ function applyOverrides<T extends Overrides[Key], Key extends keyof Overrides>(o
                 if (typeof overrideFn !== 'function') {
                     throw new TypeError(`Override ${key} must be a function`)
                 }
-                config = overrideFn(config, appConfigs);
+                config = overrideFn(config, appConfigs, args);
             }
         });
     });

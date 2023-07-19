@@ -24,3 +24,7 @@ if (process.env.NODE_ENV !== 'production' && module.hot) {
         targetElement
     );
 }
+
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register("/assets/worker.js");
+}

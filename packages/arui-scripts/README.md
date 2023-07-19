@@ -590,7 +590,7 @@ export default overrides;
             const { files } = postcssPluginsOptions['@csstools/postcss-global-data'];
             const newOption = {
                 ...postcssPluginsOptions,
-                '@csstools/postcss-global-data': { 
+                '@csstools/postcss-global-data': {
                     files:files.concat(['./vars.css'])
                 }
             };
@@ -620,6 +620,32 @@ export default overrides;
 - `serverExternalsExemptions` - список модулей, которые не будут добавлены в список внешних зависимостей сервера. [Подробнее](#node-externals).
 
 Для некоторых конфигураций определены несколько ключей, они будут применяться в том порядке, в котором они приведены в этом файле.
+
+### Создание дополнительных конфигураций для webpack
+На некоторых проектах может потребоваться создать дополнительные конфигурации для webpack. Например, для создания
+service worker'а (или любых других кейсов). Для этого можно использовать функцию-хелпер `createSingleWebpackConfig`:
+
+```ts
+import type { OverrideFile } from 'arui-scripts';
+
+const overrides: OverrideFile = {
+    webpackClient: (config, appConfig, { createSingleClientWebpackConfig }) => {
+        return [
+            config,
+            createSingleClientWebpackConfig(
+                './src/sw.js', // entrypoint, может быть массивом/объектом
+                'sw', // наименование сборки, влияет на имена чанков
+            ),
+        ];
+    }
+};
+
+export default overrides;
+```
+Эта функция вернет независимую конфигурацию для webpack, которую можно использовать в качестве оверрайда. Вы так же можете ее модифицировать,
+не боясь что это повлияет на другие конфигурации.
+
+Созданная таким образом конфигурация будет шарить с оригинальной конфигурацией только плагин для формирования assets-manifest'а.
 
 Пресеты
 ===
