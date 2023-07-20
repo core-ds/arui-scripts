@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { Suspense } from 'react';
+
+const Runtime = React.lazy( () => import('./runtime-chunk') );
 
 export const ServerModuleEmbedded = (props: { runParams: any, serverState: any }) => (
     <div>
@@ -18,6 +20,10 @@ export const ServerModuleEmbedded = (props: { runParams: any, serverState: any }
             <pre>
                 {JSON.stringify(props.runParams, null, 4)}
             </pre>
+
+            <Suspense fallback={<div>Loading...</div>}>
+                <Runtime />
+            </Suspense>
         </div>
     </div>
 )
