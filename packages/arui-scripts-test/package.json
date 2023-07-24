@@ -11,15 +11,6 @@
         "imageMinimizer": {
             "svg": {
                 "enabled": true
-            },
-            "gif": {
-                "enabled": true
-            },
-            "jpg": {
-                "enabled": true
-            },
-            "png": {
-                "enabled": true
             }
         }
     },

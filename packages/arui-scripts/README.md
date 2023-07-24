@@ -80,7 +80,10 @@ npm install arui-scripts --save-dev
 - `keepCssVars` - отключает `postcss-custom-properties`, css переменные будут оставаться в бандле.
 - `removeDevDependenciesDuringDockerBuild` - отключает удаление devDependencies из node_modules при сборке докер образа. Используется когда вам не нужно удалять devDependencies, т.к. в своём Dockerfile вы не переносите node_modules в докер-контейнер.
 - `dataUrlMaxSize` - ресурсы, не превышающие данный размер (в байтах), будут включены в исходники `inline`, иначе вынесены в отдельный файл. По умолчанию `1536`.
-- `imageMinimizer` - раздел настроек, связанных с оптимизацией графики.
+- `imageMinimizer` - раздел настроек, связанных с оптимизацией графики.<br/><br/>
+:warning: **Внимание!** Если вы планируете использовать любые `imagemin`-плагины, кроме `svgo`, необходимо установить их дополнительно. <br/>
+Так как после установки плагинам необходим прямой доступ в сеть для скачивания утилит (`cjpeg` и пр.), они указаны в `peerDependencies` `arui-scripts`, чтобы не приводить к ошибкам в закрытых контурах.<br/><br/>
+
 - `imageMinimizer.svg.enabled` - включает/отключает оптимизацию `svg`. По умолчанию `true`.
 - `imageMinimizer.gif.enabled` - включает/отключает оптимизацию `gif`. По умолчанию `false`.
 - `imageMinimizer.gif.optimizationLevel` - уровень сжатия `gif`. От `1` до `3`. По умолчанию `1`.
