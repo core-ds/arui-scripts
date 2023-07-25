@@ -32,4 +32,5 @@ jobs:
             yarn run changeset version --snapshot ${{ github.event.inputs.prefix }}
             yarn run changeset publish --tag next --no-git-tag --snapshot
         env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
