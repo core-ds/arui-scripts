@@ -58,6 +58,7 @@ const clientAssetsPlugin = new AssetsPlugin({
  * @param configName Имя конфигурации, если не указано, то используется имя по умолчанию
  */
 export const createSingleClientWebpackConfig = (mode: 'dev' | 'prod', entry: Entry, configName?: string): Configuration => ({
+    ...(configName ? { name: configName } : {}), // Если добавлять имя конфигурации всегда - могут ломаться оверрайды, которые считают что у дефолтной конфигурации нет имени
     target: 'web',
     mode: mode === 'dev' ? 'development' : 'production',
     devtool: mode === 'dev' ? configs.devSourceMaps : 'source-map',
@@ -65,7 +66,6 @@ export const createSingleClientWebpackConfig = (mode: 'dev' | 'prod', entry: Ent
     // in production mode we need to fail on first error
     bail: mode === 'prod',
     context: configs.cwd,
-    name: configName,
     output: {
         assetModuleFilename: 'static/media/[name].[hash:8][ext]',
         // Add /* filename */ comments to generated require()s in the output.

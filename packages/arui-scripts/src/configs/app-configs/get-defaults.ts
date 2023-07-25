@@ -7,6 +7,7 @@ const CWD = process.cwd();
 const absoluteSrcPath = path.resolve(CWD, 'src');
 
 export function getDefaultAppConfig(): AppConfigs {
+    const appPackage = getPackageJson();
     return {
         /// general settings
         clientServerPort: 8080,
@@ -15,7 +16,7 @@ export function getDefaultAppConfig(): AppConfigs {
         devSourceMaps: 'eval',
         devServerCors: false,
         useServerHMR: false,
-        presets: null,
+        presets: appPackage.aruiScripts?.presets || null,
 
         // paths
         buildPath: '.build',
@@ -71,12 +72,18 @@ export function getDefaultAppConfig(): AppConfigs {
     };
 }
 
-export function getDefaultAppContext(): AppContext {
+function getPackageJson() {
     const appPackage = JSON.parse(fs.readFileSync(path.join(CWD, 'package.json'), 'utf8'));
 
     if (appPackage['arui-scripts']) {
         throw Error('arui-scripts in package.json is not supported. Use aruiScripts instead.');
     }
+
+    return appPackage;
+}
+
+export function getDefaultAppContext(): AppContext {
+    const appPackage = getPackageJson();
 
     const absoluteNodeModulesPath = path.resolve(CWD, 'node_modules');
     const absoluteNodeModulesBinPath = path.resolve(absoluteNodeModulesPath, '.bin');
