@@ -25,6 +25,12 @@ jobs:
       - name: Install Dependencies
         run: yarn
 
+      - name: Creating .npmrc
+        run: |
+          cat << EOF > "$HOME/.npmrc"
+            //registry.npmjs.org/:_authToken=$NPM_TOKEN
+          EOF
+
       - name: Publish snapshot release
         id: release
         run: |
@@ -33,4 +39,3 @@ jobs:
             yarn run changeset publish --tag next --no-git-tag --snapshot
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
