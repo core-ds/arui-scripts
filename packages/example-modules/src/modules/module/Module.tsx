@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const ClientModuleMf = () => (
+export const Module = () => (
     <div>
         <h1>Модуль, загруженный через module-federation</h1>
 

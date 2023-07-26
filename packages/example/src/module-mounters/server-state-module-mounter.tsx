@@ -1,25 +1,24 @@
 import React from 'react';
 import {
-    BaseModuleState,
-    createClientResourcesFetcher,
     createModuleLoader,
-    MountableModule,
     useModuleMounter,
+    MountableModule,
+    BaseModuleState,
+    createServerStateModuleFetcher,
 } from '@alfalab/scripts-modules';
 import { Underlay } from '@alfalab/core-components/underlay';
 import { Spinner } from '@alfalab/core-components/spinner';
 
-const loader = createModuleLoader<MountableModule<void, BaseModuleState>>({
+const loader = createModuleLoader<MountableModule<{ some: string }, BaseModuleState>>({
     hostAppId: 'example',
-    moduleId: 'ClientModuleMF',
-    getModuleResources: createClientResourcesFetcher({
-        baseUrl: 'http://localhost:8082',
-    })
+    moduleId: 'ServerStateModule',
+    getModuleResources: createServerStateModuleFetcher({ baseUrl: 'http://localhost:8082' }),
 });
 
-export const MfModuleMounter = () => {
+export const ServerStateModuleMounter = () => {
     const { loadingState, targetElementRef } = useModuleMounter({
         loader,
+        runParams: { some: 'anything that you want' }
     });
 
     return (

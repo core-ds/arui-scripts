@@ -7,13 +7,13 @@ const aruiScriptsConfig: PackageSettings = {
     clientEntry: './src/client',
     keepCssVars: false,
     debug: true,
-    embeddedModules: {
+    compatModules: {
         shared: {
             'react': 'react',
             'react-dom': 'reactDOM',
         }
     },
-    mfModules: {
+    modules: {
         shared: {
             'react': {
                 eager: true,

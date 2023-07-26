@@ -1,40 +1,40 @@
 import webpack from 'webpack';
 import cssPrefix from 'postcss-prefix-selector';
 import configs from './app-configs';
-import { EmbeddedModuleConfig } from './app-configs/types';
+import { CompatModuleConfig } from './app-configs/types';
 import {findLoader} from "./util/find-loader";
 
-export function haveExposedMfModules() {
-    return configs.mfModules?.exposes;
+export function haveExposedDefaultModules() {
+    return configs.modules?.exposes;
 }
 
-export const MF_ENTRY_NAME = 'remoteEntry.js';
+export const MODULES_ENTRY_NAME = 'remoteEntry.js';
 
 export function patchMainWebpackConfigForModules(webpackConf: webpack.Configuration) {
     // Добавляем expose loader для библиотек, которые мы хотим вынести в глобальную область видимости
-    webpackConf.module!.rules!.unshift(...getExposeLoadersFormEmbeddedModules());
+    webpackConf.module!.rules!.unshift(...getExposeLoadersFormCompatModules());
 
-    if (!configs.mfModules || !webpackConf.output || !webpackConf.plugins) {
+    if (!configs.modules || !webpackConf.output || !webpackConf.plugins) {
         return webpackConf;
     }
 
-    webpackConf.output.publicPath = haveExposedMfModules()
+    webpackConf.output.publicPath = haveExposedDefaultModules()
         ? 'auto' // Для того чтобы модули могли подключаться из разных мест, нам необходимо использовать auto. Для корректной работы в IE надо подключaть https://github.com/amiller-gh/currentScript-polyfill
         : configs.publicPath;
 
     webpackConf.plugins!.push(
         new webpack.container.ModuleFederationPlugin({
-            name: configs.mfModules.name || configs.normalizedName,
-            filename: configs.mfModules.exposes ? MF_ENTRY_NAME : undefined,
-            shared: configs.mfModules.shared,
-            exposes: configs.mfModules.exposes,
+            name: configs.modules.name || configs.normalizedName,
+            filename: configs.modules.exposes ? MODULES_ENTRY_NAME : undefined,
+            shared: configs.modules.shared,
+            exposes: configs.modules.exposes,
         }),
     );
 
     return webpackConf;
 }
 
-export function getCssPrefixForModule(module: EmbeddedModuleConfig) {
+export function getCssPrefixForModule(module: CompatModuleConfig) {
     if (module.cssPrefix) {
         return module.cssPrefix;
     }
@@ -44,8 +44,8 @@ export function getCssPrefixForModule(module: EmbeddedModuleConfig) {
     return `.module-${module.name}`;
 }
 
-export function getExposeLoadersFormEmbeddedModules() {
-    const shared = configs.embeddedModules?.shared;
+export function getExposeLoadersFormCompatModules() {
+    const shared = configs.compatModules?.shared;
     if (!shared) {
         return [];
     }
@@ -87,10 +87,10 @@ function addPrefixCssRule(rule: webpack.RuleSetRule | undefined, prefix: string)
     ];
 }
 
-export function patchWebpackConfigForEmbedded(module: EmbeddedModuleConfig, webpackConf: webpack.Configuration) {
+export function patchWebpackConfigForCompat(module: CompatModuleConfig, webpackConf: webpack.Configuration) {
     webpackConf.externals = {
         ...(webpackConf.externals as Record<string, any> || {}),
-        ...(module.embeddedConfig || {})
+        ...(module.externals || {})
     };
     // Название переменной вебпака, которую он будет использовать для загрузки чанков. Важно чтобы для разных модулей они отличались,
     // иначе несколько модулей из одного приложения будут конфликтовать между собой

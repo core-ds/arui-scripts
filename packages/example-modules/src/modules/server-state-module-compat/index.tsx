@@ -1,16 +1,16 @@
 import type { ModuleMountFunction, ModuleUnmountFunction } from '@alfalab/scripts-modules';
 import ReactDOM from 'react-dom';
 import React from 'react';
-import { ServerModuleEmbedded } from '#/modules/server-module-embedded/server-module-embedded';
+import { ServerStateModuleCompat } from '#/modules/server-state-module-compat/server-state-module-compat';
 
 const mountModule: ModuleMountFunction<any, any> = (targetNode, runParams, serverState) => {
-    console.log('ServerModuleEmbedded: mount', { runParams, serverState });
+    console.log('ServerStateModuleCompat: mount', { runParams, serverState });
 
-    ReactDOM.render(<ServerModuleEmbedded serverState={serverState} runParams={runParams} />, targetNode);
+    ReactDOM.render(<ServerStateModuleCompat serverState={serverState} runParams={runParams} />, targetNode);
 };
 
 const unmountModule: ModuleUnmountFunction = (targetNode) => {
-    console.log('ServerModuleEmbedded: cleanup');
+    console.log('ServerStateModuleCompat: cleanup');
 
     if (targetNode) {
         ReactDOM.unmountComponentAtNode(targetNode);
@@ -18,7 +18,7 @@ const unmountModule: ModuleUnmountFunction = (targetNode) => {
 };
 
 // TODO: типизировать
-(window as any).ServerModuleEmbedded = {
+(window as any).ServerStateModuleCompat = {
     mount: mountModule,
     unmount: unmountModule,
 };

@@ -35,7 +35,7 @@ const loader = createModuleLoader({
         styles: ['http://localhost:8081/static/css/main.css'], // стили модуля
         moduleVersion: '1.0.0', // версия модуля
         appName: 'moduleSourceAppName', // имя приложения, которое является источником модуля
-        mountMode: 'embedded', // режим монтирования модуля
+        mountMode: 'compat', // режим монтирования модуля
         moduleRunParams: { // параметры, которые будут доступны при инициализации модуля
             baseUrl: 'http://localhost:8081',
         },
@@ -50,37 +50,37 @@ const loader = createModuleLoader({
 });
 ```
 
-### `createClientResourcesFetcher`
+### `createModuleFetcher`
 Функция, которая создает функцию `getModuleResources` для загрузки клиентских модулей.
 
 ```ts
-import { createClientResourcesFetcher } from '@alfalab/scripts-modules';
+import { createModuleFetcher } from '@alfalab/scripts-modules';
 
-const getModuleResources = createClientResourcesFetcher({
+const getModuleResources = createModuleFetcher({
     baseUrl: '', // Базовый адрес приложения, которое предоставляет модули. Может быть как относительным, так и абсолютным.
     assetsUrl: '/assets/webpack-assets.json', // опциональный параметр для переопределения пути до файла с манифестом
 });
 ```
 
-### `createServerResourcesFetcher`
+### `createServerStateModuleFetcher`
 Функция, которая создает функцию `getModuleResources` для загрузки серверных модулей.
 
 ```ts
-import { createServerResourcesFetcher } from '@alfalab/scripts-modules';
+import { createServerStateModuleFetcher } from '@alfalab/scripts-modules';
 
-const getModuleResources = createServerResourcesFetcher({
+const getModuleResources = createServerStateModuleFetcher({
     baseUrl: '', // Базовый адрес приложения, которое предоставляет модули. Может быть как относительным, так и абсолютным.
     headers: {}, // опциональный параметр для передачи дополнительных заголовков в запрос
 });
 ```
 
-### `getServerFetcherParams`
+### `getServerStateModuleFetcherParams`
 Функция, которая возвращает параметры для запроса серверных модулей.
 
 ```ts
-import { getServerFetcherParams } from '@alfalab/scripts-modules';
+import { getServerStateModuleFetcherParams } from '@alfalab/scripts-modules';
 
-const params = getServerFetcherParams(); // { method: 'POST', relativePath: '/api/getModuleResources' }
+const params = getServerStateModuleFetcherParams(); // { method: 'POST', relativePath: '/api/getModuleResources' }
 ```
 
 ### `useModuleLoader`

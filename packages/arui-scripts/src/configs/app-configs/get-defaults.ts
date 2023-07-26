@@ -71,8 +71,8 @@ export function getDefaultAppConfig(): AppConfigs {
         keepCssVars: false,
 
         // Modules
-        embeddedModules: null,
-        mfModules: null,
+        compatModules: null,
+        modules: null,
     };
 }
 

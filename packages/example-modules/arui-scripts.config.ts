@@ -10,36 +10,36 @@ const aruiScriptsConfig: PackageSettings = {
     clientEntry: "./src/client",
     keepCssVars: false,
     debug: true,
-    embeddedModules: {
+    compatModules: {
         shared: {
             react: 'react',
             'react-dom': 'reactDOM',
         },
         exposes: {
-            'ClientModuleEmbedded': {
-                entry: './src/modules/client-module-embedded/index',
+            'ModuleCompat': {
+                entry: './src/modules/module-compat/index',
             },
-            'ServerModuleEmbedded': {
-                entry: './src/modules/server-module-embedded/index',
-                embeddedConfig: {
+            'ServerStateModuleCompat': {
+                entry: './src/modules/server-state-module-compat/index',
+                externals: {
                     react: 'react',
                     'react-dom': 'reactDOM',
                 }
             },
-            'ClientModuleAbstract': {
-                entry: './src/modules/client-module-abstract/index',
+            'ModuleAbstractCompat': {
+                entry: './src/modules/module-abstract/index',
             }
         }
     },
-    mfModules: {
+    modules: {
         shared: {
             'react': '^17.0.0',
             'react-dom': '^17.0.0',
         },
         exposes: {
-            'ClientModuleMF': './src/modules/client-module-mf/index',
-            'ServerModuleMF': './src/modules/server-module-mf/index',
-            'ClientModuleAbstractMF': './src/modules/client-module-abstract/index',
+            'Module': './src/modules/module/index',
+            'ServerStateModule': './src/modules/server-state-module/index',
+            'ModuleAbstract': './src/modules/module-abstract/index',
         }
     }
 }

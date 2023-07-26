@@ -2,12 +2,12 @@ import type { ModuleMountFunction, ModuleUnmountFunction, WindowWithMountableMod
 import './styles.css';
 
 const mountModule: ModuleMountFunction<any, any> = (targetNode, runParams) => {
-    console.log('ClientModuleEmbedded: mount', { runParams });
+    console.log('ModuleCompat: mount', { runParams });
 
     if (targetNode) {
         targetNode.innerHTML = `
-  <div class="module-ClientModuleEmbedded">
-    Это модуль ClientModuleEmbedded, который был загружен в режиме embedded.
+  <div class="module-ModuleCompat">
+    Это модуль ModuleCompat, который был загружен в режиме compat.
 
     <div class="primary">
       У виджета могут быть свои стили, которые автоматически будут изолированы от других стилей на странице.
@@ -18,14 +18,14 @@ const mountModule: ModuleMountFunction<any, any> = (targetNode, runParams) => {
 };
 
 const unmountModule: ModuleUnmountFunction = (targetNode) => {
-    console.log('ClientModuleEmbedded: cleanup');
+    console.log('ModuleCompat: cleanup');
 
     if (targetNode) {
         targetNode.innerHTML = '';
     }
 };
 
-(window as WindowWithMountableModule).ClientModuleEmbedded = {
+(window as WindowWithMountableModule).ModuleCompat = {
     mount: mountModule,
     unmount: unmountModule,
 };

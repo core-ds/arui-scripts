@@ -1,7 +1,7 @@
 import path from 'path';
 import { Assets } from 'assets-webpack-plugin';
 import configs from './app-configs';
-import { MF_ENTRY_NAME } from './modules';
+import { MODULES_ENTRY_NAME } from './modules';
 
 export function processAssetsPluginOutput(assets: Assets) {
     let adjustedAssets = assets;
@@ -14,14 +14,14 @@ export function processAssetsPluginOutput(assets: Assets) {
         };
     });
 
-    // добавляем в манифест js-файлы для mf модулей
-    Object.keys(configs.mfModules?.exposes || {}).forEach((moduleName) => {
-        if (configs.embeddedModules?.exposes?.[moduleName]) {
-            throw new Error(`Модуль ${moduleName} определен как mf и как embedded. Поменяйте название одного из модулей или удалите его`);
+    // добавляем в манифест js-файлы для модулей
+    Object.keys(configs.modules?.exposes || {}).forEach((moduleName) => {
+        if (configs.compatModules?.exposes?.[moduleName]) {
+            throw new Error(`Модуль ${moduleName} определен как module и как compat. Поменяйте название одного из модулей или удалите его`);
         }
         adjustedAssets[moduleName] = {
-            mode: 'mf',
-            js: path.join(configs.publicPath, MF_ENTRY_NAME),
+            mode: 'default',
+            js: path.join(configs.publicPath, MODULES_ENTRY_NAME),
         };
     });
 

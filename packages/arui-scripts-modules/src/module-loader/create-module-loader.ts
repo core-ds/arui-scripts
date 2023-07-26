@@ -1,7 +1,7 @@
 import { BaseModuleState, GetResourcesRequest, Loader, LoaderParams, ModuleResources } from './types';
 import { removeModuleResources, scriptsFetcher, stylesFetcher } from './utils/dom-utils';
 import { ConsumersCounter } from './utils/consumers-counter';
-import { getEmbeddedModule, getMfModule } from './utils/get-module';
+import { getCompatModule, getModule } from './utils/get-module';
 import { cleanGlobal } from './utils/clean-global';
 
 export type ModuleResourcesGetter<GetResourcesParams, ModuleState extends BaseModuleState> = (params: GetResourcesRequest<GetResourcesParams>) => Promise<ModuleResources<ModuleState>>;
@@ -88,9 +88,9 @@ export function createModuleLoader<ModuleExportType, GetResourcesParams = undefi
         await onBeforeModuleMount?.(moduleId, moduleResources);
 
         // В зависимости от типа модуля, получаем его контент необходимым способом
-        const loadedModule = moduleResources.mountMode === 'mf'
-            ? await getMfModule<ModuleExportType>(moduleResources.appName, moduleId)
-            : getEmbeddedModule<ModuleExportType>(moduleId);
+        const loadedModule = moduleResources.mountMode === 'default'
+            ? await getModule<ModuleExportType>(moduleResources.appName, moduleId)
+            : getCompatModule<ModuleExportType>(moduleId);
 
         if (!loadedModule) {
             throw new Error(

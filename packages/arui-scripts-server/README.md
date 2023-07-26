@@ -34,7 +34,7 @@ import { createGetModulesHapi16Plugin } from '@alfalab/scripts-server/build/hapi
 
 const modulesPlugin = createGetModulesHapi16Plugin({
   moduleId: {
-    mountMode: 'embedded',
+    mountMode: 'compat',
     getRunParams: async (getResourcesRequest, hapiRequestObject) => ({}),
   },
 });
@@ -50,7 +50,7 @@ import { createGetModulesHapi20Plugin } from '@alfalab/scripts-server/build/hapi
 
 const modulesPlugin = createGetModulesHapi20Plugin({
   moduleId: {
-    mountMode: 'embedded',
+    mountMode: 'compat',
     getRunParams: async (getResourcesRequest, hapiRequestObject) => ({}),
   },
 });
@@ -66,7 +66,7 @@ import { createGetModulesExpress } from '@alfalab/scripts-server/build/express';
 
 const modulesRouter = createGetModulesExpress({
   moduleId: {
-    mountMode: 'embedded',
+    mountMode: 'compat',
     getRunParams: async (getResourcesRequest, expressRequestObject) => ({}),
   },
 });
@@ -83,7 +83,7 @@ import { createGetModulesMethod } from '@alfalab/scripts-server';
 
 const getModules = createGetModulesMethod({
   moduleId: {
-    mountMode: 'embedded',
+    mountMode: 'compat',
     getRunParams: async (getResourcesRequest, ...additionalArgs) => ({}),
   },
 });

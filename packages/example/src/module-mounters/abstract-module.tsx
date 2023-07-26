@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-    createClientResourcesFetcher,
+    createModuleFetcher,
     createModuleLoader,
     useModuleLoader,
 } from '@alfalab/scripts-modules';
@@ -9,8 +9,8 @@ import { Spinner } from '@alfalab/core-components/spinner';
 
 const loader = createModuleLoader<any>({
     hostAppId: 'example',
-    moduleId: 'ClientModuleAbstractMF',
-    getModuleResources: createClientResourcesFetcher({
+    moduleId: 'ModuleAbstract',
+    getModuleResources: createModuleFetcher({
         baseUrl: 'http://localhost:8082',
     })
 });

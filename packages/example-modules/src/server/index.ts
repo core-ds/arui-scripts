@@ -30,8 +30,8 @@ ${assets.js.map(c => `<script type='text/javascript' src='/${c}'></script>`).joi
 
 
 const moduleRouter = createGetModulesExpress({
-    'ServerModuleEmbedded': {
-        mountMode: 'embedded',
+    'ServerStateModuleCompat': {
+        mountMode: 'compat',
         version: '1.0.0',
         getModuleState: async (getResourcesRequest, request) => {
             console.log('We can get some data from resource request here', getResourcesRequest);
@@ -44,8 +44,8 @@ const moduleRouter = createGetModulesExpress({
             });
         },
     },
-    'ServerModuleMF': {
-        mountMode: 'mf',
+    'ServerStateModule': {
+        mountMode: 'default',
         version: '1.0.0',
         getModuleState: async () => ({
             paramFromServer: 'This can be any data from server',

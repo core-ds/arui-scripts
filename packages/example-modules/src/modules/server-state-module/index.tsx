@@ -1,14 +1,14 @@
 import React from 'react';
 import type { ModuleMountFunction, ModuleUnmountFunction } from '@alfalab/scripts-modules';
 import ReactDOM from 'react-dom';
-import { ServerModuleMf } from './ServerModuleMf';
+import { ServerStateModule } from './ServerStateModule';
 
 export const mount: ModuleMountFunction<any, any> = (targetNode, runParams, serverState) => {
-    console.log('ServerModuleMf: mount', { runParams, serverState });
-    ReactDOM.render(<ServerModuleMf runParams={runParams} serverState={serverState} />, targetNode);
+    console.log('ServerStateModule: mount', { runParams, serverState });
+    ReactDOM.render(<ServerStateModule runParams={runParams} serverState={serverState} />, targetNode);
 }
 export const unmount: ModuleUnmountFunction = (targetNode) => {
-    console.log('ServerModuleMf: unmount');
+    console.log('ServerStateModule: unmount');
 
     ReactDOM.unmountComponentAtNode(targetNode);
 }

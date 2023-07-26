@@ -1,9 +1,9 @@
 export * from './types';
 
 export { createModuleLoader } from './create-module-loader';
-export { createClientResourcesFetcher } from './create-client-resources-fetcher';
-export { createServerResourcesFetcher } from './create-server-resources-fetcher';
-export { getServerFetcherParams } from './get-server-fetcher-params';
+export { createModuleFetcher } from './create-module-fetcher';
+export { createServerStateModuleFetcher } from './create-server-state-module-fetcher';
+export { getServerStateModuleFetcherParams } from './get-server-state-module-fetcher-params';
 
 export { useModuleLoader } from './hooks/use-module-loader';
 export { useModuleMounter } from './hooks/use-module-mounter';

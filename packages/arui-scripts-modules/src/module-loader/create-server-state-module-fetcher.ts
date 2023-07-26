@@ -1,18 +1,24 @@
 import { ModuleResourcesGetter } from './create-module-loader';
 import { AruiAppManifest, BaseModuleState } from './types';
 import { urlSegmentWithoutEndSlash } from './utils/normalize-url-segment';
-import { getServerFetcherParams } from './get-server-fetcher-params';
+import { getServerStateModuleFetcherParams } from './get-server-state-module-fetcher-params';
 
 type CreateServerResourcesFetcherParams = {
     baseUrl: string;
     headers?: Record<string, string>;
 }
-export function createServerResourcesFetcher<GetResourcesParams = undefined>({
+
+/**
+ * Функция, которая создает метод для получения ресурсов модуля с серверным состоянием
+ * @param baseUrl
+ * @param headers
+ */
+export function createServerStateModuleFetcher<GetResourcesParams = undefined>({
     baseUrl,
     headers = {},
 }: CreateServerResourcesFetcherParams): ModuleResourcesGetter<GetResourcesParams, BaseModuleState> {
     return async function fetchServerResources(params) {
-        const { relativePath, method } = getServerFetcherParams();
+        const { relativePath, method } = getServerStateModuleFetcherParams();
         const url = `${urlSegmentWithoutEndSlash(baseUrl)}${relativePath}`;
 
         return new Promise((resolve, reject) => {

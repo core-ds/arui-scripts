@@ -93,7 +93,7 @@ npm install arui-scripts --save-dev
 - `imageMinimizer.png.paletteReduction` - допускает уменьшение палитры изображения. По умолчанию `false`. [Подробнее](https://github.com/imagemin/imagemin-optipng#palettereduction)
 - `imageMinimizer.png.interlaced` - потоковый порядок передачи изображение. По умолчанию этот параметр идентичен значению из входного изображения. [Подробнее](https://github.com/imagemin/imagemin-optipng#interlaced)
 - `devServerCors` - включает добавление cors-заголовков в dev-server. Может быть полезным при локальном тестировании модулей.
-- `embeddedModules`, `mfModules` - позволяет настраивать работу с модулями, подробнее в разделе [Модули](./docs/modules.md).
+- `modules`, `compatModules` - позволяет настраивать работу с модулями, подробнее в разделе [Модули](./docs/modules.md).
 
 В целях отладки все эти настройки можно переопределить не изменяя package.json
 Просто передайте необходимые настройки в environment переменной ARUI_SCRIPTS_CONFIG

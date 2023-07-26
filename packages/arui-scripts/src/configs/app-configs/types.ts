@@ -65,28 +65,28 @@ export type AppConfigs = {
     keepCssVars: boolean;
 
     // Modules
-    embeddedModules: {
+    compatModules: {
         shared?: {
             [libraryName: string]: string;
         }
         exposes?: {
-            [moduleId: string]: EmbeddedModuleConfigBase;
+            [moduleId: string]: CompatModuleConfigBase;
         };
     } | null;
-    mfModules: {
+    modules: {
         name?: string;
         shared: any; // webpack don't expose this type
         exposes?: Record<string, string>;
     } | null;
 };
 
-type EmbeddedModuleConfigBase = {
+type CompatModuleConfigBase = {
     entry: string;
-    embeddedConfig?: Record<string, string>;
+    externals?: Record<string, string>;
     cssPrefix?: false | string;
 }
 
-export type EmbeddedModuleConfig = EmbeddedModuleConfigBase & {
+export type CompatModuleConfig = CompatModuleConfigBase & {
     name: string;
 };
 

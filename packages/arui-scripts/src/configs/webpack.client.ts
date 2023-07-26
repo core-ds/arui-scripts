@@ -26,7 +26,7 @@ import {
     processAssetsPluginOutput,
 } from './process-assets-plugin-output';
 import {
-    patchWebpackConfigForEmbedded,
+    patchWebpackConfigForCompat,
     patchMainWebpackConfigForModules,
 } from './modules';
 
@@ -439,23 +439,23 @@ export const createClientWebpackConfig = (mode: 'dev' | 'prod') => {
         createSingleClientWebpackConfig(mode, configs.clientEntry)
     );
 
-    const exposedEmbeddedModules = configs.embeddedModules?.exposes;
+    const exposedCompatModules = configs.compatModules?.exposes;
 
-    if (!exposedEmbeddedModules || Object.keys(exposedEmbeddedModules).length === 0) {
+    if (!exposedCompatModules || Object.keys(exposedCompatModules).length === 0) {
         return appWebpackConfig;
     }
 
-    // Добавляем отдельные конфигурации для embedded модулей
-    const modulesWebpackConfigs = Object.keys(exposedEmbeddedModules).map((moduleName) => {
+    // Добавляем отдельные конфигурации для compat модулей
+    const modulesWebpackConfigs = Object.keys(exposedCompatModules).map((moduleName) => {
         const module = {
             name: moduleName,
-            ...exposedEmbeddedModules[moduleName]
+            ...exposedCompatModules[moduleName]
         };
         const config = createSingleClientWebpackConfig(mode, {
             [module.name]: module.entry,
         }, module.name);
 
-        return patchWebpackConfigForEmbedded(module, config);
+        return patchWebpackConfigForCompat(module, config);
     });
 
     return [appWebpackConfig, ...modulesWebpackConfigs];

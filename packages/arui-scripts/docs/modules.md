@@ -22,8 +22,8 @@
 ## Режимы подключения модулей
 
 В `arui-scripts` есть два способа сборки модулей:
-- `mf` -  Это модули, которые подключаются с помощью [webpack module federation](https://webpack.js.org/concepts/module-federation/).
-- `embedded` - Это модули, которые подключаются просто добавлением нужных скриптов на страницу.
+- `default` -  Это стандартные модули, которые подключаются с помощью [webpack module federation](https://webpack.js.org/concepts/module-federation/).
+- `compat` - Это модули, которые подключаются просто добавлением нужных скриптов на страницу.
 
 Основная проблема, которую решает ModuleFederation - это возможность не загружать на хост-приложение код библиотек уже подключенных в него.
 Например, хост-приложение уже использует `react`, модуль так же написан на `react`. ModuleFederation дает нам легко "переиспользовать"
@@ -31,7 +31,7 @@
 
 ### Сравнение
 
-`mf` модули:
+`default` модули:
 - **+++** Простой способ для переиспользования библиотек между модулем и приложением-хостом.
 - **+++** Возможность использовать разные версии общих библиотек в разных модулях/хостах (речь про те библиотеки, которые будут шарится).
 - **---** Нет встроенной изоляции стилей. Стили модуля будут применены к хост-приложению.
@@ -41,14 +41,14 @@
 или с помощью css modules. Но это накладывает некоторые ограничения либо на поддерживаемые браузеры (shadow dom), либо на
 существующую кодовую базу (css modules должны использоваться везде, если у вас будет две версии arui-feather на странице - будет не очень приятно).
 
-`embedded` модули:
+`compat` модули:
 - **+++** Встроенная изоляция стилей. Стили модуля не будут применены к хост-приложению, если только вы не захотите этого.
 - **---** Нет возможности использовать разные версии общих библиотек в разных модулях/хостах, если вы хотите их шарить.
 
 *Как понять какой режим использовать?*
-В целом, если ваше приложение и модули используют только css-modules, то можно использовать `mf` режим. Конфликты в стилях
+В целом, если ваше приложение и модули используют только css-modules, то можно использовать `default` режим. Конфликты в стилях
 вам в таком случае не грозят. Если же вы используете обычный css, или ваши библиотеки используют обычный css, то лучше
-использовать `embedded` режим.
+использовать `compat` режим.
 
 ## Возможность управления модулями с сервера
 Сами модули используются только на клиентской части приложения. Но, в некоторых случаях, может быть полезно иметь возможность
@@ -58,7 +58,7 @@
 Поэтому `arui-scripts` предоставляет возможность создать специальный эндпоинт на вашем сервере, из которого вы сможете управлять
 состоянием модуля.
 
-Модули с такой возможностью мы называем _серверными модулями_ (обычные модули мы называем _клиентскими_).
+Модули с такой возможностью мы называем _модулями с серверным состоянием_ (_server state_).
 
 ## Особые типы модулей
 Несмотря на то, что сами по себе модули представляют собой простой js-объект, мы определяем один особый тип модулей - _монтируемые модули_.
@@ -96,32 +96,32 @@ export function unmount(targetNode): void {
 import { PackageSettings } from 'arui-scripts';
 
 const aruiScriptsConfig: PackageSettings = {
-    embeddedModules: {
+    compatModules: {
         exposes: {
-            'ClientModuleEmbedded': { // имя модуля, будет использоваться приложениями-потребителями
-                entry: './src/modules/client-module-embedded/index', // точка входа модуля
+            'ClientModuleCompat': { // имя модуля, будет использоваться приложениями-потребителями
+                entry: './src/modules/module-compat/index', // точка входа модуля
             },
-            'ServerModuleEmbedded': {
-                entry: './src/modules/server-module-embedded/index',
+            'ServerStateModuleCompat': {
+                entry: './src/modules/server-state-module-compat/index',
                 // этот модуль будет ожидать на странице глобальные переменные react и reactDOM,
                 // он будет использовать их вместо библиотек из своего node_modules
-                embeddedConfig: {
+                compatConfig: {
                     react: 'react',
                     'react-dom': 'reactDOM',
                 }
             }
         }
     },
-    mfModules: {
-        // MF модули тут смогут переиспользовать react и react-dom из хост-приложения,
+    modules: {
+        // модули тут смогут переиспользовать react и react-dom из хост-приложения,
         // если хост приложение шарит эти библиотеки, и они совпадают по версии
         shared: {
             'react': '^17.0.0', // так же поддерживаются более сложные версии например { requiredVersion: '^17.0.0', singleton: true }
             'react-dom': '^17.0.0',
         },
         exposes: {
-            'ClientModuleMF': './src/modules/client-module-mf/index',
-            'ServerModuleMF': './src/modules/server-module-mf/index',
+            'module': './src/modules/module/index',
+            'ServerStateModule': './src/modules/server-state-module/index',
         }
     }
 }
@@ -134,18 +134,31 @@ export default aruiScriptsConfig;
 ### Создать модуль
 Модуль является простым js/ts файлом. Он может использовать любой код вашего проекта, и любые библиотеки из node_modules.
 
-В зависимости от режима подключения модуля, входная точка будет выглядеть по разному.
+В зависимости от режима подключения модуля, входная точка будет выглядеть по-разному.
 
-#### Embedded модуль
-Входная точка embedded модуля должна писать в глобальную переменную `window` объект с ключом `{НазваниеМодуля}`.
+#### Default модуль
+Входная точка модуля должна экспортировать все поля модуля через `export`.
+
+```ts
+// src/modules/module/index.ts
+
+export const doSomething = () => {
+    console.log('Hello from module!');
+};
+
+export const publicConstant = 3.14;
+```
+
+#### Compat модуль
+Входная точка compat модуля должна писать в глобальную переменную `window` объект с ключом `{НазваниеМодуля}`.
 Все поля этого объекта по сути и будут являться модулем, ваши потребители смогут использовать их.
 
 ```ts
-// src/modules/client-module-embedded/index.ts
+// src/modules/module-compat/index.ts
 
-window.ClientModuleEmbedded = {
+window.ModuleCompat = {
     doSomething: () => {
-        console.log('Hello from embedded module!');
+        console.log('Hello from compat module!');
     },
     publicConstant: 3.14,
     // ...
@@ -160,41 +173,28 @@ window.ClientModuleEmbedded = {
 Webpack module federation делает абсолютно то же самое, просто прячет работу с глобальными переменными за собой.
 </details>
 
-#### MF модуль
-Входная точка MF модуля должна экспортировать все поля модуля через `export`.
-
-```ts
-// src/modules/client-module-mf/index.ts
-
-export const doSomething = () => {
-    console.log('Hello from mf module!');
-};
-
-export const publicConstant = 3.14;
-```
-
 #### Создание модулей предопределенного типа
 
-**Монтируемый модуль, mf**
+**Монтируемый модуль, default**
 
 ```tsx
-// src/modules/client-module-mf/index.ts
+// src/modules/module/index.ts
 
 import React from 'react';
 import ReactDOM from 'react-dom';
 import type { ModuleMountFunction, ModuleUnmountFunction } from '@alfalab/scripts-modules';
-import { ClientModuleMf } from './ClientModuleMf';
+import { Module } from './Module';
 
 export const mount: ModuleMountFunction<any, any> = (targetNode, runParams, serverState) => {
-    console.log('ClientModuleMf: mount', { runParams, serverState });
+    console.log('Module: mount', { runParams, serverState });
     if (!targetNode) {
         throw new Error(`Target node is not defined for module`);
     }
 
-    ReactDOM.render(<ClientModuleMf />, targetNode);
+    ReactDOM.render(<Module />, targetNode);
 };
 export const unmount: ModuleUnmountFunction = (targetNode) => {
-    console.log('ClientModuleMf: unmount');
+    console.log('Module: unmount');
     if (!targetNode) {
         return;
     }
@@ -203,26 +203,26 @@ export const unmount: ModuleUnmountFunction = (targetNode) => {
 };
 ```
 
-**Монтируемый модуль, embedded**
+**Монтируемый модуль, compat**
 
 ```tsx
-// src/modules/client-module-embedded/index.ts
+// src/modules/module-compat/index.ts
 import React from 'react';
 import ReactDOM from 'react-dom';
 import type { ModuleMountFunction, ModuleUnmountFunction, WindowWithMountableModule } from '@alfalab/scripts-modules';
-import { ClientModuleMf } from './ClientModuleMf';
+import { ModuleCompat } from './ModuleCompat';
 
 const mount: ModuleMountFunction<any, any> = (targetNode, runParams, serverState) => {
-    console.log('ClientModuleEmbedded: mount', { runParams, serverState });
-    ReactDOM.render(<ClientModuleMf />, targetNode);
+    console.log('ModuleCompat: mount', { runParams, serverState });
+    ReactDOM.render(<ModuleCompat />, targetNode);
 };
 const unmount: ModuleUnmountFunction = (targetNode) => {
-    console.log('ClientModuleEmbedded: unmount');
+    console.log('ModuleCompat: unmount');
 
     ReactDOM.unmountComponentAtNode(targetNode);
 };
 
-(window as WindowWithMountableModule).ClientModuleEmbedded = {
+(window as WindowWithMountableModule).ModuleCompat = {
     mount: mountModule,
     unmount: unmountModule,
 };
@@ -237,8 +237,8 @@ const unmount: ModuleUnmountFunction = (targetNode) => {
 import type { ModulesConfig } from '@alfalab/scripts-server';
 
 const modules: ModulesConfig = {
-    'ServerModuleEmbedded': {
-        mountMode: 'embedded',
+    'ServerStateModuleCompat': {
+        mountMode: 'compat',
         version: '1.0.0',
         getRunParams: async (getResourcesRequest) => ({
             // getResouresRequest - это объект, который будет передан из хост-приложения
@@ -249,8 +249,8 @@ const modules: ModulesConfig = {
             contextRoot: 'http://localhost:8081',
         }),
     },
-    'ServerModuleMF': {
-        mountMode: 'mf',
+    'ServerModule': {
+        mountMode: 'default',
         version: '1.0.0',
         getRunParams: async () => ({
             paramFromServer: 'This can be any data from server',
@@ -315,8 +315,8 @@ type ModulesMethod = {
 
 ### (Опционально) Разобраться с изоляцией стилей
 
-#### Embedded модули
-В случае с embedded модулями, стили модуля будут применены только к элементам, которые находятся внутри элемента
+#### Compat модули
+В случае с compat модулями, стили модуля будут применены только к элементам, которые находятся внутри элемента
 с классом `module-{имя модуля}`. Это позволяет изолировать стили модуля от стилей хост-приложения.
 
 Вашей ответственностью будет добавить к рут-элементу модуля класс .module-nameOfModule. Вы должны сделать это в самом верхнем компоненте/элементе вашего модуля.
@@ -328,8 +328,8 @@ type ModulesMethod = {
 **Важно** - изоляция стилей работает только в одном направлении - стили модуля не будут применены к элементам
 хост-приложения. Но стили хост-приложения могут быть применены к элементам модуля.
 
-#### MF модули
-Никакого встроенного механизма изоляции стилей для MF модулей нет. Если хост-приложение и модуль используют css-modules,
+#### Стандартные модули
+Никакого встроенного механизма изоляции стилей для стандартных модулей нет. Если хост-приложение и модуль используют css-modules,
 то конфликтов возникнуть не должно. Если же это не так - вы можете попробовать решить эту проблему используя shadow-dom.
 
 ### Тестирование модулей
@@ -357,7 +357,7 @@ const loader = createModuleLoader({
         styles: ['http://localhost:8081/static/css/main.css'], // стили модуля
         moduleVersion: '1.0.0', // версия модуля
         appName: 'moduleSourceAppName', // имя приложения, которое является источником модуля
-        mountMode: 'embedded', // режим монтирования модуля
+        mountMode: 'compat', // режим монтирования модуля
         moduleRunParams: { // параметры, которые будут доступны при инициализации модуля
             baseUrl: 'http://localhost:8081',
         },
@@ -368,36 +368,36 @@ const loader = createModuleLoader({
 Вам вовсе не обязательно руками описывать функцию `getModuleResources`. В зависимости от типа модуля, вы можете
 использовать один из готовых хелперов:
 
-Для клиентских модулей:
+Для модулей без серверного стейта:
 ```ts
-import { createModuleLoader, createClientResourcesFetcher } from '@alfalab/scripts-modules';
+import { createModuleLoader, createModuleFetcher } from '@alfalab/scripts-modules';
 
 const loader = createModuleLoader({
     hostAppId: 'my-app',
     moduleId: 'test',
-    getModuleResources: createClientResourcesFetcher({
+    getModuleResources: createModuleFetcher({
         baseUrl: 'http://localhost:8081',
     }),
 });
 ```
 
-`createClientResourcesFetcher` сам сделает запрос за манифестом приложения, и правильным образом сформирует описание модуля.
+`createModuleFetcher` сам сделает запрос за манифестом приложения, и правильным образом сформирует описание модуля.
 
-Для серверных модулей:
+Для модулей с серверным стейтом:
 ```ts
-import { createModuleLoader, createServerResourcesFetcher } from '@alfalab/scripts-modules';
+import { createModuleLoader, createServerStateModuleFetcher } from '@alfalab/scripts-modules';
 
 const loader = createModuleLoader({
     hostAppId: 'my-app',
     moduleId: 'test',
-    getModuleResources: createServerResourcesFetcher({
+    getModuleResources: createServerStateModuleFetcher({
         baseUrl: 'http://localhost:8081',
         headers: { 'X-Auth': 'bla-bla' } // опционально вы можете передать дополнительные заголовки для запроса
     }),
 });
 ```
 
-`createServerResourcesFetcher` сам сделает запрос к ручке, которая отдает описание модуля.
+`createServerStateModuleFetcher` сам сделает запрос к ручке, которая отдает описание модуля.
 
 В случае же совсем кастомных требований, вы можете реализовать функцию `getModuleResources` самостоятельно.
 
@@ -429,9 +429,9 @@ const getModuleResourcesParams = {
 }
 ```
 
-При использовании `createServerResourcesFetcher` именно эти данные будут отправлены на сервер и будут доступны в функции `getRunParams` модуля.
+При использовании `createServerStateModuleFetcher` именно эти данные будут отправлены на сервер и будут доступны в функции `getRunParams` модуля.
 
-При использовании `createClientResourcesFetcher` вам не нужно беспокоиться о том, какие параметры вы передаете в `getModuleResources` - они
+При использовании `createModuleFetcher` вам не нужно беспокоиться о том, какие параметры вы передаете в `getModuleResources` - они
 никак не используются в клиентских модулях.
 
 ## Использования загрузчика в реакт-приложении
@@ -439,11 +439,11 @@ const getModuleResourcesParams = {
 Для того чтобы упростить работу с загрузчиком в реакт-приложении, мы предоставляем хук `useModuleLoader`:
 
 ```tsx
-import { createModuleLoader, useModuleLoader } from '@alfalab/scripts-modules';
+import { createModuleLoader, useModuleLoader, createModuleFetcher } from '@alfalab/scripts-modules';
 
 const loader = createModuleLoader({
     moduleId: 'test',
-    getModuleResources: createClientResourcesFetcher({
+    getModuleResources: createModuleFetcher({
         baseUrl: 'http://localhost:8081',
     }),
 });
@@ -472,11 +472,11 @@ const MyComponent = () => {
 Для работы с монтируемыми модулями так же есть готовый хук `useModuleMounter`:
 
 ```tsx
-import { createModuleLoader, useModuleMounter } from '@alfalab/scripts-modules';
+import { createModuleLoader, useModuleMounter, createModuleFetcher } from '@alfalab/scripts-modules';
 
 const loader = createModuleLoader({
     moduleId: 'test',
-    getModuleResources: createClientResourcesFetcher({
+    getModuleResources: createModuleFetcher({
         baseUrl: 'http://localhost:8081',
     }),
 });
@@ -503,28 +503,10 @@ const MyComponent = () => {
 ## Конфигурация модулей
 Типы, которые используются для конфигурирования модулей в `arui-scripts.config.ts`:
 
-### EmbeddedModules
+### Modules
 ```ts
-type EmbeddedModules = {
-    shared?: { // библиотеки, которые будут доступны embedded модулям при подключении в этом приложении
-        [libraryName: string]: string; // libraryName - имя библиотеки, которое вы указали в package.json, value - название глобальной переменной, в которой будет доступна библиотека
-    };
-    exposes?: { // модули, которые приложение будет предоставлять
-        [moduleId: string]: EmbeddedModuleConfig;
-    };
-};
-
-type EmbeddedModuleConfig = {
-    entry: string; // путь до точки входа модуля
-    embeddedConfig?: Record<string, string>; // список библиотек, которые модуль будет пытаться получить из приложения, в которое он будет встроен. Аналогично EmbeddedModules.shared
-    cssPrefix?: false | string; // опционально, префикс для css-классов модуля. По-умолчанию будет использовано имя модуля
-};
-```
-
-### MF modules
-```ts
-type MfModules = {
-    name?: string; // имя приложения, которое будет исползоваться как имя MF контейнера. По-умолчанию будет использовано имя из package.json (оно будет преобразовано в snake-case)
+type Modules = {
+    name?: string; // имя приложения, которое будет исползоваться как имя module federation контейнера. По-умолчанию будет использовано имя из package.json (оно будет преобразовано в snake-case)
     exposes?: { // модули, которые приложение будет предоставлять
         [moduleId: string]: string; // moduleId - id модуля, value - путь до точки входа модуля
     };
@@ -548,13 +530,31 @@ type SharedConfig = {
 }
 ```
 
+### CompatModules
+```ts
+type CompatModules = {
+    shared?: { // библиотеки, которые будут доступны compat модулям при подключении в этом приложении
+        [libraryName: string]: string; // libraryName - имя библиотеки, которое вы указали в package.json, value - название глобальной переменной, в которой будет доступна библиотека
+    };
+    exposes?: { // модули, которые приложение будет предоставлять
+        [moduleId: string]: CompatModuleConfig;
+    };
+};
+
+type CompatModuleConfig = {
+    entry: string; // путь до точки входа модуля
+    externals?: Record<string, string>; // список библиотек, которые модуль будет пытаться получить из приложения, в которое он будет встроен. Аналогично CompatModules.shared
+    cssPrefix?: false | string; // опционально, префикс для css-классов модуля. По-умолчанию будет использовано имя модуля
+};
+```
+
 ## Конфигурация серверной части
 
 ### createGetModulesMethod
 ```ts
 type ModulesConfig = {
     [moduleId: string]: {
-        mountMode: 'embedded' | 'mf'; // режим монтирования модуля
+        mountMode: 'compat' | 'default'; // режим монтирования модуля
         version?: string; // версия модуля, по умолчанию 'unknown'
         getModuleState: GetModuleStateMethod; // метод, который будет вызван для получения состояния модуля
     };

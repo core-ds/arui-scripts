@@ -1,8 +1,8 @@
 import React from 'react';
 
-export const ServerModuleMf = (props: { runParams: any; serverState: any }) => (
+export const ServerStateModule = (props: { runParams: any; serverState: any }) => (
     <div>
-        <h1>ServerModuleMf</h1>
+        <h1>ServerStateModule</h1>
 
         <p>
             Данные, полученные из сервера:

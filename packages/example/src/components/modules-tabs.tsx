@@ -1,32 +1,32 @@
 import React, { useState } from 'react';
 import { TabsDesktop, Tab } from '@alfalab/core-components/tabs/desktop';
-import { EmbeddedModuleMounter } from '#/module-mounters/embedded-module-mounter';
+import { CompatModuleMounter } from '#/module-mounters/compat-module-mounter';
 import { Typography } from '@alfalab/core-components/typography';
-import { MfModuleMounter } from '#/module-mounters/mf-module-mounter';
-import { ServerEmbeddedModuleMounter } from '#/module-mounters/server-embedded-module-mounter';
-import { ServerMfModuleMounter } from '#/module-mounters/server-mf-module-mounter';
+import { ModuleMounter } from '#/module-mounters/module-mounter';
+import { ServerStateCompatModuleMounter } from '#/module-mounters/server-state-compat-module-mounter';
+import { ServerStateModuleMounter } from '#/module-mounters/server-state-module-mounter';
 import {AbstractModule} from "#/module-mounters/abstract-module";
 
 const tabs = {
     '1': {
-        title: 'Client-only embedded module',
-        description: 'Такие модули могут быть реализованы без каких либо доработок на стороне сервера',
-        component: EmbeddedModuleMounter,
+        title: 'Default module',
+        description: 'Стандартный модуль, который может быть подключен через default режим',
+        component: ModuleMounter,
     },
     '2': {
-        title: 'Client-only MF module',
-        description: 'Модуль, созданный с помощью module-federation, опять же реализован как клиентский код',
-        component: MfModuleMounter,
+        title: 'Compat module',
+        description: 'Модуль, сделанный через compat режим, умеет изолировать стили и работать в любом проекте',
+        component: CompatModuleMounter,
     },
     '3': {
-        title: 'Server embedded module',
-        description: 'Модуль, подключенный через legacy режим. У него так же есть серверная часть, которая может отдавать предподготовленные данные на клиент при загрузке',
-        component: ServerEmbeddedModuleMounter,
+        title: 'Server state module',
+        description: 'Модуль, имеющий серверную часть, которая может отдавать предподготовленные данные на клиент при загрузке',
+        component: ServerStateModuleMounter,
     },
     '4': {
-        title: 'Server MF module',
-        description: 'Модуль, подключенный через module-federation режим. У него так же есть серверная часть, которая может отдавать предподготовленные данные на клиент при загрузке',
-        component: ServerMfModuleMounter,
+        title: 'Server state compat module',
+        description: 'Модуль, имеющий серверную часть, которая может отдавать предподготовленные данные на клиент при загрузке, сделанный через compat режим',
+        component: ServerStateCompatModuleMounter,
     },
     '5': {
         title: 'Abstract module',

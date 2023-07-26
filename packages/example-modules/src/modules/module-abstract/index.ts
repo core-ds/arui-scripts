@@ -10,7 +10,7 @@ export function justSomeRandomFunctionThatWeWantToExport() {
 
 export const someRandomVariableThatWeWantToExport = 'hello';
 
-(window as any).ClientModuleAbstract = {
+(window as any).ModuleAbstract = {
     justSomeRandomFunctionThatWeWantToExport,
     someRandomVariableThatWeWantToExport,
 };

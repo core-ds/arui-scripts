@@ -21,7 +21,7 @@ describe('createGetModulesMethod', () => {
         ).rejects.toThrowError('Module test not found');
     });
 
-    it('should return correct response for embedded module', async () => {
+    it('should return correct response for compat module', async () => {
         (readAssetsManifest as any).mockImplementationOnce(() => Promise.resolve({
             js: ['vendor.js', 'main.js'],
             css: ['vendor.css', 'main.css'],
@@ -34,7 +34,7 @@ describe('createGetModulesMethod', () => {
         const getModuleState = jest.fn(() => Promise.resolve({ baseUrl: '' }));
         const { handler } = createGetModulesMethod({
             test: {
-                mountMode: 'embedded',
+                mountMode: 'compat',
                 getModuleState,
                 version: '1.0.0',
             },
@@ -43,7 +43,7 @@ describe('createGetModulesMethod', () => {
         const result = await handler({ moduleId: 'test', hostAppId: 'test', params: undefined });
 
         expect(result).toEqual({
-            mountMode: 'embedded',
+            mountMode: 'compat',
             moduleVersion: '1.0.0',
             scripts: ['vendor.js', 'main.js'],
             styles: ['vendor.css', 'main.css'],
@@ -54,7 +54,7 @@ describe('createGetModulesMethod', () => {
         expect(getModuleState).toBeCalledWith({ moduleId: 'test', hostAppId: 'test' });
     });
 
-    it('should return correct response for mf module', async () => {
+    it('should return correct response for default module', async () => {
         (getAppManifest as any).mockImplementationOnce(() => Promise.resolve({
             __metadata__: {
                 name: 'module-app-name',
@@ -64,7 +64,7 @@ describe('createGetModulesMethod', () => {
         const getModuleState = jest.fn(() => Promise.resolve({ baseUrl: '' }));
         const { handler } = createGetModulesMethod({
             test: {
-                mountMode: 'mf',
+                mountMode: 'default',
                 getModuleState,
                 version: '1.0.0',
             },
@@ -73,7 +73,7 @@ describe('createGetModulesMethod', () => {
         const result = await handler({ moduleId: 'test', hostAppId: 'test', params: undefined });
 
         expect(result).toEqual({
-            mountMode: 'mf',
+            mountMode: 'default',
             moduleVersion: '1.0.0',
             scripts: ['assets/remoteEntry.js'],
             styles: [],

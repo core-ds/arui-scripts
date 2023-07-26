@@ -1,4 +1,4 @@
-export function getServerFetcherParams() {
+export function getServerStateModuleFetcherParams() {
     return {
         relativePath: '/api/getModuleResources',
         method: 'POST',

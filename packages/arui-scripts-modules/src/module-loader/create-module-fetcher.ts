@@ -9,12 +9,12 @@ type CreateClientResourcesFetcherParams = {
 };
 
 /**
- * Функция, которая создает метод для получения ресурсов клиентского модуля.
+ * Функция, которая создает метод для получения ресурсов модуля.
  * Предполагается, что она будет использоваться вместе с createModuleLoader.
  * @param baseUrl Базовый адрес приложения, которое предоставляет модули
  * @param assetsUrl Опциональный параметр для переопределения адреса манифеста
  */
-export function createClientResourcesFetcher({
+export function createModuleFetcher({
     baseUrl,
     assetsUrl = '/assets/webpack-assets.json',
 }: CreateClientResourcesFetcherParams): ModuleResourcesGetter<void, BaseModuleState> {
@@ -31,7 +31,7 @@ export function createClientResourcesFetcher({
         return {
             scripts: [moduleFiles.js, moduleVendorFiles.js].filter(Boolean) as string[],
             styles: [moduleFiles.css, moduleVendorFiles.css].filter(Boolean) as string[],
-            mode: moduleFiles.mode || 'embedded',
+            mode: moduleFiles.mode || 'compat',
         };
     }
 

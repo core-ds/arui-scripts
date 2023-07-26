@@ -1,9 +1,9 @@
 /**
  * То, как подключать модуль на страницу.
- * embedded - режим подключения без использования module-federation. В этом случае мы сами подключаем все скрипты и стили.
- * mf - module-federation режим, загрузкой скриптов и стилей занимается wepack.
+ * compat - режим подключения без использования module-federation. В этом случае мы сами подключаем все скрипты и стили.
+ * default - module-federation режим, загрузкой скриптов и стилей занимается wepack.
  */
-export type MountMode = 'embedded' | 'mf';
+export type MountMode = 'compat' | 'default';
 
 /**
  * Запрос, который будет отправлен на сервер для получения ресурсов модуля
@@ -100,7 +100,7 @@ export type MountableModule<RunParams = void, ServerState extends BaseModuleStat
 };
 
 /**
- * Хелпер для удобного описания типов embeded модулей
+ * Хелпер для удобного описания типов compat модулей
  * @example (window as WindowWithModule).myAwesomeModule = { ... };
  */
 export type WindowWithModule<ModuleType = unknown> = typeof window & {
@@ -108,7 +108,7 @@ export type WindowWithModule<ModuleType = unknown> = typeof window & {
 }
 
 /**
- * Хелпер для удобного описания embeded модулей
+ * Хелпер для удобного описания compat модулей
  */
 export type WindowWithMountableModule = WindowWithModule<MountableModule>
 

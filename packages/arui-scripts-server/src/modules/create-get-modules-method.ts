@@ -20,12 +20,12 @@ export function createGetModulesMethod<FrameworkParams extends unknown[] = []>(
 
             const module = modules[moduleName];
 
-            if (module.mountMode === 'embedded' && !assets[moduleName]) {
+            if (module.mountMode === 'compat' && !assets[moduleName]) {
                 assets[moduleName] = await readAssetsManifest([`vendor-${moduleName}`, moduleName]);
             }
-            if (module.mountMode === 'mf') {
-                // для mf модулей мы всегда берем просто remoteEntry, это стандартный энтрипоинт для mf
-                // загрузку стилей при этом на себя берет сам mf.
+            if (module.mountMode === 'default') {
+                // для default модулей мы всегда берем просто remoteEntry, это стандартный энтрипоинт для module federation
+                // загрузку стилей при этом на себя берет сам module federation.
                 assets[moduleName] = {
                     js: ['assets/remoteEntry.js'],
                     css: [],

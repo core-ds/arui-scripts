@@ -1,25 +1,25 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import {
+    BaseModuleState,
+    createModuleFetcher,
     createModuleLoader,
     MountableModule,
-    BaseModuleState,
     useModuleMounter,
-    createServerResourcesFetcher,
 } from '@alfalab/scripts-modules';
 import { Underlay } from '@alfalab/core-components/underlay';
 import { Spinner } from '@alfalab/core-components/spinner';
 
-const loader = createModuleLoader<MountableModule<any, BaseModuleState>, { something: string }>({
+const loader = createModuleLoader<MountableModule<any, BaseModuleState>>({
     hostAppId: 'example',
-    moduleId: 'ServerModuleEmbedded',
-    getModuleResources: createServerResourcesFetcher({ baseUrl: 'http://localhost:8082' }),
+    moduleId: 'ModuleCompat',
+    getModuleResources: createModuleFetcher({
+        baseUrl: 'http://localhost:8082',
+    })
 });
 
-export const ServerEmbeddedModuleMounter = () => {
+export const CompatModuleMounter = () => {
     const { loadingState, targetElementRef } = useModuleMounter({
-        loader,
-        runParams: { test: 'test' },
-        loaderParams: { something: 'foo'}
+        loader
     });
 
     return (

@@ -1,7 +1,7 @@
 import React from 'react';
 import {
     BaseModuleState,
-    createClientResourcesFetcher,
+    createModuleFetcher,
     createModuleLoader,
     MountableModule,
     useModuleMounter,
@@ -9,17 +9,17 @@ import {
 import { Underlay } from '@alfalab/core-components/underlay';
 import { Spinner } from '@alfalab/core-components/spinner';
 
-const loader = createModuleLoader<MountableModule<any, BaseModuleState>>({
+const loader = createModuleLoader<MountableModule<void, BaseModuleState>>({
     hostAppId: 'example',
-    moduleId: 'ClientModuleEmbedded',
-    getModuleResources: createClientResourcesFetcher({
+    moduleId: 'Module',
+    getModuleResources: createModuleFetcher({
         baseUrl: 'http://localhost:8082',
     })
 });
 
-export const EmbeddedModuleMounter = () => {
+export const ModuleMounter = () => {
     const { loadingState, targetElementRef } = useModuleMounter({
-        loader
+        loader,
     });
 
     return (

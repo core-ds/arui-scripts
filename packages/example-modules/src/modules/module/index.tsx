@@ -1,18 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import type { ModuleMountFunction, ModuleUnmountFunction } from '@alfalab/scripts-modules';
-import { ClientModuleMf } from './ClientModuleMf';
+import { Module } from './Module';
 
 export const mount: ModuleMountFunction<any, any> = (targetNode, runParams, serverState) => {
-    console.log('ClientModuleMf: mount', { runParams, serverState });
+    console.log('Module: mount', { runParams, serverState });
     if (!targetNode) {
         throw new Error(`Target node is not defined for module`);
     }
 
-    ReactDOM.render(<ClientModuleMf />, targetNode);
+    ReactDOM.render(<Module />, targetNode);
 }
 export const unmount: ModuleUnmountFunction = (targetNode) => {
-    console.log('ClientModuleMf: unmount');
+    console.log('Module: unmount');
     if (!targetNode) {
         return;
     }
