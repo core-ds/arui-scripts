@@ -1,5 +1,13 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 15.4.1
+
+### Patch Changes
+
+- [#57](https://github.com/core-ds/arui-scripts/pull/57) [`3d35ddc`](https://github.com/core-ds/arui-scripts/commit/3d35ddc84a97a5324bdf8172be972826838148a8) Thanks [@vaagnavanesyan](https://github.com/vaagnavanesyan)! - move imagemin plugins to peer deps
+
+- [#60](https://github.com/core-ds/arui-scripts/pull/60) [`2b38d23`](https://github.com/core-ds/arui-scripts/commit/2b38d230032dd8f7b1f1adba805d1dc238c74243) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Fix presets loading
+
 ## 15.4.0
 
 ### Minor Changes
