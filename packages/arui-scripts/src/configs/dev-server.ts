@@ -35,12 +35,19 @@ const devServerConfig = applyOverrides('devServer', {
                     const cspHeader = proxyRes.headers['content-security-policy'];
                     if (typeof cspHeader === 'string' && !cspHeader.includes('unsafe-eval')) {
                         proxyRes.headers['content-security-policy'] = cspHeader
-                            .replace(/script-src/, "script-src 'unsafe-eval'");
+                            .replace(/script-src/, 'script-src \'unsafe-eval\'');
                     }
-                }
+                },
             } : {}),
+        },
+    }),
+    headers: configs.devServerCors
+        ? {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': '*',
+            'Access-Control-Allow-Methods': '*',
         }
-    })
+        : {},
 });
 
 export default devServerConfig;

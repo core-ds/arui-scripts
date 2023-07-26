@@ -63,7 +63,33 @@ export type AppConfigs = {
     // CSS
     componentsTheme: string | null;
     keepCssVars: boolean;
+
+    // Modules
+    compatModules: {
+        shared?: {
+            [libraryName: string]: string;
+        }
+        exposes?: {
+            [moduleId: string]: CompatModuleConfigBase;
+        };
+    } | null;
+    modules: {
+        name?: string;
+        shared: any; // webpack don't expose this type
+        exposes?: Record<string, string>;
+    } | null;
 };
+
+type CompatModuleConfigBase = {
+    entry: string;
+    externals?: Record<string, string>;
+    cssPrefix?: false | string;
+}
+
+export type CompatModuleConfig = CompatModuleConfigBase & {
+    name: string;
+};
+
 
 /**
  * Внутренний контекст arui-scripts

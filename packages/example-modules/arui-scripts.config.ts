@@ -1,0 +1,47 @@
+import { PackageSettings } from 'arui-scripts';
+
+const aruiScriptsConfig: PackageSettings = {
+    presets: "./presets",
+    serverPort: 3001,
+    clientServerPort: 8082,
+    devServerCors: true,
+    clientPolyfillsEntry: null,
+    serverEntry: "./src/server/index",
+    clientEntry: "./src/client",
+    keepCssVars: false,
+    debug: true,
+    compatModules: {
+        shared: {
+            react: 'react',
+            'react-dom': 'reactDOM',
+        },
+        exposes: {
+            'ModuleCompat': {
+                entry: './src/modules/module-compat/index',
+            },
+            'ServerStateModuleCompat': {
+                entry: './src/modules/server-state-module-compat/index',
+                externals: {
+                    react: 'react',
+                    'react-dom': 'reactDOM',
+                }
+            },
+            'ModuleAbstractCompat': {
+                entry: './src/modules/module-abstract/index',
+            }
+        }
+    },
+    modules: {
+        shared: {
+            'react': '^17.0.0',
+            'react-dom': '^17.0.0',
+        },
+        exposes: {
+            'Module': './src/modules/module/index',
+            'ServerStateModule': './src/modules/server-state-module/index',
+            'ModuleAbstract': './src/modules/module-abstract/index',
+        }
+    }
+}
+
+export default aruiScriptsConfig;

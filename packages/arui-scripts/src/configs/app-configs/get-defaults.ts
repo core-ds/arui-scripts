@@ -69,6 +69,10 @@ export function getDefaultAppConfig(): AppConfigs {
         // CSS
         componentsTheme: null,
         keepCssVars: false,
+
+        // Modules
+        compatModules: null,
+        modules: null,
     };
 }
 
