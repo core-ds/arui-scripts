@@ -36,7 +36,7 @@ export function createModuleFetcher({
     }
 
 
-    return async function getClientModuleResources({ moduleId }): Promise<ModuleResources> {
+    return async function getClientModuleResources({ moduleId, hostAppId }): Promise<ModuleResources> {
         const manifest = await fetchAppManifest(manifestUrl);
         const { mode, ...moduleFiles} = getModuleFiles(manifest, moduleId);
 
@@ -47,6 +47,7 @@ export function createModuleFetcher({
             mountMode: mode,
             moduleState: {
                 baseUrl,
+                hostAppId
             },
         }
     }

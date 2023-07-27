@@ -40,6 +40,7 @@ const moduleRouter = createGetModulesExpress({
                 paramFromServer: 'This can be any data from server',
                 asyncData: 'It can be constructed from async data, so you may perform some service calls here',
                 baseUrl: 'http://localhost:8082',
+                hostAppId: getResourcesRequest.hostAppId,
                 stuffFromClient: getResourcesRequest.params
             });
         },
@@ -47,10 +48,11 @@ const moduleRouter = createGetModulesExpress({
     'ServerStateModule': {
         mountMode: 'default',
         version: '1.0.0',
-        getModuleState: async () => ({
+        getModuleState: async (getResourcesRequest) => ({
             paramFromServer: 'This can be any data from server',
             asyncData: 'It can be constructed from async data, so you may perform some service calls here',
             baseUrl: 'http://localhost:8082',
+            hostAppId: getResourcesRequest.hostAppId,
         }),
     },
 });

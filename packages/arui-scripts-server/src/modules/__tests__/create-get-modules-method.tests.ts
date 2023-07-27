@@ -31,7 +31,7 @@ describe('createGetModulesMethod', () => {
                 name: 'module-app-name',
             },
         }));
-        const getModuleState = jest.fn(() => Promise.resolve({ baseUrl: '' }));
+        const getModuleState = jest.fn(() => Promise.resolve({ baseUrl: '', hostAppId: 'test' }));
         const { handler } = createGetModulesMethod({
             test: {
                 mountMode: 'compat',
@@ -47,7 +47,7 @@ describe('createGetModulesMethod', () => {
             moduleVersion: '1.0.0',
             scripts: ['vendor.js', 'main.js'],
             styles: ['vendor.css', 'main.css'],
-            moduleState: { baseUrl: '' },
+            moduleState: { baseUrl: '', hostAppId: 'test' },
             appName: 'module-app-name',
         });
 
@@ -61,7 +61,7 @@ describe('createGetModulesMethod', () => {
             },
         }));
 
-        const getModuleState = jest.fn(() => Promise.resolve({ baseUrl: '' }));
+        const getModuleState = jest.fn(() => Promise.resolve({ baseUrl: '', hostAppId: 'test' }));
         const { handler } = createGetModulesMethod({
             test: {
                 mountMode: 'default',
@@ -77,7 +77,7 @@ describe('createGetModulesMethod', () => {
             moduleVersion: '1.0.0',
             scripts: ['assets/remoteEntry.js'],
             styles: [],
-            moduleState: { baseUrl: '' },
+            moduleState: { baseUrl: '', hostAppId: 'test' },
             appName: 'module-app-name',
         });
 

@@ -37,6 +37,7 @@ export type AruiAppManifest = {
  */
 export type BaseModuleState = {
     baseUrl: string;
+    hostAppId: string;
 };
 /**
  * Ресурсы, которые нужны модулю для запуска
