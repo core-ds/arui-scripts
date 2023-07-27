@@ -23,9 +23,9 @@ export const postcssPlugins = [
     'postcss-mixins',
     'postcss-for',
     'postcss-each',
-    ( config.componentsTheme || config.keepCssVars ) && '@csstools/postcss-global-data',
-    config.keepCssVars && 'postcss-custom-media',
-    config.componentsTheme && 'postcss-custom-properties',
+    '@csstools/postcss-global-data',
+    'postcss-custom-media',
+    !config.keepCssVars && 'postcss-custom-properties',
     'postcss-strip-units',
     'postcss-calc',
     'postcss-color-function',
@@ -42,7 +42,7 @@ export const postcssPluginsOptions = {
     },
     '@csstools/postcss-global-data': {
         files: [
-            config.keepCssVars && path.join(__dirname,'mq.css'),
+            path.join(__dirname,'mq.css'),
             config.componentsTheme
         ].filter(Boolean) as string[],
     },
