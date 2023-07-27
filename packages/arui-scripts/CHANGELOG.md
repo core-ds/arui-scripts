@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 15.5.1
+
+### Patch Changes
+
+- [#64](https://github.com/core-ds/arui-scripts/pull/64) [`82b0587`](https://github.com/core-ds/arui-scripts/commit/82b0587b9333193a6eaad3ed29b2d3a32745479c) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Always load custom media variables, remove css vars when keepCssVars set to false
+
 ## 15.5.0
 
 ### Minor Changes
