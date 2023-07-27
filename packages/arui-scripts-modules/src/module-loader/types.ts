@@ -32,12 +32,21 @@ export type AruiAppManifest = {
         name: string;
     };
 }
+
 /**
  * "состояние" модуля полученное от сервера
  */
-export type BaseModuleState = {
+export type GetModuleStateResult = {
     baseUrl: string;
 };
+
+/**
+ * ожидаемое "состояние" модуля
+ */
+export type BaseModuleState = {
+    baseUrl: string;
+    hostAppId: string;
+}
 /**
  * Ресурсы, которые нужны модулю для запуска
  */
