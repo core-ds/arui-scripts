@@ -87,6 +87,52 @@ export function unmount(targetNode): void {
 }
 ```
 
+### Модули-фабрики
+Модули-фабрики - это модули, которые поставляют фабрики, которые в свою очередь вызываются в рантайме со стейтом (клиентским или серверным, в зависимости от типа поставляемого модуля).
+
+Такие модули должны экспортировать фабрику тремя возможными вариантами:
+
+
+Для mf(default) модулей:
+
+```tsx
+export default function (moduleState) {
+    // в фабрике можно на основе стейта вернуть готовый модуль 
+    return {
+        moduleState,
+        doSomething: () => {
+            fetch(moduleState.baseUrl + '/api/getData')
+        }
+    };
+}
+```
+или:
+
+```tsx
+export const factory = function (moduleState) {
+    // в фабрике можно на основе стейта вернуть готовый модуль 
+    return {
+        moduleState,
+        doSomething: () => {
+            fetch(moduleState.baseUrl + '/api/getData')
+        }
+    };
+}
+```
+
+для compat модулей:
+```ts
+// src/modules/module-compat/index.ts
+
+window.ModuleCompat = (moduleState) => {
+    doSomething: () => {
+        fetch(moduleState.apiUrl);
+    },
+    publicConstant: 3.14,
+    // ...
+};
+```
+
 ## Как создать модуль
 
 ### Описать модуль в настройках arui-scripts

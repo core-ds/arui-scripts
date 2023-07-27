@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { TabsDesktop, Tab } from '@alfalab/core-components/tabs/desktop';
+import { TabsResponsive, Tab } from '@alfalab/core-components/tabs/responsive';
 import { CompatModuleMounter } from '#/module-mounters/compat-module-mounter';
 import { Typography } from '@alfalab/core-components/typography';
 import { ModuleMounter } from '#/module-mounters/module-mounter';
 import { ServerStateCompatModuleMounter } from '#/module-mounters/server-state-compat-module-mounter';
 import { ServerStateModuleMounter } from '#/module-mounters/server-state-module-mounter';
 import {AbstractModule} from "#/module-mounters/abstract-module";
+import { ServerStateFactoryModuleMounter } from '#/module-mounters/server-state-factory-module-mounter';
+import { FactoryCompatModuleMaunter } from '#/module-mounters/factory-compat-module-mounter';
 
 const tabs = {
     '1': {
@@ -32,6 +34,16 @@ const tabs = {
         title: 'Abstract module',
         description: 'НЕ монтируемый модуль, который просто предоставляет какие то функции',
         component: AbstractModule,
+    },
+    '6': {
+        title: 'Server state Factory Module',
+        description: 'Сфабрикованный модуль, фабрика получает состояние с сервера',
+        component: ServerStateFactoryModuleMounter,
+    },
+    '7': {
+        title: 'Factory Compat module',
+        description: 'Сфабрикованный модуль, сделанный через compat режим, который просто предоставляет какие то функции и данные',
+        component: FactoryCompatModuleMaunter,
     }
 } as const;
 
@@ -42,14 +54,15 @@ export const ModulesTabs = () => {
 
     return (
         <div>
-            <TabsDesktop
+            <TabsResponsive
+                collapsible={true}
                 selectedId={activeTab}
                 onChange={(_, { selectedId }) => { setActiveTab(selectedId as TabId) }}
             >
             { Object.keys(tabs).map((tabKey) => (
                 <Tab id={tabKey} title={tabs[tabKey as TabId].title} key={tabKey} />
             )) }
-            </TabsDesktop>
+            </TabsResponsive>
 
             <div>
                 <Typography.Text>
