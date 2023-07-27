@@ -150,15 +150,18 @@ export const publicConstant = 3.14;
 ```
 
 #### Compat модуль
-Входная точка compat модуля должна писать в глобальную переменную `window` объект с ключом `{НазваниеМодуля}`.
+Входная точка compat модуля должна писать в глобальную переменную `window` по ключу `{НазваниеМодуля}` функцию, которая будет принимать в качестве аргументов параметры модуля `moduleResources` и возвращать сам модуль в виде любых данных.
 Все поля этого объекта по сути и будут являться модулем, ваши потребители смогут использовать их.
 
 ```ts
 // src/modules/module-compat/index.ts
 
-window.ModuleCompat = {
+window.ModuleCompat = (moduleResources) => {
     doSomething: () => {
-        console.log('Hello from compat module!');
+        console.log('Hello from compat module! My state here: ', moduleResources.moduleState);
+    },
+    getInfo: () => {
+        console.log(`Application: ${moduleResources.appName}. Version: ${moduleResources.moduleVersion}`, 
     },
     publicConstant: 3.14,
     // ...

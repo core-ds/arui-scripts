@@ -3,7 +3,7 @@ import { Loader, ModuleResources } from '../types';
 import { LoadingState } from './types';
 
 export type UseModuleLoaderParams<ModuleExportType, GetResourcesParams> = {
-    loader: Loader<GetResourcesParams, ModuleExportType>;
+    loader: Loader<GetResourcesParams, (resources: ModuleResources) => ModuleExportType>;
     loaderParams?: GetResourcesParams;
 };
 
@@ -16,10 +16,6 @@ export type UseModuleLoaderResult<ModuleExportType> = {
      * Экспорт модуля
      */
     module: ModuleExportType | undefined;
-    /**
-     * Полный ответ от модуля
-     */
-    resources: ModuleResources | undefined;
 }
 
 export function useModuleLoader<ModuleExportType, GetResourcesParams>({
@@ -28,7 +24,7 @@ export function useModuleLoader<ModuleExportType, GetResourcesParams>({
 }: UseModuleLoaderParams<ModuleExportType, GetResourcesParams>): UseModuleLoaderResult<ModuleExportType> {
     const [loadingState, setLoadingState] = useState<LoadingState>('unknown');
 
-    const [moduleAndResources, setModuleAndResources] = useState<{ module: ModuleExportType, resources: ModuleResources } | undefined>();
+    const [moduleAndResources, setModuleAndResources] = useState<ModuleExportType | undefined>();
     useEffect(() => {
         let unmountFn: () => void | undefined;
 
@@ -39,10 +35,10 @@ export function useModuleLoader<ModuleExportType, GetResourcesParams>({
                     getResourcesParams: loaderParams as GetResourcesParams,
                 });
 
-                setModuleAndResources({
-                    module: result.module,
-                    resources: result.moduleResources,
-                })
+                const module = await result.module?.(result.moduleResources)
+
+                setModuleAndResources(module)
+
                 unmountFn = result.unmount;
 
                 setLoadingState('fulfilled');
@@ -62,7 +58,6 @@ export function useModuleLoader<ModuleExportType, GetResourcesParams>({
 
     return {
         loadingState,
-        module: moduleAndResources?.module,
-        resources: moduleAndResources?.resources,
+        module: moduleAndResources,
     };
 }
