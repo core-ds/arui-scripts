@@ -68,9 +68,13 @@ export function useModuleFactory<LoaderParams, FactoryParams extends BaseModuleS
                 } else if (result.module.factory && typeof result.module.factory === 'function') {
 
                     moduleResult = result.module.factory(factoryParams);
+                } else {
+
+                    throw new Error(
+                        `Module ${factoryParams.hostAppId} does not present a factory function, 
+                        try usign another hook, e.g. 'useModuleLoader' or 'useModuleMounter'`
+                    )
                 }
-
-
 
                 setModule(moduleResult)
 

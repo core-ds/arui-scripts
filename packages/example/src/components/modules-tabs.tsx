@@ -37,12 +37,12 @@ const tabs = {
     },
     '6': {
         title: 'Server state Factory Module',
-        description: 'Сфабрикованный модуль, фабрика получает состояние с сервера',
+        description: 'Модуль-фабрика, который получает состояние с сервера',
         component: ServerStateFactoryModuleMounter,
     },
     '7': {
         title: 'Factory Compat module',
-        description: 'Сфабрикованный модуль, сделанный через compat режим, который просто предоставляет какие то функции и данные',
+        description: 'Модуль-фабрика, сделанный через compat режим, который просто предоставляет какие то функции и данные',
         component: FactoryCompatModuleMaunter,
     }
 } as const;
