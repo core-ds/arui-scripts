@@ -1,5 +1,11 @@
 # @alfalab/scripts-server
 
+## 1.2.0
+
+### Minor Changes
+
+- [#67](https://github.com/core-ds/arui-scripts/pull/67) [`5f0b9bb`](https://github.com/core-ds/arui-scripts/commit/5f0b9bbb2ed995a8888492b389a5ad340e783d0a) Thanks [@chermashentsau](https://github.com/chermashentsau)! - Add factory modules support
+
 ## 1.1.0
 
 ### Minor Changes
