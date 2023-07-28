@@ -46,6 +46,8 @@ export function useModuleFactory<LoaderParams, FactoryParams extends BaseModuleS
                     getResourcesParams: loaderParams as LoaderParams,
                 });
 
+                unmountFn = result.unmount;
+
                 const factoryParams = getFactoryParams ? 
                     await getFactoryParams(result.moduleResources.moduleState as FactoryParams) :
                     result.moduleResources.moduleState
@@ -59,15 +61,15 @@ export function useModuleFactory<LoaderParams, FactoryParams extends BaseModuleS
                  */
                 if (typeof result.module === 'function') {
 
-                    moduleResult = result.module(factoryParams);
+                    moduleResult = await result.module(factoryParams);
 
                 } else if (result.module.default && typeof result.module.default === 'function') {
 
-                    moduleResult = result.module.default(factoryParams);
+                    moduleResult = await result.module.default(factoryParams);
 
                 } else if (result.module.factory && typeof result.module.factory === 'function') {
 
-                    moduleResult = result.module.factory(factoryParams);
+                    moduleResult = await result.module.factory(factoryParams);
                 } else {
 
                     throw new Error(
@@ -77,8 +79,6 @@ export function useModuleFactory<LoaderParams, FactoryParams extends BaseModuleS
                 }
 
                 setModule(moduleResult)
-
-                unmountFn = result.unmount;
 
                 setLoadingState('fulfilled');
             } catch (error) {
