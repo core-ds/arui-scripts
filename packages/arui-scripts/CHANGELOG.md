@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 15.5.2
+
+### Patch Changes
+
+- [`eca6d00`](https://github.com/core-ds/arui-scripts/commit/eca6d0094d36f5041a2ad2c29c95e6099219c154) - Fix postcss prefix for modules
+
 ## 15.5.1
 
 ### Patch Changes
