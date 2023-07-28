@@ -81,9 +81,17 @@ function addPrefixCssRule(rule: webpack.RuleSetRule | undefined, prefix: string)
         return;
     }
 
+    function transform (incomingPrefix: string, selector: string, prefixedSelector: string) {
+        if (selector === ':root') {
+            return incomingPrefix
+        }
+
+        return prefixedSelector
+    }
+
     postCssLoader.options.postcssOptions.plugins = [
         ...postCssLoader.options.postcssOptions.plugins,
-        cssPrefix({ prefix }),
+        cssPrefix({ prefix, transform }),
     ];
 }
 
