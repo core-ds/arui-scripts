@@ -27,8 +27,8 @@ export function useModuleLoader<ModuleExportType, GetResourcesParams>({
     loaderParams,
 }: UseModuleLoaderParams<ModuleExportType, GetResourcesParams>): UseModuleLoaderResult<ModuleExportType> {
     const [loadingState, setLoadingState] = useState<LoadingState>('unknown');
-
     const [moduleAndResources, setModuleAndResources] = useState<{ module: ModuleExportType, resources: ModuleResources } | undefined>();
+    
     useEffect(() => {
         let unmountFn: () => void | undefined;
 

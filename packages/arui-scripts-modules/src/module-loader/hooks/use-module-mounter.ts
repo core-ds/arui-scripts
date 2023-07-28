@@ -1,7 +1,6 @@
 import { BaseModuleState, Loader, MountableModule } from '../types';
 import { useCallback, useEffect, useState } from 'react';
 import { LoadingState } from './types';
-import {useModuleLoader} from "./use-module-loader";
 
 export type UseModuleLoaderParams<LoaderParams, RunParams, ServerState extends BaseModuleState> = {
     /**

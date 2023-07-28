@@ -53,6 +53,15 @@ const moduleRouter = createGetModulesExpress({
             baseUrl: 'http://localhost:8082',
         }),
     },
+    'ServerStateFactoryModule': {
+        mountMode: 'default',
+        version: '1.0.0',
+        getModuleState: async () => ({
+            paramFromServer: 'This can be any data from server',
+            asyncData: 'It can be constructed from async data, so you may perform some service calls here',
+            baseUrl: 'http://localhost:8082',
+        }),
+    },
 });
 app.use(moduleRouter);
 

@@ -19,6 +19,9 @@ const aruiScriptsConfig: PackageSettings = {
             'ModuleCompat': {
                 entry: './src/modules/module-compat/index',
             },
+            'FactoryModuleCompat': {
+                entry: './src/modules/factory-module-compat/index',
+            },
             'ServerStateModuleCompat': {
                 entry: './src/modules/server-state-module-compat/index',
                 externals: {
@@ -38,6 +41,7 @@ const aruiScriptsConfig: PackageSettings = {
         },
         exposes: {
             'Module': './src/modules/module/index',
+            'ServerStateFactoryModule': './src/modules/server-state-factory-module/index',
             'ServerStateModule': './src/modules/server-state-module/index',
             'ModuleAbstract': './src/modules/module-abstract/index',
         }

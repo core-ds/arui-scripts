@@ -44,7 +44,10 @@ export function createGetModulesMethod<FrameworkParams extends unknown[] = []>(
                 moduleVersion: module.version ?? 'unknown',
                 scripts: moduleAssets.js,
                 styles: moduleAssets.css,
-                moduleState: moduleRunParams,
+                moduleState: {
+                    ...moduleRunParams,
+                    hostAppId: getResourcesRequest.hostAppId,
+                },
                 appName: appManifest.__metadata__.name,
             };
         }

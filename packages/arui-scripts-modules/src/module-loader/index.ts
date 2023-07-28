@@ -7,3 +7,4 @@ export { getServerStateModuleFetcherParams } from './get-server-state-module-fet
 
 export { useModuleLoader } from './hooks/use-module-loader';
 export { useModuleMounter } from './hooks/use-module-mounter';
+export { useModuleFactory } from './hooks/use-module-factory';
