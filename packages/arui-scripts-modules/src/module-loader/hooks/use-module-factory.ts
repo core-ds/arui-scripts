@@ -52,7 +52,7 @@ export function useModuleFactory<LoaderParams, FactoryParams extends BaseModuleS
                     await getFactoryParams(result.moduleResources.moduleState as FactoryParams) :
                     result.moduleResources.moduleState
 
-                let moduleResult;
+                let moduleResult: ModuleExportType;
 
                 /**
                  * Делаем 3 возможных варианта доставки фабрики:
@@ -78,7 +78,8 @@ export function useModuleFactory<LoaderParams, FactoryParams extends BaseModuleS
                     )
                 }
 
-                setModule(moduleResult)
+                // используем callback в setState, т.к. фабрика может вернуть модуль в виде функции
+                setModule(() => moduleResult)
 
                 setLoadingState('fulfilled');
             } catch (error) {
