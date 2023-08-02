@@ -1,5 +1,11 @@
 # @alfalab/scripts-modules
 
+## 1.2.1
+
+### Patch Changes
+
+- [#71](https://github.com/core-ds/arui-scripts/pull/71) [`1f1fa45`](https://github.com/core-ds/arui-scripts/commit/1f1fa45d9d634d59e92169e4931b38e4945f2f92) Thanks [@chermashentsau](https://github.com/chermashentsau)! - Fix modules factory hook
+
 ## 1.2.0
 
 ### Minor Changes
