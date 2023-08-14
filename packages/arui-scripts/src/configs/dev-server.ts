@@ -16,7 +16,7 @@ const devServerConfig = applyOverrides('devServer', {
         publicPath: `/${configs.publicPath}`,
     },
     static: [configs.serverOutputPath],
-    proxy: Object.assign(configs.appPackage.proxy || {}, {
+    proxy: Object.assign(configs.proxy || {}, {
         '/**': {
             target: `http://localhost:${configs.serverPort}`,
             bypass: (req: http.IncomingMessage) => {
