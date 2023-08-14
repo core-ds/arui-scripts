@@ -1,5 +1,13 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 15.5.3
+
+### Patch Changes
+
+- [#74](https://github.com/core-ds/arui-scripts/pull/74) [`2827327`](https://github.com/core-ds/arui-scripts/commit/2827327868addc654677c2fd79f6ef8da2f15ce8) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Don't require setup files from jest config
+
+- [#82](https://github.com/core-ds/arui-scripts/pull/82) [`3617329`](https://github.com/core-ds/arui-scripts/commit/361732947536ea14dab3c6e2f8285d7604f3f7a3) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Add 200 response for OPTIONS request when devServerCors option is enabled
+
 ## 15.5.2
 
 ### Patch Changes
