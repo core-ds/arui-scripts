@@ -13,9 +13,6 @@ module.exports = {
     moduleNameMapper: {
         "\\.css$": require.resolve('./build/configs/jest/css-mock')
     },
-    setupFiles: [
-        require.resolve('./build/configs/jest/setup')
-    ],
     snapshotSerializers: [
         require.resolve('jest-snapshot-serializer-class-name-to-string')
     ]
