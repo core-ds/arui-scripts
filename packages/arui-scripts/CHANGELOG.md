@@ -1,5 +1,15 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 15.6.0
+
+### Minor Changes
+
+- [#83](https://github.com/core-ds/arui-scripts/pull/83) [`4123653`](https://github.com/core-ds/arui-scripts/commit/41236530565511eceb86d6a950c338fc386b4848) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Allow to configure proxy through aruiScripts settings
+
+### Patch Changes
+
+- [#85](https://github.com/core-ds/arui-scripts/pull/85) [`d31109c`](https://github.com/core-ds/arui-scripts/commit/d31109c81a39173918bc17568b792b5fb1df06dc) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Change types for OverrideFunction, it's actually also include application context
+
 ## 15.5.3
 
 ### Patch Changes
