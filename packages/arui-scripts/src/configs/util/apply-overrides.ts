@@ -1,7 +1,7 @@
 import type { Configuration as WebpackConfiguration, WebpackOptionsNormalized } from 'webpack';
 import type { Configuration as WebpackDevServerConfiguration } from 'webpack-dev-server';
 import appConfigs from '../app-configs';
-import { AppConfigs } from '../app-configs/types';
+import { AppContextWithConfigs } from '../app-configs/types';
 import { createSingleClientWebpackConfig } from "../webpack.client";
 
 type Overrides = {
@@ -52,7 +52,7 @@ type OverridesAdditionalArgs = {
 
 type OverrideFunction<K extends keyof Overrides, AdditionalArgs = K extends keyof OverridesAdditionalArgs ? OverridesAdditionalArgs[K] : undefined> = (
     config: Overrides[K],
-    appConfig: AppConfigs,
+    appConfig: AppContextWithConfigs,
     additionalArgs: AdditionalArgs
 ) => Overrides[K];
 
