@@ -17,6 +17,7 @@ export function getDefaultAppConfig(): AppConfigs {
         devServerCors: false,
         useServerHMR: false,
         presets: appPackage.aruiScripts?.presets || null,
+        proxy: appPackage.proxy || null,
 
         // paths
         buildPath: '.build',
