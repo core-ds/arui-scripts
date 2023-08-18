@@ -1,3 +1,11 @@
 .primary {
     color: red;
+
+    &__footer {
+        color: blue;
+    }
+
+    @media (min-width: 1024px) {
+        color: coral;
+    }
 }

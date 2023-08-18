@@ -12,6 +12,10 @@ const mountModule: ModuleMountFunction<any, any> = (targetNode, runParams) => {
     <div class="primary">
       У виджета могут быть свои стили, которые автоматически будут изолированы от других стилей на странице.
       Единственное условие - виджет сам должен добавлять class="module-{ID виджета}" к корневому элементу.
+
+      <div class="primary__footer">
+        Этот текст должен быть синего цвета
+      </div>
     </div>
   </div>`;
     }

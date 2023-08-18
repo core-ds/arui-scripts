@@ -81,9 +81,16 @@ function addPrefixCssRule(rule: webpack.RuleSetRule | undefined, prefix: string)
         return;
     }
 
-    function transform (incomingPrefix: string, selector: string, prefixedSelector: string) {
+    function transform (incomingPrefix: string, selector: string, prefixedSelector: string, file: string, rule: any) {
         if (selector === ':root') {
+            // :root фактически должен заменяться на название класса модуля
             return incomingPrefix
+        }
+
+        if (rule.parent.parent && rule.parent.type !== 'atrule') {
+            // если у селектора родителем явлеется не root - значит он часть нестинга и его не надо префиксить
+            // исключение - если родитель @-правило, типа @media
+            return selector;
         }
 
         return prefixedSelector
@@ -91,7 +98,7 @@ function addPrefixCssRule(rule: webpack.RuleSetRule | undefined, prefix: string)
 
     postCssLoader.options.postcssOptions.plugins = [
         ...postCssLoader.options.postcssOptions.plugins,
-        cssPrefix({ prefix, transform }),
+        cssPrefix({ prefix, transform: transform as any }),
     ];
 }
 
