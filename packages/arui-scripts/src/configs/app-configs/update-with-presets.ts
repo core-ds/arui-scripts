@@ -1,6 +1,7 @@
 import { AppConfigs, AppContext } from './types';
 import { tryResolve } from '../util/resolve';
 import { validateSettingsKeys } from './validate-settings-keys';
+import merge from 'lodash.merge';
 
 export function updateWithPresets(config: AppConfigs, context: AppContext) {
     if (!config.presets) {
@@ -22,10 +23,7 @@ export function updateWithPresets(config: AppConfigs, context: AppContext) {
             presetsSettings = presetsSettings.default;
         }
         validateSettingsKeys(config, presetsSettings, presetsConfigPath);
-        config = {
-            ...config,
-            ...presetsSettings,
-        }
+        config = merge(config, presetsSettings);
     }
     if (presetsOverridesPath) {
         context.overridesPath.unshift(presetsOverridesPath);
