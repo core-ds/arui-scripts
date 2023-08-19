@@ -1,5 +1,13 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 15.6.1
+
+### Patch Changes
+
+- [#91](https://github.com/core-ds/arui-scripts/pull/91) [`33a1c60`](https://github.com/core-ds/arui-scripts/commit/33a1c60dceae7fa78ede8e073ccb7f57927c07b0) Thanks [@Echzio](https://github.com/Echzio)! - fix docs
+
+- [#88](https://github.com/core-ds/arui-scripts/pull/88) [`dcb6fd3`](https://github.com/core-ds/arui-scripts/commit/dcb6fd3a69a5877e43ae08e6330c8bbb0a095bb3) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Correctly merge complex settings
+
 ## 15.6.0
 
 ### Minor Changes
