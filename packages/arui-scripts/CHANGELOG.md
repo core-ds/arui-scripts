@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 15.6.2
+
+### Patch Changes
+
+- [#90](https://github.com/core-ds/arui-scripts/pull/90) [`1169f2d`](https://github.com/core-ds/arui-scripts/commit/1169f2d24e185f07644492054b2e40cc4cd75351) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Correctly add prefix for module css selector when css has nested rules
+
 ## 15.6.1
 
 ### Patch Changes
