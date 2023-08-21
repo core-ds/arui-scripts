@@ -14,12 +14,13 @@
     },
     "husky": {
         "hooks": {
-            "pre-commit": "turbo run build lint test",
+            "pre-commit": "yarn test",
             "commit-msg": "yarn commitlint -E HUSKY_GIT_PARAMS"
         }
     },
     "scripts": {
-        "publish-packages": "turbo run build lint test && changeset version && changeset publish",
-        "build": "turbo run build"
+        "publish-packages": "yarn test && changeset version && changeset publish",
+        "build": "turbo run build",
+        "test": "turbo run build lint test validate"
     }
 }

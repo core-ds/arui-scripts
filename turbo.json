@@ -8,6 +8,9 @@
         "test": {
             "dependsOn": ["^build"]
         },
-        "lint": {}
+        "lint": {},
+        "validate": {
+            "dependsOn": ["build"]
+        }
     }
 }

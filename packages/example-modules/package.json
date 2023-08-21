@@ -4,13 +4,11 @@
     "private": true,
     "scripts": {
         "build": "arui-scripts build",
-        "start": "NODE_ENV=localhost arui-scripts start"
+        "start": "NODE_ENV=localhost arui-scripts start",
+        "validate": "jest \"validate-build/*\" --config jest.config.validate-build.js"
     },
     "jest": {
-        "preset": "arui-scripts",
-        "setupFiles": [
-            "<rootDir>/__tests__/setup.js"
-        ]
+        "preset": "arui-scripts"
     },
     "dependencies": {
         "@alfalab/scripts-modules": "workspace:*",
