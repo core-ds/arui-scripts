@@ -1,3 +1,5 @@
+import { ProxyConfigArrayItem } from "webpack-dev-server";
+
 /**
  * Конфигурация arui-scripts, которая может быть переопределена приложением
  */
@@ -10,6 +12,9 @@ export type AppConfigs = {
     devServerCors: boolean;
     useServerHMR: boolean;
     presets: string | null;
+    proxy: null | {
+        [url: string]: ProxyConfigArrayItem;
+    };
 
     // paths
     buildPath: string;

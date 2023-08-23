@@ -16,7 +16,7 @@ const devServerConfig = applyOverrides('devServer', {
         publicPath: `/${configs.publicPath}`,
     },
     static: [configs.serverOutputPath],
-    proxy: Object.assign(configs.appPackage.proxy || {}, {
+    proxy: Object.assign(configs.proxy || {}, {
         '/**': {
             target: `http://localhost:${configs.serverPort}`,
             bypass: (req: http.IncomingMessage) => {
@@ -28,14 +28,21 @@ const devServerConfig = applyOverrides('devServer', {
 
                 return null;
             },
-            // Для дев режима, когда мы используем в качестве соурсмапов что-то, основанное на eval - нужно
-            // разрешить браузеру исполнять наш код, даже когда content-security-policy приложения не позволяет этого делать.
-            ...(configs.devSourceMaps.includes('eval') ? {
+            ...(configs.devSourceMaps.includes('eval') || configs.devServerCors ? {
                 onProxyRes: (proxyRes: http.IncomingMessage) => {
-                    const cspHeader = proxyRes.headers['content-security-policy'];
-                    if (typeof cspHeader === 'string' && !cspHeader.includes('unsafe-eval')) {
-                        proxyRes.headers['content-security-policy'] = cspHeader
-                            .replace(/script-src/, 'script-src \'unsafe-eval\'');
+                    // Для дев режима, когда мы используем в качестве соурсмапов что-то, основанное на eval - нужно
+                    // разрешить браузеру исполнять наш код, даже когда content-security-policy приложения не позволяет этого делать.
+                    if (configs.devSourceMaps.includes('eval')) {
+                        const cspHeader = proxyRes.headers['content-security-policy'];
+                        if (typeof cspHeader === 'string' && !cspHeader.includes('unsafe-eval')) {
+                            proxyRes.headers['content-security-policy'] = cspHeader
+                                .replace(/script-src/, 'script-src \'unsafe-eval\'');
+                        }
+                    }
+                    // если включен devServerCors, то нужно принудительно менять статус ответа на 200, чтобы
+                    // браузер не отклонял ответы с CORS
+                    if (configs.devServerCors && proxyRes.method === 'OPTIONS') {
+                        proxyRes.statusCode = 200;
                     }
                 },
             } : {}),

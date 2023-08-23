@@ -3,18 +3,18 @@
 }
 @media (--tablet) {
     .root {
-        padding: 15px;
+        padding: var(--gap-xl);
     }
 }
 
 @media (--desktop) {
     .root {
-        padding: 30px;
+        padding: var(--gap-2xl);
     }
 }
 
 @media (--mobile) {
     .root {
-        padding: 5px;
+        padding: var(--gap-xs);
     }
 }

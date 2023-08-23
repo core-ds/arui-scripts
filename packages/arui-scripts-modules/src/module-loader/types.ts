@@ -129,7 +129,6 @@ export type ModuleFederationContainer = {
 
 declare global {
     /* eslint-disable @typescript-eslint/naming-convention,no-underscore-dangle */
-    const __webpack_init_sharing__: Function;
     const __webpack_share_scopes__: {
         default: unknown;
     };

@@ -1,5 +1,37 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 15.6.2
+
+### Patch Changes
+
+- [#90](https://github.com/core-ds/arui-scripts/pull/90) [`1169f2d`](https://github.com/core-ds/arui-scripts/commit/1169f2d24e185f07644492054b2e40cc4cd75351) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Correctly add prefix for module css selector when css has nested rules
+
+## 15.6.1
+
+### Patch Changes
+
+- [#91](https://github.com/core-ds/arui-scripts/pull/91) [`33a1c60`](https://github.com/core-ds/arui-scripts/commit/33a1c60dceae7fa78ede8e073ccb7f57927c07b0) Thanks [@Echzio](https://github.com/Echzio)! - fix docs
+
+- [#88](https://github.com/core-ds/arui-scripts/pull/88) [`dcb6fd3`](https://github.com/core-ds/arui-scripts/commit/dcb6fd3a69a5877e43ae08e6330c8bbb0a095bb3) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Correctly merge complex settings
+
+## 15.6.0
+
+### Minor Changes
+
+- [#83](https://github.com/core-ds/arui-scripts/pull/83) [`4123653`](https://github.com/core-ds/arui-scripts/commit/41236530565511eceb86d6a950c338fc386b4848) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Allow to configure proxy through aruiScripts settings
+
+### Patch Changes
+
+- [#85](https://github.com/core-ds/arui-scripts/pull/85) [`d31109c`](https://github.com/core-ds/arui-scripts/commit/d31109c81a39173918bc17568b792b5fb1df06dc) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Change types for OverrideFunction, it's actually also include application context
+
+## 15.5.3
+
+### Patch Changes
+
+- [#74](https://github.com/core-ds/arui-scripts/pull/74) [`2827327`](https://github.com/core-ds/arui-scripts/commit/2827327868addc654677c2fd79f6ef8da2f15ce8) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Don't require setup files from jest config
+
+- [#82](https://github.com/core-ds/arui-scripts/pull/82) [`3617329`](https://github.com/core-ds/arui-scripts/commit/361732947536ea14dab3c6e2f8285d7604f3f7a3) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Add 200 response for OPTIONS request when devServerCors option is enabled
+
 ## 15.5.2
 
 ### Patch Changes

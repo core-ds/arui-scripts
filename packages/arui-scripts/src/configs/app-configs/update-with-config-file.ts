@@ -1,4 +1,5 @@
 import path from 'path';
+import merge from 'lodash.merge';
 import { tryResolve } from '../util/resolve';
 import { AppConfigs, AppContext } from './types';
 import { validateSettingsKeys } from './validate-settings-keys';
@@ -13,10 +14,7 @@ export function updateWithConfigFile(config: AppConfigs, context: AppContext) {
             appSettings = appSettings.default;
         }
         validateSettingsKeys(config, appSettings, appConfigPath);
-        return {
-            ...config,
-            ...appSettings,
-        };
+        return merge(config, appSettings);
     }
 
     return config;

@@ -1,5 +1,33 @@
 # example-modules
 
+## 1.0.9
+
+### Patch Changes
+
+- Updated dependencies [[`1169f2d`](https://github.com/core-ds/arui-scripts/commit/1169f2d24e185f07644492054b2e40cc4cd75351)]:
+  - arui-scripts@15.6.2
+
+## 1.0.8
+
+### Patch Changes
+
+- Updated dependencies [[`33a1c60`](https://github.com/core-ds/arui-scripts/commit/33a1c60dceae7fa78ede8e073ccb7f57927c07b0), [`dcb6fd3`](https://github.com/core-ds/arui-scripts/commit/dcb6fd3a69a5877e43ae08e6330c8bbb0a095bb3)]:
+  - arui-scripts@15.6.1
+
+## 1.0.7
+
+### Patch Changes
+
+- Updated dependencies [[`d31109c`](https://github.com/core-ds/arui-scripts/commit/d31109c81a39173918bc17568b792b5fb1df06dc), [`4123653`](https://github.com/core-ds/arui-scripts/commit/41236530565511eceb86d6a950c338fc386b4848)]:
+  - arui-scripts@15.6.0
+
+## 1.0.6
+
+### Patch Changes
+
+- Updated dependencies [[`2827327`](https://github.com/core-ds/arui-scripts/commit/2827327868addc654677c2fd79f6ef8da2f15ce8), [`3617329`](https://github.com/core-ds/arui-scripts/commit/361732947536ea14dab3c6e2f8285d7604f3f7a3)]:
+  - arui-scripts@15.5.3
+
 ## 1.0.5
 
 ### Patch Changes
