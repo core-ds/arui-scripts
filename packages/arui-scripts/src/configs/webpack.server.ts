@@ -15,9 +15,9 @@ import { babelDependencies } from './babel-dependencies';
 import { serverExternalsExemptions } from './server-externals-exemptions';
 import { RunScriptWebpackPlugin } from 'run-script-webpack-plugin';
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
-import WatchMissingNodeModulesPlugin from 'react-dev-utils/WatchMissingNodeModulesPlugin';
 
 const ReloadServerPlugin = require('../plugins/reload-server-webpack-plugin');
+const WatchMissingNodeModulesPlugin = require('../plugins/watch-missing-node-modules-plugin');
 
 const assetsIgnoreBanner = fs.readFileSync(require.resolve('./util/node-assets-ignore'), 'utf8');
 const sourceMapSupportBanner = fs.readFileSync(require.resolve('./util/install-sourcemap-support'), 'utf8');

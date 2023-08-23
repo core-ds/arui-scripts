@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TabsResponsive, Tab } from '@alfalab/core-components/tabs/responsive';
+import { Tabs, Tab } from '@alfalab/core-components/tabs';
 import { CompatModuleMounter } from '#/module-mounters/compat-module-mounter';
 import { Typography } from '@alfalab/core-components/typography';
 import { ModuleMounter } from '#/module-mounters/module-mounter';
@@ -54,15 +54,15 @@ export const ModulesTabs = () => {
 
     return (
         <div>
-            <TabsResponsive
-                collapsible={true}
+            <Tabs
+
                 selectedId={activeTab}
                 onChange={(_, { selectedId }) => { setActiveTab(selectedId as TabId) }}
             >
             { Object.keys(tabs).map((tabKey) => (
                 <Tab id={tabKey} title={tabs[tabKey as TabId].title} key={tabKey} />
             )) }
-            </TabsResponsive>
+            </Tabs>
 
             <div>
                 <Typography.Text>
