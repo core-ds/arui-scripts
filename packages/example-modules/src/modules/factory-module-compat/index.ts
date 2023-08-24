@@ -1,9 +1,15 @@
-import type { BaseModuleState, WindowWithModule } from '@alfalab/scripts-modules';
+import type {
+    BaseModuleState,
+    FactoryModule,
+    WindowWithModule,
+} from '@alfalab/scripts-modules';
 
 
-
-(window as WindowWithModule).FactoryModuleCompat = (moduleState: BaseModuleState) => ({
-  someData: 'Some data here',
-  saySomething: () => alert('something'),
-  ...moduleState
+const factory: FactoryModule = (moduleState, runParams) => ({
+    someData: 'Some data here',
+    saySomething: () => alert('something'),
+    runParams,
+    ...moduleState
 });
+
+(window as WindowWithModule).FactoryModuleCompat = factory;

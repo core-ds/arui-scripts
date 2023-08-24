@@ -1,4 +1,5 @@
 export * from './types';
+export * from './module-types';
 
 export { createModuleLoader } from './create-module-loader';
 export { createModuleFetcher } from './create-module-fetcher';

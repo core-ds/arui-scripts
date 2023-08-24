@@ -70,7 +70,8 @@
 Такие модули должны экспортировать две функции:
 
 ```tsx
-export function mount(targetNode, runParams, serverState): void {
+import { ModuleMountFunction, ModuleUnmountFunction } from '@alfalab/scripts-modules';
+export const mount: ModuleMountFunction = (targetNode, runParams, serverState) => {
     // здесь происходит монтирование модуля в хост-приложение
     // targetNode - это DOM-нода, в которую нужно отрендерить модуль
     // runParams - это параметры, которые были переданы при запуске модуля
@@ -80,7 +81,7 @@ export function mount(targetNode, runParams, serverState): void {
     ReactDOM.render(<App preparedState={serverState} runParams={runParams} />, targetNode);
 }
 
-export function unmount(targetNode): void {
+export const unmount: ModuleUnmountFunction = (targetNode) => {
     // здесь происходит демонтирование модуля из хост-приложения
     // Скорее всего это будет что-то вроде:
     ReactDOM.unmountComponentAtNode(targetNode);
@@ -90,47 +91,44 @@ export function unmount(targetNode): void {
 ### Модули-фабрики
 Модули-фабрики - это модули, которые поставляют фабрики, которые в свою очередь вызываются в рантайме со стейтом (клиентским или серверным, в зависимости от типа поставляемого модуля).
 
-Такие модули должны экспортировать фабрику тремя возможными вариантами:
-
+Такие модули должны экспортировать фабрику:
 
 Для mf(default) модулей:
 
 ```tsx
-export default function (moduleState) {
-    // в фабрике можно на основе стейта вернуть готовый модуль 
-    return {
-        moduleState,
-        doSomething: () => {
-            fetch(moduleState.baseUrl + '/api/getData')
-        }
-    };
-}
-```
-или:
+import type { FactoryModule } from '@alfalab/scripts-modules';
 
-```tsx
-export const factory = function (moduleState) {
-    // в фабрике можно на основе стейта вернуть готовый модуль 
+const factory: FactoryModule = function (serverState, runParams) {
+    // serverState - это состояние, которое подготовлено на сервере модуля
+    // runParams - это параметры, которые были переданы при запуске модуля клиентом
+    // в фабрике можно на основе стейта вернуть готовый модуль
     return {
-        moduleState,
+        serverState,
         doSomething: () => {
-            fetch(moduleState.baseUrl + '/api/getData')
+            fetch(serverState.baseUrl + '/api/getData')
         }
     };
 }
+
+export default factory;
+// или export { factory };
 ```
 
 для compat модулей:
 ```ts
-// src/modules/module-compat/index.ts
+import type { FactoryModule } from '@alfalab/scripts-modules';
 
-window.ModuleCompat = (moduleState) => {
-    doSomething: () => {
-        fetch(moduleState.apiUrl);
-    },
-    publicConstant: 3.14,
-    // ...
-};
+const factory: FactoryModule = function (serverState, runParams) {
+    // в фабрике можно на основе стейта вернуть готовый модуль
+    return {
+        serverState,
+        doSomething: () => {
+            fetch(serverState.baseUrl + '/api/getData')
+        }
+    };
+}
+
+window.ModuleCompat = factory;
 ```
 
 ## Как создать модуль

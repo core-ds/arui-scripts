@@ -1,6 +1,8 @@
-import { BaseModuleState, Loader, MountableModule } from '../types';
+import { BaseModuleState, Loader } from '../types';
 import { useCallback, useEffect, useState } from 'react';
 import { LoadingState } from './types';
+import { MountableModule } from '../module-types';
+import { unwrapDefaultExport } from '../utils/unwrap-default-export';
 
 export type UseModuleLoaderParams<LoaderParams, RunParams, ServerState extends BaseModuleState> = {
     /**
@@ -8,7 +10,7 @@ export type UseModuleLoaderParams<LoaderParams, RunParams, ServerState extends B
      */
     loader: Loader<LoaderParams, MountableModule<RunParams, ServerState>>;
     /**
-     * Параметры, которые будут переданы в loader
+     * Параметры, которые будут переданы в загрузчик (и будут переданы на сервер модуля)
      */
     loaderParams?: LoaderParams;
     /**
@@ -69,11 +71,12 @@ export function useModuleMounter<LoaderParams, RunParams, ServerState extends Ba
                     getResourcesParams: loaderParams as LoaderParams,
                 });
 
-                result.module.mount(targetNode, runParams as RunParams, result.moduleResources.moduleState as ServerState);
+                const module = unwrapDefaultExport(result.module);
+                module.mount(targetNode, runParams as RunParams, result.moduleResources.moduleState as ServerState);
 
                 unmountFn = () => {
                     result.unmount();
-                    result.module.unmount(targetNode);
+                    module.unmount(targetNode);
                 };
             } catch (error) {
                 setLoadingState('rejected');
