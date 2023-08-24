@@ -1,5 +1,18 @@
 # @alfalab/scripts-modules
 
+## 1.3.0
+
+### Minor Changes
+
+- [#94](https://github.com/core-ds/arui-scripts/pull/94) [`ad23eb0`](https://github.com/core-ds/arui-scripts/commit/ad23eb09e75080a3828f04c9a30a72ea19ddde59) Thanks [@sanityFair](https://github.com/sanityFair)! - ## В данном PR исправлены:
+
+  - Prototype pollution in webpack loader-utils Critical
+  - Improper Neutralization of Special Elements used in a Command in Shell-quote Critical
+  - json-schema is vulnerable to Prototype Pollution Critical
+  - Prototype Pollution in immer Critical (
+  - Для обновления пришлось вынести в плагины WatchMissingNodeModulesPlugin из react-dev-utils, так как в последней версии его убрали.)
+  - Prototype Pollution in handlebars Critical
+
 ## 1.2.1
 
 ### Patch Changes
