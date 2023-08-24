@@ -1,0 +1,11 @@
+{
+    "extends": "arui-scripts/tsconfig.json",
+    "include": [
+        "**/*.ts"
+    ],
+    "compilerOptions": {
+        "baseUrl": "./",
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true
+    }
+}

@@ -1,0 +1,18 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`modules should create valid css for ModuleCompat 1`] = `
+".module-ModuleCompat .primary{
+    color:red;
+}
+
+    .module-ModuleCompat .primary__footer{
+        color:blue;
+    }
+
+    @media (min-width: 1024px){.module-ModuleCompat .primary{
+        color:coral
+}
+    }
+
+"
+`;
