@@ -1,5 +1,18 @@
 # @alfalab/scripts-modules
 
+## 1.4.0
+
+### Minor Changes
+
+- [#98](https://github.com/core-ds/arui-scripts/pull/98) [`ed40587`](https://github.com/core-ds/arui-scripts/commit/ed4058763981be72124be3f29269563df748b627) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - - Добавлено описание типов для Factory-модулей, доступно как `FactoryModule`.
+
+  - Factory-модули теперь могут принимать `runParams` - отдельный параметр, который не будет передаваться на сервер, а
+    сразу будет попадать из клиента в клиент.
+    **Важно:** `runParams` теперь является первым аргументом для `run` функции.
+
+  - Mountable модули теперь могут использовать запись вида `export default mountableModule;` вместо отдельных экспортов
+    `mount` и `unmount` функций.
+
 ## 1.3.0
 
 ### Minor Changes
