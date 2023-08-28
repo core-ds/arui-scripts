@@ -1,5 +1,11 @@
 # @alfalab/scripts-server
 
+## 1.2.1
+
+### Patch Changes
+
+- [#98](https://github.com/core-ds/arui-scripts/pull/98) [`ed40587`](https://github.com/core-ds/arui-scripts/commit/ed4058763981be72124be3f29269563df748b627) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Удалены неиспользуемые типы.
+
 ## 1.2.0
 
 ### Minor Changes
