@@ -5,12 +5,16 @@
             "outputs": ["build/**"],
             "dependsOn": ["^build"]
         },
+        "build:app": {
+            "outputs": [".build/**"],
+            "dependsOn": ["^build"]
+        },
         "test": {
             "dependsOn": ["^build"]
         },
         "lint": {},
         "validate": {
-            "dependsOn": ["build"]
+            "dependsOn": ["build:app"]
         }
     }
 }
