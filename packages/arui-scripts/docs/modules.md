@@ -98,7 +98,7 @@ export const unmount: ModuleUnmountFunction = (targetNode) => {
 ```tsx
 import type { FactoryModule } from '@alfalab/scripts-modules';
 
-const factory: FactoryModule = function (serverState, runParams) {
+const factory: FactoryModule = function (runParams, serverState) {
     // serverState - это состояние, которое подготовлено на сервере модуля
     // runParams - это параметры, которые были переданы при запуске модуля клиентом
     // в фабрике можно на основе стейта вернуть готовый модуль
@@ -118,7 +118,7 @@ export default factory;
 ```ts
 import type { FactoryModule } from '@alfalab/scripts-modules';
 
-const factory: FactoryModule = function (serverState, runParams) {
+const factory: FactoryModule = function (runParams, serverState) {
     // в фабрике можно на основе стейта вернуть готовый модуль
     return {
         serverState,

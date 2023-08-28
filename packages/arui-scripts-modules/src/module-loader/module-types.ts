@@ -55,7 +55,7 @@ export type FactoryModuleFunction<
     RunParams = void,
     ServerState extends BaseModuleState = BaseModuleState,
 > = {
-    (serverState: ServerState, runParams: RunParams): ReturnType;
+    (runParams: RunParams, serverState: ServerState): ReturnType;
 };
 
 export type FactoryModule<ReturnType = any, RunParams = void, ServerState extends BaseModuleState = BaseModuleState> =

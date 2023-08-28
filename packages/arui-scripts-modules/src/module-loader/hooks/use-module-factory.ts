@@ -23,7 +23,7 @@ export type UseModuleFactoryParams<
      */
     runParams?: RunParams;
     /**
-     * Функция, который позволяет дополнить/изменить параметры для фабрики
+     * Функция, который позволяет дополнить/изменить серверный стейт модуля перед вызовом фабрики
      */
     getFactoryParams?: (params: ServerState) => ServerState;
 }
@@ -65,7 +65,7 @@ export function useModuleFactory<
 
                 unmountFn = result.unmount;
 
-                const factoryParams = (getFactoryParams
+                const serverState = (getFactoryParams
                     ? await getFactoryParams(result.moduleResources.moduleState as ServerState)
                     : result.moduleResources.moduleState) as ServerState;
 
@@ -79,12 +79,12 @@ export function useModuleFactory<
                 const unwrappedModule = unwrapDefaultExport(result.module);
 
                 if (typeof unwrappedModule === 'function') {
-                    moduleResult = await unwrappedModule(factoryParams, runParams as RunParams);
+                    moduleResult = await unwrappedModule(runParams as RunParams, serverState);
                 } else if (unwrappedModule.factory && typeof unwrappedModule.factory === 'function') {
-                    moduleResult = await unwrappedModule.factory(factoryParams, runParams as RunParams);
+                    moduleResult = await unwrappedModule.factory(runParams as RunParams, serverState);
                 } else {
                     throw new Error(
-                        `Module ${factoryParams.hostAppId} does not present a factory function,
+                        `Module ${serverState.hostAppId} does not present a factory function,
                         try usign another hook, e.g. 'useModuleLoader' or 'useModuleMounter'`
                     )
                 }

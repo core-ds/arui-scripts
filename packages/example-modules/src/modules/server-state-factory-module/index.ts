@@ -1,6 +1,6 @@
 import type { FactoryModule } from '@alfalab/scripts-modules';
 
-const factory: FactoryModule = (moduleState, runParams) => ({
+const factory: FactoryModule = (runParams, moduleState) => ({
     someData: 'Some data here',
     reloadPage: () => location.reload(),
     runParams,
