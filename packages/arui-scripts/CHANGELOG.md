@@ -1,5 +1,13 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 15.7.1
+
+### Patch Changes
+
+- [#100](https://github.com/core-ds/arui-scripts/pull/100) [`06f382d`](https://github.com/core-ds/arui-scripts/commit/06f382d4cead2a4a3a9d7d9c3e340230040eb75e) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Исправлена проблема сборки css при использовании keepCssVars: false:
+  Теперь все переменные будут удаляться из css.
+  Исправление для #97
+
 ## 15.7.0
 
 ### Minor Changes
