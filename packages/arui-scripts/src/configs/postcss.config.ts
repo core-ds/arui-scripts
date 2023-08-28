@@ -26,6 +26,7 @@ export const postcssPlugins = [
     '@csstools/postcss-global-data',
     'postcss-custom-media',
     !config.keepCssVars && 'postcss-custom-properties',
+    !config.keepCssVars && 'postcss-remove-root',
     'postcss-strip-units',
     'postcss-calc',
     'postcss-color-function',
@@ -54,5 +55,5 @@ export const postcssPluginsOptions = {
     },
     'postcss-custom-properties': {
         preserve: false,
-    }
+    },
 };

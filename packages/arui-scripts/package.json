@@ -81,6 +81,7 @@
         "postcss-nested": "^6.0.0",
         "postcss-omit-import-tilde": "^1.0.0",
         "postcss-prefix-selector": "^1.16.0",
+        "postcss-remove-root": "^0.0.2",
         "postcss-strip-units": "^2.0.0",
         "postcss-url": "^10.0.0",
         "react-dev-utils": "12.0.1",

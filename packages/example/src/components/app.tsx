@@ -17,7 +17,7 @@ export class App extends React.Component {
     render() {
         return (
             <div className={ styles.root }>
-                <Typography.Title tag='h1'>
+                <Typography.Title tag='h1' className={styles.title}>
                     ARUI-scripts example app
                 </Typography.Title>
                 <Gap size='s' />
@@ -31,6 +31,7 @@ export class App extends React.Component {
                 <Gap size='s' />
                 <Button
                     size='xs'
+                    view='accent'
                     onClick={ () => this.setState({ clickCount: this.state.clickCount + 1 }) }
                 >
                     Up!
