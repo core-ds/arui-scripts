@@ -21,6 +21,6 @@
     "scripts": {
         "publish-packages": "yarn test && changeset version && changeset publish",
         "build": "turbo run build",
-        "test": "turbo run build lint test validate"
+        "test": "turbo run build build:app lint test validate"
     }
 }
