@@ -1,11 +1,11 @@
-import type { BaseModuleState } from '@alfalab/scripts-modules';
+import type { FactoryModule } from '@alfalab/scripts-modules';
 
-function factory(moduleState: BaseModuleState) {
-    return {
-        someData: 'Some data here',
-        reloadPage: () => location.reload(),
-        ...moduleState 
-    }
-}
+const factory: FactoryModule = (runParams, moduleState) => ({
+    someData: 'Some data here',
+    reloadPage: () => location.reload(),
+    runParams,
+    ...moduleState
+});
+
 
 export default factory
