@@ -20,6 +20,6 @@ jobs:
     - name: yarn install and test
       run: |
         yarn install --immutable
-        yarn run turbo test build lint
+        yarn run test
       env:
         CI: true
