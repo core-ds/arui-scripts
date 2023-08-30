@@ -2,7 +2,8 @@
 
 exports[`modules should create valid css for ModuleCompat 1`] = `
 ".module-ModuleCompat .primary{
-    color:red;
+    color:rgba(255, 0, 0, 0.5);
+    margin-top:4px;
 }
 
     .module-ModuleCompat .primary__footer{

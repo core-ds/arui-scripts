@@ -1,5 +1,10 @@
+:root {
+    --color-primary: red;
+    --gap: 2px;
+}
 .primary {
-    color: red;
+    color: color-mod(var(--color-primary), a(0.5));
+    margin-top: calc(var(--gap) * 2);
 
     &__footer {
         color: blue;
