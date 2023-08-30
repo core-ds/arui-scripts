@@ -3,7 +3,7 @@
     --gap: 2px;
 }
 .primary {
-    color: color-mod(var(--color-primary), a(0.5));
+    color: color-mod(var(--color-primary) a(0.5));
     margin-top: calc(var(--gap) * 2);
 
     &__footer {
