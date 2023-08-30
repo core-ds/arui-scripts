@@ -1,5 +1,14 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 15.7.2
+
+### Patch Changes
+
+- [#104](https://github.com/core-ds/arui-scripts/pull/104) [`332b437`](https://github.com/core-ds/arui-scripts/commit/332b437851900d288f6d98f191666d21e5571879) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Исправление обработки color-mod функций в css при использовании keepCssVars: false.
+  Исправление для [бага](https://github.com/core-ds/arui-scripts/issues/103).
+
+- [#105](https://github.com/core-ds/arui-scripts/pull/105) [`d314448`](https://github.com/core-ds/arui-scripts/commit/d3144488d9a93f1d664a1e90f769d0f8b76528b8) Thanks [@vaagnavanesyan](https://github.com/vaagnavanesyan)! - ignore css order to prevent conflicts
+
 ## 15.7.1
 
 ### Patch Changes
