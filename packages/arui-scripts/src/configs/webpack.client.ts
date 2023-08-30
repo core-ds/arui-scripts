@@ -361,6 +361,7 @@ export const createSingleClientWebpackConfig = (mode: 'dev' | 'prod', entry: Ent
             ),
         }),
         new MiniCssExtractPlugin({
+            ignoreOrder: true,
             filename: mode === 'dev' ? '[name].css' : '[name].[contenthash:8].css',
             chunkFilename: mode === 'dev' ? '[id].css' : '[name].[contenthash:8].chunk.css',
         }),
