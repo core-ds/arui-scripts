@@ -1,8 +1,8 @@
 import webpack from 'webpack';
-import cssPrefix from 'postcss-prefix-selector';
 import configs from './app-configs';
 import { CompatModuleConfig } from './app-configs/types';
-import {findLoader} from "./util/find-loader";
+import { findLoader } from "./util/find-loader";
+import { postCssPrefix } from '../plugins/postcss-prefix-selector';
 
 export function haveExposedDefaultModules() {
     return configs.modules?.exposes;
@@ -81,24 +81,9 @@ function addPrefixCssRule(rule: webpack.RuleSetRule | undefined, prefix: string)
         return;
     }
 
-    function transform (incomingPrefix: string, selector: string, prefixedSelector: string, file: string, rule: any) {
-        if (selector === ':root') {
-            // :root фактически должен заменяться на название класса модуля
-            return incomingPrefix
-        }
-
-        if (rule.parent.parent && rule.parent.type !== 'atrule') {
-            // если у селектора родителем явлеется не root - значит он часть нестинга и его не надо префиксить
-            // исключение - если родитель @-правило, типа @media
-            return selector;
-        }
-
-        return prefixedSelector
-    }
-
     postCssLoader.options.postcssOptions.plugins = [
         ...postCssLoader.options.postcssOptions.plugins,
-        cssPrefix({ prefix, transform: transform as any }),
+        postCssPrefix({ prefix: `${prefix} ` }),
     ];
 }
 
