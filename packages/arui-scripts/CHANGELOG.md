@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 15.7.3
+
+### Patch Changes
+
+- [#109](https://github.com/core-ds/arui-scripts/pull/109) [`a6d38a3`](https://github.com/core-ds/arui-scripts/commit/a6d38a3db0e9df0e9367395ae863bafd363710ce) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Исправление реализации префиксов для css правил в модулях
+
 ## 15.7.2
 
 ### Patch Changes
