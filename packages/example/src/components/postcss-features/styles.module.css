@@ -1,0 +1,11 @@
+.paragraph {
+    @mixin accent_caps;
+
+    padding-inline-start: var(--gap-s);
+    padding-block: var(--gap-3xs);
+    box-shadow: var(--shadow-xs-hard-up);
+    color: color-mod(
+        var(--color-static-status-red) blend(rgba(255, 255, 255, 0.5) 50%)
+    );
+    background-color: var(--color-static-graphic-milano-red);
+}

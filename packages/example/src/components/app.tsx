@@ -8,6 +8,7 @@ import { Typography } from '@alfalab/core-components/typography';
 import { Button } from '@alfalab/core-components/button';
 import { Gap } from '@alfalab/core-components/gap';
 import { ModulesTabs } from '#/components/modules-tabs';
+import { PostcssFeatures } from './postcss-features';
 
 export class App extends React.Component {
     state = {
@@ -21,6 +22,8 @@ export class App extends React.Component {
                     ARUI-scripts example app
                 </Typography.Title>
                 <Gap size='s' />
+
+                <PostcssFeatures />
 
                 <Typography.Text>
                     Check hot-loader: <br />
