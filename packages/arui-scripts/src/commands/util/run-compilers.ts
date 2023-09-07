@@ -3,7 +3,7 @@ import fs from 'fs-extra';
 import configs from '../../configs/app-configs';
 import { spawn } from 'child_process';
 
-export function runCompilers(pathToCompilers: string[]) {
+export function runCompilers(pathToCompilers: Array<string | string[] | null | boolean>) {
     if (!checkRequiredFiles()) {
         process.exit(1);
     }
@@ -12,8 +12,14 @@ export function runCompilers(pathToCompilers: string[]) {
         fs.removeSync(configs.serverOutputPath);
     }
 
-    const compilers = pathToCompilers.map((pathToCompiler) => {
-        const compiler = spawn('node', [pathToCompiler], { stdio: 'inherit' });
+    const pathToCompilersFiltered = pathToCompilers.filter(Boolean) as Array<string | string[]>;
+
+    const compilers = pathToCompilersFiltered.map((pathToCompiler) => {
+        const compiler = spawn(
+            'node',
+            Array.isArray(pathToCompiler) ? pathToCompiler : [pathToCompiler],
+            { stdio: 'inherit', cwd: configs.cwd },
+        );
 
         compiler.on('error', onProcessExit);
         compiler.on('close', onProcessExit);
