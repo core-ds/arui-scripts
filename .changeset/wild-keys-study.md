@@ -2,4 +2,4 @@
 "arui-scripts": patch
 ---
 
-fix(webpack): restore postcss-discard-duplicates
+Исправлено дублирование css-переменных в дев режиме, оно приводило к замедлению работы devtools.
