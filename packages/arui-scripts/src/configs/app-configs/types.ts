@@ -8,6 +8,7 @@ export type AppConfigs = {
     clientServerPort: number;
     serverPort: number;
     debug: boolean;
+    disableDevWebpackTypecheck: boolean;
     devSourceMaps: string;
     devServerCors: boolean;
     useServerHMR: boolean;
@@ -73,7 +74,7 @@ export type AppConfigs = {
     compatModules: {
         shared?: {
             [libraryName: string]: string;
-        }
+        };
         exposes?: {
             [moduleId: string]: CompatModuleConfigBase;
         };
@@ -89,12 +90,11 @@ type CompatModuleConfigBase = {
     entry: string;
     externals?: Record<string, string>;
     cssPrefix?: false | string;
-}
+};
 
 export type CompatModuleConfig = CompatModuleConfigBase & {
     name: string;
 };
-
 
 /**
  * Внутренний контекст arui-scripts

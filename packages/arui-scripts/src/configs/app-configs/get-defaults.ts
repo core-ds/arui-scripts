@@ -18,7 +18,7 @@ export function getDefaultAppConfig(): AppConfigs {
         useServerHMR: false,
         presets: appPackage.aruiScripts?.presets || null,
         proxy: appPackage.proxy || null,
-
+        
         // paths
         buildPath: '.build',
         assetsPath: 'assets',
@@ -43,7 +43,8 @@ export function getDefaultAppConfig(): AppConfigs {
         useTscLoader: false,
         webpack4Compatibility: false,
         installServerSourceMaps: false,
-
+        disableDevWebpackTypecheck:false,
+        
         // image processing
         dataUrlMaxSize: 1536,
         imageMinimizer: {

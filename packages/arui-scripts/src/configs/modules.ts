@@ -1,16 +1,18 @@
-import webpack from 'webpack';
-import configs from './app-configs';
-import { CompatModuleConfig } from './app-configs/types';
+import webpack from "webpack";
+import configs from "./app-configs";
+import { CompatModuleConfig } from "./app-configs/types";
 import { findLoader } from "./util/find-loader";
-import { postCssPrefix } from '../plugins/postcss-prefix-selector';
+import { postCssPrefix } from "../plugins/postcss-prefix-selector";
 
 export function haveExposedDefaultModules() {
     return configs.modules?.exposes;
 }
 
-export const MODULES_ENTRY_NAME = 'remoteEntry.js';
+export const MODULES_ENTRY_NAME = "remoteEntry.js";
 
-export function patchMainWebpackConfigForModules(webpackConf: webpack.Configuration) {
+export function patchMainWebpackConfigForModules(
+    webpackConf: webpack.Configuration
+) {
     // Добавляем expose loader для библиотек, которые мы хотим вынести в глобальную область видимости
     webpackConf.module!.rules!.unshift(...getExposeLoadersFormCompatModules());
 
@@ -19,7 +21,7 @@ export function patchMainWebpackConfigForModules(webpackConf: webpack.Configurat
     }
 
     webpackConf.output.publicPath = haveExposedDefaultModules()
-        ? 'auto' // Для того чтобы модули могли подключаться из разных мест, нам необходимо использовать auto. Для корректной работы в IE надо подключaть https://github.com/amiller-gh/currentScript-polyfill
+        ? "auto" // Для того чтобы модули могли подключаться из разных мест, нам необходимо использовать auto. Для корректной работы в IE надо подключaть https://github.com/amiller-gh/currentScript-polyfill
         : configs.publicPath;
 
     webpackConf.plugins!.push(
@@ -28,7 +30,7 @@ export function patchMainWebpackConfigForModules(webpackConf: webpack.Configurat
             filename: configs.modules.exposes ? MODULES_ENTRY_NAME : undefined,
             shared: configs.modules.shared,
             exposes: configs.modules.exposes,
-        }),
+        })
     );
 
     return webpackConf;
@@ -56,7 +58,7 @@ export function getExposeLoadersFormCompatModules() {
             test: require.resolve(libraryName),
             use: [
                 {
-                    loader: require.resolve('expose-loader'),
+                    loader: require.resolve("expose-loader"),
                     options: {
                         exposes: [globalVarName],
                     },
@@ -66,18 +68,30 @@ export function getExposeLoadersFormCompatModules() {
     });
 }
 
-function addPrefixCssRule(rule: webpack.RuleSetRule | undefined, prefix: string) {
+function addPrefixCssRule(
+    rule: webpack.RuleSetRule | undefined,
+    prefix: string
+) {
     if (!rule || !rule.use || !Array.isArray(rule.use)) {
         return;
     }
     const postCssLoader = rule.use.find((loaderConfig) => {
-        if (typeof loaderConfig === 'string' || typeof loaderConfig === 'function' || !loaderConfig) {
+        if (
+            typeof loaderConfig === "string" ||
+            typeof loaderConfig === "function" ||
+            !loaderConfig
+        ) {
             return false;
         }
-        return loaderConfig.loader?.indexOf('postcss-loader') !== -1
+        return loaderConfig.loader?.indexOf("postcss-loader") !== -1;
     });
 
-    if (!postCssLoader || typeof postCssLoader !== 'object' || !postCssLoader.options || typeof postCssLoader.options !== 'object') {
+    if (
+        !postCssLoader ||
+        typeof postCssLoader !== "object" ||
+        !postCssLoader.options ||
+        typeof postCssLoader.options !== "object"
+    ) {
         return;
     }
 
@@ -87,10 +101,13 @@ function addPrefixCssRule(rule: webpack.RuleSetRule | undefined, prefix: string)
     ];
 }
 
-export function patchWebpackConfigForCompat(module: CompatModuleConfig, webpackConf: webpack.Configuration) {
+export function patchWebpackConfigForCompat(
+    module: CompatModuleConfig,
+    webpackConf: webpack.Configuration
+) {
     webpackConf.externals = {
-        ...(webpackConf.externals as Record<string, any> || {}),
-        ...(module.externals || {})
+        ...((webpackConf.externals as Record<string, any>) || {}),
+        ...(module.externals || {}),
     };
     // Название переменной вебпака, которую он будет использовать для загрузки чанков. Важно чтобы для разных модулей они отличались,
     // иначе несколько модулей из одного приложения будут конфликтовать между собой
@@ -99,8 +116,8 @@ export function patchWebpackConfigForCompat(module: CompatModuleConfig, webpackC
     const cssPrefix = getCssPrefixForModule(module);
     if (cssPrefix) {
         // Добавляем префикс для css-классов, чтобы изолировать стили модуля от стилей основного приложения
-        const cssRule = findLoader(webpackConf, '/\\.css$/');
-        const cssModulesRule = findLoader(webpackConf, '/\\.module\\.css$/');
+        const cssRule = findLoader(webpackConf, "/\\.css$/");
+        const cssModulesRule = findLoader(webpackConf, "/\\.module\\.css$/");
         addPrefixCssRule(cssRule, cssPrefix);
         addPrefixCssRule(cssModulesRule, `:global(${cssPrefix})`);
     }

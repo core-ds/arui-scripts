@@ -3,7 +3,6 @@ import path from 'path';
 import webpack, { Configuration } from 'webpack';
 
 import nodeExternals from 'webpack-node-externals';
-import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
 import getCSSModuleLocalIdent from 'react-dev-utils/getCSSModuleLocalIdent';
 
@@ -205,8 +204,6 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
             raw: true,
             entryOnly: false
         }),
-        configs.tsconfig !== null && new ForkTsCheckerWebpackPlugin(),
-
         // dev plugins:
         mode === 'dev' && (configs.useServerHMR
             ? new RunScriptWebpackPlugin({

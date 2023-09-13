@@ -1,45 +1,45 @@
-import path from 'path';
-import webpack, { Configuration } from 'webpack';
+import path from "path";
+import webpack, { Configuration } from "webpack";
 
-import { WebpackManifestPlugin } from 'webpack-manifest-plugin';
-import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import TerserPlugin from 'terser-webpack-plugin';
-import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
-import CompressionPlugin from 'compression-webpack-plugin';
-import AssetsPlugin from 'assets-webpack-plugin';
-import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
-import getCSSModuleLocalIdent from 'react-dev-utils/getCSSModuleLocalIdent';
+import { WebpackManifestPlugin } from "webpack-manifest-plugin";
+import MiniCssExtractPlugin from "mini-css-extract-plugin";
+import TerserPlugin from "terser-webpack-plugin";
+import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
+import CompressionPlugin from "compression-webpack-plugin";
+import AssetsPlugin from "assets-webpack-plugin";
+import TsconfigPathsPlugin from "tsconfig-paths-webpack-plugin";
+import getCSSModuleLocalIdent from "react-dev-utils/getCSSModuleLocalIdent";
 
-import getEntry, { Entry } from './util/get-entry';
-import configs from './app-configs';
-import babelConf from './babel-client';
-import postcssConf from './postcss';
-import checkNodeVersion from './util/check-node-version';
-import { babelDependencies } from './babel-dependencies';
-import ReactRefreshTypeScript from 'react-refresh-typescript';
-import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
-import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
-import { WebpackDeduplicationPlugin } from 'webpack-deduplication-plugin';
+import getEntry, { Entry } from "./util/get-entry";
+import configs from "./app-configs";
+import babelConf from "./babel-client";
+import postcssConf from "./postcss";
+import checkNodeVersion from "./util/check-node-version";
+import { babelDependencies } from "./babel-dependencies";
+import ReactRefreshTypeScript from "react-refresh-typescript";
+import ReactRefreshWebpackPlugin from "@pmmmwh/react-refresh-webpack-plugin";
+import CaseSensitivePathsPlugin from "case-sensitive-paths-webpack-plugin";
+import { WebpackDeduplicationPlugin } from "webpack-deduplication-plugin";
 import { getImageMin } from "./config-extras/minimizers";
 import svgToMiniDataURI from "mini-svg-data-uri";
-import {
-    processAssetsPluginOutput,
-} from './process-assets-plugin-output';
+import { processAssetsPluginOutput } from "./process-assets-plugin-output";
 import {
     patchWebpackConfigForCompat,
     patchMainWebpackConfigForModules,
-} from './modules';
+} from "./modules";
 
-const PnpWebpackPlugin = require('pnp-webpack-plugin');
+const PnpWebpackPlugin = require("pnp-webpack-plugin");
 
-const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 
-const noopPath = require.resolve('./util/noop');
+const noopPath = require.resolve("./util/noop");
 
-function getSingleEntry(entryPoint: string[], mode: 'dev' | 'prod') {
+function getSingleEntry(entryPoint: string[], mode: "dev" | "prod") {
     return [
-        ...(Array.isArray(configs.clientPolyfillsEntry) ? configs.clientPolyfillsEntry : [configs.clientPolyfillsEntry]),
-        ...entryPoint
+        ...(Array.isArray(configs.clientPolyfillsEntry)
+            ? configs.clientPolyfillsEntry
+            : [configs.clientPolyfillsEntry]),
+        ...entryPoint,
     ].filter(Boolean) as string[];
 }
 
@@ -61,64 +61,74 @@ const clientAssetsPlugin = new AssetsPlugin({
  * @param entry Точка входа, любой валидный вход для webpack
  * @param configName Имя конфигурации, если не указано, то используется имя по умолчанию
  */
-export const createSingleClientWebpackConfig = (mode: 'dev' | 'prod', entry: Entry, configName?: string): Configuration => ({
+export const createSingleClientWebpackConfig = (
+    mode: "dev" | "prod",
+    entry: Entry,
+    configName?: string
+): Configuration => ({
     ...(configName ? { name: configName } : {}), // Если добавлять имя конфигурации всегда - могут ломаться оверрайды, которые считают что у дефолтной конфигурации нет имени
-    target: 'web',
-    mode: mode === 'dev' ? 'development' : 'production',
-    devtool: mode === 'dev' ? configs.devSourceMaps : 'source-map',
+    target: "web",
+    mode: mode === "dev" ? "development" : "production",
+    devtool: mode === "dev" ? configs.devSourceMaps : "source-map",
     entry: getEntry(entry, getSingleEntry, mode),
     // in production mode we need to fail on first error
-    bail: mode === 'prod',
+    bail: mode === "prod",
     context: configs.cwd,
     output: {
-        assetModuleFilename: 'static/media/[name].[hash:8][ext]',
+        assetModuleFilename: "static/media/[name].[hash:8][ext]",
         // Add /* filename */ comments to generated require()s in the output.
-        pathinfo: mode === 'dev',
+        pathinfo: mode === "dev",
         path: configs.clientOutputPath,
         publicPath: configs.publicPath,
-        filename: mode === 'dev' ? '[name].js' : '[name].[chunkhash:8].js',
-        chunkFilename: mode === 'dev'
-            ? `${configName ? `${configName}-` : ''}[name].js`
-            : `${configName ? `${configName}-` : ''}[name].[chunkhash:8].chunk.js`,
+        filename: mode === "dev" ? "[name].js" : "[name].[chunkhash:8].js",
+        chunkFilename:
+            mode === "dev"
+                ? `${configName ? `${configName}-` : ""}[name].js`
+                : `${
+                      configName ? `${configName}-` : ""
+                  }[name].[chunkhash:8].chunk.js`,
         // Point sourcemap entries to original disk location (format as URL on Windows)
         devtoolModuleFilenameTemplate: (info: any) =>
             path
                 .relative(configs.appSrc, info.absoluteResourcePath)
-                .replace(/\\/g, '/'),
+                .replace(/\\/g, "/"),
     },
     optimization: {
-        splitChunks: mode === 'prod'
-            ? {
-                chunks: "all",
-                cacheGroups: {
-                    commons: {
-                        chunks: "initial",
-                        minChunks: 2,
-                        maxInitialRequests: 5, // The default limit is too small to showcase the effect
-                        minSize: 0 // This is example is too small to create commons chunks
-                    },
-                    vendor: {
-                        test: /node_modules/,
-                        chunks: "initial",
-                        name: (
-                            _: unknown,
-                            chunks: any[],
-                            cacheGroupKey: string,
-                        ) => {
-                            if (!configName) {
-                                return 'vendor';
-                            }
-                            // Нам нужно сделать так, чтобы у разных конфигураций были разные имена чанков
-                            const allChunksNames = chunks.map((item) => item.name).join('~');
-                            return `${cacheGroupKey}-${allChunksNames}`;
-                        },
-                        priority: 10,
-                        enforce: true
-                    }
-                }
-            }
-            : false,
-        minimize: mode === 'prod',
+        splitChunks:
+            mode === "prod"
+                ? {
+                      chunks: "all",
+                      cacheGroups: {
+                          commons: {
+                              chunks: "initial",
+                              minChunks: 2,
+                              maxInitialRequests: 5, // The default limit is too small to showcase the effect
+                              minSize: 0, // This is example is too small to create commons chunks
+                          },
+                          vendor: {
+                              test: /node_modules/,
+                              chunks: "initial",
+                              name: (
+                                  _: unknown,
+                                  chunks: any[],
+                                  cacheGroupKey: string
+                              ) => {
+                                  if (!configName) {
+                                      return "vendor";
+                                  }
+                                  // Нам нужно сделать так, чтобы у разных конфигураций были разные имена чанков
+                                  const allChunksNames = chunks
+                                      .map((item) => item.name)
+                                      .join("~");
+                                  return `${cacheGroupKey}-${allChunksNames}`;
+                              },
+                              priority: 10,
+                              enforce: true,
+                          },
+                      },
+                  }
+                : false,
+        minimize: mode === "prod",
         minimizer: [
             ...getImageMin(),
             // This is only used in production mode
@@ -160,47 +170,68 @@ export const createSingleClientWebpackConfig = (mode: 'dev' | 'prod', entry: Ent
                 // Default number of concurrent runs: os.cpus().length - 1
                 parallel: true,
             }),
-            new CssMinimizerPlugin()
+            new CssMinimizerPlugin(),
         ].filter(Boolean),
-        nodeEnv: mode === 'prod' ? 'production' : false,
+        nodeEnv: mode === "prod" ? "production" : false,
 
         // Оптимизации времени билда, см https://webpack.js.org/guides/build-performance/
-        removeAvailableModules: mode !== 'dev',
-        removeEmptyChunks: mode !== 'dev',
+        removeAvailableModules: mode !== "dev",
+        removeEmptyChunks: mode !== "dev",
     },
     resolve: {
         // This allows you to set a fallback for where Webpack should look for modules.
         // We placed these paths second because we want `node_modules` to "win"
         // if there are any conflicts. This matches Node resolution mechanism.
         // https://github.com/facebookincubator/create-react-app/issues/253
-        modules: ['node_modules', configs.appNodeModules],
+        modules: ["node_modules", configs.appNodeModules],
         // These are the reasonable defaults supported by the Node ecosystem.
         // We also include JSX as a common component filename extension to support
         // some tools, although we do not recommend using it, see:
         // https://github.com/facebookincubator/create-react-app/issues/290
         // `web` extension prefixes have been added for better support
         // for React Native Web.
-        extensions: ['.web.js', '.mjs', '.cjs', '.js', '.json', '.web.jsx', '.jsx', '.ts', '.tsx'],
-        plugins: ([
-            (configs.tsconfig && new TsconfigPathsPlugin({
-                configFile: configs.tsconfig,
-                extensions: ['.web.js', '.mjs', '.js', '.json', '.web.jsx', '.jsx', '.ts', '.tsx']
-            })),
-        ].filter(Boolean)) as NonNullable<webpack.Configuration['resolve']>['plugins'],
+        extensions: [
+            ".web.js",
+            ".mjs",
+            ".cjs",
+            ".js",
+            ".json",
+            ".web.jsx",
+            ".jsx",
+            ".ts",
+            ".tsx",
+        ],
+        plugins: [
+            configs.tsconfig &&
+                new TsconfigPathsPlugin({
+                    configFile: configs.tsconfig,
+                    extensions: [
+                        ".web.js",
+                        ".mjs",
+                        ".js",
+                        ".json",
+                        ".web.jsx",
+                        ".jsx",
+                        ".ts",
+                        ".tsx",
+                    ],
+                }),
+        ].filter(Boolean) as NonNullable<
+            webpack.Configuration["resolve"]
+        >["plugins"],
     },
     resolveLoader: {
-        plugins: [
-            PnpWebpackPlugin.moduleLoader(module),
-        ],
+        plugins: [PnpWebpackPlugin.moduleLoader(module)],
     },
-    cache: mode === 'dev'
-        ? {
-            type: 'filesystem',
-            buildDependencies: {
-                config: [__filename],
-            },
-        }
-        : false,
+    cache:
+        mode === "dev"
+            ? {
+                  type: "filesystem",
+                  buildDependencies: {
+                      config: [__filename],
+                  },
+              }
+            : false,
     module: {
         // typescript interface will be removed from modules, and we will get an error on correct code
         // see https://github.com/webpack/webpack/issues/7378
@@ -210,59 +241,86 @@ export const createSingleClientWebpackConfig = (mode: 'dev' | 'prod', entry: Ent
                 // "oneOf" will traverse all following loaders until one will
                 // match the requirements. When no loader matches it will fall
                 // back to the "file" loader at the end of the loader list.
-                oneOf: ([
+                oneOf: [
                     // Process JS with Babel.
                     {
-                        test: configs.useTscLoader ? /\.(js|jsx|mjs|cjs)$/ : /\.(js|jsx|mjs|ts|tsx|cjs)$/,
+                        test: configs.useTscLoader
+                            ? /\.(js|jsx|mjs|cjs)$/
+                            : /\.(js|jsx|mjs|ts|tsx|cjs)$/,
                         include: configs.appSrc,
-                        loader: require.resolve('babel-loader'),
+                        loader: require.resolve("babel-loader"),
                         options: {
                             ...babelConf,
-                            cacheDirectory: mode === 'dev',
+                            cacheDirectory: mode === "dev",
                             cacheCompression: false,
                             plugins: [
                                 ...babelConf.plugins,
-                                mode === 'dev' ? [require.resolve('react-refresh/babel'), {skipEnvCheck: true}] : undefined
+                                mode === "dev"
+                                    ? [
+                                          require.resolve(
+                                              "react-refresh/babel"
+                                          ),
+                                          { skipEnvCheck: true },
+                                      ]
+                                    : undefined,
                             ].filter(Boolean),
                         },
                     },
-                    (configs.tsconfig && configs.useTscLoader) && {
-                        test: /\.tsx?$/,
-                        use: [
-                            {
-                                loader: require.resolve('babel-loader'),
-                                options: Object.assign({
-                                    cacheDirectory: mode === 'dev',
-                                    cacheCompression: false,
-                                    plugins: mode === 'dev' ? [require.resolve('react-refresh/babel'), {skipEnvCheck: true}] : undefined,
-                                }, babelConf)
-                            },
-                            {
-                                loader: require.resolve('ts-loader'),
-                                options: {
-                                    getCustomTransformers: () => ({
-                                        before: mode === 'dev' ? [ReactRefreshTypeScript()] : [],
-                                    }),
-                                    onlyCompileBundledFiles: true,
-                                    transpileOnly: true,
-                                    happyPackMode: true,
-                                    configFile: configs.tsconfig
-                                }
-                            }
-                        ]
-                    },
+                    configs.tsconfig &&
+                        configs.useTscLoader && {
+                            test: /\.tsx?$/,
+                            use: [
+                                {
+                                    loader: require.resolve("babel-loader"),
+                                    options: Object.assign(
+                                        {
+                                            cacheDirectory: mode === "dev",
+                                            cacheCompression: false,
+                                            plugins:
+                                                mode === "dev"
+                                                    ? [
+                                                          require.resolve(
+                                                              "react-refresh/babel"
+                                                          ),
+                                                          {
+                                                              skipEnvCheck:
+                                                                  true,
+                                                          },
+                                                      ]
+                                                    : undefined,
+                                        },
+                                        babelConf
+                                    ),
+                                },
+                                {
+                                    loader: require.resolve("ts-loader"),
+                                    options: {
+                                        getCustomTransformers: () => ({
+                                            before:
+                                                mode === "dev"
+                                                    ? [ReactRefreshTypeScript()]
+                                                    : [],
+                                        }),
+                                        onlyCompileBundledFiles: true,
+                                        transpileOnly: true,
+                                        happyPackMode: true,
+                                        configFile: configs.tsconfig,
+                                    },
+                                },
+                            ],
+                        },
                     // Process any JS outside of the app with Babel.
                     // Unlike the application JS, we only compile the standard ES features.
                     {
                         test: /\.(js|mjs)$/,
                         exclude: /@babel(?:\/|\\{1,2})runtime/,
-                        loader: require.resolve('babel-loader'),
+                        loader: require.resolve("babel-loader"),
                         options: {
                             ...babelDependencies,
                             babelrc: false,
                             configFile: false,
                             compact: false,
-                            cacheDirectory: mode === 'dev',
+                            cacheDirectory: mode === "dev",
                             cacheCompression: false,
                         },
                     },
@@ -273,21 +331,21 @@ export const createSingleClientWebpackConfig = (mode: 'dev' | 'prod', entry: Ent
                         use: [
                             {
                                 loader: MiniCssExtractPlugin.loader,
-                                options: { publicPath: './' }
+                                options: { publicPath: "./" },
                             },
                             {
-                                loader: require.resolve('css-loader'),
+                                loader: require.resolve("css-loader"),
                                 options: {
                                     importLoaders: 1,
-                                    sourceMap: mode === 'dev',
+                                    sourceMap: mode === "dev",
                                 },
                             },
                             {
-                                loader: require.resolve('postcss-loader'),
+                                loader: require.resolve("postcss-loader"),
                                 options: {
                                     postcssOptions: {
                                         plugins: postcssConf,
-                                    }
+                                    },
                                 },
                             },
                         ],
@@ -298,74 +356,88 @@ export const createSingleClientWebpackConfig = (mode: 'dev' | 'prod', entry: Ent
                         use: [
                             {
                                 loader: MiniCssExtractPlugin.loader,
-                                options: { publicPath: './' }
+                                options: { publicPath: "./" },
                             },
                             {
-                                loader: require.resolve('css-loader'),
+                                loader: require.resolve("css-loader"),
                                 options: {
                                     importLoaders: 1,
-                                    sourceMap: mode === 'dev',
+                                    sourceMap: mode === "dev",
                                     modules: {
-                                        getLocalIdent: getCSSModuleLocalIdent
+                                        getLocalIdent: getCSSModuleLocalIdent,
                                     },
                                 },
                             },
                             {
-                                loader: require.resolve('postcss-loader'),
+                                loader: require.resolve("postcss-loader"),
                                 options: {
                                     postcssOptions: {
                                         plugins: postcssConf,
-                                    }
+                                    },
                                 },
                             },
                         ],
                     },
                     {
                         test: /\.svg/,
-                        type: 'asset',
+                        type: "asset",
                         generator: {
-                            dataUrl: (content: Buffer) => svgToMiniDataURI(content.toString())
+                            dataUrl: (content: Buffer) =>
+                                svgToMiniDataURI(content.toString()),
                         },
                         parser: {
                             dataUrlCondition: {
-                                maxSize: configs.dataUrlMaxSize
-                            }
-                        }
+                                maxSize: configs.dataUrlMaxSize,
+                            },
+                        },
                     },
                     {
-                        exclude: [/\.(js|jsx|mjs|cjs|ts|tsx)$/, /\.(html|ejs)$/, /\.json$/],
-                        type: 'asset',
+                        exclude: [
+                            /\.(js|jsx|mjs|cjs|ts|tsx)$/,
+                            /\.(html|ejs)$/,
+                            /\.json$/,
+                        ],
+                        type: "asset",
                         parser: {
                             dataUrlCondition: {
-                                maxSize: configs.dataUrlMaxSize
-                            }
-                        }
+                                maxSize: configs.dataUrlMaxSize,
+                            },
+                        },
                     },
-                ].filter(Boolean)) as webpack.RuleSetRule[],
+                ].filter(Boolean) as webpack.RuleSetRule[],
             },
             // ** STOP ** Are you adding a new loader?
             // Make sure to add the new loader(s) before asset modules
         ],
     },
-    plugins: ([
+    plugins: [
         assetsPlugin,
         clientAssetsPlugin,
         new webpack.DefinePlugin({
             // Tell Webpack to provide empty mocks for process.env.
-            'process.env': '{}',
+            "process.env": "{}",
             // В прод режиме webpack автоматически подставляет NODE_ENV=production, но нам нужно чтобы эта переменная
             // была доступна всегда. При этом мы не хотим давать возможность переопределять ее в production режиме.
-            ...(mode === 'dev'
-                ? { 'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV) }
-                : {}
-            ),
+            ...(mode === "dev"
+                ? {
+                      "process.env.NODE_ENV": JSON.stringify(
+                          process.env.NODE_ENV
+                      ),
+                  }
+                : {}),
         }),
         new MiniCssExtractPlugin({
             ignoreOrder: true,
-            filename: mode === 'dev' ? '[name].css' : '[name].[contenthash:8].css',
-            chunkFilename: mode === 'dev' ? '[id].css' : '[name].[contenthash:8].chunk.css',
+            filename:
+                mode === "dev" ? "[name].css" : "[name].[contenthash:8].css",
+            chunkFilename:
+                mode === "dev"
+                    ? "[id].css"
+                    : "[name].[contenthash:8].chunk.css",
         }),
-        configs.tsconfig !== null && new ForkTsCheckerWebpackPlugin(),
+        !configs.disableDevWebpackTypecheck &&
+            configs.tsconfig !== null &&
+            new ForkTsCheckerWebpackPlugin(),
         // moment.js очень большая библиотека, которая включает в себя массу локализаций, которые мы не используем.
         // Поэтому мы их просто игнорируем, чтобы не включать в сборку.
         // https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
@@ -378,55 +450,67 @@ export const createSingleClientWebpackConfig = (mode: 'dev' | 'prod', entry: Ent
         // например проект зависит от lodash@1, библиотеки A и B зависят от lodash@2. Тогда lodash@2 будет включен в сборку
         // дважды, что приведет к увеличению размера бандла (и это не лечится дедубликацией в yarn/npm).
         // Сама реализация плагина зависит от yarn.lock, поэтому если мы используем npm, то плагин не будет работать.
-        configs.useYarn && new WebpackDeduplicationPlugin({
-            cacheDir: path.join(configs.cwd, 'node_modules/.cache/deduplication-webpack-plugin/'),
-            rootPath: configs.cwd,
-        }),
+        configs.useYarn &&
+            new WebpackDeduplicationPlugin({
+                cacheDir: path.join(
+                    configs.cwd,
+                    "node_modules/.cache/deduplication-webpack-plugin/"
+                ),
+                rootPath: configs.cwd,
+            }),
         // dev plugins:
-        mode === 'dev' && new ReactRefreshWebpackPlugin({
-            overlay: false,
-        }),
+        mode === "dev" &&
+            new ReactRefreshWebpackPlugin({
+                overlay: false,
+            }),
         // Watcher doesn't work well if you mistype casing in a path so we use
         // a plugin that prints an error when you attempt to do this.
         // See https://github.com/facebookincubator/create-react-app/issues/240
-        mode === 'dev' && new CaseSensitivePathsPlugin(),
+        mode === "dev" && new CaseSensitivePathsPlugin(),
 
         // production plugins:
-        mode === 'prod' && new WebpackManifestPlugin(),
-        mode === 'prod' && new CompressionPlugin({
-            filename: '[file].gz',
-            algorithm: 'gzip',
-            test: /\.js$|\.css$|\.png$|\.svg$/,
-            threshold: 10240,
-            minRatio: 0.8
-        }),
-        mode === 'prod' && checkNodeVersion(10) && new CompressionPlugin({
-            filename: '[file].br',
-            algorithm: 'brotliCompress',
-            test: /\.(js|css|html|svg)$/,
-            compressionOptions: {
-                level: 11,
-            },
-            threshold: 10240,
-            minRatio: 0.8,
-        }),
+        mode === "prod" && new WebpackManifestPlugin(),
+        mode === "prod" &&
+            new CompressionPlugin({
+                filename: "[file].gz",
+                algorithm: "gzip",
+                test: /\.js$|\.css$|\.png$|\.svg$/,
+                threshold: 10240,
+                minRatio: 0.8,
+            }),
+        mode === "prod" &&
+            checkNodeVersion(10) &&
+            new CompressionPlugin({
+                filename: "[file].br",
+                algorithm: "brotliCompress",
+                test: /\.(js|css|html|svg)$/,
+                compressionOptions: {
+                    level: 11,
+                },
+                threshold: 10240,
+                minRatio: 0.8,
+            }),
         // Ignore prop-types packages in production mode
         // This should works fine, since proptypes usage should be eliminated in production mode
-        mode === 'prod' && !configs.keepPropTypes && new webpack.NormalModuleReplacementPlugin(
-            /^react-style-proptype$/,
-            noopPath
-        ),
-        mode === 'prod' && !configs.keepPropTypes && new webpack.NormalModuleReplacementPlugin(
-            /^thrift-services\/proptypes/,
-            noopPath
-        )
-    ].filter(Boolean)) as webpack.WebpackPluginInstance[],
+        mode === "prod" &&
+            !configs.keepPropTypes &&
+            new webpack.NormalModuleReplacementPlugin(
+                /^react-style-proptype$/,
+                noopPath
+            ),
+        mode === "prod" &&
+            !configs.keepPropTypes &&
+            new webpack.NormalModuleReplacementPlugin(
+                /^thrift-services\/proptypes/,
+                noopPath
+            ),
+    ].filter(Boolean) as webpack.WebpackPluginInstance[],
     experiments: {
         backCompat: configs.webpack4Compatibility,
     },
     // Без этого комиляция трирегилась на изменение в node_modules и приводила к утечке памяти
     watchOptions: {
-        ignored: new RegExp(configs.watchIgnorePath.join('|')),
+        ignored: new RegExp(configs.watchIgnorePath.join("|")),
         aggregateTimeout: 100,
     },
     // Выключаем performance hints, т.к. размеры бандлов контролируются не в рамках arui-scripts
@@ -435,29 +519,38 @@ export const createSingleClientWebpackConfig = (mode: 'dev' | 'prod', entry: Ent
     },
 });
 
-export const createClientWebpackConfig = (mode: 'dev' | 'prod') => {
+export const createClientWebpackConfig = (mode: "dev" | "prod") => {
     const appWebpackConfig = patchMainWebpackConfigForModules(
         createSingleClientWebpackConfig(mode, configs.clientEntry)
     );
 
     const exposedCompatModules = configs.compatModules?.exposes;
 
-    if (!exposedCompatModules || Object.keys(exposedCompatModules).length === 0) {
+    if (
+        !exposedCompatModules ||
+        Object.keys(exposedCompatModules).length === 0
+    ) {
         return appWebpackConfig;
     }
 
     // Добавляем отдельные конфигурации для compat модулей
-    const modulesWebpackConfigs = Object.keys(exposedCompatModules).map((moduleName) => {
-        const module = {
-            name: moduleName,
-            ...exposedCompatModules[moduleName]
-        };
-        const config = createSingleClientWebpackConfig(mode, {
-            [module.name]: module.entry,
-        }, module.name);
+    const modulesWebpackConfigs = Object.keys(exposedCompatModules).map(
+        (moduleName) => {
+            const module = {
+                name: moduleName,
+                ...exposedCompatModules[moduleName],
+            };
+            const config = createSingleClientWebpackConfig(
+                mode,
+                {
+                    [module.name]: module.entry,
+                },
+                module.name
+            );
 
-        return patchWebpackConfigForCompat(module, config);
-    });
+            return patchWebpackConfigForCompat(module, config);
+        }
+    );
 
     return [appWebpackConfig, ...modulesWebpackConfigs];
-}
+};
