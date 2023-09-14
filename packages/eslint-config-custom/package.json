@@ -1,0 +1,35 @@
+{
+    "name": "eslint-config-custom",
+    "version": "0.0.0",
+    "private": true,
+    "license": "MIT",
+    "devDependencies": {
+        "@typescript-eslint/eslint-plugin": "^5.30.6",
+        "@typescript-eslint/parser": "^5.30.6",
+        "arui-presets-lint": "6.1.0",
+        "eslint": "^8.20.0",
+        "eslint-config-airbnb": "^19.0.4",
+        "eslint-config-airbnb-typescript": "^17.0.0",
+        "eslint-config-prettier": "^8.5.0",
+        "eslint-import-resolver-typescript": "~3.1.5",
+        "eslint-plugin-cypress": "^2.12.1",
+        "eslint-plugin-dirnames": "^1.0.3",
+        "eslint-plugin-import": "^2.26.0",
+        "eslint-plugin-jsx-a11y": "^6.6.1",
+        "eslint-plugin-react": "^7.30.1",
+        "eslint-plugin-react-hooks": "^4.6.0",
+        "eslint-plugin-simple-import-sort": "^7.0.0",
+        "eslint-plugin-turbo": "latest",
+        "eslint-plugin-unicorn": "^42.0.0",
+        "prettier": "^2.7.1",
+        "stylelint": "^14.9.1",
+        "stylelint-config-prettier": "^9.0.3"
+    },
+    "prettier": "arui-presets-lint/prettier",
+    "eslintConfig": {
+        "extends": "./node_modules/arui-presets-lint/eslint"
+    },
+    "stylelint": {
+        "extends": "arui-presets-lint/stylelint"
+    }
+}
