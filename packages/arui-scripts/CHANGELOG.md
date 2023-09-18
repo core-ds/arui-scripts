@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 15.7.4
+
+### Patch Changes
+
+- [#119](https://github.com/core-ds/arui-scripts/pull/119) [`c2c8382`](https://github.com/core-ds/arui-scripts/commit/c2c8382f809432dad79f8c9eae4db999f98a44d2) Thanks [@reme3d2y](https://github.com/reme3d2y)! - Исправлено дублирование css-переменных в дев режиме, оно приводило к замедлению работы devtools.
+
 ## 15.7.3
 
 ### Patch Changes
