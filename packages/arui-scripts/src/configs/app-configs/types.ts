@@ -40,6 +40,7 @@ export type AppConfigs = {
     useTscLoader: boolean;
     webpack4Compatibility: boolean;
     installServerSourceMaps: boolean;
+    disableDevWebpackTypecheck: boolean;
 
     // image processing
     dataUrlMaxSize?: number;
