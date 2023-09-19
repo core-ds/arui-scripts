@@ -1,6 +1,4 @@
-import { fetchAppManifest } from "../fetch-app-manifest";
-
-type Writeable<T> = { -readonly [P in keyof T]: T[P] };
+import { fetchAppManifest } from '../fetch-app-manifest';
 
 describe('fetchAppManifest', () => {
     let xhrMock = {
@@ -49,6 +47,7 @@ describe('fetchAppManifest', () => {
 
     it('should reject promise if request was errored', async () => {
         const manifestPromise = fetchAppManifest('http://test/manifest.json');
+
         xhrMock.onerror();
 
         await expect(manifestPromise).rejects.toEqual(new Error(''));

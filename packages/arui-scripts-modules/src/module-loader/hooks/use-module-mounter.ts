@@ -1,8 +1,10 @@
-import { BaseModuleState, Loader } from '../types';
 import { useCallback, useEffect, useState } from 'react';
-import { LoadingState } from './types';
+
 import { MountableModule } from '../module-types';
+import { BaseModuleState, Loader } from '../types';
 import { unwrapDefaultExport } from '../utils/unwrap-default-export';
+
+import { LoadingState } from './types';
 
 export type UseModuleLoaderParams<LoaderParams, RunParams, ServerState extends BaseModuleState> = {
     /**
@@ -22,7 +24,7 @@ export type UseModuleLoaderParams<LoaderParams, RunParams, ServerState extends B
      * По умолчанию будет создан div.
      */
     createTargetNode?: () => HTMLElement;
-}
+};
 
 export type UseModuleLoaderResult = {
     /**
@@ -72,7 +74,12 @@ export function useModuleMounter<LoaderParams, RunParams, ServerState extends Ba
                 });
 
                 const module = unwrapDefaultExport(result.module);
-                module.mount(targetNode, runParams as RunParams, result.moduleResources.moduleState as ServerState);
+
+                module.mount(
+                    targetNode,
+                    runParams as RunParams,
+                    result.moduleResources.moduleState as ServerState,
+                );
 
                 unmountFn = () => {
                     result.unmount();

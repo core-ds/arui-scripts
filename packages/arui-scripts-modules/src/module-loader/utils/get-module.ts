@@ -16,7 +16,9 @@ export async function getModule<ModuleType>(containerId: string, moduleId: strin
     const container = (window as unknown as Record<string, ModuleFederationContainer>)[containerId];
 
     if (!container || !container.init) {
-        throw new Error(`Cannot load external remote: ${containerId}, unable to locate module federation init function`);
+        throw new Error(
+            `Cannot load external remote: ${containerId}, unable to locate module federation init function`,
+        );
     }
 
     // webpack любит двойные подчеркивания для внутренних функций
@@ -25,7 +27,9 @@ export async function getModule<ModuleType>(containerId: string, moduleId: strin
     const factory = await container.get<ModuleType>(moduleId);
 
     if (!factory) {
-        throw new Error(`Cannot load external remote: ${moduleId}, unable to locate module inside a container`);
+        throw new Error(
+            `Cannot load external remote: ${moduleId}, unable to locate module inside a container`,
+        );
     }
 
     return factory();
@@ -38,7 +42,9 @@ export function getCompatModule<ModuleType>(moduleId: string) {
     const module = (window as unknown as Record<string, ModuleType>)[moduleId];
 
     if (!module) {
-        throw new Error(`Cannot load compat module: ${moduleId}, unable to locate module in window`);
+        throw new Error(
+            `Cannot load compat module: ${moduleId}, unable to locate module in window`,
+        );
     }
 
     return module;

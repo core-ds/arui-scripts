@@ -3,19 +3,21 @@ export function normalizeUrlSegment(segment: string) {
         return '/';
     }
 
+    let innerSegment = segment;
+
     if (segment[segment.length - 1] !== '/') {
-        segment = `${segment}/`;
+        innerSegment = `${innerSegment}/`;
     }
 
-    if (segment.indexOf('http') === 0) {
-        return segment;
+    if (innerSegment.indexOf('http') === 0) {
+        return innerSegment;
     }
 
-    if (segment[0] !== '/') {
-        segment = `/${segment}`;
+    if (innerSegment[0] !== '/') {
+        innerSegment = `/${innerSegment}`;
     }
 
-    return segment;
+    return innerSegment;
 }
 
 export function urlSegmentWithoutEndSlash(segment: string) {

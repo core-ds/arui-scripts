@@ -14,7 +14,7 @@ export type GetResourcesRequest<GetResourcesParams = void> = {
     /** id приложения-хоста */
     hostAppId: string;
     /** параметры, которые передаются в функцию получения ресурсов модуля */
-    params: GetResourcesParams,
+    params: GetResourcesParams;
 };
 
 /**
@@ -25,13 +25,14 @@ export type AruiAppManifest = {
         js?: string;
         css?: string;
         mode?: MountMode;
-    }
-} & { // мы делаем так, поскольку typescript не позволяет определить доп поля другого типа
+    };
+} & {
+    // мы делаем так, поскольку typescript не позволяет определить доп поля другого типа
     __metadata__: {
         version: string;
         name: string;
     };
-}
+};
 
 /**
  * "состояние" модуля полученное от сервера
@@ -46,7 +47,7 @@ export type GetModuleStateResult = {
 export type BaseModuleState = {
     baseUrl: string;
     hostAppId: string;
-}
+};
 /**
  * Ресурсы, которые нужны модулю для запуска
  */
@@ -69,7 +70,7 @@ type LoaderResult<ModuleExportType> = {
     unmount: () => void;
     module: ModuleExportType;
     moduleResources: ModuleResources;
-}
+};
 
 // Для того чтобы пользователям не приходилось передавать undefined если их загрузчик не принимает параметры
 // мы делаем такой мини-хак
@@ -82,8 +83,9 @@ export type LoaderParams<GetResourcesParams> = {
  * Может принимать дополнительные параметры, которые будут переданы в функцию получения ресурсов модуля.
  * Возвращает промис, содержащий сам модуль и функцию, которая удаляет ресурсы модуля со страницы.
  */
-export type Loader<GetResourcesParams, ModuleExportType = unknown> =
-    (params: LoaderParams<GetResourcesParams>) => Promise<LoaderResult<ModuleExportType>>;
+export type Loader<GetResourcesParams, ModuleExportType = unknown> = (
+    params: LoaderParams<GetResourcesParams>,
+) => Promise<LoaderResult<ModuleExportType>>;
 
 // Описание типов модулей
 
@@ -91,7 +93,6 @@ export type ModuleFederationContainer = {
     init: (...args: unknown[]) => Promise<void>;
     get<T>(id: string): Promise<() => T>;
 };
-
 
 declare global {
     /* eslint-disable @typescript-eslint/naming-convention,no-underscore-dangle */

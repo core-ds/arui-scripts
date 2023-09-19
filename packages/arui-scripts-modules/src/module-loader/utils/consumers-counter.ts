@@ -1,3 +1,4 @@
+// TODO: remove eslint-disable-next-line
 const counters: Record<string, number> = {};
 
 export class ConsumersCounter {
@@ -6,6 +7,7 @@ export class ConsumersCounter {
     constructor(moduleId: string) {
         this.moduleId = moduleId;
 
+        // eslint-disable-next-line no-prototype-builtins
         if (!counters.hasOwnProperty(moduleId)) {
             counters[moduleId] = 0;
         }
@@ -30,4 +32,4 @@ export const resetConsumersCounter = () => {
     Object.keys(counters).forEach((moduleId) => {
         counters[moduleId] = 0;
     });
-}
+};
