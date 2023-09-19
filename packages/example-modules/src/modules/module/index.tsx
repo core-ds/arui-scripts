@@ -1,16 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+
 import type { ModuleMountFunction, ModuleUnmountFunction } from '@alfalab/scripts-modules';
+
 import { Module } from './Module';
 
 export const mount: ModuleMountFunction<any, any> = (targetNode, runParams, serverState) => {
     console.log('Module: mount', { runParams, serverState });
     if (!targetNode) {
-        throw new Error(`Target node is not defined for module`);
+        throw new Error('Target node is not defined for module');
     }
 
     ReactDOM.render(<Module />, targetNode);
-}
+};
 export const unmount: ModuleUnmountFunction = (targetNode) => {
     console.log('Module: unmount');
     if (!targetNode) {
@@ -18,4 +20,4 @@ export const unmount: ModuleUnmountFunction = (targetNode) => {
     }
 
     ReactDOM.unmountComponentAtNode(targetNode);
-}
+};

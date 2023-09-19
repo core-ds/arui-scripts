@@ -1,12 +1,21 @@
-import type { ModuleMountFunction, ModuleUnmountFunction, WindowWithMountableModule } from '@alfalab/scripts-modules';
+// TODO: remove eslint-disable
+/* eslint-disable no-param-reassign */
 import React from 'react';
 import { render } from 'react-dom';
+
+import type {
+    ModuleMountFunction,
+    ModuleUnmountFunction,
+    WindowWithMountableModule,
+} from '@alfalab/scripts-modules';
+
 import { PostcssFeatures } from '#/shared/postcss-features';
+
 import './styles.css';
 
 const mountModule: ModuleMountFunction<any, any> = (targetNode, runParams) => {
     console.log('ModuleCompat: mount', { runParams });
-      
+
     if (targetNode) {
         targetNode.innerHTML = `
   <div class="module-ModuleCompat">
@@ -23,7 +32,7 @@ const mountModule: ModuleMountFunction<any, any> = (targetNode, runParams) => {
     </div>
   </div>`;
 
-      render(<PostcssFeatures />, document.getElementById('postcss-example'));
+        render(<PostcssFeatures />, document.getElementById('postcss-example'));
     }
 };
 
