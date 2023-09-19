@@ -1,5 +1,5 @@
 :root {
-    --color-red: #ff0000;
+    --color-red: #f00;
 }
 body {
     background: aliceblue;
@@ -18,9 +18,15 @@ body {
 }
 
 @keyframes Insanity {
-    0%{background-position:0 50%}
-    50%{background-position:100% 50%}
-    100%{background-position:0 50%}
+    0% {
+        background-position: 0 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0 50%;
+    }
 }
 
 .icon {

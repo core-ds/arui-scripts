@@ -1,4 +1,7 @@
 import React from 'react';
+
+import { Spinner } from '@alfalab/core-components/spinner';
+import { Underlay } from '@alfalab/core-components/underlay';
 import {
     BaseModuleState,
     createModuleFetcher,
@@ -6,28 +9,32 @@ import {
     MountableModule,
     useModuleMounter,
 } from '@alfalab/scripts-modules';
-import { Underlay } from '@alfalab/core-components/underlay';
-import { Spinner } from '@alfalab/core-components/spinner';
 
 const loader = createModuleLoader<MountableModule<any, BaseModuleState>>({
     hostAppId: 'example',
     moduleId: 'ModuleCompat',
     getModuleResources: createModuleFetcher({
         baseUrl: 'http://localhost:8082',
-    })
+    }),
 });
 
 export const CompatModuleMounter = () => {
     const { loadingState, targetElementRef } = useModuleMounter({
-        loader
+        loader,
     });
 
     return (
-        <Underlay padding='m' backgroundColor='info' shadow='shadow-s' borderSize={1} borderRadius='m'>
-            { loadingState === 'pending' && <Spinner size='m' /> }
-            { loadingState === 'rejected' && <div>Failed to load module</div> }
+        <Underlay
+            padding='m'
+            backgroundColor='info'
+            shadow='shadow-s'
+            borderSize={1}
+            borderRadius='m'
+        >
+            {loadingState === 'pending' && <Spinner size='m' />}
+            {loadingState === 'rejected' && <div>Failed to load module</div>}
 
-            <div ref={ targetElementRef } />
+            <div ref={targetElementRef} />
         </Underlay>
     );
-}
+};

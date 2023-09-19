@@ -1,13 +1,14 @@
-import React, { useMemo } from 'react';
-import {
-    createModuleLoader,
-    MountableModule,
-    BaseModuleState,
-    useModuleMounter,
-    createServerStateModuleFetcher,
-} from '@alfalab/scripts-modules';
-import { Underlay } from '@alfalab/core-components/underlay';
+import React from 'react';
+
 import { Spinner } from '@alfalab/core-components/spinner';
+import { Underlay } from '@alfalab/core-components/underlay';
+import {
+    BaseModuleState,
+    createModuleLoader,
+    createServerStateModuleFetcher,
+    MountableModule,
+    useModuleMounter,
+} from '@alfalab/scripts-modules';
 
 const loader = createModuleLoader<MountableModule<any, BaseModuleState>, { something: string }>({
     hostAppId: 'example',
@@ -19,15 +20,21 @@ export const ServerStateCompatModuleMounter = () => {
     const { loadingState, targetElementRef } = useModuleMounter({
         loader,
         runParams: { test: 'test' },
-        loaderParams: { something: 'foo'}
+        loaderParams: { something: 'foo' },
     });
 
     return (
-        <Underlay padding='m' backgroundColor='info' shadow='shadow-s' borderSize={1} borderRadius='m'>
-            { loadingState === 'pending' && <Spinner size='m' /> }
-            { loadingState === 'rejected' && <div>Failed to load module</div> }
+        <Underlay
+            padding='m'
+            backgroundColor='info'
+            shadow='shadow-s'
+            borderSize={1}
+            borderRadius='m'
+        >
+            {loadingState === 'pending' && <Spinner size='m' />}
+            {loadingState === 'rejected' && <div>Failed to load module</div>}
 
-            <div ref={ targetElementRef } />
+            <div ref={targetElementRef} />
         </Underlay>
     );
-}
+};
