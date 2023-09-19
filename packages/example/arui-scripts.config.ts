@@ -5,6 +5,7 @@ const aruiScriptsConfig: PackageSettings = {
     clientPolyfillsEntry: './src/polyfills.js',
     serverEntry: './src/server/index',
     clientEntry: './src/client',
+    componentsTheme: '../../node_modules/@alfalab/core-components/themes/corp.css',
     keepCssVars: false,
     debug: true,
     compatModules: {

@@ -1,7 +1,43 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`modules should create valid css for ModuleCompat 1`] = `
-".module-ModuleCompat .primary{
+".module-ModuleCompat .module-postcss-features{
+    margin-block:24px;
+}
+
+    .module-ModuleCompat .module-postcss-features__paragraph{
+        font-size:12px;
+        line-height:16px;
+        font-weight:700;
+        letter-spacing:1.25px;
+        text-transform:uppercase;
+
+        -webkit-padding-start:12px;
+
+                padding-inline-start:12px;
+        padding-block:2px;
+        box-shadow:0 0 4px rgba(0, 0, 0, 0.02), 0 -2px 4px rgba(0, 0, 0, 0.04), 0 -2px 4px rgba(0, 0, 0, 0.16);
+        color:rgb(236, 142, 133);
+        background-color:#cd1501;
+    }
+
+.module-ModuleCompat .styles-module-paragraph-RR62e{
+    font-size:12px;
+    line-height:16px;
+    font-weight:700;
+    letter-spacing:1.25px;
+    text-transform:uppercase;
+
+    -webkit-padding-start:12px;
+
+            padding-inline-start:12px;
+    padding-block:2px;
+    box-shadow:0 0 4px rgba(0, 0, 0, 0.02), 0 -2px 4px rgba(0, 0, 0, 0.04), 0 -2px 4px rgba(0, 0, 0, 0.16);
+    color:rgb(236, 142, 133);
+    background-color:#cd1501;
+}
+
+.module-ModuleCompat .primary{
     color:rgba(255, 0, 0, 0.5);
     margin-top:4px;
 }

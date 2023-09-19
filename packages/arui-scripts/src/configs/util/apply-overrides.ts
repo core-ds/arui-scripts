@@ -3,6 +3,7 @@ import type { Configuration as WebpackDevServerConfiguration } from 'webpack-dev
 import appConfigs from '../app-configs';
 import { AppContextWithConfigs } from '../app-configs/types';
 import { createSingleClientWebpackConfig } from "../webpack.client";
+import { findLoader } from './find-loader';
 
 type Overrides = {
     webpack: WebpackConfiguration | WebpackConfiguration[];
@@ -38,6 +39,7 @@ type BoundCreateSingleClientWebpackConfig = OmitFirstArg<typeof createSingleClie
 
 type ClientWebpackAdditionalArgs = {
     createSingleClientWebpackConfig: BoundCreateSingleClientWebpackConfig;
+    findLoader: typeof findLoader;
 }
 
 /**
