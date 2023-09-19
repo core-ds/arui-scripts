@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { promisify } from 'util';
+
 import type { AruiAppManifest } from '@alfalab/scripts-modules';
 
 const readFile = promisify(fs.readFile);
@@ -13,6 +14,7 @@ export async function getAppManifest() {
     if (!appManifest) {
         const manifestPath = path.join(process.cwd(), '.build/webpack-assets.json');
         const fileContent = await readFile(manifestPath, 'utf8');
+
         appManifest = JSON.parse(fileContent);
     }
 
@@ -30,11 +32,13 @@ export async function readAssetsManifest(bundleNames: string[] = DEFAULT_BUNDLE_
         }
 
         const script = manifest[key].js;
+
         if (script) {
             js.push(script);
         }
 
         const style = manifest[key].css;
+
         if (style) {
             css.push(style);
         }
