@@ -1,17 +1,20 @@
-import configs from '../../configs/app-configs';
 import path from 'path';
+
 import fs from 'fs-extra';
-import shell from 'shelljs';
 import satisfies from 'semver/functions/satisfies';
+import shell from 'shelljs';
+
+import configs from '../../configs/app-configs';
 
 export function getBuildParamsFromArgs() {
     let imageVersion = configs.version;
     let imageName = configs.name;
-    let dockerRegistry = configs.dockerRegistry;
+    let { dockerRegistry } = configs;
     const commandLineArguments = process.argv.slice(3);
 
-    commandLineArguments.forEach(arg => {
+    commandLineArguments.forEach((arg) => {
         let [argName, argValue] = arg.split('=');
+
         argName = argName.toLowerCase().trim();
         argValue = argValue ? argValue.trim() : '';
         switch (argName) {
@@ -31,13 +34,15 @@ export function getBuildParamsFromArgs() {
 
     const tempDirName = '.docker-build';
     const pathToTempDir = path.join(configs.cwd, tempDirName);
-    const imageFullName = `${dockerRegistry ? `${dockerRegistry}/` : ''}${imageName}:${imageVersion}`;
+    const imageFullName = `${
+        dockerRegistry ? `${dockerRegistry}/` : ''
+    }${imageName}:${imageVersion}`;
 
     return {
         pathToTempDir,
         imageFullName,
         tempDirName,
-    }
+    };
 }
 
 type PrepareFilesForDockerParams = {
@@ -47,7 +52,7 @@ type PrepareFilesForDockerParams = {
     pathToTempDir: string;
     allowLocalDockerfile: boolean;
     allowLocalStartScript: boolean;
-}
+};
 
 export async function prepareFilesForDocker({
     dockerfileTemplate,
@@ -55,7 +60,7 @@ export async function prepareFilesForDocker({
     startScriptTemplate,
     pathToTempDir,
     allowLocalDockerfile,
-    allowLocalStartScript
+    allowLocalStartScript,
 }: PrepareFilesForDockerParams) {
     await fs.emptyDir(pathToTempDir);
 
@@ -63,23 +68,30 @@ export async function prepareFilesForDocker({
         ? await fs.readFile(configs.localNginxConf, 'utf8')
         : nginxConfTemplate;
 
-    const dockerfile = configs.localDockerfile && allowLocalDockerfile
-        ? await fs.readFile(configs.localDockerfile, 'utf8')
-        : dockerfileTemplate;
+    const dockerfile =
+        configs.localDockerfile && allowLocalDockerfile
+            ? await fs.readFile(configs.localDockerfile, 'utf8')
+            : dockerfileTemplate;
 
-    const startScript = configs.localStartScript && allowLocalStartScript
-        ? await fs.readFile(configs.localStartScript, 'utf8')
-        : startScriptTemplate;
+    const startScript =
+        configs.localStartScript && allowLocalStartScript
+            ? await fs.readFile(configs.localStartScript, 'utf8')
+            : startScriptTemplate;
 
     await Promise.all([
         fs.writeFile(path.join(pathToTempDir, 'Dockerfile'), dockerfile, 'utf8'),
         fs.writeFile(path.join(pathToTempDir, 'nginx.conf'), nginxConf, 'utf8'),
-        fs.writeFile(path.join(pathToTempDir, 'start.sh'), startScript, { encoding: 'utf8', mode: 0o555 }),
+        fs.writeFile(path.join(pathToTempDir, 'start.sh'), startScript, {
+            encoding: 'utf8',
+            mode: 0o555,
+        }),
     ]);
 }
 
 export function dockerVersionSatisfies(request: string) {
-    const dockerVersion = shell.exec('docker version --format \'{{.Server.Version}}\'', { silent: true });
+    const dockerVersion = shell.exec("docker version --format '{{.Server.Version}}'", {
+        silent: true,
+    });
 
     return satisfies(dockerVersion.toString(), request);
 }
@@ -87,7 +99,7 @@ export function dockerVersionSatisfies(request: string) {
 type DockerBuildCommandParams = {
     tempDirName: string;
     imageFullName: string;
-}
+};
 
 export function getDockerBuildCommand({ tempDirName, imageFullName }: DockerBuildCommandParams) {
     // если пытаться собрать проект на маках с m1, докер будет пытаться вытянуть базовый образ под свою платформу и
@@ -96,7 +108,9 @@ export function getDockerBuildCommand({ tempDirName, imageFullName }: DockerBuil
     // Соответственно они будут падать при наличии этого флага.
     const canUsePlatformFlag = dockerVersionSatisfies('>=17.12');
 
-    return `docker build ${canUsePlatformFlag ? '--platform linux/x86_64' : ''} -f "./${tempDirName}/Dockerfile" \\
+    return `docker build ${
+        canUsePlatformFlag ? '--platform linux/x86_64' : ''
+    } -f "./${tempDirName}/Dockerfile" \\
  --build-arg START_SH_LOCATION="./${tempDirName}/start.sh" \\
  --build-arg NGINX_CONF_LOCATION="./${tempDirName}/nginx.conf" -t ${imageFullName} .`;
 }

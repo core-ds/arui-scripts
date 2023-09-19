@@ -1,18 +1,22 @@
-import config from './app-configs';
 import path from 'path';
+
+import config from './app-configs';
 /**
  * Функция для создания конфигурационного файла postcss
  * @param {String[]} plugins список плагинов
  * @param {Object} options коллекция конфигураций плагинов, где ключ - название плагина, а значение - аргумент для инициализации
  * @returns {*}
  */
-export function createPostcssConfig(plugins: string[], options: Record<string, unknown>): string[] | unknown[] {
-    return plugins.map(pluginName => {
+export function createPostcssConfig(
+    plugins: string[],
+    options: Record<string, unknown>,
+): string[] | unknown[] {
+    return plugins.map((pluginName) => {
         if (pluginName in options) {
             return [pluginName, options[pluginName]];
         }
 
-        return pluginName
+        return pluginName;
     });
 }
 
@@ -42,10 +46,7 @@ export const postcssPluginsOptions = {
         path: ['./src'],
     },
     '@csstools/postcss-global-data': {
-        files: [
-            path.join(__dirname,'mq.css'),
-            config.componentsTheme
-        ].filter(Boolean) as string[],
+        files: [path.join(__dirname, 'mq.css'), config.componentsTheme].filter(Boolean) as string[],
     },
     'postcss-url': {
         url: 'rebase',

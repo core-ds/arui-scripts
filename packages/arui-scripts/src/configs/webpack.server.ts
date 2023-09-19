@@ -1,32 +1,41 @@
+// TODO: remove eslint-disable
+/* eslint-disable @typescript-eslint/no-var-requires */
 import fs from 'fs';
 import path from 'path';
-import webpack, { Configuration } from 'webpack';
 
-import nodeExternals from 'webpack-node-externals';
-import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
 import getCSSModuleLocalIdent from 'react-dev-utils/getCSSModuleLocalIdent';
+import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
+import { RunScriptWebpackPlugin } from 'run-script-webpack-plugin';
+import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
+import webpack, { Configuration } from 'webpack';
+import nodeExternals from 'webpack-node-externals';
 
+import getEntry from './util/get-entry';
 import configs from './app-configs';
+import { babelDependencies } from './babel-dependencies';
 import babelConf from './babel-server';
 import postcssConf from './postcss';
-import getEntry from './util/get-entry';
-import { babelDependencies } from './babel-dependencies';
 import { serverExternalsExemptions } from './server-externals-exemptions';
-import { RunScriptWebpackPlugin } from 'run-script-webpack-plugin';
-import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 
 const ReloadServerPlugin = require('../plugins/reload-server-webpack-plugin');
 const WatchMissingNodeModulesPlugin = require('../plugins/watch-missing-node-modules-plugin');
 
 const assetsIgnoreBanner = fs.readFileSync(require.resolve('./util/node-assets-ignore'), 'utf8');
-const sourceMapSupportBanner = fs.readFileSync(require.resolve('./util/install-sourcemap-support'), 'utf8');
+const sourceMapSupportBanner = fs.readFileSync(
+    require.resolve('./util/install-sourcemap-support'),
+    'utf8',
+);
 
 // style files regexes
 const cssRegex = /\.css$/;
 const cssModuleRegex = /\.module\.css$/;
 
 function getSingleEntry(entryPoint: string[], mode: 'dev' | 'prod') {
-    const prefix = (mode === 'dev' && configs.useServerHMR) ? [`${require.resolve('webpack/hot/poll')}?1000`] : [];
+    const prefix =
+        mode === 'dev' && configs.useServerHMR
+            ? [`${require.resolve('webpack/hot/poll')}?1000`]
+            : [];
+
     return [...prefix, ...entryPoint];
 }
 
@@ -39,7 +48,7 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
     target: 'node',
     node: {
         __filename: true,
-        __dirname: true
+        __dirname: true,
     },
     entry: getEntry(configs.serverEntry, getSingleEntry, mode),
     context: configs.cwd,
@@ -53,24 +62,27 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
         chunkFilename: '[name].js',
         // Point sourcemap entries to original disk location (format as URL on Windows)
         devtoolModuleFilenameTemplate: (info: any) =>
-            path
-                .relative(configs.appSrc, info.absoluteResourcePath)
-                .replace(/\\/g, '/'),
+            path.relative(configs.appSrc, info.absoluteResourcePath).replace(/\\/g, '/'),
     },
-    cache: mode === 'dev' ? {
-        type: 'filesystem',
-        name: 'server',
-        buildDependencies: {
-            config: [__filename],
-        },
-    } : false,
+    cache:
+        mode === 'dev'
+            ? {
+                  type: 'filesystem',
+                  name: 'server',
+                  buildDependencies: {
+                      config: [__filename],
+                  },
+              }
+            : false,
     externalsPresets: { node: true },
-    externals: [nodeExternals({
-        allowlist: serverExternalsExemptions,
-        // we cannot determine node_modules location before arui-scripts installation, so just load
-        // dependencies list from package.json
-        modulesFromFile: true,
-    })] as Configuration['externals'],
+    externals: [
+        nodeExternals({
+            allowlist: serverExternalsExemptions,
+            // we cannot determine node_modules location before arui-scripts installation, so just load
+            // dependencies list from package.json
+            modulesFromFile: true,
+        }),
+    ] as Configuration['externals'],
     optimization: {
         minimize: false,
         nodeEnv: mode === 'dev' ? false : 'production',
@@ -88,12 +100,22 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
         // `web` extension prefixes have been added for better support
         // for React Native Web.
         extensions: ['.web.js', '.mjs', '.js', '.json', '.web.jsx', '.jsx', '.ts', '.tsx'],
-        plugins: ([
-            (configs.tsconfig && new TsconfigPathsPlugin({
-                configFile: configs.tsconfig,
-                extensions: ['.web.js', '.mjs', '.js', '.json', '.web.jsx', '.jsx', '.ts', '.tsx']
-            }))
-        ].filter(Boolean)) as NonNullable<webpack.Configuration['resolve']>['plugins'],
+        plugins: [
+            configs.tsconfig &&
+                new TsconfigPathsPlugin({
+                    configFile: configs.tsconfig,
+                    extensions: [
+                        '.web.js',
+                        '.mjs',
+                        '.js',
+                        '.json',
+                        '.web.jsx',
+                        '.jsx',
+                        '.ts',
+                        '.tsx',
+                    ],
+                }),
+        ].filter(Boolean) as NonNullable<webpack.Configuration['resolve']>['plugins'],
     },
     module: {
         // typescript interface will be removed from modules, and we will get an error on correct code
@@ -101,7 +123,7 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
         strictExportPresence: !configs.tsconfig,
         rules: [
             {
-                oneOf: ([
+                oneOf: [
                     // Process JS with Babel.
                     {
                         test: configs.useTscLoader ? /\.(js|jsx|mjs)$/ : /\.(js|jsx|mjs|ts|tsx)$/,
@@ -115,29 +137,31 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
                             cacheDirectory: mode === 'dev',
                         },
                     },
-                    (configs.tsconfig && configs.useTscLoader) && {
-                        test: /\.tsx?$/,
-                        use: [
-                            {
-                                loader: require.resolve('babel-loader'),
-                                options: Object.assign({
-                                    // This is a feature of `babel-loader` for webpack (not Babel itself).
-                                    // It enables caching results in ./node_modules/.cache/babel-loader/
-                                    // directory for faster rebuilds.
-                                    cacheDirectory: mode === 'dev'
-                                }, babelConf)
-                            },
-                            {
-                                loader: require.resolve('ts-loader'),
-                                options: {
-                                    onlyCompileBundledFiles: true,
-                                    transpileOnly: true,
-                                    happyPackMode: true,
-                                    configFile: configs.tsconfig
-                                }
-                            }
-                        ]
-                    },
+                    configs.tsconfig &&
+                        configs.useTscLoader && {
+                            test: /\.tsx?$/,
+                            use: [
+                                {
+                                    loader: require.resolve('babel-loader'),
+                                    options: {
+                                        // This is a feature of `babel-loader` for webpack (not Babel itself).
+                                        // It enables caching results in ./node_modules/.cache/babel-loader/
+                                        // directory for faster rebuilds.
+                                        cacheDirectory: mode === 'dev',
+                                        ...babelConf,
+                                    },
+                                },
+                                {
+                                    loader: require.resolve('ts-loader'),
+                                    options: {
+                                        onlyCompileBundledFiles: true,
+                                        transpileOnly: true,
+                                        happyPackMode: true,
+                                        configFile: configs.tsconfig,
+                                    },
+                                },
+                            ],
+                        },
                     // Process any JS outside of the app with Babel.
                     // Unlike the application JS, we only compile the standard ES features.
                     {
@@ -157,7 +181,7 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
                     {
                         test: cssRegex,
                         exclude: cssModuleRegex,
-                        loader: require.resolve('null-loader')
+                        loader: require.resolve('null-loader'),
                     },
                     {
                         test: cssModuleRegex,
@@ -167,7 +191,7 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
                                 options: {
                                     modules: {
                                         exportOnlyLocals: true,
-                                        getLocalIdent: getCSSModuleLocalIdent
+                                        getLocalIdent: getCSSModuleLocalIdent,
                                     },
                                 },
                             },
@@ -176,7 +200,7 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
                                 options: {
                                     postcssOptions: {
                                         plugins: postcssConf,
-                                    }
+                                    },
                                 },
                             },
                         ],
@@ -187,30 +211,34 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
                         generator: {
                             outputPath: configs.publicPath,
                             publicPath: configs.publicPath,
-                        }
+                        },
                     },
-                ].filter(Boolean)) as webpack.RuleSetRule[],
+                ].filter(Boolean) as webpack.RuleSetRule[],
             },
         ],
     },
-    plugins: ([
+    plugins: [
         new webpack.BannerPlugin({
             banner: assetsIgnoreBanner,
             raw: true,
-            entryOnly: false
+            entryOnly: false,
         }),
-        configs.installServerSourceMaps && new webpack.BannerPlugin({
-            banner: sourceMapSupportBanner,
-            raw: true,
-            entryOnly: false
-        }),
+        configs.installServerSourceMaps &&
+            new webpack.BannerPlugin({
+                banner: sourceMapSupportBanner,
+                raw: true,
+                entryOnly: false,
+            }),
 
         // dev plugins:
-        mode === 'dev' && (configs.useServerHMR
-            ? new RunScriptWebpackPlugin({
-                name: configs.serverOutput
-            })
-            : new ReloadServerPlugin({ script: path.join(configs.serverOutputPath, configs.serverOutput) })),
+        mode === 'dev' &&
+            (configs.useServerHMR
+                ? new RunScriptWebpackPlugin({
+                      name: configs.serverOutput,
+                  })
+                : new ReloadServerPlugin({
+                      script: path.join(configs.serverOutputPath, configs.serverOutput),
+                  })),
         mode === 'dev' && new webpack.NoEmitOnErrorsPlugin(),
         // Watcher doesn't work well if you mistype casing in a path so we use
         // a plugin that prints an error when you attempt to do this.
@@ -221,8 +249,8 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
         // makes the discovery automatic so you don't have to restart.
         // See https://github.com/facebookincubator/create-react-app/issues/186
         mode === 'dev' && new WatchMissingNodeModulesPlugin(configs.appNodeModules),
-        mode === 'dev' && configs.useServerHMR && new webpack.HotModuleReplacementPlugin()
-    ].filter(Boolean)) as webpack.WebpackPluginInstance[],
+        mode === 'dev' && configs.useServerHMR && new webpack.HotModuleReplacementPlugin(),
+    ].filter(Boolean) as webpack.WebpackPluginInstance[],
     experiments: {
         backCompat: configs.webpack4Compatibility,
     },

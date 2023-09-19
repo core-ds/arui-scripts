@@ -1,5 +1,5 @@
-import { getPolyfills } from '../get-polyfills';
 import { AppConfigs } from '../../app-configs/types';
+import { getPolyfills } from '../get-polyfills';
 
 describe('getPolyfills', () => {
     it('should return array when original config contain string as polyfills entry', () => {
@@ -9,9 +9,7 @@ describe('getPolyfills', () => {
 
         const polyfills = getPolyfills(appConfig as AppConfigs);
 
-        expect(polyfills).toMatchObject([
-            'custom-polyfills',
-        ]);
+        expect(polyfills).toMatchObject(['custom-polyfills']);
     });
 
     it('should return array when original config contains multiple polyfills entry', () => {
@@ -21,10 +19,7 @@ describe('getPolyfills', () => {
 
         const polyfills = getPolyfills(appConfig as AppConfigs);
 
-        expect(polyfills).toMatchObject([
-            'custom1',
-            'custom2'
-        ]);
+        expect(polyfills).toMatchObject(['custom1', 'custom2']);
     });
 
     it('should return empty array when original config is empty', () => {
@@ -45,10 +40,8 @@ describe('getPolyfills', () => {
 
         const polyfills = getPolyfills(appConfig as AppConfigs, requireResolve as any);
 
-        expect(polyfills).toMatchObject([
-            'feather-polyfills-path'
-        ]);
-        expect(requireResolve).toHaveBeenCalledWith('arui-feather/polyfills')
+        expect(polyfills).toMatchObject(['feather-polyfills-path']);
+        expect(requireResolve).toHaveBeenCalledWith('arui-feather/polyfills');
     });
 
     it('should not add feather polyfills when original config has any polyfills', () => {

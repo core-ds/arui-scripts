@@ -1,5 +1,5 @@
-import { updateWithEnv } from '../update-with-env';
 import { AppConfigs } from '../types';
+import { updateWithEnv } from '../update-with-env';
 
 describe('update-with-env', () => {
     const OLD_ENV = process.env;
@@ -32,7 +32,9 @@ describe('update-with-env', () => {
     });
 
     it('should update config keys with values from env', () => {
-        process.env.ARUI_SCRIPTS_CONFIG = JSON.stringify({ dockerRegistry: 'docker.other-company.com'});
+        process.env.ARUI_SCRIPTS_CONFIG = JSON.stringify({
+            dockerRegistry: 'docker.other-company.com',
+        });
         const baseConfig = { dockerRegistry: 'docker.my-company.com' } as AppConfigs;
 
         const updatedConfig = updateWithEnv(baseConfig);

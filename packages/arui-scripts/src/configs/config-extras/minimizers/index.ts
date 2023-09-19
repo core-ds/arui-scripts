@@ -1,1 +1,1 @@
-export * from './imagemin'
+export * from './imagemin';

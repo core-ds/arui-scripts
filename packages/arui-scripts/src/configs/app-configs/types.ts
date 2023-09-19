@@ -1,4 +1,4 @@
-import { ProxyConfigArrayItem } from "webpack-dev-server";
+import { ProxyConfigArrayItem } from 'webpack-dev-server';
 
 /**
  * Конфигурация arui-scripts, которая может быть переопределена приложением
@@ -74,7 +74,7 @@ export type AppConfigs = {
     compatModules: {
         shared?: {
             [libraryName: string]: string;
-        }
+        };
         exposes?: {
             [moduleId: string]: CompatModuleConfigBase;
         };
@@ -90,12 +90,11 @@ type CompatModuleConfigBase = {
     entry: string;
     externals?: Record<string, string>;
     cssPrefix?: false | string;
-}
+};
 
 export type CompatModuleConfig = CompatModuleConfigBase & {
     name: string;
 };
-
 
 /**
  * Внутренний контекст arui-scripts

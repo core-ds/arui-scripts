@@ -14,6 +14,7 @@ export function getPolyfills(config: AppConfigs, requireResolve = require.resolv
         // не задал свои кастомные полифилы.
         try {
             const aruiPolyfills = requireResolve('arui-feather/polyfills');
+
             polyfills.push(aruiPolyfills);
         } catch (error) {
             // just ignore it

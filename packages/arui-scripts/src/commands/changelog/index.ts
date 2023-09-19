@@ -1,14 +1,16 @@
+// TODO: remove eslint-disable-next-line
 /**
  * Формирует описание версии в `CHANGELOG.md` на основе данных введенных в Jenkins при старте пайплайна.
  * `standard-version` запускает этот скрипт как `postchangelog` хук.
  */
 
-import {execSync} from 'child_process';
-import {createReadStream, createWriteStream, promises} from 'fs';
+import { execSync } from 'child_process';
+import { createReadStream, createWriteStream, promises } from 'fs';
 import readline from 'readline';
-import configs from "../../configs/app-configs";
 
-const {readFile, rename, unlink} = promises;
+import configs from '../../configs/app-configs';
+
+const { readFile, rename, unlink } = promises;
 
 type GetVersionDescriptionParams = {
     features: string;
@@ -29,7 +31,7 @@ const {
     changelogTmpPath,
     changelogFeaturesPath,
     changelogBugfixesPath,
-    changelogBreakingChangesPath
+    changelogBreakingChangesPath,
 } = configs;
 
 // Пример заголовка – `## [50.1.0](http://git.moscow.alfaintra.net/...) (2022-07-27)`.
@@ -50,9 +52,10 @@ const changelogHeaderRegExp = /^###? \[\d+\.\d+\.\d+]\([^)]+\) \(\d{4}-\d{2}-\d{
             readFile(changelogBreakingChangesPath, 'utf-8'),
         ]).then((files) => files.map((content) => content.trim()));
 
-        ws.write(getVersionDescription({features, bugFixes, breakingChanges}));
-    }
+        ws.write(getVersionDescription({ features, bugFixes, breakingChanges }));
+    };
 
+    // eslint-disable-next-line no-restricted-syntax
     for await (const line of rl) {
         switch (modifyingStatus) {
             // Копируем всё как есть до первого заголовка.
@@ -94,7 +97,11 @@ const changelogHeaderRegExp = /^###? \[\d+\.\d+\.\d+]\([^)]+\) \(\d{4}-\d{2}-\d{
     process.exit(0);
 })();
 
-function getVersionDescription({features, bugFixes, breakingChanges}: GetVersionDescriptionParams) {
+function getVersionDescription({
+    features,
+    bugFixes,
+    breakingChanges,
+}: GetVersionDescriptionParams) {
     let versionDescription = '';
 
     if (features) {

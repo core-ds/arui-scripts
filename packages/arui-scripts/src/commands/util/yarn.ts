@@ -1,5 +1,6 @@
-import configs from '../../configs/app-configs';
 import shell from 'shelljs';
+
+import configs from '../../configs/app-configs';
 
 type YarnVersion = '1' | '2+' | 'unavailable';
 

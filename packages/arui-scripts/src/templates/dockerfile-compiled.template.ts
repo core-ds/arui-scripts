@@ -1,6 +1,6 @@
+import { getInstallProductionCommand, getYarnVersion } from '../commands/util/yarn';
 import configs from '../configs/app-configs';
 import applyOverrides from '../configs/util/apply-overrides';
-import { getInstallProductionCommand, getPruningCommand, getYarnVersion } from '../commands/util/yarn';
 
 const installProductionCommand = getInstallProductionCommand();
 const yarnVersion = getYarnVersion();
@@ -26,7 +26,9 @@ ADD $START_SH_LOCATION /src/start.sh
 ADD $NGINX_CONF_LOCATION /src/nginx.conf
 
 # Зависимости. При некоторой удаче могут кешироваться и соответственно кешировать установку зависимостей
-${filesRequiredToInstallDependencies.map((file) => `ADD --chown=nginx:nginx ${file} /src/${file}`).join('\n')}
+${filesRequiredToInstallDependencies
+    .map((file) => `ADD --chown=nginx:nginx ${file} /src/${file}`)
+    .join('\n')}
 
 RUN ${installProductionCommand}  && \\
     ${yarnVersion === 'unavailable' ? 'npm cache clean --force' : 'yarn cache clean'}

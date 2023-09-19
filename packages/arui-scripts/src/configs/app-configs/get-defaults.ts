@@ -1,13 +1,16 @@
-import path from 'path';
 import fs from 'fs';
-import { AppConfigs, AppContext } from './types';
+import path from 'path';
+
 import { tryResolve } from '../util/resolve';
+
+import { AppConfigs, AppContext } from './types';
 
 const CWD = process.cwd();
 const absoluteSrcPath = path.resolve(CWD, 'src');
 
 export function getDefaultAppConfig(): AppConfigs {
     const appPackage = getPackageJson();
+
     return {
         /// general settings
         clientServerPort: 8080,
@@ -43,7 +46,7 @@ export function getDefaultAppConfig(): AppConfigs {
         useTscLoader: false,
         webpack4Compatibility: false,
         installServerSourceMaps: false,
-        disableDevWebpackTypecheck:false,
+        disableDevWebpackTypecheck: false,
 
         // image processing
         dataUrlMaxSize: 1536,

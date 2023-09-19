@@ -9,6 +9,7 @@ describe('validate-settings-keys', () => {
         const baseSettings = {
             name: 'ivan',
         };
+
         jest.spyOn(console, 'warn');
 
         validateSettingsKeys(baseSettings, objectWithSettings);

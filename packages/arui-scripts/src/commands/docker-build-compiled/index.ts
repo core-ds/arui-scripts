@@ -1,16 +1,19 @@
 import fs from 'fs-extra';
 
 import configs from '../../configs/app-configs';
-
 import dockerfileTemplate from '../../templates/dockerfile-compiled.template';
 import nginxConfTemplate from '../../templates/nginx.conf.template';
 import startScript from '../../templates/start.template';
+import {
+    getBuildParamsFromArgs,
+    getDockerBuildCommand,
+    prepareFilesForDocker,
+} from '../util/docker-build';
 import exec from '../util/exec';
-import { getBuildParamsFromArgs, getDockerBuildCommand, prepareFilesForDocker } from '../util/docker-build';
-
 
 (async () => {
     const { imageFullName, pathToTempDir, tempDirName } = getBuildParamsFromArgs();
+
     try {
         console.log(`Build docker image ${imageFullName}`);
         console.time('Total time');
