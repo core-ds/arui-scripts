@@ -238,3 +238,7 @@ const settings = {
 
 #### compatModules
 Позволяет настроить работу с `compat` модулями. По умолчанию `{}`. Подробнее в разделе [модули](modules.md).
+
+#### disableDevWebpackTypecheck
+Позволяет настроить проверку типов для клиентского кода и серверный код в режиме разработки. 
+Если `true`, то для проверки типов используется `tsc --watch --noEmit --project tsconfig.json --skipLibCheck`, вместо `ForkTsCheckerWebpackPlugin`. По умолчанию `false`.
