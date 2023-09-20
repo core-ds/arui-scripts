@@ -1,5 +1,35 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 15.8.0
+
+### Minor Changes
+
+- [#122](https://github.com/core-ds/arui-scripts/pull/122) [`112b32a`](https://github.com/core-ds/arui-scripts/commit/112b32a5b642d3bd2dd96c24ce3c65c9908b4b03) Thanks [@sanityFair](https://github.com/sanityFair)! - ## Текущая реализация нацелена на снятие лишней нагрузки в режиме разработки при проверки типов.
+
+  #### disableDevWebpackTypecheck=false, команда start:
+
+      1. В конфиге для клиента запускается ForkTsCheckerWebpackPlugin.
+      2. В конфигах, сделанных через createSingle - не запускается.
+
+  #### disableDevWebpackTypecheck=false, команда build:
+
+      1. В конфиге для клиента запускается ForkTsCheckerWebpackPlugin.
+      2. В конфигах, сделанных через createSingle - не запускается.
+
+  #### disableDevWebpackTypecheck=true, команда start:
+
+      1. Запускается runCompilers c TSC_WATCH_COMMAND.
+      2. В вебпаке для клиента и сервера ForkTsCheckerWebpackPlugin не запускается.
+
+  #### disableDevWebpackTypecheck=true, команда build:
+
+      1. В конфиге для клиента запускается ForkTsCheckerWebpackPlugin.
+      2. В конфигах, сделанных через createSingle - не запускается.
+
+### Patch Changes
+
+- [#117](https://github.com/core-ds/arui-scripts/pull/117) [`8b6d9c7`](https://github.com/core-ds/arui-scripts/commit/8b6d9c75e1c466b82cd12edcdca3f8c3f1d56d3f) Thanks [@Echzio](https://github.com/Echzio)! - Добавление findLoader в конфигурацию webpack для override-файла, который будет полезен для поиска и переопределения лоадеров
+
 ## 15.7.4
 
 ### Patch Changes
