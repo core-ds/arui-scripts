@@ -3,6 +3,7 @@ import path from 'path';
 
 import { tryResolve } from '../util/resolve';
 
+import { readConfigFile } from './read-config-file';
 import { AppConfigs, AppContext } from './types';
 
 const CWD = process.cwd();
@@ -10,6 +11,7 @@ const absoluteSrcPath = path.resolve(CWD, 'src');
 
 export function getDefaultAppConfig(): AppConfigs {
     const appPackage = getPackageJson();
+    const configFile = readConfigFile(CWD);
 
     return {
         /// general settings
@@ -19,7 +21,7 @@ export function getDefaultAppConfig(): AppConfigs {
         devSourceMaps: 'eval',
         devServerCors: false,
         useServerHMR: false,
-        presets: appPackage.aruiScripts?.presets || null,
+        presets: configFile?.presets || appPackage?.aruiScripts?.presets || null,
         proxy: appPackage.proxy || null,
 
         // paths
