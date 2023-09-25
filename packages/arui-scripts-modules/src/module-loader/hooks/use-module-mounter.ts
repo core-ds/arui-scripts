@@ -98,7 +98,6 @@ export function useModuleMounter<LoaderParams, RunParams, ServerState extends Ba
         run();
 
         return function moduleCleanUp() {
-            console.log('unmounting...');
             unmountFn?.();
         };
     }, [targetNode, loader]);

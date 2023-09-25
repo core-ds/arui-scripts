@@ -14,13 +14,13 @@ import {
 export type ModuleResourcesGetter<GetResourcesParams, ModuleState extends BaseModuleState> = (
     params: GetResourcesRequest<GetResourcesParams>,
 ) => Promise<ModuleResources<ModuleState>>;
-export type ModuleLoaderHook = (
+export type ModuleLoaderHook<ModuleState extends BaseModuleState = BaseModuleState> = (
     moduleId: string,
-    resources: ModuleResources,
+    resources: ModuleResources<ModuleState>,
 ) => Promise<void> | void;
-export type ModuleLoaderHookWithModule<ModuleExportType> = (
+export type ModuleLoaderHookWithModule<ModuleExportType, ModuleState extends BaseModuleState = BaseModuleState> = (
     moduleId: string,
-    resources: ModuleResources,
+    resources: ModuleResources<ModuleState>,
     module: ModuleExportType,
 ) => Promise<void> | void;
 
@@ -41,15 +41,15 @@ export type CreateModuleLoaderParams<
     /** Опциональная html-нода, в которую будут подключаться ресурсы модуля. По-умолчанию `document.head` */
     resourcesTargetNode?: HTMLElement;
     /** хук, вызываемый перед подключением ресурсов модуля на страницу */
-    onBeforeResourcesMount?: ModuleLoaderHook;
+    onBeforeResourcesMount?: ModuleLoaderHook<ModuleState>;
     /** хук, вызываемый после подключения ресурсов, но до получения контента модуля */
-    onBeforeModuleMount?: ModuleLoaderHook;
+    onBeforeModuleMount?: ModuleLoaderHook<ModuleState>;
     /** хук, вызываемый после того, как модуль был получен */
-    onAfterModuleMount?: ModuleLoaderHookWithModule<ModuleExportType>;
+    onAfterModuleMount?: ModuleLoaderHookWithModule<ModuleExportType, ModuleState>;
     /** хук, вызываемый перед удалением ресурсов модуля со страницы */
-    onBeforeModuleUnmount?: ModuleLoaderHookWithModule<ModuleExportType>;
+    onBeforeModuleUnmount?: ModuleLoaderHookWithModule<ModuleExportType, ModuleState>;
     /** хук, вызываем после удаления ресурсов модуля со страницы */
-    onAfterModuleUnmount?: ModuleLoaderHookWithModule<ModuleExportType>;
+    onAfterModuleUnmount?: ModuleLoaderHookWithModule<ModuleExportType, ModuleState>;
 };
 
 export function createModuleLoader<
