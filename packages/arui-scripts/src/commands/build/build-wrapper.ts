@@ -9,9 +9,12 @@ type BuildResult = {
     stats: webpack.Stats | webpack.MultiStats;
     warnings: string[];
     previousFileSizes: unknown;
-}
+};
 
-function build(config: webpack.Configuration | webpack.Configuration[], previousFileSizes?: unknown) {
+function build(
+    config: webpack.Configuration | webpack.Configuration[],
+    previousFileSizes?: unknown,
+) {
     let compiler = webpack(config as webpack.Configuration);
     return new Promise<BuildResult>((resolve, reject) => {
         compiler.run((err: any, stats: any) => {
@@ -29,23 +32,22 @@ function build(config: webpack.Configuration | webpack.Configuration[], previous
                 return reject(new Error(messages.errors.join('\n\n')));
             }
             if (
-                process.env.CI && (
-                    process.env.CI.toLowerCase() !== 'false'
-                ) &&
+                process.env.CI &&
+                process.env.CI.toLowerCase() !== 'false' &&
                 messages.warnings.length
             ) {
                 console.log(
                     chalk.yellow(
                         '\nTreating warnings as errors because process.env.CI = true.\n' +
-                        'Most CI servers set it automatically.\n'
-                    )
+                            'Most CI servers set it automatically.\n',
+                    ),
                 );
                 return reject(new Error(messages.warnings.join('\n\n')));
             }
             return resolve({
                 stats,
                 warnings: messages.warnings,
-                previousFileSizes
+                previousFileSizes,
             });
         });
     });

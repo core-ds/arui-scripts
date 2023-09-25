@@ -5,9 +5,11 @@ const config = applyOverrides(['babel', 'babelServer'], {
     presets: [
         [
             require.resolve('@babel/preset-env'),
-            { modules: false, targets: { node: 'current' }, loose: true }
+            { modules: false, targets: { node: 'current' }, loose: true },
         ],
-        (configs.tsconfig !== null && !configs.useTscLoader) && require.resolve('@babel/preset-typescript'),
+        configs.tsconfig !== null &&
+            !configs.useTscLoader &&
+            require.resolve('@babel/preset-typescript'),
         require.resolve('@babel/preset-react'),
     ].filter(Boolean),
     plugins: [
@@ -23,22 +25,20 @@ const config = applyOverrides(['babel', 'babelServer'], {
         [require.resolve('@babel/plugin-proposal-object-rest-spread'), { useBuiltIns: true }],
         [require.resolve('@babel/plugin-transform-runtime'), { helpers: false }],
         require.resolve('@babel/plugin-proposal-nullish-coalescing-operator'),
-        require.resolve('@babel/plugin-proposal-optional-chaining')
+        require.resolve('@babel/plugin-proposal-optional-chaining'),
     ],
     env: {
         production: {
             plugins: [
                 require.resolve('@babel/plugin-transform-react-constant-elements'),
                 require.resolve('@babel/plugin-transform-react-inline-elements'),
-                require.resolve('babel-plugin-transform-react-remove-prop-types')
-            ]
+                require.resolve('babel-plugin-transform-react-remove-prop-types'),
+            ],
         },
         test: {
-            plugins: [
-                require.resolve('@babel/plugin-transform-modules-commonjs')
-            ]
-        }
-    }
+            plugins: [require.resolve('@babel/plugin-transform-modules-commonjs')],
+        },
+    },
 });
 
 export default config;

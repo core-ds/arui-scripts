@@ -1,8 +1,9 @@
+import { choosePort } from 'react-dev-utils/WebpackDevServerUtils';
 import webpack, { Configuration } from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
+
 import devServerConfig from '../../configs/dev-server';
 import printCompilerOutput from '../start/print-compiler-output';
-import { choosePort } from 'react-dev-utils/WebpackDevServerUtils';
 
 export async function runClientDevServer(configuration: Configuration | Configuration[]) {
     const clientCompiler = webpack(configuration as Configuration); // типы вебпака не умеют выбирать между конфигурациями и массивом конфигураций

@@ -104,10 +104,12 @@ describe('modules', () => {
         );
 
         const moduleJsPath = path.join(BUILD_PATH, assetsManifest[moduleName].js);
+
         expect(await fileExists(moduleJsPath)).toBe(true);
 
         if (assetsManifest[moduleName].css) {
             const moduleCssPath = path.join(BUILD_PATH, assetsManifest[moduleName].css);
+
             expect(await fileExists(moduleCssPath)).toBe(true);
         }
     });

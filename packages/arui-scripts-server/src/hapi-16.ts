@@ -1,11 +1,13 @@
-import { createGetModulesMethod, ModulesConfig } from './modules';
 import type { HTTP_METHODS_PARTIAL, PluginFunction, Request } from 'hapi16';
 
-export function createGetModulesHapi16Plugin(modules: ModulesConfig<[Request]>, routeParams?: Record<string, unknown>) {
+import { createGetModulesMethod, ModulesConfig } from './modules';
+
+export function createGetModulesHapi16Plugin(
+    modules: ModulesConfig<[Request]>,
+    routeParams?: Record<string, unknown>,
+) {
     const modulesMethodSettings = createGetModulesMethod(modules);
-    const register: PluginFunction<{}> = (server, options, next) => {
-
-
+    const register: PluginFunction<Record<string, never>> = (server, options, next) => {
         server.route({
             method: modulesMethodSettings.method as HTTP_METHODS_PARTIAL,
             path: modulesMethodSettings.path,
@@ -13,6 +15,7 @@ export function createGetModulesHapi16Plugin(modules: ModulesConfig<[Request]>, 
             handler: async (request, reply) => {
                 try {
                     const response = await modulesMethodSettings.handler(request.payload, request);
+
                     reply(response);
                 } catch (e: any) {
                     reply({

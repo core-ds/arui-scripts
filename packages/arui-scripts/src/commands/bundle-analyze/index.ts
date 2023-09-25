@@ -1,11 +1,14 @@
+// TODO: remove eslint-disable
+/* eslint-disable no-param-reassign */
 import webpack from 'webpack';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
-import makeTmpDir from '../util/make-tmp-dir';
+
+import configs from '../../configs/app-configs';
 import clientConfig from '../../configs/webpack.client.prod';
-import configs from "../../configs/app-configs";
+import makeTmpDir from '../util/make-tmp-dir';
 
 (async () => {
-    let clientWebpackConfigs = Array.isArray(clientConfig) ? clientConfig : [clientConfig];
+    const clientWebpackConfigs = Array.isArray(clientConfig) ? clientConfig : [clientConfig];
 
     const promises = clientWebpackConfigs.map(async (webpackConfig, i) => {
         const tmpDir = await makeTmpDir(i.toString());
@@ -17,12 +20,13 @@ import configs from "../../configs/app-configs";
                 statsFilename: configs.statsOutputPath,
                 analyzerPort: 'auto',
             }),
-        ]
+        ];
         webpackConfig.output = {
             ...webpackConfig.output,
             path: tmpDir,
-        }
+        };
     });
+
     await Promise.all(promises);
 
     webpack(clientWebpackConfigs).run(() => {});

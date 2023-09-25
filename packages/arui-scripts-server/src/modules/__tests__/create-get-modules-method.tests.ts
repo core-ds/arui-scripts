@@ -1,5 +1,5 @@
-import { createGetModulesMethod } from '../create-get-modules-method';
 import { getAppManifest, readAssetsManifest } from '../../read-assets-manifest';
+import { createGetModulesMethod } from '../create-get-modules-method';
 
 jest.mock('../../read-assets-manifest', () => ({
     readAssetsManifest: jest.fn(),
@@ -9,6 +9,7 @@ jest.mock('../../read-assets-manifest', () => ({
 describe('createGetModulesMethod', () => {
     it('should return method description with correct http method and path', () => {
         const { method, path } = createGetModulesMethod({});
+
         expect(method).toBe('POST');
         expect(path).toBe('/api/getModuleResources');
     });
@@ -22,15 +23,19 @@ describe('createGetModulesMethod', () => {
     });
 
     it('should return correct response for compat module', async () => {
-        (readAssetsManifest as any).mockImplementationOnce(() => Promise.resolve({
-            js: ['vendor.js', 'main.js'],
-            css: ['vendor.css', 'main.css'],
-        }));
-        (getAppManifest as any).mockImplementationOnce(() => Promise.resolve({
-            __metadata__: {
-                name: 'module-app-name',
-            },
-        }));
+        (readAssetsManifest as any).mockImplementationOnce(() =>
+            Promise.resolve({
+                js: ['vendor.js', 'main.js'],
+                css: ['vendor.css', 'main.css'],
+            }),
+        );
+        (getAppManifest as any).mockImplementationOnce(() =>
+            Promise.resolve({
+                __metadata__: {
+                    name: 'module-app-name',
+                },
+            }),
+        );
         const getModuleState = jest.fn(() => Promise.resolve({ baseUrl: '' }));
         const { handler } = createGetModulesMethod({
             test: {
@@ -55,11 +60,13 @@ describe('createGetModulesMethod', () => {
     });
 
     it('should return correct response for default module', async () => {
-        (getAppManifest as any).mockImplementationOnce(() => Promise.resolve({
-            __metadata__: {
-                name: 'module-app-name',
-            },
-        }));
+        (getAppManifest as any).mockImplementationOnce(() =>
+            Promise.resolve({
+                __metadata__: {
+                    name: 'module-app-name',
+                },
+            }),
+        );
 
         const getModuleState = jest.fn(() => Promise.resolve({ baseUrl: '' }));
         const { handler } = createGetModulesMethod({

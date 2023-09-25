@@ -17,13 +17,14 @@ function getEntry<AdditionalArgs extends unknown[]>(
     if (Array.isArray(entryPoint)) {
         return getSingleEntry(entryPoint, ...args);
     }
+
     // client entry also can be an object, so we must add hot loader to each entry point
     return Object.keys(entryPoint).reduce((result, entryPointName) => {
         const entry = getEntry(entryPoint[entryPointName], getSingleEntry, ...args);
 
         return {
             ...result,
-            [entryPointName]: entry
+            [entryPointName]: entry,
         };
     }, {});
 }

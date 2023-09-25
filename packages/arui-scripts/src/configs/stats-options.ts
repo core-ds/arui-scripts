@@ -1,4 +1,5 @@
 import type { WebpackOptionsNormalized } from 'webpack';
+
 import applyOverrides from './util/apply-overrides';
 
 const statsOptions: WebpackOptionsNormalized['stats'] = applyOverrides('stats', {
@@ -41,7 +42,7 @@ const statsOptions: WebpackOptionsNormalized['stats'] = applyOverrides('stats', 
     // Add warnings
     warnings: true,
     // ignore warning from missing types
-    warningsFilter: /export .* was not found in/
+    warningsFilter: /export .* was not found in/,
 });
 
 export default statsOptions;

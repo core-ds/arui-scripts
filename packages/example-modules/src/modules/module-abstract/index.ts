@@ -3,9 +3,8 @@
  * функции, переменные, классы, интерфейсы, типы и т.д.
  */
 
-
 export function justSomeRandomFunctionThatWeWantToExport() {
-  return 'hello';
+    return 'hello';
 }
 
 export const someRandomVariableThatWeWantToExport = 'hello';

@@ -1,13 +1,13 @@
 import { PackageSettings } from 'arui-scripts';
 
 const aruiScriptsConfig: PackageSettings = {
-    presets: "./presets",
+    presets: './presets',
     serverPort: 3001,
     clientServerPort: 8082,
     devServerCors: true,
     clientPolyfillsEntry: null,
-    serverEntry: "./src/server/index",
-    clientEntry: "./src/client",
+    serverEntry: './src/server/index',
+    clientEntry: './src/client',
     componentsTheme: '../../node_modules/@alfalab/core-components/themes/corp.css',
     keepCssVars: false,
     debug: true,

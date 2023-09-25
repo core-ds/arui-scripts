@@ -1,10 +1,12 @@
-import tar from 'tar';
 import path from 'path';
+
 import fs from 'fs-extra';
+import tar from 'tar';
+
 import configs from '../../configs/app-configs';
-import exec from '../util/exec';
 import nginxConfTemplate from '../../templates/nginx.conf.template';
 import startScript from '../../templates/start.template';
+import exec from '../util/exec';
 import { getPruningCommand } from '../util/yarn';
 
 const tempDirName = '.archive-build';
@@ -52,16 +54,19 @@ const packageJsonPath = path.join(configs.cwd, packageJsonFileName);
             fs.copy(configs.buildPath, path.join(pathToTempDir, configs.buildPath)),
             fs.copy(nodeModulesPath, path.join(pathToTempDir, nodeModulesDirName)),
             fs.copy(packageJsonPath, path.join(pathToTempDir, packageJsonFileName)),
-            ...configs.additionalBuildPath.map(additionalPath => (
-                fs.copy(path.join(configs.cwd, additionalPath), path.join(pathToTempDir, additionalPath))
-            ))
+            ...configs.additionalBuildPath.map((additionalPath) =>
+                fs.copy(
+                    path.join(configs.cwd, additionalPath),
+                    path.join(pathToTempDir, additionalPath),
+                ),
+            ),
         ]);
         await tar.c(
             {
                 file: configs.archiveName,
-                cwd: pathToTempDir
+                cwd: pathToTempDir,
             },
-            fs.readdirSync(pathToTempDir)
+            fs.readdirSync(pathToTempDir),
         );
 
         console.timeEnd('Archive build time');

@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
-import { BaseModuleState, Loader } from '../types';
+
 import { FactoryModule } from '../module-types';
-import { LoadingState } from './types';
+import { BaseModuleState, Loader } from '../types';
 import { unwrapDefaultExport } from '../utils/unwrap-default-export';
+
+import { LoadingState } from './types';
 
 export type UseModuleFactoryParams<
     LoaderParams,
@@ -26,7 +28,7 @@ export type UseModuleFactoryParams<
      * Функция, который позволяет дополнить/изменить серверный стейт модуля перед вызовом фабрики
      */
     getFactoryParams?: (params: ServerState) => ServerState;
-}
+};
 
 export type UseModuleFactoryResult<ModuleExportType> = {
     /**
@@ -37,7 +39,7 @@ export type UseModuleFactoryResult<ModuleExportType> = {
      * Экспорт модуля
      */
     module: ModuleExportType | undefined;
-}
+};
 
 export function useModuleFactory<
     LoaderParams,
@@ -49,7 +51,12 @@ export function useModuleFactory<
     loaderParams,
     runParams,
     getFactoryParams,
-}: UseModuleFactoryParams<LoaderParams, ServerState, ModuleExportType, RunParams>): UseModuleFactoryResult<ModuleExportType> {
+}: UseModuleFactoryParams<
+    LoaderParams,
+    ServerState,
+    ModuleExportType,
+    RunParams
+>): UseModuleFactoryResult<ModuleExportType> {
     const [loadingState, setLoadingState] = useState<LoadingState>('unknown');
     const [module, setModule] = useState<ModuleExportType | undefined>();
 
@@ -65,9 +72,11 @@ export function useModuleFactory<
 
                 unmountFn = result.unmount;
 
-                const serverState = (getFactoryParams
-                    ? await getFactoryParams(result.moduleResources.moduleState as ServerState)
-                    : result.moduleResources.moduleState) as ServerState;
+                const serverState = (
+                    getFactoryParams
+                        ? await getFactoryParams(result.moduleResources.moduleState as ServerState)
+                        : result.moduleResources.moduleState
+                ) as ServerState;
 
                 let moduleResult: ModuleExportType;
 
@@ -80,17 +89,23 @@ export function useModuleFactory<
 
                 if (typeof unwrappedModule === 'function') {
                     moduleResult = await unwrappedModule(runParams as RunParams, serverState);
-                } else if (unwrappedModule.factory && typeof unwrappedModule.factory === 'function') {
-                    moduleResult = await unwrappedModule.factory(runParams as RunParams, serverState);
+                } else if (
+                    unwrappedModule.factory &&
+                    typeof unwrappedModule.factory === 'function'
+                ) {
+                    moduleResult = await unwrappedModule.factory(
+                        runParams as RunParams,
+                        serverState,
+                    );
                 } else {
                     throw new Error(
                         `Module ${serverState.hostAppId} does not present a factory function,
-                        try usign another hook, e.g. 'useModuleLoader' or 'useModuleMounter'`
-                    )
+                        try usign another hook, e.g. 'useModuleLoader' or 'useModuleMounter'`,
+                    );
                 }
 
                 // используем callback в setState, т.к. фабрика может вернуть модуль в виде функции
-                setModule(() => moduleResult)
+                setModule(() => moduleResult);
 
                 setLoadingState('fulfilled');
             } catch (error) {
@@ -104,7 +119,7 @@ export function useModuleFactory<
 
         return function moduleCleanUp() {
             unmountFn?.();
-        }
+        };
     }, [loader]);
 
     return {

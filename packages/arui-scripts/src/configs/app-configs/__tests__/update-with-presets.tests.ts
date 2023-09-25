@@ -1,15 +1,18 @@
+// TODO: remove eslint-disable-next-line
+import { tryResolve } from '../../util/resolve';
 import { AppConfigs, AppContext } from '../types';
 import { updateWithPresets } from '../update-with-presets';
-import { tryResolve } from '../../util/resolve';
 
 jest.mock('../../util/resolve');
-const mockedTryResolve = (tryResolve as unknown) as jest.Mock<typeof tryResolve>;
+const mockedTryResolve = tryResolve as unknown as jest.Mock<typeof tryResolve>;
 
 describe('update-with-presets', () => {
     it('should return config as is if "appPackage.aruiScripts.presets" field is not set', () => {
         const baseConfig = { dockerRegistry: 'docker.my-company.com' } as AppConfigs;
 
-        const updatedConfig = updateWithPresets(baseConfig, { appPackage: { aruiScripts: {} } } as AppContext);
+        const updatedConfig = updateWithPresets(baseConfig, {
+            appPackage: { aruiScripts: {} },
+        } as AppContext);
 
         expect(updatedConfig).toBe(baseConfig);
     });
@@ -19,6 +22,7 @@ describe('update-with-presets', () => {
             if (path.includes('/arui-scripts.config')) {
                 return undefined;
             }
+
             return path as any;
         });
         const baseConfig = {
@@ -30,22 +34,28 @@ describe('update-with-presets', () => {
             overridesPath: ['package-overrides-path.js'],
         } as AppContext;
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const updatedConfig = updateWithPresets(baseConfig, context);
 
-        expect(context.overridesPath)
-            .toEqual(['presets/arui-scripts.overrides', 'package-overrides-path.js']);
+        expect(context.overridesPath).toEqual([
+            'presets/arui-scripts.overrides',
+            'package-overrides-path.js',
+        ]);
     });
 
     it('should merge config with config from presets', () => {
-        jest.doMock('virtual-presets', () => {
-            return {
+        jest.doMock(
+            'virtual-presets',
+            () => ({
                 dockerRegistry: 'docker.from-presets.com',
-            };
-        }, { virtual: true });
+            }),
+            { virtual: true },
+        );
         mockedTryResolve.mockImplementation((path: string) => {
             if (path.includes('/arui-scripts.config')) {
                 return 'virtual-presets' as any;
             }
+
             return undefined;
         });
         const baseConfig = {

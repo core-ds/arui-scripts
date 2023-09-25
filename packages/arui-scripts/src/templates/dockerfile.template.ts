@@ -1,8 +1,8 @@
 import configs from '../configs/app-configs';
 import applyOverrides from '../configs/util/apply-overrides';
 
-const nginxNonRootPart = configs.runFromNonRootUser ?
-    `RUN chown -R nginx:nginx /src && \\
+const nginxNonRootPart = configs.runFromNonRootUser
+    ? `RUN chown -R nginx:nginx /src && \\
        mkdir -p /var/lib/nginx && \\
        chown -R nginx:nginx /var/lib/nginx && \\
        chown -R nginx:nginx /var/log/nginx && \\

@@ -1,57 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`client should create valid css 1`] = `
-".app-module-root-v3y8h{
-    padding:10px;
-} @media (min-width:600px) and (max-width:1023px){
-    .app-module-root-v3y8h{
-        padding:24px;
-    }
-} @media (min-width:1024px){
-    .app-module-root-v3y8h{
-        padding:32px;
-    }
-} @media (max-width:599px){
-    .app-module-root-v3y8h{
-        padding:8px;
-    }
-} .app-module-title-NCKQE{
-    color:#202022;
-    border-radius:99px;
-}
-
-body{
-    background:aliceblue;
-}
-.btn{
-    border-radius:5px;
-    border:0;
-    margin:10px;
-    font-size:20px;
-    padding:15px;
-    color:#ff0000;
-    background:-webkit-linear-gradient(105deg, #aacac2, #3929bb);
-    background:linear-gradient(345deg, #aacac2, #3929bb);
-    background-size:400% 400%;
-    -webkit-animation:Insanity 2s ease infinite;
-            animation:Insanity 2s ease infinite;
-}
-@-webkit-keyframes Insanity{
-    0%{background-position:0 50%}
-    50%{background-position:100% 50%}
-    100%{background-position:0 50%}
-}
-@keyframes Insanity{
-    0%{background-position:0 50%}
-    50%{background-position:100% 50%}
-    100%{background-position:0 50%}
-}
-.icon{
-    padding-left:5px;
-    vertical-align:middle;
-}
-
-.postcss-features{
+".postcss-features{
     margin-block:24px;
 }
 
@@ -85,6 +35,68 @@ body{
     box-shadow:0 0 4px rgba(0, 0, 0, 0.02), 0 -2px 4px rgba(0, 0, 0, 0.04), 0 -2px 4px rgba(0, 0, 0, 0.16);
     color:rgb(236, 142, 133);
     background-color:#cd1501;
+}
+
+body{
+    background:aliceblue;
+}
+.btn{
+    border-radius:5px;
+    border:0;
+    margin:10px;
+    font-size:20px;
+    padding:15px;
+    color:#f00;
+    background:-webkit-linear-gradient(105deg, #aacac2, #3929bb);
+    background:linear-gradient(345deg, #aacac2, #3929bb);
+    background-size:400% 400%;
+    -webkit-animation:Insanity 2s ease infinite;
+            animation:Insanity 2s ease infinite;
+}
+@-webkit-keyframes Insanity{
+    0%{
+        background-position:0 50%;
+    }
+    50%{
+        background-position:100% 50%;
+    }
+    100%{
+        background-position:0 50%;
+    }
+}
+@keyframes Insanity{
+    0%{
+        background-position:0 50%;
+    }
+    50%{
+        background-position:100% 50%;
+    }
+    100%{
+        background-position:0 50%;
+    }
+}
+.icon{
+    padding-left:5px;
+    vertical-align:middle;
+}
+
+.app-module-root-v3y8h{
+    padding:10px;
+} @media (min-width: 600px) and (max-width: 1023px){
+    .app-module-root-v3y8h{
+        padding:24px;
+    }
+} @media (min-width: 1024px){
+    .app-module-root-v3y8h{
+        padding:32px;
+    }
+} @media (max-width: 599px){
+    .app-module-root-v3y8h{
+        padding:8px;
+    }
+} .app-module-title-NCKQE{
+    color:#202022;
+    border-radius:99px;
 }
 
 "

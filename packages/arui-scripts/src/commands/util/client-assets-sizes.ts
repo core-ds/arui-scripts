@@ -1,17 +1,21 @@
+// TODO: remove eslint-disable-next-line
 import fs from 'fs';
 import path from 'path';
-import { sync as gzipSize } from 'gzip-size';
-import filesize from 'filesize';
-import stripAnsi from 'strip-ansi';
+
 import chalk from 'chalk';
+import filesize from 'filesize';
+import { sync as gzipSize } from 'gzip-size';
+import stripAnsi from 'strip-ansi';
 import { Stats } from 'webpack';
 
 let brotliSize: (content: Buffer) => number = () => NaN;
+
 try {
+    // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
     brotliSize = require('brotli-size').sync;
 } catch (error) {
+    // empty error
 }
-
 
 function canReadAsset(asset: string) {
     return (
@@ -24,10 +28,7 @@ function canReadAsset(asset: string) {
 function removeFileNameHash(fileName: string) {
     return fileName
         .replace(/\\/g, '/')
-        .replace(
-            /\/?(.*)(\.[0-9a-f]+)(\.chunk)?(\.js|\.css)/,
-            (match, p1, p2, p3, p4) => p1 + p4
-        );
+        .replace(/\/?(.*)(\.[0-9a-f]+)(\.chunk)?(\.js|\.css)/, (match, p1, p2, p3, p4) => p1 + p4);
 }
 
 type AssetSize = {
@@ -55,10 +56,8 @@ type ClientAssetsSizes = {
     assets: AssetSize[];
 };
 
-export function calculateAssetsSizes(webpackStats: Stats, rootDir: string = ''): ClientAssetsSizes {
-    const assetsStats = (webpackStats
-        .toJson({ all: false, assets: true })
-        .assets || []);
+export function calculateAssetsSizes(webpackStats: Stats, rootDir = ''): ClientAssetsSizes {
+    const assetsStats = webpackStats.toJson({ all: false, assets: true }).assets || [];
 
     const assets = assetsStats
         .filter((asset) => canReadAsset(asset.name))
@@ -76,18 +75,17 @@ export function calculateAssetsSizes(webpackStats: Stats, rootDir: string = ''):
                 size: asset.size,
                 sizeLabel: filesize(asset.size),
                 gzipLabel: filesize(size),
-                brotliLabel: brSize ? filesize(brSize) : '-'
+                brotliLabel: brSize ? filesize(brSize) : '-',
             };
-        })
-;
-
-    const totalSizes: Partial<TotalSizes> = (assets || []).reduce((file, total) => {
-        return {
+        });
+    const totalSizes: Partial<TotalSizes> = (assets || []).reduce(
+        (file, total) => ({
             size: total.size + file.size,
             gzipSize: total.gzipSize + file.gzipSize,
-            brotliSize: total.brotliSize + file.brotliSize
-        };
-    }, { size: 0, gzipSize: 0, brotliSize: 0 });
+            brotliSize: total.brotliSize + file.brotliSize,
+        }),
+        { size: 0, gzipSize: 0, brotliSize: 0 },
+    );
 
     totalSizes.sizeLabel = filesize(totalSizes.size || 0);
     totalSizes.gzipLabel = filesize(totalSizes.gzipSize || 0);
@@ -95,42 +93,38 @@ export function calculateAssetsSizes(webpackStats: Stats, rootDir: string = ''):
 
     return {
         totalSizes: totalSizes as TotalSizes,
-        assets
+        assets,
     };
 }
 
 export function printAssetsSizes(sizes: ClientAssetsSizes) {
     const longestSizeLabelLength = Math.max.apply(
         null,
-        sizes.assets.map(a => {
+        sizes.assets.map((a) => {
             const sizeLength = stripAnsi(a.gzipLabel).length;
 
-            return sizeLength + sizeLength + 8
-        })
+            return sizeLength + sizeLength + 8;
+        }),
     );
 
     console.log(chalk.blueBright('Assets sizes:'));
 
-    sizes.assets.forEach(asset => {
+    sizes.assets.forEach((asset) => {
         let sizeLabel = `${asset.sizeLabel} (${asset.gzipLabel} gzip, ${asset.brotliLabel} br)`;
         const sizeLength = stripAnsi(sizeLabel).length;
 
         if (sizeLength < longestSizeLabelLength) {
             const rightPadding = ' '.repeat(longestSizeLabelLength - sizeLength);
+
             sizeLabel += rightPadding;
         }
 
-        console.log(
-            '  ' +
-            sizeLabel +
-            '  ' +
-            chalk.cyan(asset.name)
-        );
+        console.log(`  ${sizeLabel}  ${chalk.cyan(asset.name)}`);
     });
 
     console.log(
-        chalk.blueBright('\nTotal size:\n') +
-        `  ${sizes.totalSizes.sizeLabel} (${sizes.totalSizes.gzipLabel} gzip, ${sizes.totalSizes.brotliLabel} br)\n`
+        `${chalk.blueBright('\nTotal size:\n')}  ${sizes.totalSizes.sizeLabel} (${
+            sizes.totalSizes.gzipLabel
+        } gzip, ${sizes.totalSizes.brotliLabel} br)\n`,
     );
 }
-

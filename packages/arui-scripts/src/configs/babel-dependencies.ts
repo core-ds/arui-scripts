@@ -15,7 +15,7 @@ export const babelDependencies = applyOverrides('babelDependencies', {
                 // Exclude transforms that make all code slower
                 exclude: ['transform-typeof-symbol'],
             },
-        ]
+        ],
     ],
     plugins: [
         [
@@ -29,6 +29,6 @@ export const babelDependencies = applyOverrides('babelDependencies', {
                 version: configs.babelRuntimeVersion,
                 regenerator: true,
             },
-        ]
-    ]
+        ],
+    ],
 });

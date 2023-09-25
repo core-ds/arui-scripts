@@ -1,5 +1,8 @@
+// TODO: remove eslint-disable-next-line
 import type { GetResourcesRequest, ModuleResources } from '@alfalab/scripts-modules';
-import { readAssetsManifest, getAppManifest } from '../read-assets-manifest';
+
+import { getAppManifest, readAssetsManifest } from '../read-assets-manifest';
+
 import { ModulesConfig } from './types';
 
 export function createGetModulesMethod<FrameworkParams extends unknown[] = []>(
@@ -10,7 +13,10 @@ export function createGetModulesMethod<FrameworkParams extends unknown[] = []>(
     return {
         method: 'POST',
         path: '/api/getModuleResources',
-        handler: async (getResourcesRequest: GetResourcesRequest, ...params: FrameworkParams): Promise<ModuleResources> => {
+        handler: async (
+            getResourcesRequest: GetResourcesRequest,
+            ...params: FrameworkParams
+        ): Promise<ModuleResources> => {
             const appManifest = await getAppManifest();
             const moduleName = getResourcesRequest.moduleId;
 
@@ -29,15 +35,12 @@ export function createGetModulesMethod<FrameworkParams extends unknown[] = []>(
                 assets[moduleName] = {
                     js: ['assets/remoteEntry.js'],
                     css: [],
-                }
+                };
             }
 
             const moduleAssets = assets[moduleName];
 
-            const moduleRunParams = await module.getModuleState(
-                getResourcesRequest,
-                ...params,
-            );
+            const moduleRunParams = await module.getModuleState(getResourcesRequest, ...params);
 
             return {
                 mountMode: module.mountMode,
@@ -48,8 +51,9 @@ export function createGetModulesMethod<FrameworkParams extends unknown[] = []>(
                     ...moduleRunParams,
                     hostAppId: getResourcesRequest.hostAppId,
                 },
+                // eslint-disable-next-line no-underscore-dangle
                 appName: appManifest.__metadata__.name,
             };
-        }
-    }
+        },
+    };
 }

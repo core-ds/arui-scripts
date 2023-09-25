@@ -14,10 +14,12 @@ build(config as any)
             console.log(chalk.yellow('Server compiled with warnings.\n'));
             console.log(warnings.join('\n\n'));
             console.log(
-                `Search for the ${chalk.underline(chalk.yellow('keywords'))} to learn more about each warning.`
+                `Search for the ${chalk.underline(
+                    chalk.yellow('keywords'),
+                )} to learn more about each warning.`,
             );
             console.log(
-                `To ignore, add ${chalk.cyan('// eslint-disable-next-line')} to the line before.`
+                `To ignore, add ${chalk.cyan('// eslint-disable-next-line')} to the line before.`,
             );
         } else {
             console.log(chalk.green('Server compiled successfully.\n'));

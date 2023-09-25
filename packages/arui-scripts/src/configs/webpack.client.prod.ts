@@ -5,7 +5,7 @@ import { createClientWebpackConfig, createSingleClientWebpackConfig } from './we
 const config = applyOverrides(
     ['webpack', 'webpackClient', 'webpackProd', 'webpackClientProd'],
     createClientWebpackConfig('prod'),
-    { 
+    {
         createSingleClientWebpackConfig: createSingleClientWebpackConfig.bind(null, 'prod'),
         findLoader,
     },

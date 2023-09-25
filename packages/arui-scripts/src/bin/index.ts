@@ -1,6 +1,10 @@
 #! /usr/bin/env node
+// TODO: remove eslint-disable and eslint-disable-next-line
+/* eslint-disable global-require */
 /* eslint import/no-dynamic-require: 0 */
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 const commands: Record<string, () => void> = {
     start: () => require('../commands/start'),
     'start:prod': () => require('../commands/start-prod'),
@@ -14,10 +18,16 @@ const commands: Record<string, () => void> = {
     changelog: () => require('../commands/changelog'),
 };
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 const command = process.argv[2] as string;
 
 if (!command || !commands[command]) {
-    console.error(`Please specify one of available commands: ${Object.keys(commands).map(c => `"${c}"`).join(' ')}`);
+    console.error(
+        `Please specify one of available commands: ${Object.keys(commands)
+            .map((c) => `"${c}"`)
+            .join(' ')}`,
+    );
 
     process.exit(-1);
 }

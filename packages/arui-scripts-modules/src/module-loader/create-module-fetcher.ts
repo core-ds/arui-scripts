@@ -1,7 +1,9 @@
-import { AruiAppManifest, BaseModuleState, ModuleResources, MountMode } from './types';
+// TODO: remove eslint-disable
+/* eslint-disable no-underscore-dangle */
 import { fetchAppManifest } from './utils/fetch-app-manifest';
+import { urlSegmentWithoutEndSlash } from './utils/normalize-url-segment';
 import { ModuleResourcesGetter } from './create-module-loader';
-import {urlSegmentWithoutEndSlash} from "./utils/normalize-url-segment";
+import { AruiAppManifest, BaseModuleState, ModuleResources } from './types';
 
 type CreateClientResourcesFetcherParams = {
     baseUrl: string;
@@ -35,10 +37,12 @@ export function createModuleFetcher({
         };
     }
 
-
-    return async function getClientModuleResources({ moduleId, hostAppId }): Promise<ModuleResources> {
+    return async function getClientModuleResources({
+        moduleId,
+        hostAppId,
+    }): Promise<ModuleResources> {
         const manifest = await fetchAppManifest(manifestUrl);
-        const { mode, ...moduleFiles} = getModuleFiles(manifest, moduleId);
+        const { mode, ...moduleFiles } = getModuleFiles(manifest, moduleId);
 
         return {
             ...moduleFiles,
@@ -47,8 +51,8 @@ export function createModuleFetcher({
             mountMode: mode,
             moduleState: {
                 baseUrl,
-                hostAppId
+                hostAppId,
             },
-        }
-    }
+        };
+    };
 }

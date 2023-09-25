@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import { Tabs, Tab } from '@alfalab/core-components/tabs';
-import { CompatModuleMounter } from '#/module-mounters/compat-module-mounter';
+
+import { Tab, Tabs } from '@alfalab/core-components/tabs';
 import { Typography } from '@alfalab/core-components/typography';
+
+import { AbstractModule } from '#/module-mounters/abstract-module';
+import { CompatModuleMounter } from '#/module-mounters/compat-module-mounter';
+import { FactoryCompatModuleMaunter } from '#/module-mounters/factory-compat-module-mounter';
 import { ModuleMounter } from '#/module-mounters/module-mounter';
 import { ServerStateCompatModuleMounter } from '#/module-mounters/server-state-compat-module-mounter';
-import { ServerStateModuleMounter } from '#/module-mounters/server-state-module-mounter';
-import {AbstractModule} from "#/module-mounters/abstract-module";
 import { ServerStateFactoryModuleMounter } from '#/module-mounters/server-state-factory-module-mounter';
-import { FactoryCompatModuleMaunter } from '#/module-mounters/factory-compat-module-mounter';
+import { ServerStateModuleMounter } from '#/module-mounters/server-state-module-mounter';
 
 const tabs = {
     '1': {
@@ -17,17 +19,20 @@ const tabs = {
     },
     '2': {
         title: 'Compat module',
-        description: 'Модуль, сделанный через compat режим, умеет изолировать стили и работать в любом проекте',
+        description:
+            'Модуль, сделанный через compat режим, умеет изолировать стили и работать в любом проекте',
         component: CompatModuleMounter,
     },
     '3': {
         title: 'Server state module',
-        description: 'Модуль, имеющий серверную часть, которая может отдавать предподготовленные данные на клиент при загрузке',
+        description:
+            'Модуль, имеющий серверную часть, которая может отдавать предподготовленные данные на клиент при загрузке',
         component: ServerStateModuleMounter,
     },
     '4': {
         title: 'Server state compat module',
-        description: 'Модуль, имеющий серверную часть, которая может отдавать предподготовленные данные на клиент при загрузке, сделанный через compat режим',
+        description:
+            'Модуль, имеющий серверную часть, которая может отдавать предподготовленные данные на клиент при загрузке, сделанный через compat режим',
         component: ServerStateCompatModuleMounter,
     },
     '5': {
@@ -42,9 +47,10 @@ const tabs = {
     },
     '7': {
         title: 'Factory Compat module',
-        description: 'Модуль-фабрика, сделанный через compat режим, который просто предоставляет какие то функции и данные',
+        description:
+            'Модуль-фабрика, сделанный через compat режим, который просто предоставляет какие то функции и данные',
         component: FactoryCompatModuleMaunter,
-    }
+    },
 } as const;
 
 type TabId = keyof typeof tabs;
@@ -55,21 +61,20 @@ export const ModulesTabs = () => {
     return (
         <div>
             <Tabs
-
                 selectedId={activeTab}
-                onChange={(_, { selectedId }) => { setActiveTab(selectedId as TabId) }}
+                onChange={(_, { selectedId }) => {
+                    setActiveTab(selectedId as TabId);
+                }}
             >
-            { Object.keys(tabs).map((tabKey) => (
-                <Tab id={tabKey} title={tabs[tabKey as TabId].title} key={tabKey} />
-            )) }
+                {Object.keys(tabs).map((tabKey) => (
+                    <Tab id={tabKey} title={tabs[tabKey as TabId].title} key={tabKey} />
+                ))}
             </Tabs>
 
             <div>
-                <Typography.Text>
-                    { tabs[activeTab].description }
-                </Typography.Text>
-                { React.createElement(tabs[activeTab].component)}
+                <Typography.Text>{tabs[activeTab].description}</Typography.Text>
+                {React.createElement(tabs[activeTab].component)}
             </div>
         </div>
-    )
-}
+    );
+};

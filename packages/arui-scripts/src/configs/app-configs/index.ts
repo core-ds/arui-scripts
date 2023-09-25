@@ -1,12 +1,12 @@
-import '../util/register-ts-node';
-
-import { AppConfigs, AppContext, AppContextWithConfigs } from './types';
+import { calculateDependentConfig, calculateDependentContext } from './calculate-dependent-config';
 import { getDefaultAppConfig, getDefaultAppContext } from './get-defaults';
+import { AppConfigs, AppContext, AppContextWithConfigs } from './types';
+import { updateWithConfigFile } from './update-with-config-file';
 import { updateWithEnv } from './update-with-env';
 import { updateWithPackage } from './update-with-package';
 import { updateWithPresets } from './update-with-presets';
-import { calculateDependentConfig, calculateDependentContext } from './calculate-dependent-config';
-import { updateWithConfigFile } from './update-with-config-file';
+
+import '../util/register-ts-node';
 
 let tmpConfig: AppConfigs = getDefaultAppConfig();
 let tmpContext: AppContext = getDefaultAppContext();

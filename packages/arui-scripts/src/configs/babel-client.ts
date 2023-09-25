@@ -1,6 +1,6 @@
-import browsers from './supporting-browsers';
-import configs from './app-configs';
 import applyOverrides from './util/apply-overrides';
+import configs from './app-configs';
+import browsers from './supporting-browsers';
 
 const babelClientConfig = applyOverrides(['babel', 'babelClient'], {
     presets: [
@@ -15,10 +15,12 @@ const babelClientConfig = applyOverrides(['babel', 'babelClient'], {
                 corejs: 3,
                 // Exclude transforms that make all code slower
                 exclude: ['transform-typeof-symbol'],
-            }
+            },
         ],
-        (configs.tsconfig !== null && !configs.useTscLoader) && require.resolve('@babel/preset-typescript'),
-        require.resolve('@babel/preset-react')
+        configs.tsconfig !== null &&
+            !configs.useTscLoader &&
+            require.resolve('@babel/preset-typescript'),
+        require.resolve('@babel/preset-react'),
     ].filter(Boolean),
     plugins: [
         require.resolve('@babel/plugin-syntax-dynamic-import'),
@@ -31,32 +33,36 @@ const babelClientConfig = applyOverrides(['babel', 'babelClient'], {
         require.resolve('@babel/plugin-proposal-export-default-from'),
         require.resolve('@babel/plugin-proposal-export-namespace-from'),
         [require.resolve('@babel/plugin-proposal-object-rest-spread'), { useBuiltIns: true }],
-        [require.resolve('@babel/plugin-transform-runtime'), {
-            corejs: false,
-            helpers: true,
-            // By default, babel assumes babel/runtime version 7.0.0-beta.0,
-            // explicitly resolving to match the provided helper functions.
-            // https://github.com/babel/babel/issues/10261
-            version: configs.babelRuntimeVersion,
-            regenerator: true,
-        }],
+        [
+            require.resolve('@babel/plugin-transform-runtime'),
+            {
+                corejs: false,
+                helpers: true,
+                // By default, babel assumes babel/runtime version 7.0.0-beta.0,
+                // explicitly resolving to match the provided helper functions.
+                // https://github.com/babel/babel/issues/10261
+                version: configs.babelRuntimeVersion,
+                regenerator: true,
+            },
+        ],
         require.resolve('@babel/plugin-proposal-nullish-coalescing-operator'),
-        require.resolve('@babel/plugin-proposal-optional-chaining')
+        require.resolve('@babel/plugin-proposal-optional-chaining'),
     ],
     env: {
         production: {
             plugins: [
                 require.resolve('@babel/plugin-transform-react-constant-elements'),
                 require.resolve('@babel/plugin-transform-react-inline-elements'),
-                [require.resolve('babel-plugin-transform-react-remove-prop-types'), { removeImport: true }]
-            ]
+                [
+                    require.resolve('babel-plugin-transform-react-remove-prop-types'),
+                    { removeImport: true },
+                ],
+            ],
         },
         test: {
-            plugins: [
-                require.resolve('@babel/plugin-transform-modules-commonjs')
-            ]
-        }
-    }
+            plugins: [require.resolve('@babel/plugin-transform-modules-commonjs')],
+        },
+    },
 });
 
 export default babelClientConfig;

@@ -8,8 +8,8 @@ describe('update-with-package', () => {
             compatModules: {
                 shared: {
                     react: 'react',
-                }
-            }
+                },
+            },
         } as unknown as AppConfigs;
         const context = {
             appPackage: {
@@ -19,8 +19,8 @@ describe('update-with-package', () => {
                         exposes: {
                             example: {
                                 entry: 'foo.js',
-                            }
-                        }
+                            },
+                        },
                     },
                 },
             },
@@ -36,8 +36,8 @@ describe('update-with-package', () => {
             exposes: {
                 example: {
                     entry: 'foo.js',
-                }
-            }
+                },
+            },
         });
     });
 });

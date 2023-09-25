@@ -8,12 +8,14 @@ import { BaseModuleState } from './types';
  */
 export type WindowWithModule<ModuleType = unknown> = typeof window & {
     [key: string]: ModuleType;
-}
+};
 
 // --- Монтируемые модули ---
 
-export type ModuleMountFunction<RunParams = void, ServerState extends BaseModuleState = BaseModuleState> =
-    (targetNode: HTMLElement, runParams: RunParams, serverState: ServerState) => void;
+export type ModuleMountFunction<
+    RunParams = void,
+    ServerState extends BaseModuleState = BaseModuleState,
+> = (targetNode: HTMLElement, runParams: RunParams, serverState: ServerState) => void;
 
 export type ModuleUnmountFunction = (targetNode: HTMLElement) => void;
 
@@ -22,7 +24,10 @@ export type ModuleUnmountFunction = (targetNode: HTMLElement) => void;
  * @template RunParams параметры, которые передаются в модуль с клиента
  * @template ServerState состояние модуля, которое пришло с сервера
  */
-export type MountableModule<RunParams = void, ServerState extends BaseModuleState = BaseModuleState> = {
+export type MountableModule<
+    RunParams = void,
+    ServerState extends BaseModuleState = BaseModuleState,
+> = {
     /**
      * Метод, с помощью которого модуль может прикрепиться к DOM
      * @param targetNode DOM-нода, к которой нужно прикрепить модуль
@@ -58,7 +63,11 @@ export type FactoryModuleFunction<
     (runParams: RunParams, serverState: ServerState): ReturnType;
 };
 
-export type FactoryModule<ReturnType = any, RunParams = void, ServerState extends BaseModuleState = BaseModuleState> =
+export type FactoryModule<
+    ReturnType = any,
+    RunParams = void,
+    ServerState extends BaseModuleState = BaseModuleState,
+> =
     | FactoryModuleFunction<ReturnType, RunParams, ServerState>
     | { factory: FactoryModuleFunction<ReturnType, RunParams, ServerState> };
 

@@ -1,10 +1,12 @@
 import path from 'path';
+
 import { Assets } from 'assets-webpack-plugin';
+
 import configs from './app-configs';
 import { MODULES_ENTRY_NAME } from './modules';
 
 export function processAssetsPluginOutput(assets: Assets) {
-    let adjustedAssets = assets;
+    const adjustedAssets = assets;
 
     Object.keys(adjustedAssets).forEach((key) => {
         // заменяем путь к файлам на корректный в случае если в нем есть 'auto/'
@@ -17,7 +19,9 @@ export function processAssetsPluginOutput(assets: Assets) {
     // добавляем в манифест js-файлы для модулей
     Object.keys(configs.modules?.exposes || {}).forEach((moduleName) => {
         if (configs.compatModules?.exposes?.[moduleName]) {
-            throw new Error(`Модуль ${moduleName} определен как module и как compat. Поменяйте название одного из модулей или удалите его`);
+            throw new Error(
+                `Модуль ${moduleName} определен как module и как compat. Поменяйте название одного из модулей или удалите его`,
+            );
         }
         adjustedAssets[moduleName] = {
             mode: 'default',
@@ -43,5 +47,6 @@ function replaceAutoPath(assets: string | string[] | undefined) {
     if (Array.isArray(assets)) {
         return assets.map((asset) => asset.replace(/^auto\//, configs.publicPath));
     }
+
     return assets.replace(/^auto\//, configs.publicPath);
 }

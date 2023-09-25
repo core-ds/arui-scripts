@@ -1,12 +1,28 @@
-import { BaseModuleState, GetResourcesRequest, Loader, LoaderParams, ModuleResources } from './types';
-import { removeModuleResources, scriptsFetcher, stylesFetcher } from './utils/dom-utils';
-import { ConsumersCounter } from './utils/consumers-counter';
-import { getCompatModule, getModule } from './utils/get-module';
+// TODO: remove eslint-disable-next-line
 import { cleanGlobal } from './utils/clean-global';
+import { ConsumersCounter } from './utils/consumers-counter';
+import { removeModuleResources, scriptsFetcher, stylesFetcher } from './utils/dom-utils';
+import { getCompatModule, getModule } from './utils/get-module';
+import {
+    BaseModuleState,
+    GetResourcesRequest,
+    Loader,
+    LoaderParams,
+    ModuleResources,
+} from './types';
 
-export type ModuleResourcesGetter<GetResourcesParams, ModuleState extends BaseModuleState> = (params: GetResourcesRequest<GetResourcesParams>) => Promise<ModuleResources<ModuleState>>;
-export type ModuleLoaderHook = (moduleId: string, resources: ModuleResources) => Promise<void> | void;
-export type ModuleLoaderHookWithModule<ModuleExportType> = (moduleId: string, resources: ModuleResources, module: ModuleExportType) => Promise<void> | void;
+export type ModuleResourcesGetter<GetResourcesParams, ModuleState extends BaseModuleState> = (
+    params: GetResourcesRequest<GetResourcesParams>,
+) => Promise<ModuleResources<ModuleState>>;
+export type ModuleLoaderHook = (
+    moduleId: string,
+    resources: ModuleResources,
+) => Promise<void> | void;
+export type ModuleLoaderHookWithModule<ModuleExportType> = (
+    moduleId: string,
+    resources: ModuleResources,
+    module: ModuleExportType,
+) => Promise<void> | void;
 
 export type CreateModuleLoaderParams<
     // Тип экспорта модуля
@@ -32,11 +48,15 @@ export type CreateModuleLoaderParams<
     onAfterModuleMount?: ModuleLoaderHookWithModule<ModuleExportType>;
     /** хук, вызываемый перед удалением ресурсов модуля со страницы */
     onBeforeModuleUnmount?: ModuleLoaderHookWithModule<ModuleExportType>;
-    /** хук, вызываем после удаления ресурсов модуля со страницы*/
+    /** хук, вызываем после удаления ресурсов модуля со страницы */
     onAfterModuleUnmount?: ModuleLoaderHookWithModule<ModuleExportType>;
 };
 
-export function createModuleLoader<ModuleExportType, GetResourcesParams = undefined, ModuleState extends BaseModuleState = BaseModuleState>({
+export function createModuleLoader<
+    ModuleExportType,
+    GetResourcesParams = undefined,
+    ModuleState extends BaseModuleState = BaseModuleState,
+>({
     moduleId,
     hostAppId,
     getModuleResources,
@@ -46,18 +66,22 @@ export function createModuleLoader<ModuleExportType, GetResourcesParams = undefi
     onAfterModuleMount,
     onBeforeModuleUnmount,
     onAfterModuleUnmount,
-}: CreateModuleLoaderParams<ModuleExportType, GetResourcesParams, ModuleState>): Loader<GetResourcesParams, ModuleExportType> {
+}: CreateModuleLoaderParams<ModuleExportType, GetResourcesParams, ModuleState>): Loader<
+    GetResourcesParams,
+    ModuleExportType
+> {
     validateUsedWebpackVersion();
 
     const moduleConsumersCounter = new ConsumersCounter(moduleId);
 
     return async (params) => {
+        // eslint-disable-next-line no-param-reassign
         resourcesTargetNode = resourcesTargetNode || document.head; // определяем дефолт тут, а не в сигнатуре функции, чтобы не было проблем с при импорте модуля в nodejs
         // Загружаем описание модуля
         const moduleResources = await getModuleResources({
             moduleId,
             hostAppId,
-            params: (params as LoaderParams<unknown>).getResourcesParams as any // для того чтобы пользователям не пришлось передавать этот параметр если он им не нужен, мы обвешиваемся type-cast'ом
+            params: (params as LoaderParams<unknown>).getResourcesParams as any, // для того чтобы пользователям не пришлось передавать этот параметр если он им не нужен, мы обвешиваемся type-cast'ом
         });
 
         await onBeforeResourcesMount?.(moduleId, moduleResources);
@@ -66,19 +90,19 @@ export function createModuleLoader<ModuleExportType, GetResourcesParams = undefi
         await Promise.all([
             moduleConsumersCounter.isAbsent()
                 ? scriptsFetcher({
-                    moduleId,
-                    urls: moduleResources.scripts,
-                    baseUrl: moduleResources.moduleState.baseUrl,
-                    targetNode: resourcesTargetNode,
-                })
+                      moduleId,
+                      urls: moduleResources.scripts,
+                      baseUrl: moduleResources.moduleState.baseUrl,
+                      targetNode: resourcesTargetNode,
+                  })
                 : Promise.resolve(),
             moduleConsumersCounter.isAbsent()
                 ? stylesFetcher({
-                    moduleId,
-                    urls: moduleResources.styles,
-                    baseUrl: moduleResources.moduleState.baseUrl,
-                    targetNode: resourcesTargetNode,
-                })
+                      moduleId,
+                      urls: moduleResources.styles,
+                      baseUrl: moduleResources.moduleState.baseUrl,
+                      targetNode: resourcesTargetNode,
+                  })
                 : Promise.resolve(),
         ]);
 
@@ -88,14 +112,13 @@ export function createModuleLoader<ModuleExportType, GetResourcesParams = undefi
         await onBeforeModuleMount?.(moduleId, moduleResources);
 
         // В зависимости от типа модуля, получаем его контент необходимым способом
-        const loadedModule = moduleResources.mountMode === 'default'
-            ? await getModule<ModuleExportType>(moduleResources.appName, moduleId)
-            : getCompatModule<ModuleExportType>(moduleId);
+        const loadedModule =
+            moduleResources.mountMode === 'default'
+                ? await getModule<ModuleExportType>(moduleResources.appName, moduleId)
+                : getCompatModule<ModuleExportType>(moduleId);
 
         if (!loadedModule) {
-            throw new Error(
-                `Module ${moduleId} is not available`,
-            );
+            throw new Error(`Module ${moduleId} is not available`);
         }
 
         await onAfterModuleMount?.(moduleId, moduleResources, loadedModule);
@@ -108,21 +131,30 @@ export function createModuleLoader<ModuleExportType, GetResourcesParams = undefi
 
                 if (moduleConsumersCounter.isAbsent()) {
                     // Если на странице больше нет потребителей модуля, то удаляем его ресурсы - скрипты, стили и глобальные переменные
-                    removeModuleResources({ moduleId: moduleId, targetNode: resourcesTargetNode || document.head });
+                    removeModuleResources({
+                        moduleId,
+                        targetNode: resourcesTargetNode || document.head,
+                    });
                     cleanGlobal(moduleId);
                 }
 
                 onAfterModuleUnmount?.(moduleId, moduleResources, loadedModule);
             },
             module: loadedModule,
-            moduleResources: moduleResources,
+            moduleResources,
         };
     };
 }
 
 function validateUsedWebpackVersion() {
-    if (typeof window !== 'undefined' && typeof (window as any).webpackJsonp !== 'undefined' && process.env.NODE_ENV !== 'production') {
-        console.warn('Если вы хотите использовать модули - вам надо обновиться до webpack 5/arui-scripts 12.' +
-            'в противном случае вы можете получить совершенно неожиданные ошибки');
+    if (
+        typeof window !== 'undefined' &&
+        typeof (window as any).webpackJsonp !== 'undefined' &&
+        process.env.NODE_ENV !== 'production'
+    ) {
+        console.warn(
+            'Если вы хотите использовать модули - вам надо обновиться до webpack 5/arui-scripts 12.' +
+                'в противном случае вы можете получить совершенно неожиданные ошибки',
+        );
     }
 }

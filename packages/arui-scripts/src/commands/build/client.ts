@@ -16,10 +16,12 @@ build(config)
             console.log(chalk.yellow('Client compiled with warnings.\n'));
             console.log(warnings.join('\n\n'));
             console.log(
-                `Search for the ${chalk.underline(chalk.yellow('keywords'))} to learn more about each warning.`
+                `Search for the ${chalk.underline(
+                    chalk.yellow('keywords'),
+                )} to learn more about each warning.`,
             );
             console.log(
-                `To ignore, add ${chalk.cyan('// eslint-disable-next-line')} to the line before.`
+                `To ignore, add ${chalk.cyan('// eslint-disable-next-line')} to the line before.`,
             );
         } else {
             console.log(chalk.green('Client compiled successfully.\n'));
@@ -30,9 +32,10 @@ build(config)
             printAssetsSizes(sizes);
         }
 
-
         if (Array.isArray(config)) {
-            config.forEach((conf, index) => printOutputSizes(conf, (stats as MultiStats).stats[index]));
+            config.forEach((conf, index) =>
+                printOutputSizes(conf, (stats as MultiStats).stats[index]),
+            );
         } else {
             printOutputSizes(config, stats as Stats);
         }

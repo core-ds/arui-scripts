@@ -1,12 +1,12 @@
-import { ModuleResourcesGetter } from './create-module-loader';
-import { AruiAppManifest, BaseModuleState } from './types';
 import { urlSegmentWithoutEndSlash } from './utils/normalize-url-segment';
+import { ModuleResourcesGetter } from './create-module-loader';
 import { getServerStateModuleFetcherParams } from './get-server-state-module-fetcher-params';
+import { BaseModuleState } from './types';
 
 type CreateServerResourcesFetcherParams = {
     baseUrl: string;
     headers?: Record<string, string>;
-}
+};
 
 /**
  * Функция, которая создает метод для получения ресурсов модуля с серверным состоянием
@@ -23,6 +23,7 @@ export function createServerStateModuleFetcher<GetResourcesParams = undefined>({
 
         return new Promise((resolve, reject) => {
             const xhr = new XMLHttpRequest();
+
             xhr.open(method, url, true);
             xhr.setRequestHeader('Content-Type', 'application/json');
             Object.keys(headers).forEach((headerName) => {

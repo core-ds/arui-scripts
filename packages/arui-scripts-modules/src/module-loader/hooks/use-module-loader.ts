@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
+
 import { Loader, ModuleResources } from '../types';
+
 import { LoadingState } from './types';
 
 export type UseModuleLoaderParams<ModuleExportType, GetResourcesParams> = {
@@ -20,15 +22,20 @@ export type UseModuleLoaderResult<ModuleExportType> = {
      * Полный ответ от модуля
      */
     resources: ModuleResources | undefined;
-}
+};
 
 export function useModuleLoader<ModuleExportType, GetResourcesParams>({
     loader,
     loaderParams,
-}: UseModuleLoaderParams<ModuleExportType, GetResourcesParams>): UseModuleLoaderResult<ModuleExportType> {
+}: UseModuleLoaderParams<
+    ModuleExportType,
+    GetResourcesParams
+>): UseModuleLoaderResult<ModuleExportType> {
     const [loadingState, setLoadingState] = useState<LoadingState>('unknown');
-    const [moduleAndResources, setModuleAndResources] = useState<{ module: ModuleExportType, resources: ModuleResources } | undefined>();
-    
+    const [moduleAndResources, setModuleAndResources] = useState<
+        { module: ModuleExportType; resources: ModuleResources } | undefined
+    >();
+
     useEffect(() => {
         let unmountFn: () => void | undefined;
 
@@ -42,7 +49,7 @@ export function useModuleLoader<ModuleExportType, GetResourcesParams>({
                 setModuleAndResources({
                     module: result.module,
                     resources: result.moduleResources,
-                })
+                });
                 unmountFn = result.unmount;
 
                 setLoadingState('fulfilled');
@@ -57,7 +64,7 @@ export function useModuleLoader<ModuleExportType, GetResourcesParams>({
 
         return function moduleCleanUp() {
             unmountFn?.();
-        }
+        };
     }, [loader]);
 
     return {

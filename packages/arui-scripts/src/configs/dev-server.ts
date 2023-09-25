@@ -1,7 +1,10 @@
-import path from 'path';
+// TODO: remove eslint-disable-next-line
+/* eslint-disable no-param-reassign */
 import http from 'http';
-import configs from './app-configs';
+import path from 'path';
+
 import applyOverrides from './util/apply-overrides';
+import configs from './app-configs';
 
 const devServerConfig = applyOverrides('devServer', {
     port: configs.clientServerPort,
@@ -28,32 +31,40 @@ const devServerConfig = applyOverrides('devServer', {
 
                 return null;
             },
-            ...(configs.devSourceMaps.includes('eval') || configs.devServerCors ? {
-                onProxyRes: (proxyRes: http.IncomingMessage) => {
-                    // Для дев режима, когда мы используем в качестве соурсмапов что-то, основанное на eval - нужно
-                    // разрешить браузеру исполнять наш код, даже когда content-security-policy приложения не позволяет этого делать.
-                    if (configs.devSourceMaps.includes('eval')) {
-                        const cspHeader = proxyRes.headers['content-security-policy'];
-                        if (typeof cspHeader === 'string' && !cspHeader.includes('unsafe-eval')) {
-                            proxyRes.headers['content-security-policy'] = cspHeader
-                                .replace(/script-src/, 'script-src \'unsafe-eval\'');
-                        }
-                    }
-                    // если включен devServerCors, то нужно принудительно менять статус ответа на 200, чтобы
-                    // браузер не отклонял ответы с CORS
-                    if (configs.devServerCors && proxyRes.method === 'OPTIONS') {
-                        proxyRes.statusCode = 200;
-                    }
-                },
-            } : {}),
+            ...(configs.devSourceMaps.includes('eval') || configs.devServerCors
+                ? {
+                      onProxyRes: (proxyRes: http.IncomingMessage) => {
+                          // Для дев режима, когда мы используем в качестве соурсмапов что-то, основанное на eval - нужно
+                          // разрешить браузеру исполнять наш код, даже когда content-security-policy приложения не позволяет этого делать.
+                          if (configs.devSourceMaps.includes('eval')) {
+                              const cspHeader = proxyRes.headers['content-security-policy'];
+
+                              if (
+                                  typeof cspHeader === 'string' &&
+                                  !cspHeader.includes('unsafe-eval')
+                              ) {
+                                  proxyRes.headers['content-security-policy'] = cspHeader.replace(
+                                      /script-src/,
+                                      "script-src 'unsafe-eval'",
+                                  );
+                              }
+                          }
+                          // если включен devServerCors, то нужно принудительно менять статус ответа на 200, чтобы
+                          // браузер не отклонял ответы с CORS
+                          if (configs.devServerCors && proxyRes.method === 'OPTIONS') {
+                              proxyRes.statusCode = 200;
+                          }
+                      },
+                  }
+                : {}),
         },
     }),
     headers: configs.devServerCors
         ? {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Headers': '*',
-            'Access-Control-Allow-Methods': '*',
-        }
+              'Access-Control-Allow-Origin': '*',
+              'Access-Control-Allow-Headers': '*',
+              'Access-Control-Allow-Methods': '*',
+          }
         : {},
 });
 

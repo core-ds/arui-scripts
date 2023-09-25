@@ -4,7 +4,7 @@
 export function validateSettingsKeys(
     existingConfig: Record<string, unknown>,
     settingsObject: Record<string, unknown>,
-    source?: string
+    source?: string,
 ) {
     Object.keys(settingsObject).forEach((setting) => {
         if (typeof existingConfig[setting] === 'undefined') {
