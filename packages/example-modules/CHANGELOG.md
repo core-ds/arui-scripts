@@ -1,5 +1,13 @@
 # example-modules
 
+## 1.1.9
+
+### Patch Changes
+
+-   Updated dependencies [[`7b897ed`](https://github.com/core-ds/arui-scripts/commit/7b897ed5ce4485d42c7d7ab7516038e802de9396)]:
+    -   @alfalab/scripts-modules@1.5.0
+    -   @alfalab/scripts-server@1.2.1
+
 ## 1.1.8
 
 ### Patch Changes
