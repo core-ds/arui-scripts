@@ -1,5 +1,11 @@
 # @alfalab/scripts-modules
 
+## 1.5.0
+
+### Minor Changes
+
+-   [#135](https://github.com/core-ds/arui-scripts/pull/135) [`7b897ed`](https://github.com/core-ds/arui-scripts/commit/7b897ed5ce4485d42c7d7ab7516038e802de9396) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Добавлен экспорт функции executeModuleFactory для использования модулей фабрик вне react-хуков
+
 ## 1.4.1
 
 ### Patch Changes
