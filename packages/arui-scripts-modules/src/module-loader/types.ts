@@ -66,7 +66,7 @@ export type ModuleResources<ModuleState extends BaseModuleState = BaseModuleStat
     moduleState: ModuleState;
 };
 
-type LoaderResult<ModuleExportType> = {
+export type LoaderResult<ModuleExportType> = {
     unmount: () => void;
     module: ModuleExportType;
     moduleResources: ModuleResources;

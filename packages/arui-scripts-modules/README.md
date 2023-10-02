@@ -17,6 +17,8 @@ yarn add @alfalab/scripts-modules
 - [`getServerFetcherParams`](#getServerFetcherParams)
 - [`useModuleLoader`](#useModuleLoader)
 - [`useModuleMounter`](#useModuleMounter)
+- [`useModuleFactory](#useModuleFactory)
+- [`executeModuleFactory`](#executeModuleFactory)
 
 ## Использование
 
@@ -104,9 +106,9 @@ const MyApp = () => {
 
     return (
         <div>
-            {loadingState === 'loading' && <div>Загрузка...</div>}
-            {loadingState === 'error' && <div>Ошибка загрузки</div>}
-            {loadingState === 'success' && <div>Модуль загружен</div>}
+            {loadingState === 'pending' && <div>Загрузка...</div>}
+            {loadingState === 'rejected' && <div>Ошибка загрузки</div>}
+            {loadingState === 'fulfilled' && <div>Модуль загружен</div>}
             <pre>{JSON.stringify(module, null, 4)}</pre>
         </div>
     );
@@ -135,11 +137,65 @@ const MyApp = () => {
 
     return (
         <div>
-            {loadingState === 'loading' && <div>Загрузка...</div>}
-            {loadingState === 'error' && <div>Ошибка загрузки</div>}
+            {loadingState === 'pending' && <div>Загрузка...</div>}
+            {loadingState === 'rejected' && <div>Ошибка загрузки</div>}
 
             <div ref={ targetElementRef } />
         </div>
     );
 }
+```
+
+### `useModuleFactory`
+
+React-хук, который позволяет использовать модули-фабрики в компонентах
+
+```tsx
+import { createClientLoader, useModuleFactory } from '@alfalab/scripts-modules';
+
+const loader = createModuleLoader({ ... });
+
+const MyApp = () => {
+    const {
+        loadingState, // состояние загрузки модуля, 'unknown' | 'pending' | 'fulfilled' | 'rejected'
+        module, // Результат выполнения фабрики
+    } = useModuleFactory({
+        loader, // загручик модуля, полученный с помощью createModuleLoader
+        loaderParams: {}, // опциональные параметры, которые будут переданы в getModuleResources
+        runParams: {}, // опциональные параметры, которые будут переданы в модуль при инициализации
+        getFactoryParams: (serverState) => serverState, // опциональная функция, которая позволяет модифицировать серверное состояние модуля
+    });
+
+    return (
+        <div>
+            {loadingState === 'pending' && <div>Загрузка...</div>}
+            {loadingState === 'rejected' && <div>Ошибка загрузки</div>}
+
+            {loadingState === 'fulfilled' && <pre>{JSON.stringify(module)}</pre>}
+        </div>
+    );
+}
+```
+
+### executeModuleFactory
+
+Хелпер, позволяющий "выполнить" модуль-фабрику, полезен при использовании фабрик вне реакт-компонентов
+
+```ts
+import { createModuleLoader, executeModuleFactory } from '@alfalab/scripts-modules';
+
+const loader = createModuleLoader({...});
+
+async function mySuperMethod() {
+    const result = await loader();
+
+    const executionResult = executeModuleFactory(
+        result.module,
+        result.moduleResources.moduleState,
+        {}, // опциональные run-параметры модуля
+    );
+
+    console.log(executionResult); // Тут будет то, что возвращает модуль-фабрика
+}
+
 ```
