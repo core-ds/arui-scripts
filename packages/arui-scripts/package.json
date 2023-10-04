@@ -65,7 +65,7 @@
         "mini-svg-data-uri": "^1.4.4",
         "null-loader": "0.1.1",
         "pnp-webpack-plugin": "1.7.0",
-        "postcss": "^8.4.27",
+        "postcss": "^8.4.31",
         "postcss-calc": "^9.0.0",
         "postcss-color-function": "^4.0.0",
         "postcss-color-mod-function": "^3.0.0",
