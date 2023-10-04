@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 15.8.2
+
+### Patch Changes
+
+-   [#137](https://github.com/core-ds/arui-scripts/pull/137) [`6aa87a0`](https://github.com/core-ds/arui-scripts/commit/6aa87a046e7307847c55b95ed3bc7ba061b2de41) Thanks [@dependabot](https://github.com/apps/dependabot)! - Обновлен postcss для исправления уязвимостей
+
 ## 15.8.1
 
 ### Patch Changes
