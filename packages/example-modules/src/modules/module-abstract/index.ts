@@ -1,3 +1,5 @@
+import { WindowWithModule } from '@alfalab/scripts-modules';
+
 /**
  * Этот модуль является "абстрактным", то есть он не имеет какой-либо заданной структуры. Он может содержать любые
  * функции, переменные, классы, интерфейсы, типы и т.д.
@@ -9,7 +11,7 @@ export function justSomeRandomFunctionThatWeWantToExport() {
 
 export const someRandomVariableThatWeWantToExport = 'hello';
 
-(window as any).ModuleAbstract = {
+(window as WindowWithModule).ModuleAbstract = {
     justSomeRandomFunctionThatWeWantToExport,
     someRandomVariableThatWeWantToExport,
 };

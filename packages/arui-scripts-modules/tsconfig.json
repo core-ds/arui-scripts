@@ -9,6 +9,7 @@
     },
     "include": [
         "src/**/*.ts",
+        "global-definitions.d.ts"
     ],
     "exclude": ["build"]
 }

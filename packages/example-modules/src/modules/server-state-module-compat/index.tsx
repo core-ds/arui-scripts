@@ -1,11 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import type { ModuleMountFunction, ModuleUnmountFunction } from '@alfalab/scripts-modules';
+import type { ModuleMountFunction, ModuleUnmountFunction, WindowWithModule } from '@alfalab/scripts-modules';
 
 import { ServerStateModuleCompat } from '#/modules/server-state-module-compat/server-state-module-compat';
 
-const mountModule: ModuleMountFunction<any, any> = (targetNode, runParams, serverState) => {
+const mountModule: ModuleMountFunction<Record<string, unknown>> = (targetNode, runParams, serverState) => {
     console.log('ServerStateModuleCompat: mount', { runParams, serverState });
 
     ReactDOM.render(
@@ -22,8 +22,7 @@ const unmountModule: ModuleUnmountFunction = (targetNode) => {
     }
 };
 
-// TODO: типизировать
-(window as any).ServerStateModuleCompat = {
+(window as WindowWithModule).ServerStateModuleCompat = {
     mount: mountModule,
     unmount: unmountModule,
 };

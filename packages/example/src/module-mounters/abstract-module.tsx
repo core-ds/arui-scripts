@@ -4,7 +4,12 @@ import { Spinner } from '@alfalab/core-components/spinner';
 import { Underlay } from '@alfalab/core-components/underlay';
 import { createModuleFetcher, createModuleLoader, useModuleLoader } from '@alfalab/scripts-modules';
 
-const loader = createModuleLoader<any>({
+type ModuleType = {
+    justSomeRandomFunctionThatWeWantToExport: () => void;
+    someRandomVariableThatWeWantToExport: string;
+}
+
+const loader = createModuleLoader<ModuleType>({
     hostAppId: 'example',
     moduleId: 'ModuleAbstract',
     getModuleResources: createModuleFetcher({

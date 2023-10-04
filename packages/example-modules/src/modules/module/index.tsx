@@ -5,7 +5,7 @@ import type { ModuleMountFunction, ModuleUnmountFunction } from '@alfalab/script
 
 import { Module } from './Module';
 
-export const mount: ModuleMountFunction<any, any> = (targetNode, runParams, serverState) => {
+export const mount: ModuleMountFunction = (targetNode, runParams, serverState) => {
     console.log('Module: mount', { runParams, serverState });
     if (!targetNode) {
         throw new Error('Target node is not defined for module');

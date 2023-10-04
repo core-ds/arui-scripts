@@ -3,14 +3,13 @@ import React from 'react';
 import { Spinner } from '@alfalab/core-components/spinner';
 import { Underlay } from '@alfalab/core-components/underlay';
 import {
-    BaseModuleState,
     createModuleFetcher,
     createModuleLoader,
     MountableModule,
     useModuleMounter,
 } from '@alfalab/scripts-modules';
 
-const loader = createModuleLoader<MountableModule<any, BaseModuleState>>({
+const loader = createModuleLoader<MountableModule>({
     hostAppId: 'example',
     moduleId: 'ModuleCompat',
     getModuleResources: createModuleFetcher({

@@ -3,21 +3,21 @@
 import React from 'react';
 import { render } from 'react-dom';
 
-import type {
-    ModuleMountFunction,
-    ModuleUnmountFunction,
-    WindowWithMountableModule,
-} from '@alfalab/scripts-modules';
+import type { WindowWithModule } from '@alfalab/scripts-modules';
+import { MountableModule } from '@alfalab/scripts-modules/src/module-loader/module-types';
 
 import { PostcssFeatures } from '#/shared/postcss-features';
 
 import './styles.css';
 
-const mountModule: ModuleMountFunction<any, any> = (targetNode, runParams) => {
-    console.log('ModuleCompat: mount', { runParams });
+type ModuleType = MountableModule<Record<string, unknown>>;
 
-    if (targetNode) {
-        targetNode.innerHTML = `
+const ModuleCompat: ModuleType = {
+    mount: (targetNode, runParams) => {
+        console.log('ModuleCompat: mount', { runParams });
+
+        if (targetNode) {
+            targetNode.innerHTML = `
   <div class="module-ModuleCompat">
     Это модуль ModuleCompat, который был загружен в режиме compat.
 
@@ -32,19 +32,16 @@ const mountModule: ModuleMountFunction<any, any> = (targetNode, runParams) => {
     </div>
   </div>`;
 
-        render(<PostcssFeatures />, document.getElementById('postcss-example'));
-    }
+            render(<PostcssFeatures />, document.getElementById('postcss-example'));
+        }
+    },
+    unmount: (targetNode) => {
+        console.log('ModuleCompat: cleanup');
+
+        if (targetNode) {
+            targetNode.innerHTML = '';
+        }
+    },
 };
 
-const unmountModule: ModuleUnmountFunction = (targetNode) => {
-    console.log('ModuleCompat: cleanup');
-
-    if (targetNode) {
-        targetNode.innerHTML = '';
-    }
-};
-
-(window as WindowWithMountableModule).ModuleCompat = {
-    mount: mountModule,
-    unmount: unmountModule,
-};
+(window as WindowWithModule<ModuleType>).ModuleCompat = ModuleCompat;

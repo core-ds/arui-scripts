@@ -3,14 +3,17 @@ import React from 'react';
 import { Spinner } from '@alfalab/core-components/spinner';
 import { Underlay } from '@alfalab/core-components/underlay';
 import {
-    BaseModuleState,
     createModuleLoader,
     createServerStateModuleFetcher,
     MountableModule,
     useModuleMounter,
 } from '@alfalab/scripts-modules';
 
-const loader = createModuleLoader<MountableModule<any, BaseModuleState>, { something: string }>({
+type ModuleRunParams = {
+    test: string;
+}
+
+const loader = createModuleLoader<MountableModule<ModuleRunParams>, { something: string }>({
     hostAppId: 'example',
     moduleId: 'ServerStateModuleCompat',
     getModuleResources: createServerStateModuleFetcher({ baseUrl: 'http://localhost:8082' }),

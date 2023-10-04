@@ -16,7 +16,11 @@ type FactoryModuleRunParams = {
     placementId: string;
 };
 
-type ModuleType = FactoryModule<Record<string, any>, FactoryModuleRunParams>;
+type FactoryModuleType = {
+    reloadPage: () => void;
+}
+
+type ModuleType = FactoryModule<FactoryModuleType, FactoryModuleRunParams>;
 
 const loader = createModuleLoader<ModuleType>({
     hostAppId: 'example',
