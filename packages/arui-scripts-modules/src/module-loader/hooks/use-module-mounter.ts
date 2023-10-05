@@ -100,6 +100,8 @@ export function useModuleMounter<LoaderParams, RunParams, ServerState extends Ba
         return function moduleCleanUp() {
             unmountFn?.();
         };
+        // Мы не хотим чтобы loader обновлялся при изменении run-params и loader-params, это осознанное решение
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [targetNode, loader]);
 
     return {

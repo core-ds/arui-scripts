@@ -93,11 +93,3 @@ export type ModuleFederationContainer = {
     init: (...args: unknown[]) => Promise<void>;
     get<T>(id: string): Promise<() => T>;
 };
-
-declare global {
-    /* eslint-disable @typescript-eslint/naming-convention,no-underscore-dangle */
-    const __webpack_share_scopes__: {
-        default: unknown;
-    };
-    /* eslint-enable @typescript-eslint/naming-convention,no-underscore-dangle */
-}

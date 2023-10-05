@@ -1,8 +1,6 @@
-/* eslint-disable unicorn/filename-case */
-// TODO: remove eslint-disable
 import React from 'react';
 
-export const ServerStateModule = (props: { runParams: any; serverState: any }) => (
+export const ServerStateModule = (props: { runParams: Record<string, unknown>; serverState: Record<string, unknown> }) => (
     <div>
         <h1>ServerStateModule</h1>
 
