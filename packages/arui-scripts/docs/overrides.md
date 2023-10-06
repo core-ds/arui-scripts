@@ -120,3 +120,62 @@ export default overrides;
 не боясь что это повлияет на другие конфигурации.
 
 Созданная таким образом конфигурация будет шарить с оригинальной конфигурацией только плагин для формирования assets-manifest'а.
+
+### Переопределение плагинов или загрузчиков для конфигураций webpack
+Иногда может понадобиться возможность поменять конфигурацию конкретного загрузчика или плагина, для этого в `webpackClient`, `webpackClientDev`, `webpackServer` и `webpackServerDev` третьим параметром можно получить хелпер-функции `findLoader` и `findPlugin`:
+```ts
+import type { OverrideFile } from 'arui-scripts';
+
+const overrides: OverrideFile = {
+    webpackClient: (config, appConfig, { findLoader, findPlugin }) => {
+      // ...        
+    }
+};
+
+export default overrides;
+```
+- `findLoader` - помогает найти загрузчик для переопределения. Функция возвращает ссылку, поэтому вы можете спокойно мутировать этот результат и обходиться без создания нового объекта через spread-оператор. В качестве аргументов принимает `config` и `testRule`, по которому будет искаться загрузчик. Пример:
+```ts
+import type { OverrideFile } from 'arui-scripts';
+
+const overrides: OverrideFile = {
+    webpackClient: (config, appConfig, { findLoader }) => {
+      const cssModulesLoader = findLoader(config, '/\\.module\\.css$/')
+      const currentCssLoader = cssModulesLoader.use.find((cssLoader) => {
+        return cssLoader.loader.includes('css-loader') && !cssLoader.loader.includes('postcss-loader')
+      })
+
+      currentCssLoader.options.modules = {
+        localIdentName: '[name]-[local]-[hash:base64:5]'
+      }
+
+      return config
+    }
+};
+
+export default overrides
+```
+- `findPlugin` - помогает найти плагин для переопределения. Функция так же возвращает ссылку. В качестве аргументов принимает `config` и название плагина. Все типизировано, поэтому название можете достать из автокомплита. для `webpackClient` и `webpackClientDev` из автокомплита будут приходить клиентские плагины, а для `webpackServer` и `webpackServerDev` серверные. Примеры:
+```ts
+import type { OverrideFile } from 'arui-scripts';
+
+const overrides: OverrideFile = {
+    webpackClient: (config, appConfig, { findPlugin }) => {
+      const [MiniCssExtractPlugin] = findPlugin(config, 'MiniCssExtractPlugin')
+
+      // возвращаемые плагины так же типизированы
+      MiniCssExtractPlugin.options.ignoreOrder = false
+
+      return config
+    },
+    webpackServerDev: (config, appConfig, { findPlugin }) => {
+      const [BannerPlugin] = findPlugin(config, 'BannerPlugin');
+
+      BannerPlugin.options.banner = 'unexpected error';
+
+      return config
+    }
+};
+
+export default overrides
+```

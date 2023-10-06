@@ -7,6 +7,7 @@ import { AppContextWithConfigs } from '../app-configs/types';
 import { createSingleClientWebpackConfig } from '../webpack.client';
 
 import { findLoader } from './find-loader';
+import { findPlugin } from './find-plugin';
 
 type Overrides = {
     webpack: WebpackConfiguration | WebpackConfiguration[];
@@ -43,6 +44,12 @@ type BoundCreateSingleClientWebpackConfig = OmitFirstArg<typeof createSingleClie
 type ClientWebpackAdditionalArgs = {
     createSingleClientWebpackConfig: BoundCreateSingleClientWebpackConfig;
     findLoader: typeof findLoader;
+    findPlugin: ReturnType<typeof findPlugin<'client'>>
+};
+
+type ServerWebpackAdditionalArgs = {
+    findLoader: typeof findLoader;
+    findPlugin: ReturnType<typeof findPlugin<'server'>>;
 };
 
 /**
@@ -53,6 +60,8 @@ type OverridesAdditionalArgs = {
     webpackClient: ClientWebpackAdditionalArgs;
     webpackDev: ClientWebpackAdditionalArgs;
     webpackClientDev: ClientWebpackAdditionalArgs;
+    webpackServer: ServerWebpackAdditionalArgs;
+    webpackServerDev: ServerWebpackAdditionalArgs;
 };
 
 type OverrideFunction<
