@@ -82,9 +82,12 @@ export type LoaderParams<GetResourcesParams> = {
  * Функция, которая загружает модуль и подключает его на страницу.
  * Может принимать дополнительные параметры, которые будут переданы в функцию получения ресурсов модуля.
  * Возвращает промис, содержащий сам модуль и функцию, которая удаляет ресурсы модуля со страницы.
+ * @param params параметры, которые будут переданы в функцию получения ресурсов модуля
+ * @param cssTargetSelector Опциональный параметр, который используется для поиска элемента, в который нужно вставить css ресурсы модуля.
  */
 export type Loader<GetResourcesParams, ModuleExportType = unknown> = (
     params: LoaderParams<GetResourcesParams>,
+    cssTargetSelector?: string,
 ) => Promise<LoaderResult<ModuleExportType>>;
 
 // Описание типов модулей

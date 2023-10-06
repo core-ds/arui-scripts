@@ -65,6 +65,8 @@ export function useModuleLoader<ModuleExportType, GetResourcesParams>({
         return function moduleCleanUp() {
             unmountFn?.();
         };
+        // Мы не хотим чтобы loader обновлялся при изменении run-params и loader-params, это осознанное решение
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [loader]);
 
     return {

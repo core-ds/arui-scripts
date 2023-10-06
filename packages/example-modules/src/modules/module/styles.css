@@ -1,0 +1,7 @@
+.module-shadow-dom-style {
+    color: red;
+
+    &:after {
+        content: 'Content from shadow dom';
+    }
+}

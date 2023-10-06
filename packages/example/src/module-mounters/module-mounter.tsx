@@ -21,20 +21,27 @@ const loader = createModuleLoader<MountableModule<void, BaseModuleState>>({
 export const ModuleMounter = () => {
     const { loadingState, targetElementRef } = useModuleMounter({
         loader,
+        useShadowDom: true,
     });
 
     return (
-        <Underlay
-            padding='m'
-            backgroundColor='info'
-            shadow='shadow-s'
-            borderSize={1}
-            borderRadius='m'
-        >
-            {loadingState === 'pending' && <Spinner size='m' />}
-            {loadingState === 'rejected' && <div>Failed to load module</div>}
+        <React.Fragment>
+            <div className="module-shadow-dom-style">
+                К этому элементу не должны примениться стили из модуля
+            </div>
 
-            <div ref={targetElementRef} />
-        </Underlay>
+            <Underlay
+                padding="m"
+                backgroundColor="info"
+                shadow="shadow-s"
+                borderSize={ 1 }
+                borderRadius="m"
+            >
+                { loadingState === 'pending' && <Spinner size="m"/> }
+                { loadingState === 'rejected' && <div>Failed to load module</div> }
+
+                <div ref={ targetElementRef }/>
+            </Underlay>
+        </React.Fragment>
     );
 };

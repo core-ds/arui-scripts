@@ -20,6 +20,7 @@ const loader = createModuleLoader<MountableModule>({
 export const CompatModuleMounter = () => {
     const { loadingState, targetElementRef } = useModuleMounter({
         loader,
+        useShadowDom: true,
     });
 
     return (
