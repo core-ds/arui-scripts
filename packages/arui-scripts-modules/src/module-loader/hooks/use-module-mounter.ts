@@ -68,10 +68,10 @@ export function useModuleMounter<LoaderParams, RunParams, ServerState extends Ba
             }
             setLoadingState('pending');
             try {
-                const result = await loader(
-                    { getResourcesParams: loaderParams as LoaderParams },
+                const result = await loader({
+                    getResourcesParams: loaderParams as LoaderParams,
                     cssTargetSelector,
-                );
+                });
 
                 const module = unwrapDefaultExport(result.module);
 

@@ -75,19 +75,23 @@ export type LoaderResult<ModuleExportType> = {
 // Для того чтобы пользователям не приходилось передавать undefined если их загрузчик не принимает параметры
 // мы делаем такой мини-хак
 export type LoaderParams<GetResourcesParams> = {
+    /**
+     * Параметры, которые будут переданы в функцию получения ресурсов модуля
+     */
     getResourcesParams: GetResourcesParams;
+    /**
+     * Опциональный параметр, который используется для поиска элемента, в который нужно вставить css ресурсы модуля.
+     */
+    cssTargetSelector?: string;
 };
 
 /**
  * Функция, которая загружает модуль и подключает его на страницу.
  * Может принимать дополнительные параметры, которые будут переданы в функцию получения ресурсов модуля.
  * Возвращает промис, содержащий сам модуль и функцию, которая удаляет ресурсы модуля со страницы.
- * @param params параметры, которые будут переданы в функцию получения ресурсов модуля
- * @param cssTargetSelector Опциональный параметр, который используется для поиска элемента, в который нужно вставить css ресурсы модуля.
  */
 export type Loader<GetResourcesParams, ModuleExportType = unknown> = (
     params: LoaderParams<GetResourcesParams>,
-    cssTargetSelector?: string,
 ) => Promise<LoaderResult<ModuleExportType>>;
 
 // Описание типов модулей

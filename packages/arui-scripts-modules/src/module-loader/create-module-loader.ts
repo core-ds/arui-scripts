@@ -3,7 +3,7 @@ import { ConsumersCounter } from './utils/consumers-counter';
 import { removeModuleResources } from './utils/dom-utils';
 import { getCompatModule, getModule } from './utils/get-module';
 import { mountModuleResources } from './utils/mount-module-resources';
-import { BaseModuleState, GetResourcesRequest, Loader, LoaderParams, ModuleResources } from './types';
+import { BaseModuleState, GetResourcesRequest, Loader, ModuleResources } from './types';
 
 export type ModuleResourcesGetter<GetResourcesParams, ModuleState extends BaseModuleState> = (
     params: GetResourcesRequest<GetResourcesParams>,
@@ -68,12 +68,12 @@ export function createModuleLoader<
 
     const moduleConsumersCounter = new ConsumersCounter(moduleId);
 
-    return async (params, cssTargetSelector) => {
+    return async ({ cssTargetSelector, getResourcesParams}) => {
         // Загружаем описание модуля
         const moduleResources = await getModuleResources({
             moduleId,
             hostAppId,
-            params: (params as LoaderParams<unknown>).getResourcesParams as any, // для того чтобы пользователям не пришлось передавать этот параметр если он им не нужен, мы обвешиваемся type-cast'ом
+            params: getResourcesParams as any, // для того чтобы пользователям не пришлось передавать этот параметр если он им не нужен, мы обвешиваемся type-cast'ом
         });
 
         await onBeforeResourcesMount?.(moduleId, moduleResources);
