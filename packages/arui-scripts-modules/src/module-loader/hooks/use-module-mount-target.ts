@@ -1,6 +1,6 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 
-let mountId = 0;
+import { useId } from './use-id';
 
 type UseModuleMountTargetParams = {
     useShadowDom?: boolean;
@@ -14,11 +14,7 @@ export function useModuleMountTarget({
     createTargetNode,
 }: UseModuleMountTargetParams) {
     const [mountTargetNode, setMountTargetNode] = useState<undefined | HTMLElement>();
-    const currentMountId = useMemo(() => {
-        mountId += 1;
-
-        return `arui-scripts-module-${mountId}`;
-    }, []);
+    const currentMountId = useId();
     // Мы не можем использовать useRef тут, useRef не будет тригерить ререндер, так как он не меняет ничего
     // внутри хуков. https://reactjs.org/docs/hooks-faq.html#how-can-i-measure-a-dom-node
     const afterTargetMountCallback = useCallback((node: HTMLElement | null) => {

@@ -1,28 +1,24 @@
-import { ConsumersCounter, resetConsumersCounter } from '../consumers-counter';
+import { getConsumerCounter } from '../consumers-counter';
 
 describe('ConsumersCounter', () => {
-    beforeEach(() => {
-        resetConsumersCounter();
+    it('getCounter should return 0 if module never get increased', () => {
+        const counter = getConsumerCounter();
+
+        expect(counter.getCounter('test')).toBe(0);
     });
 
-    it('isAbsent should return true if module never get increased', () => {
-        const counter = new ConsumersCounter('test');
+    it('getCounter should return consume counter if module get increased', () => {
+        const counter = getConsumerCounter();
 
-        expect(counter.isAbsent()).toBe(true);
+        counter.increase('test');
+        expect(counter.getCounter('test')).toBe(1);
     });
 
-    it('isAbsent should return false if module get increased', () => {
-        const counter = new ConsumersCounter('test');
+    it('getCounter should return 0 if module get increased and decreased', () => {
+        const counter = getConsumerCounter();
 
-        counter.increase();
-        expect(counter.isAbsent()).toBe(false);
-    });
-
-    it('isAbsent should return true if module get increased and decreased', () => {
-        const counter = new ConsumersCounter('test');
-
-        counter.increase();
-        counter.decrease();
-        expect(counter.isAbsent()).toBe(true);
+        counter.increase('test');
+        counter.decrease('test');
+        expect(counter.getCounter('test')).toBe(0);
     });
 });

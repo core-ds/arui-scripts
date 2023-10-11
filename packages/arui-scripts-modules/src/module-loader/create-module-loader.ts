@@ -1,5 +1,5 @@
 import { cleanGlobal } from './utils/clean-global';
-import { ConsumersCounter } from './utils/consumers-counter';
+import { getConsumerCounter } from './utils/consumers-counter';
 import { removeModuleResources } from './utils/dom-utils';
 import { getCompatModule, getModule } from './utils/get-module';
 import { mountModuleResources } from './utils/mount-module-resources';
@@ -46,6 +46,8 @@ export type CreateModuleLoaderParams<
     onAfterModuleUnmount?: ModuleLoaderHookWithModule<ModuleExportType, ModuleState>;
 };
 
+const moduleConsumersCounter = getConsumerCounter();
+
 export function createModuleLoader<
     ModuleExportType,
     GetResourcesParams = undefined,
@@ -65,8 +67,6 @@ export function createModuleLoader<
     ModuleExportType
 > {
     validateUsedWebpackVersion();
-
-    const moduleConsumersCounter = new ConsumersCounter(moduleId);
 
     return async ({ cssTargetSelector, getResourcesParams}) => {
         // Загружаем описание модуля
@@ -89,7 +89,7 @@ export function createModuleLoader<
         });
 
         // увеличиваем счетчик потребителей только после добавления скриптов и стилей
-        moduleConsumersCounter.increase();
+        moduleConsumersCounter.increase(moduleId);
 
         await onBeforeModuleMount?.(moduleId, moduleResources);
 
@@ -107,11 +107,11 @@ export function createModuleLoader<
 
         return {
             unmount: () => {
-                moduleConsumersCounter.decrease();
+                moduleConsumersCounter.decrease(moduleId);
 
                 onBeforeModuleUnmount?.(moduleId, moduleResources, loadedModule);
 
-                if (moduleConsumersCounter.isAbsent()) {
+                if (moduleConsumersCounter.getCounter(moduleId) === 0) {
                     // Если на странице больше нет потребителей модуля, то удаляем его ресурсы - скрипты, стили и глобальные переменные
                     removeModuleResources({
                         moduleId,

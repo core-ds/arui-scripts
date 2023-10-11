@@ -1,35 +1,29 @@
-// TODO: remove eslint-disable-next-line
-const counters: Record<string, number> = {};
+export function getConsumerCounter() {
+    const counters: Record<string, number> = {};
 
-export class ConsumersCounter {
-    moduleId: string;
-
-    constructor(moduleId: string) {
-        this.moduleId = moduleId;
-
-        // eslint-disable-next-line no-prototype-builtins
-        if (!counters.hasOwnProperty(moduleId)) {
+    function ensureCounter(moduleId: string) {
+        if (!Object.prototype.hasOwnProperty.call(counters, moduleId)) {
             counters[moduleId] = 0;
         }
     }
 
-    isAbsent() {
-        return counters[this.moduleId] === 0;
-    }
+    return {
+        increase(moduleId: string) {
+            ensureCounter(moduleId);
+            counters[moduleId] += 1;
+        },
+        decrease(moduleId: string) {
+            ensureCounter(moduleId);
+            if (counters[moduleId] > 0) {
+                counters[moduleId] -= 1;
+            }
+        },
+        getCounter(moduleId: string) {
+            ensureCounter(moduleId);
 
-    increase() {
-        counters[this.moduleId] += 1;
-    }
-
-    decrease() {
-        if (counters[this.moduleId] > 0) {
-            counters[this.moduleId] -= 1;
+            return counters[moduleId];
         }
-    }
+    };
 }
 
-export const resetConsumersCounter = () => {
-    Object.keys(counters).forEach((moduleId) => {
-        counters[moduleId] = 0;
-    });
-};
+export type ConsumersCounter = ReturnType<typeof getConsumerCounter>;

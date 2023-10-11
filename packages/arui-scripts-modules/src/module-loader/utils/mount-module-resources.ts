@@ -36,7 +36,7 @@ export async function mountModuleResources({
 
     // Подключаем ресурсы модуля на страницу
     await Promise.all([
-        moduleConsumersCounter.isAbsent()
+        moduleConsumersCounter.getCounter(moduleId) === 0
             ? scriptsFetcher({
                 moduleId,
                 urls: scripts,
@@ -45,7 +45,7 @@ export async function mountModuleResources({
                 attributes: jsTagsAttributes,
             })
             : Promise.resolve(),
-        moduleConsumersCounter.isAbsent()
+        moduleConsumersCounter.getCounter(moduleId) === 0
             ? stylesFetcher({
                 moduleId,
                 urls: styles,
