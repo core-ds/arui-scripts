@@ -34,10 +34,10 @@ export function useModuleMountTarget({
                 delegatesFocus: true,
             });
 
-            const body = document.createElement('body');
+            const contentTarget = document.createElement('div');
 
-            shadowRoot.appendChild(body);
-            body.appendChild(realTarget);
+            shadowRoot.appendChild(contentTarget);
+            contentTarget.appendChild(realTarget);
             setMountTargetNode(realTarget);
         } else {
             node.appendChild(realTarget);

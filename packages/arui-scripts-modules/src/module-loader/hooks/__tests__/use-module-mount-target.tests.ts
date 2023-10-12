@@ -60,7 +60,7 @@ describe('useModuleMountTarget', () => {
         });
 
         expect(targetNode.shadowRoot).toBeDefined();
-        expect(targetNode.shadowRoot?.children[0].tagName).toBe('BODY');
+        expect(targetNode.shadowRoot?.children[0].tagName).toBe('DIV');
         expect(targetNode.shadowRoot?.children[0].children[0]).toBe(realTarget);
         expect(result.current.cssTargetSelector).toBe('[data-module-mount-id="unique-id"]');
         expect(result.current.mountTargetNode).toBe(realTarget);
