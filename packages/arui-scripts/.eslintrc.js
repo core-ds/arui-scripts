@@ -9,5 +9,7 @@ module.exports = {
     rules: {
         'import/no-default-export': 'warn',
         'import/no-named-as-default': 'warn',
+        // чтобы могли использовать for и генераторы
+        'no-restricted-syntax': 'off',
     },
 };
