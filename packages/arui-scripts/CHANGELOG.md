@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 15.9.0
+
+### Minor Changes
+
+-   [#143](https://github.com/core-ds/arui-scripts/pull/143) [`1d94d1f`](https://github.com/core-ds/arui-scripts/commit/1d94d1fd57c1899966624b497c3506e0c818410e) Thanks [@Echzio](https://github.com/Echzio)! - добавление findPlugin хелпера для overrides-файла
+
 ## 15.8.2
 
 ### Patch Changes
