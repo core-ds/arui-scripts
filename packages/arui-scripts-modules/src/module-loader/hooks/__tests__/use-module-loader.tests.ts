@@ -24,7 +24,10 @@ describe('useModuleLoader', () => {
         expect(result.current.module).toBe(moduleExport);
         expect(result.current.resources).toBe(resources);
 
-        expect(loader).toHaveBeenCalledWith({ getResourcesParams: loaderParams });
+        expect(loader).toHaveBeenCalledWith({
+            getResourcesParams: loaderParams,
+            abortSignal: expect.any(AbortSignal),
+        });
     });
 
     it('should return an error when the loader rejects', async () => {
@@ -62,7 +65,10 @@ describe('useModuleLoader', () => {
         await waitForNextUpdate();
 
         expect(result.current.loadingState).toBe('fulfilled');
-        expect(loader).toHaveBeenCalledWith({ getResourcesParams: loaderParams });
+        expect(loader).toHaveBeenCalledWith({
+            getResourcesParams: loaderParams,
+            abortSignal: expect.any(AbortSignal),
+        });
 
         rerender({ loader, loaderParams: { id: 'my-module' } });
 

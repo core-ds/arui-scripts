@@ -38,22 +38,32 @@ export function useModuleLoader<ModuleExportType, GetResourcesParams>({
 
     useEffect(() => {
         let unmountFn: () => void | undefined;
+        const abortController = new AbortController();
 
         async function run() {
             setLoadingState('pending');
             try {
                 const result = await loader({
                     getResourcesParams: loaderParams as GetResourcesParams,
+                    abortSignal: abortController.signal,
                 });
+
+                if (abortController.signal.aborted) {
+                    return;
+                }
+
+                unmountFn = result.unmount;
 
                 setModuleAndResources({
                     module: result.module,
                     resources: result.moduleResources,
                 });
-                unmountFn = result.unmount;
 
                 setLoadingState('fulfilled');
             } catch (error) {
+                if (abortController.signal.aborted) {
+                    return;
+                }
                 setLoadingState('rejected');
                 // eslint-disable-next-line no-console
                 console.error(error);
@@ -64,6 +74,9 @@ export function useModuleLoader<ModuleExportType, GetResourcesParams>({
 
         return function moduleCleanUp() {
             unmountFn?.();
+            if (loadingState === 'pending') {
+                abortController.abort();
+            }
         };
         // Мы не хотим чтобы loader обновлялся при изменении run-params и loader-params, это осознанное решение
         // eslint-disable-next-line react-hooks/exhaustive-deps

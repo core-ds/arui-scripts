@@ -72,6 +72,7 @@ describe('useModuleMounter', () => {
         expect(loader).toHaveBeenCalledWith({
             getResourcesParams: loaderParams,
             cssTargetSelector: 'head',
+            abortSignal: expect.any(AbortSignal),
         });
 
         jest.advanceTimersByTime(1);

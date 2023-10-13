@@ -62,13 +62,19 @@ export function useModuleFactory<
 
     useEffect(() => {
         let unmountFn: () => void | undefined;
+        const abortController = new AbortController();
 
         async function run() {
             setLoadingState('pending');
             try {
                 const result = await loader({
                     getResourcesParams: loaderParams as LoaderParams,
+                    abortSignal: abortController.signal,
                 });
+
+                if (abortController.signal.aborted) {
+                    return;
+                }
 
                 unmountFn = result.unmount;
 
@@ -89,6 +95,9 @@ export function useModuleFactory<
 
                 setLoadingState('fulfilled');
             } catch (error) {
+                if (abortController.signal.aborted) {
+                    return;
+                }
                 setLoadingState('rejected');
                 // eslint-disable-next-line no-console
                 console.error(error);
@@ -99,6 +108,9 @@ export function useModuleFactory<
 
         return function moduleCleanUp() {
             unmountFn?.();
+            if (loadingState === 'pending') {
+                abortController.abort();
+            }
         };
     }, [loader]);
 

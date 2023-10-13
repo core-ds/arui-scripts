@@ -21,7 +21,10 @@ describe('useModuleFactory', () => {
         await waitForNextUpdate();
 
         expect(result.current.loadingState).toBe('fulfilled');
-        expect(loader).toHaveBeenCalledWith({ getResourcesParams: loaderParams });
+        expect(loader).toHaveBeenCalledWith({
+            getResourcesParams: loaderParams,
+            abortSignal: expect.any(AbortSignal),
+        });
         expect(moduleExport).toHaveBeenCalledWith(runParams, 'serverState');
     });
 
@@ -55,7 +58,10 @@ describe('useModuleFactory', () => {
 
         expect(result.current.loadingState).toBe('rejected');
         expect(result.current.module).toBeUndefined();
-        expect(loader).toHaveBeenCalledWith({ getResourcesParams: loaderParams });
+        expect(loader).toHaveBeenCalledWith({
+            getResourcesParams: loaderParams,
+            abortSignal: expect.any(AbortSignal),
+        });
     });
 
     it('should call unmount function of a loader when the component unmounts', async () => {

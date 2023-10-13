@@ -61,6 +61,7 @@ export function useModuleMounter<LoaderParams, RunParams, ServerState extends Ba
 
     useEffect(() => {
         let unmountFn: () => void | undefined;
+        const abortController = new AbortController();
 
         async function run() {
             if (!mountTargetNode) {
@@ -70,8 +71,13 @@ export function useModuleMounter<LoaderParams, RunParams, ServerState extends Ba
             try {
                 const result = await loader({
                     getResourcesParams: loaderParams as LoaderParams,
-                    cssTargetSelector,
+                    abortSignal: abortController.signal,
+                    cssTargetSelector
                 });
+
+                if (abortController.signal.aborted) {
+                    return;
+                }
 
                 const module = unwrapDefaultExport(result.module);
 
@@ -86,6 +92,9 @@ export function useModuleMounter<LoaderParams, RunParams, ServerState extends Ba
                     module.unmount(mountTargetNode);
                 };
             } catch (error) {
+                if (abortController.signal.aborted) {
+                    return;
+                }
                 setLoadingState('rejected');
                 // eslint-disable-next-line no-console
                 console.error(error);
@@ -99,6 +108,9 @@ export function useModuleMounter<LoaderParams, RunParams, ServerState extends Ba
 
         return function moduleCleanUp() {
             unmountFn?.();
+            if (loadingState === 'pending') {
+                abortController.abort();
+            }
         };
         // Мы не хотим чтобы loader обновлялся при изменении run-params и loader-params, это осознанное решение
         // eslint-disable-next-line react-hooks/exhaustive-deps
