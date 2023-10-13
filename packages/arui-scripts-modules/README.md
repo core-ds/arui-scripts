@@ -50,6 +50,13 @@ const loader = createModuleLoader({
     onBeforeModuleUnmount: (moduleId, resources, module) => {}, // коллбек, который будет вызван перед размонтированием модуля
     onAfterModuleUnmount: (moduleId, resources, module) => {}, // коллбек, который будет вызван после размонтирования модуля
 });
+
+const result = await loader({
+    cssTargetSelector: 'head', // опциональный параметр, селектор по которому будет производиться поиск DOM-ноды, в которую будут монтироваться стили модуля
+    getResourcesParams: { ... }, // опциональные параметры, которые будут переданы в getModuleResources
+});
+
+console.log(result); // { module, moduleResources, unmount }
 ```
 
 ### `createModuleFetcher`
@@ -133,6 +140,7 @@ const MyApp = () => {
         loaderParams: {}, // опциональные параметры, которые будут переданы в getModuleResources
         runParams: {}, // опциональные параметры, которые будут переданы в модуль при инициализации
         createTargetNode: () => document.createElement('div'), // опциональная функция, которая должна вернуть DOM-ноду, в которую будет монтироваться модуль
+        useShadowDom: false, // опциональный флаг, если true - внутри targetElementRef будет создан shadowRoot, и модуль будет монтироваться туда
     });
 
     return (

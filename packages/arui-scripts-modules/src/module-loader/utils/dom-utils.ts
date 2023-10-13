@@ -4,7 +4,8 @@ type ScriptsFetcherParams = {
     moduleId: string;
     urls: string[];
     baseUrl: string;
-    targetNode: HTMLElement;
+    targetNode: Node;
+    attributes?: Record<string, string>;
 };
 
 /**
@@ -14,21 +15,23 @@ type ScriptsFetcherParams = {
  * @param urls адреса подключаемых скриптов
  * @param baseUrl базовый адрес модуля
  * @param targetNode HTML элемент, в который мы добавляем скрипты
+ * @param attributes Дополнительные аттрибуты, которые будут добавлены к тегу скрипта
  */
 export function scriptsFetcher({
     moduleId,
     urls,
     baseUrl,
     targetNode,
+    attributes,
 }: ScriptsFetcherParams): Promise<HTMLElement[]> {
-    return Promise.all(urls.map((src) => appendScriptTag({ src, baseUrl, moduleId, targetNode })));
+    return Promise.all(urls.map((src) => appendScriptTag({ src, baseUrl, moduleId, targetNode, attributes })));
 }
 
 type StylesFetcherParams = {
     moduleId: string;
     urls: string[];
     baseUrl: string;
-    targetNode: HTMLElement;
+    targetNode: Node;
 };
 
 /**
@@ -63,21 +66,23 @@ const DATA_APP_ID_ATTRIBUTE = 'data-parent-app-id';
 
 type RemoveModuleResourcesParams = {
     moduleId: string;
-    targetNode: HTMLElement;
+    targetNodes: ParentNode[];
 };
 
 /**
  * Удаляет все ресурсы, которые были добавлены в дом для приложения
  * @param moduleId ID приложения, ресурсы которого мы удаляем
- * @param targetNode HTML элемент, в котором мы ищем ресурсы для удаления
+ * @param targetNodes Список HTML элементов, в которых мы ищем ресурсы для удаления
  */
-export function removeModuleResources({ moduleId, targetNode }: RemoveModuleResourcesParams): void {
-    const resources = nodeListToArray(
-        targetNode.querySelectorAll(`[${DATA_APP_ID_ATTRIBUTE}="${moduleId}"]`),
-    );
+export function removeModuleResources({ moduleId, targetNodes }: RemoveModuleResourcesParams): void {
+    targetNodes.forEach((targetNode) => {
+        const resources = nodeListToArray(
+            targetNode.querySelectorAll(`[${DATA_APP_ID_ATTRIBUTE}="${moduleId}"]`),
+        );
 
-    resources.forEach((element) => {
-        element.parentNode?.removeChild(element);
+        resources.forEach((element) => {
+            element.parentNode?.removeChild(element);
+        });
     });
 }
 
@@ -85,7 +90,7 @@ function nodeListToArray<T extends Node>(nodeList: NodeListOf<T>): T[] {
     return [].slice.call(nodeList);
 }
 
-function appendTagAsync(element: HTMLElement, targetNode: HTMLElement): Promise<HTMLElement> {
+function appendTagAsync(element: HTMLElement, targetNode: Node): Promise<HTMLElement> {
     return new Promise((resolve, reject) => {
         element.addEventListener('load', () => {
             resolve(element);
@@ -101,10 +106,11 @@ type AppendScriptTagParams = {
     src: string;
     baseUrl: string;
     moduleId: string;
-    targetNode: HTMLElement;
+    targetNode: Node;
+    attributes?: Record<string, string>;
 };
 
-function appendScriptTag({ src, baseUrl, moduleId, targetNode }: AppendScriptTagParams) {
+function appendScriptTag({ src, baseUrl, moduleId, targetNode, attributes }: AppendScriptTagParams) {
     const script = document.createElement('script');
 
     script.type = 'text/javascript';
@@ -113,13 +119,19 @@ function appendScriptTag({ src, baseUrl, moduleId, targetNode }: AppendScriptTag
     // используем setAttribute, а не dataset потому что так нам не надо конвертировать название аттрибута в js/html вид
     script.setAttribute(DATA_APP_ID_ATTRIBUTE, moduleId);
 
+    if (attributes) {
+        Object.keys(attributes).forEach((key) => {
+            script.setAttribute(key, attributes[key]);
+        });
+    }
+
     return appendTagAsync(script, targetNode);
 }
 
 type AppendCssTagParams = {
     href: string;
     moduleId: string;
-    targetNode: HTMLElement;
+    targetNode: Node;
 };
 
 function appendCssTag({ href, moduleId, targetNode }: AppendCssTagParams) {

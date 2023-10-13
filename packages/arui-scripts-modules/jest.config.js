@@ -6,4 +6,8 @@ module.exports = {
         '/node_modules/',
         '/build/',
     ],
+    collectCoverageFrom: [
+        'src/**/*.{ts,tsx}',
+        '!src/**/*.d.ts',
+    ],
 };

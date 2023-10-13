@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { MountableModule } from '../module-types';
 import { BaseModuleState, Loader } from '../types';
 import { unwrapDefaultExport } from '../utils/unwrap-default-export';
 
 import { LoadingState } from './types';
+import { useModuleMountTarget } from './use-module-mount-target';
 
 export type UseModuleLoaderParams<LoaderParams, RunParams, ServerState extends BaseModuleState> = {
     /**
@@ -19,6 +20,12 @@ export type UseModuleLoaderParams<LoaderParams, RunParams, ServerState extends B
      * Параметры, которые будут переданы в run-функцию модуля
      */
     runParams?: RunParams;
+    /**
+     * Флаг, указывающий, нужно ли использовать shadow-dom для монтирования модуля.
+     * По умолчанию false.
+     * Модуль должен быть собран с помощью версии arui-scripts, которая поддерживает shadow-dom.
+     */
+    useShadowDom?: boolean;
     /**
      * Опциональная функция, которая будет вызвана для создания DOM-ноды, в которую будет монтироваться модуль.
      * По умолчанию будет создан div.
@@ -35,7 +42,7 @@ export type UseModuleLoaderResult = {
      * Функция, которая должна быть передана в ref-проп элемента, в который будет монтироваться модуль.
      * @param node
      */
-    targetElementRef: (node: HTMLDivElement | null) => void;
+    targetElementRef: (node: HTMLElement | null) => void;
 };
 
 export function useModuleMounter<LoaderParams, RunParams, ServerState extends BaseModuleState>({
@@ -43,47 +50,40 @@ export function useModuleMounter<LoaderParams, RunParams, ServerState extends Ba
     loaderParams,
     runParams,
     createTargetNode,
+    useShadowDom,
 }: UseModuleLoaderParams<LoaderParams, RunParams, ServerState>): UseModuleLoaderResult {
-    const [targetNode, setTargetNode] = useState<undefined | HTMLElement>();
     const [loadingState, setLoadingState] = useState<LoadingState>('unknown');
-    // Мы не можем использовать useRef тут, useRef не будет тригерить ререндер, так как он не меняет ничего
-    // внутри хуков. https://reactjs.org/docs/hooks-faq.html#how-can-i-measure-a-dom-node
-    const afterDivMountCallback = useCallback((node: HTMLDivElement | null) => {
-        if (!node) {
-            return;
-        }
-        // мы не можем маунтить реакт-приложение в элемент, созданный другим реакт-приложением, поэтому создаем элемент, лежащий
-        // прямо внутри нашей targetNode
-        const realTarget = createTargetNode ? createTargetNode() : document.createElement('div');
-
-        node.appendChild(realTarget);
-        setTargetNode(realTarget);
-    }, []);
+    const {
+        mountTargetNode,
+        afterTargetMountCallback,
+        cssTargetSelector,
+    } = useModuleMountTarget({ useShadowDom, createTargetNode });
 
     useEffect(() => {
         let unmountFn: () => void | undefined;
 
         async function run() {
-            if (!targetNode) {
+            if (!mountTargetNode) {
                 return;
             }
             setLoadingState('pending');
             try {
                 const result = await loader({
                     getResourcesParams: loaderParams as LoaderParams,
+                    cssTargetSelector,
                 });
 
                 const module = unwrapDefaultExport(result.module);
 
                 module.mount(
-                    targetNode,
+                    mountTargetNode,
                     runParams as RunParams,
                     result.moduleResources.moduleState as ServerState,
                 );
 
                 unmountFn = () => {
                     result.unmount();
-                    module.unmount(targetNode);
+                    module.unmount(mountTargetNode);
                 };
             } catch (error) {
                 setLoadingState('rejected');
@@ -102,10 +102,10 @@ export function useModuleMounter<LoaderParams, RunParams, ServerState extends Ba
         };
         // Мы не хотим чтобы loader обновлялся при изменении run-params и loader-params, это осознанное решение
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [targetNode, loader]);
+    }, [mountTargetNode, loader, cssTargetSelector]);
 
     return {
         loadingState,
-        targetElementRef: afterDivMountCallback,
+        targetElementRef: afterTargetMountCallback,
     };
 }

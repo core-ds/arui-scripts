@@ -337,8 +337,11 @@ export const MyAwesomeComponent = () => {
 Для решения конфликтов стилей вы можете попробовать перевести проект на css-modules, но это может быть довольно
 трудоемкой задачей, особенно если у вас уже есть большая кодовая база.
 
-Простое решение, которое предлагает arui-scripts - это использование другого типа модулей, основанного не
-на module-federation. Эти модули мы называем _compat_ модулями.
+arui-scripts предоставляет два решения для этой проблемы:
+- _compat_ модули
+- использование shadow dom
+
+## compat модули
 
 Суть метода заключается в том, что ко всем стилям модуля будет добавляться префикс, который позволит изолировать
 стили модуля от стилей приложения-потребителя.
@@ -431,7 +434,7 @@ Webpack module federation делает абсолютно то же самое, 
 - **---** Нет встроенной изоляции стилей. Стили модуля будут применены к хост-приложению.
 - **---** Нет возможности использовать модуль в приложении, которое не использует webpack.
 
-Проблема изоляции стилей может быть решена с помощью [shadow dom](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_shadow_DOM),
+Проблема изоляции стилей может быть решена с помощью [shadow dom](#shadow-dom),
 или с помощью css modules. Но это накладывает некоторые ограничения либо на поддерживаемые браузеры (shadow dom), либо на
 существующую кодовую базу (css modules должны использоваться везде, если у вас будет две версии arui-feather на странице - будет не очень приятно).
 
@@ -443,6 +446,50 @@ Webpack module federation делает абсолютно то же самое, 
 В целом, если ваше приложение и модули используют только css-modules, то можно использовать `default` режим. Конфликты в стилях
 вам в таком случае не грозят. Если же вы используете обычный css, или ваши библиотеки используют обычный css, то лучше
 использовать `compat` режим.
+
+## Shadow dom
+[Shadow DOM](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_shadow_DOM) - это спецификация, которая позволяет
+создавать изолированные DOM-деревья, которые не будут влиять на DOM-дерево родительского элемента.
+
+arui-scripts предоставляет возможность использовать shadow dom для модулей. Для этого вам нужно:
+
+- На стороне модуля - использовать `arui-scripts` старше `15.9.2`.
+- На стороне потребителя - указать параметр `useShadowDom` в `useModuleMounter`:
+
+```tsx
+import {
+    createModuleLoader,
+    createModuleFetcher,
+    useModuleMounter,
+    MountableModule,
+} from '@alfalab/scripts-modules';
+
+const loader = createModuleLoader<MountableModule>({
+    hostAppId: 'bar-app',
+    moduleId: 'test',
+    getModuleResources: createModuleFetcher({
+        baseUrl: 'https://examle.com/foo-app',
+    }),
+});
+
+export const MyAwesomeComponent = () => {
+    const { loadingState, targetElementRef } = useModuleMounter({
+        loader,
+        useShadowDom: true, // !!!
+    });
+
+    return (
+        <div>
+            {loadingState === 'pending' && <div>pending...</div>}
+            {loadingState === 'rejected' && <div>Error</div>}
+            <div ref={targetElementRef} /> {/* сюда будет монтироваться модуль */}
+        </div>
+    );
+}
+```
+
+Этот режим работает как для _default_, так и для _compat_ модулей.
+Внутри targetElementRef будет создаваться shadowRoot, и модуль и его стили будут монтироваться в него.
 
 # Другие типы модулей
 

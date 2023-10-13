@@ -75,7 +75,14 @@ export type LoaderResult<ModuleExportType> = {
 // Для того чтобы пользователям не приходилось передавать undefined если их загрузчик не принимает параметры
 // мы делаем такой мини-хак
 export type LoaderParams<GetResourcesParams> = {
+    /**
+     * Параметры, которые будут переданы в функцию получения ресурсов модуля
+     */
     getResourcesParams: GetResourcesParams;
+    /**
+     * Опциональный параметр, который используется для поиска элемента, в который нужно вставить css ресурсы модуля.
+     */
+    cssTargetSelector?: string;
 };
 
 /**

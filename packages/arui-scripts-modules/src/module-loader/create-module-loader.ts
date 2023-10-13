@@ -1,15 +1,9 @@
-// TODO: remove eslint-disable-next-line
 import { cleanGlobal } from './utils/clean-global';
-import { ConsumersCounter } from './utils/consumers-counter';
-import { removeModuleResources, scriptsFetcher, stylesFetcher } from './utils/dom-utils';
+import { getConsumerCounter } from './utils/consumers-counter';
+import { removeModuleResources } from './utils/dom-utils';
 import { getCompatModule, getModule } from './utils/get-module';
-import {
-    BaseModuleState,
-    GetResourcesRequest,
-    Loader,
-    LoaderParams,
-    ModuleResources,
-} from './types';
+import { mountModuleResources } from './utils/mount-module-resources';
+import { BaseModuleState, GetResourcesRequest, Loader, ModuleResources } from './types';
 
 export type ModuleResourcesGetter<GetResourcesParams, ModuleState extends BaseModuleState> = (
     params: GetResourcesRequest<GetResourcesParams>,
@@ -52,6 +46,8 @@ export type CreateModuleLoaderParams<
     onAfterModuleUnmount?: ModuleLoaderHookWithModule<ModuleExportType, ModuleState>;
 };
 
+const moduleConsumersCounter = getConsumerCounter();
+
 export function createModuleLoader<
     ModuleExportType,
     GetResourcesParams = undefined,
@@ -72,42 +68,28 @@ export function createModuleLoader<
 > {
     validateUsedWebpackVersion();
 
-    const moduleConsumersCounter = new ConsumersCounter(moduleId);
-
-    return async (params) => {
-        // eslint-disable-next-line no-param-reassign
-        resourcesTargetNode = resourcesTargetNode || document.head; // определяем дефолт тут, а не в сигнатуре функции, чтобы не было проблем с при импорте модуля в nodejs
+    return async ({ cssTargetSelector, getResourcesParams}) => {
         // Загружаем описание модуля
         const moduleResources = await getModuleResources({
             moduleId,
             hostAppId,
-            params: (params as LoaderParams<unknown>).getResourcesParams as any, // для того чтобы пользователям не пришлось передавать этот параметр если он им не нужен, мы обвешиваемся type-cast'ом
+            params: getResourcesParams as any, // для того чтобы пользователям не пришлось передавать этот параметр если он им не нужен, мы обвешиваемся type-cast'ом
         });
 
         await onBeforeResourcesMount?.(moduleId, moduleResources);
 
-        // Подключаем ресурсы модуля на страницу
-        await Promise.all([
-            moduleConsumersCounter.isAbsent()
-                ? scriptsFetcher({
-                      moduleId,
-                      urls: moduleResources.scripts,
-                      baseUrl: moduleResources.moduleState.baseUrl,
-                      targetNode: resourcesTargetNode,
-                  })
-                : Promise.resolve(),
-            moduleConsumersCounter.isAbsent()
-                ? stylesFetcher({
-                      moduleId,
-                      urls: moduleResources.styles,
-                      baseUrl: moduleResources.moduleState.baseUrl,
-                      targetNode: resourcesTargetNode,
-                  })
-                : Promise.resolve(),
-        ]);
+        const resourcesNodes = await mountModuleResources({
+            resourcesTargetNode,
+            cssTargetSelector,
+            moduleConsumersCounter,
+            moduleId,
+            scripts: moduleResources.scripts,
+            styles: moduleResources.styles,
+            baseUrl: moduleResources.moduleState.baseUrl,
+        });
 
         // увеличиваем счетчик потребителей только после добавления скриптов и стилей
-        moduleConsumersCounter.increase();
+        moduleConsumersCounter.increase(moduleId);
 
         await onBeforeModuleMount?.(moduleId, moduleResources);
 
@@ -118,22 +100,22 @@ export function createModuleLoader<
                 : getCompatModule<ModuleExportType>(moduleId);
 
         if (!loadedModule) {
-            throw new Error(`Module ${moduleId} is not available`);
+            throw new Error(`Module ${ moduleId } is not available`);
         }
 
         await onAfterModuleMount?.(moduleId, moduleResources, loadedModule);
 
         return {
             unmount: () => {
-                moduleConsumersCounter.decrease();
+                moduleConsumersCounter.decrease(moduleId);
 
                 onBeforeModuleUnmount?.(moduleId, moduleResources, loadedModule);
 
-                if (moduleConsumersCounter.isAbsent()) {
+                if (moduleConsumersCounter.getCounter(moduleId) === 0) {
                     // Если на странице больше нет потребителей модуля, то удаляем его ресурсы - скрипты, стили и глобальные переменные
                     removeModuleResources({
                         moduleId,
-                        targetNode: resourcesTargetNode || document.head,
+                        targetNodes: resourcesNodes,
                     });
                     cleanGlobal(moduleId);
                 }

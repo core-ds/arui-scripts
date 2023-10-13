@@ -27,6 +27,7 @@ import { babelDependencies } from './babel-dependencies';
 import { patchMainWebpackConfigForModules, patchWebpackConfigForCompat } from './modules';
 import postcssConf from './postcss';
 import { processAssetsPluginOutput } from './process-assets-plugin-output';
+import { AruiRuntimePlugin, getInsertCssRuntimeMethod } from '../plugins/arui-runtime';
 
 const PnpWebpackPlugin = require('pnp-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
@@ -421,6 +422,7 @@ export const createSingleClientWebpackConfig = (
             ignoreOrder: true,
             filename: mode === 'dev' ? '[name].css' : '[name].[contenthash:8].css',
             chunkFilename: mode === 'dev' ? '[id].css' : '[name].[contenthash:8].chunk.css',
+            insert: getInsertCssRuntimeMethod() as any,
         }),
         (mode === 'prod' || !configs.disableDevWebpackTypecheck) &&
             configs.tsconfig !== null &&
@@ -454,6 +456,7 @@ export const createSingleClientWebpackConfig = (
         // a plugin that prints an error when you attempt to do this.
         // See https://github.com/facebookincubator/create-react-app/issues/240
         mode === 'dev' && new CaseSensitivePathsPlugin(),
+        new AruiRuntimePlugin(),
 
         // production plugins:
         mode === 'prod' && new WebpackManifestPlugin(),

@@ -1,6 +1,9 @@
 import { normalizeUrlSegment, urlSegmentWithoutEndSlash } from '../normalize-url-segment';
 
 describe('normalizeUrlSegment', () => {
+    it('should return slash for empty string', () => {
+        expect(normalizeUrlSegment('')).toBe('/');
+    });
     it('should return slash for falsy values', () => {
         expect(normalizeUrlSegment('')).toBe('/');
     });

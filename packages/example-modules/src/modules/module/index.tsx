@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 
 import type { ModuleMountFunction, ModuleUnmountFunction } from '@alfalab/scripts-modules';
 
-import { Module } from './Module';
+import { Module } from './example-module';
 
 export const mount: ModuleMountFunction = (targetNode, runParams, serverState) => {
     console.log('Module: mount', { runParams, serverState });
