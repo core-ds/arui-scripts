@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 15.10.0
+
+### Minor Changes
+
+-   [#142](https://github.com/core-ds/arui-scripts/pull/142) [`473ab9f`](https://github.com/core-ds/arui-scripts/commit/473ab9f0482c740741c7ed7ae6e926d5ae06feca) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Runtime css чанки теперь могут подключаться в определяемую из вне ноду
+
 ## 15.9.0
 
 ### Minor Changes

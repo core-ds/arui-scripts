@@ -1,5 +1,15 @@
 # @alfalab/scripts-modules
 
+## 1.6.0
+
+### Minor Changes
+
+-   [#142](https://github.com/core-ds/arui-scripts/pull/142) [`473ab9f`](https://github.com/core-ds/arui-scripts/commit/473ab9f0482c740741c7ed7ae6e926d5ae06feca) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Добавлена возможность загружать монтируемые модули в shadow-DOM
+
+### Patch Changes
+
+-   [#146](https://github.com/core-ds/arui-scripts/pull/146) [`92cb660`](https://github.com/core-ds/arui-scripts/commit/92cb6606518f9226d0e61f3af755f3b1531946f5) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Исправлено удаление модулей и их ресурсов со страници при отмонтировании хука до загрузки модуля
+
 ## 1.5.0
 
 ### Minor Changes
