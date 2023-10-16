@@ -1,8 +1,8 @@
 import { cleanGlobal } from './utils/clean-global';
 import { getConsumerCounter } from './utils/consumers-counter';
 import { removeModuleResources } from './utils/dom-utils';
+import { fetchResources,getResourcesTargetNodes } from './utils/fetch-resources';
 import { getCompatModule, getModule } from './utils/get-module';
-import { mountModuleResources } from './utils/mount-module-resources';
 import { BaseModuleState, GetResourcesRequest, Loader, ModuleResources } from './types';
 
 export type ModuleResourcesGetter<GetResourcesParams, ModuleState extends BaseModuleState> = (
@@ -46,7 +46,7 @@ export type CreateModuleLoaderParams<
     onAfterModuleUnmount?: ModuleLoaderHookWithModule<ModuleExportType, ModuleState>;
 };
 
-const moduleConsumersCounter = getConsumerCounter();
+const consumerCounter = getConsumerCounter();
 
 export function createModuleLoader<
     ModuleExportType,
@@ -68,7 +68,36 @@ export function createModuleLoader<
 > {
     validateUsedWebpackVersion();
 
-    return async ({ cssTargetSelector, getResourcesParams}) => {
+    return async ({ abortSignal, getResourcesParams, cssTargetSelector}) => {
+        // Если во время загрузки модуля пришел сигнал об отмене, то отменяем загрузку
+        if (abortSignal?.aborted) {
+            throw new Error(`Module ${moduleId} loading was aborted`);
+        }
+
+        abortSignal?.addEventListener('abort', () => {
+            moduleUnmount();
+        });
+
+        consumerCounter.increase(moduleId);
+
+        const resourcesNodes = getResourcesTargetNodes({
+            resourcesTargetNode,
+            cssTargetSelector,
+        });
+
+        function moduleUnmount() {
+            consumerCounter.decrease(moduleId);
+
+            if (consumerCounter.getCounter(moduleId) === 0) {
+                // Если на странице больше нет потребителей модуля, то удаляем его ресурсы - скрипты, стили и глобальные переменные
+                removeModuleResources({
+                    moduleId,
+                    targetNodes: [resourcesNodes.js, resourcesNodes.css],
+                });
+                cleanGlobal(moduleId);
+            }
+        }
+
         // Загружаем описание модуля
         const moduleResources = await getModuleResources({
             moduleId,
@@ -78,18 +107,16 @@ export function createModuleLoader<
 
         await onBeforeResourcesMount?.(moduleId, moduleResources);
 
-        const resourcesNodes = await mountModuleResources({
-            resourcesTargetNode,
+        await fetchResources({
+            cssTargetNode: resourcesNodes.css,
+            jsTargetNode: resourcesNodes.js,
             cssTargetSelector,
-            moduleConsumersCounter,
             moduleId,
             scripts: moduleResources.scripts,
             styles: moduleResources.styles,
             baseUrl: moduleResources.moduleState.baseUrl,
+            abortSignal,
         });
-
-        // увеличиваем счетчик потребителей только после добавления скриптов и стилей
-        moduleConsumersCounter.increase(moduleId);
 
         await onBeforeModuleMount?.(moduleId, moduleResources);
 
@@ -107,19 +134,8 @@ export function createModuleLoader<
 
         return {
             unmount: () => {
-                moduleConsumersCounter.decrease(moduleId);
-
                 onBeforeModuleUnmount?.(moduleId, moduleResources, loadedModule);
-
-                if (moduleConsumersCounter.getCounter(moduleId) === 0) {
-                    // Если на странице больше нет потребителей модуля, то удаляем его ресурсы - скрипты, стили и глобальные переменные
-                    removeModuleResources({
-                        moduleId,
-                        targetNodes: resourcesNodes,
-                    });
-                    cleanGlobal(moduleId);
-                }
-
+                moduleUnmount();
                 onAfterModuleUnmount?.(moduleId, moduleResources, loadedModule);
             },
             module: loadedModule,

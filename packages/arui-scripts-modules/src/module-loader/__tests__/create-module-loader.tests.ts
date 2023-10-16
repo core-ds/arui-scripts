@@ -1,12 +1,12 @@
 import { createModuleLoader } from '../create-module-loader';
-import { getConsumerCounter } from '../utils/consumers-counter';
 import { getCompatModule,getModule } from '../utils/get-module';
-import { mountModuleResources } from '../utils/mount-module-resources';
+import { fetchResources } from '../utils/fetch-resources';
 import * as cleanGlobal from '../utils/clean-global';
 import * as domUtils from '../utils/dom-utils';
 
-jest.mock('../utils/mount-module-resources', () => ({
-    mountModuleResources: jest.fn(() => []),
+jest.mock('../utils/fetch-resources', () => ({
+    fetchResources: jest.fn(() => []),
+    getResourcesTargetNodes: jest.fn(() => []),
 }));
 
 jest.mock('../utils/get-module', () => ({
@@ -14,15 +14,11 @@ jest.mock('../utils/get-module', () => ({
     getCompatModule: jest.fn(),
 }));
 
-jest.mock('../utils/consumers-counter', () => ({
-    getConsumerCounter: jest.fn(() => ({
-        increase: jest.fn(),
-        decrease: jest.fn(),
-        getCounter: jest.fn(),
-    })),
-}));
-
 describe('createModuleLoader', () => {
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+
     it('should create a module loader', () => {
         const loader = createModuleLoader({
             moduleId: 'test',
@@ -121,9 +117,9 @@ describe('createModuleLoader', () => {
         expect(onAfterModuleUnmount).toHaveBeenCalled();
     });
 
-    it('should pass correct params to mountModuleResources', async () => {
+    it('should pass correct params to fetchResources', async () => {
         const getModuleResources = jest.fn();
-        const mountModuleResourcesMock = mountModuleResources as jest.Mock;
+        const fetchResourcesMock = fetchResources as jest.Mock;
         const loader = createModuleLoader({
             moduleId: 'test',
             hostAppId: 'test',
@@ -143,10 +139,10 @@ describe('createModuleLoader', () => {
 
         await loader({ getResourcesParams: undefined, cssTargetSelector: '.target' });
 
-        expect(mountModuleResourcesMock).toHaveBeenCalledWith({
-            resourcesTargetNode: undefined,
+        expect(fetchResourcesMock).toHaveBeenCalledWith({
+            jsTargetNode: undefined,
+            cssTargetNode: undefined,
             cssTargetSelector: '.target',
-            moduleConsumersCounter: expect.anything(),
             moduleId: 'test',
             scripts: [],
             styles: [],
@@ -222,67 +218,126 @@ describe('createModuleLoader', () => {
         );
     });
 
-    describe('module consumers counter', () => {
-        it('should increase module consumers counter on mount', async () => {
+    it('should not remove module resources if there is still someone consuming it', async () => {
+        jest.spyOn(domUtils, 'removeModuleResources');
+        jest.spyOn(cleanGlobal, 'cleanGlobal');
+        const getModuleResources = jest.fn();
+        const loader = createModuleLoader({
+            moduleId: 'test',
+            hostAppId: 'test',
+            getModuleResources,
+        });
+
+        getModuleResources.mockResolvedValue({
+            scripts: [],
+            styles: [],
+            moduleState: {},
+            mountMode: 'default',
+            appName: 'AppName',
+        });
+
+        (getModule as jest.Mock).mockResolvedValue({});
+
+        const { unmount } = await loader({ getResourcesParams: undefined });
+        await loader({ getResourcesParams: undefined });
+
+        unmount();
+
+        expect(domUtils.removeModuleResources).not.toHaveBeenCalled();
+        expect(cleanGlobal.cleanGlobal).not.toHaveBeenCalled();
+    });
+
+    it('should remove module resources if there is no one consuming it', async () => {
+        jest.spyOn(domUtils, 'removeModuleResources');
+        jest.spyOn(cleanGlobal, 'cleanGlobal');
+        const getModuleResources = jest.fn();
+        const loader = createModuleLoader({
+            moduleId: 'unique-id',
+            hostAppId: 'test',
+            getModuleResources,
+        });
+
+        getModuleResources.mockResolvedValue({
+            scripts: [],
+            styles: [],
+            moduleState: {},
+            mountMode: 'default',
+            appName: 'AppName',
+        });
+
+        (getModule as jest.Mock).mockResolvedValueOnce({});
+
+        const { unmount } = await loader({ getResourcesParams: undefined });
+
+        unmount();
+
+        expect(domUtils.removeModuleResources).toHaveBeenCalledWith({ moduleId: 'unique-id', targetNodes: [] });
+        expect(cleanGlobal.cleanGlobal).toHaveBeenCalledWith('unique-id');
+    });
+
+    describe('aborting', () => {
+        it('should reject with error if provided abortSignal is aborted', async () => {
             const getModuleResources = jest.fn();
             const loader = createModuleLoader({
                 moduleId: 'test',
                 hostAppId: 'test',
                 getModuleResources,
             });
-            const moduleConsumersCounter = (getConsumerCounter as jest.Mock).mock.results[0].value;
 
-            getModuleResources.mockResolvedValue({
-                scripts: [],
-                styles: [],
-                moduleState: {},
-                mountMode: 'default',
-                appName: 'AppName',
-            });
+            const abortController = new AbortController();
+            abortController.abort();
 
-            (getModule as jest.Mock).mockResolvedValueOnce({});
+            await expect(loader({ getResourcesParams: undefined, abortSignal: abortController.signal })).rejects.toThrow(
+                'Module test loading was aborted'
+            );
 
-            await loader({ getResourcesParams: undefined });
-
-            expect(moduleConsumersCounter.increase).toHaveBeenCalledWith('test');
+            expect(getModuleResources).not.toHaveBeenCalled();
         });
 
-        it('should decrease module consumers counter on unmount', async () => {
+        it('should pass abortSignal to fetchResources', async () => {
             const getModuleResources = jest.fn();
             const loader = createModuleLoader({
                 moduleId: 'test',
                 hostAppId: 'test',
                 getModuleResources,
             });
-            const moduleConsumersCounter = (getConsumerCounter as jest.Mock).mock.results[0].value;
+
+            const abortController = new AbortController();
 
             getModuleResources.mockResolvedValue({
                 scripts: [],
                 styles: [],
                 moduleState: {},
                 mountMode: 'default',
-                appName: 'AppName',
             });
 
             (getModule as jest.Mock).mockResolvedValueOnce({});
 
-            const { unmount } = await loader({ getResourcesParams: undefined });
+            await loader({ getResourcesParams: undefined, abortSignal: abortController.signal });
 
-            unmount();
-
-            expect(moduleConsumersCounter.decrease).toHaveBeenCalledWith('test');
+            expect(fetchResources).toHaveBeenCalledWith({
+                jsTargetNode: undefined,
+                cssTargetNode: undefined,
+                cssTargetSelector: undefined,
+                moduleId: 'test',
+                scripts: [],
+                styles: [],
+                baseUrl: undefined,
+                abortSignal: abortController.signal,
+            });
         });
 
-        it('should remove module resources if module consumers counter is 0', async () => {
+        it('should remove module resources when receive abort signal', async () => {
             jest.spyOn(domUtils, 'removeModuleResources');
             jest.spyOn(cleanGlobal, 'cleanGlobal');
             const getModuleResources = jest.fn();
             const loader = createModuleLoader({
-                moduleId: 'test',
+                moduleId: 'another-id',
                 hostAppId: 'test',
                 getModuleResources,
             });
-            const moduleConsumersCounter = (getConsumerCounter as jest.Mock).mock.results[0].value;
+
+            const abortController = new AbortController();
 
             getModuleResources.mockResolvedValue({
                 scripts: [],
@@ -293,15 +348,13 @@ describe('createModuleLoader', () => {
             });
 
             (getModule as jest.Mock).mockResolvedValueOnce({});
-            moduleConsumersCounter.getCounter.mockReturnValueOnce(0);
 
-            const { unmount } = await loader({ getResourcesParams: undefined });
+            await loader({ getResourcesParams: undefined, abortSignal: abortController.signal });
 
-            unmount();
+            abortController.abort();
 
-            expect(moduleConsumersCounter.getCounter).toHaveBeenCalledWith('test');
-            expect(domUtils.removeModuleResources).toHaveBeenCalledWith({ moduleId: 'test', targetNodes: [] });
-            expect(cleanGlobal.cleanGlobal).toHaveBeenCalledWith('test');
+            expect(domUtils.removeModuleResources).toHaveBeenCalledWith({ moduleId: 'another-id', targetNodes: [] });
+            expect(cleanGlobal.cleanGlobal).toHaveBeenCalledWith('another-id');
         });
     });
 });

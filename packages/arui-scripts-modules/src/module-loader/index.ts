@@ -1,3 +1,5 @@
+import 'abortcontroller-polyfill/dist/abortcontroller-polyfill-only';
+
 export * from './types';
 export * from './module-types';
 
