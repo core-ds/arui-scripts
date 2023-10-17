@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 15.10.1
+
+### Patch Changes
+
+-   [#148](https://github.com/core-ds/arui-scripts/pull/148) [`cd6c8df`](https://github.com/core-ds/arui-scripts/commit/cd6c8df45ed53ca72208ab59ce51960664629edc) Thanks [@dependabot](https://github.com/apps/dependabot)! - bump @babel/traverse from 7.22.10 to 7.23.2
+
 ## 15.10.0
 
 ### Minor Changes
