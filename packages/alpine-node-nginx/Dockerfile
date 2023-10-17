@@ -1,5 +1,6 @@
 ARG NODE_VERSION=latest
 ARG ALPINE_VERSION=3.14
+ARG NODE_BASE_IMAGE=node
 
 # Copied from https://github.com/fholzer/docker-nginx-brotli/blob/master/Dockerfile
 # this is a build container, target one is in the end
@@ -138,7 +139,7 @@ RUN \
  ## end copy
 
 
-FROM node:${NODE_VERSION}-alpine${ALPINE_VERSION}
+FROM ${NODE_BASE_IMAGE}:${NODE_VERSION}-alpine${ALPINE_VERSION}
 
 COPY --from=0 /tmp/runDeps.txt /tmp/runDeps.txt
 COPY --from=0 /etc/nginx /etc/nginx
