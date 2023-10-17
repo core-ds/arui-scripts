@@ -5,16 +5,39 @@ on:
   push:
     branches:
       - master
+    paths:
+      - packages/alpine-node-nginx/**
 
 env:
   # version that would be tagged as latest
   LATEST_VERSION: 14.21.3
 
 jobs:
+
+  # build node@14 with alpine 3.18
+  buildOldNode:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v1
+        with:
+          path: packages/alpine-node-nginx/node-14-alpine-3.18/
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+          repository: alfabankui/arui-scripts
+          tags: 14.21.3-alpine-3.18
+
   build:
     strategy:
       matrix:
-        version: [14.21.3, 16.20.0, 18.16.0]
+        versions: [
+          { node: 14.21.3, alpine: 3.18, image: alfabankui/nodejs },
+          { node: 16.20.2, alpine: 3.18, image: node },
+          { node: 18.18.2, alpine: 3.18, image: node },
+        ]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -27,5 +50,5 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
           repository: alfabankui/arui-scripts
-          build_args: NODE_VERSION=${{ matrix.version }},ALPINE_VERSION=3.16
-          tags: ${{ matrix.version == env.LATEST_VERSION && format('{0},latest', matrix.version) || matrix.version }}
+          build_args: NODE_VERSION=${{ matrix.versions.node }},ALPINE_VERSION=${{ matrix.versions.alpine }},NODE_BASE_IMAGE=${{ matrix.versions.image }}
+          tags: ${{ matrix.versions.node == env.LATEST_VERSION && format('{0},latest', matrix.versions.node) || matrix.version.node }}
