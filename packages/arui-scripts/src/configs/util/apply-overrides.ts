@@ -60,8 +60,11 @@ type OverridesAdditionalArgs = {
     webpackClient: ClientWebpackAdditionalArgs;
     webpackDev: ClientWebpackAdditionalArgs;
     webpackClientDev: ClientWebpackAdditionalArgs;
+    webpackProd: ClientWebpackAdditionalArgs;
+    webpackClientProd: ClientWebpackAdditionalArgs;
     webpackServer: ServerWebpackAdditionalArgs;
     webpackServerDev: ServerWebpackAdditionalArgs;
+    webpackServerProd: ServerWebpackAdditionalArgs;
 };
 
 type OverrideFunction<
