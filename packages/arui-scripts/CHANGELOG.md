@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 15.10.2
+
+### Patch Changes
+
+-   [#151](https://github.com/core-ds/arui-scripts/pull/151) [`6beb22b`](https://github.com/core-ds/arui-scripts/commit/6beb22b99305fdd46819494b0c2baf88b41d3281) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Исправлены типы для оверрайдов, теперь prod овверайды так же принимают дополнительные аргументы
+
 ## 15.10.1
 
 ### Patch Changes
