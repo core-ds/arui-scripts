@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 15.10.3
+
+### Patch Changes
+
+-   [#153](https://github.com/core-ds/arui-scripts/pull/153) [`9ba7186`](https://github.com/core-ds/arui-scripts/commit/9ba71864bf0266b4614b381f4747752a98a7477e) Thanks [@IH8E](https://github.com/IH8E)! - Исправлен адрес для dev-server на ipv4 для корректной работы с node18
+
 ## 15.10.2
 
 ### Patch Changes

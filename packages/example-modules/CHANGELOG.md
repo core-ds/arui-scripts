@@ -1,5 +1,12 @@
 # example-modules
 
+## 1.1.15
+
+### Patch Changes
+
+-   Updated dependencies [[`9ba7186`](https://github.com/core-ds/arui-scripts/commit/9ba71864bf0266b4614b381f4747752a98a7477e)]:
+    -   arui-scripts@15.10.3
+
 ## 1.1.14
 
 ### Patch Changes
