@@ -24,5 +24,5 @@ docker build --build-arg NODE_VERSION=14.17.6 --build-arg ALPINE_VERSION=3.16 -t
 его на наших серверах будет невозможно. Поэтому собирать нужно немного иначе:
 
 ```sh
-docker buildx build --platform linux/amd64 --build-arg NODE_VERSION=14.21.3 --build-arg ALPINE_VERSION=3.16 -t alfabankui/arui-scripts:14.21.3 .
+docker buildx build --platform linux/amd64 --build-arg NODE_VERSION=16.20.2 --build-arg ALPINE_VERSION=3.18 -t alfabankui/arui-scripts:test --load .
 ```
