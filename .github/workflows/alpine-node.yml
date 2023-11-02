@@ -23,49 +23,49 @@ jobs:
         uses: docker/build-push-action@v1
         with:
           path: packages/alpine-node-nginx/
-          dockerfile: Dockerfile-debian
+          dockerfile: packages/alpine-node-nginx/Dockerfile-debian
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
           repository: alfabankui/arui-scripts
           build_args: NODE_VERSION=16.20.2
           tags: 16.20.2-debian
   # build node@14 with alpine 3.18
-  buildOldNode:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Build and push Docker images
-        uses: docker/build-push-action@v1
-        with:
-          path: packages/alpine-node-nginx/node-14-alpine-3.18/
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
-          repository: alfabankui/nodejs
-          tags: 14.21.3-alpine3.18
-
-  build:
-    needs:
-      - buildOldNode
-    strategy:
-      matrix:
-        versions: [
-          { node: 14.21.3, alpine: 3.18, image: alfabankui/nodejs },
-          { node: 16.20.2, alpine: 3.18, image: node },
-          { node: 18.18.2, alpine: 3.18, image: node },
-        ]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Build and push Docker images
-        uses: docker/build-push-action@v1
-        with:
-          path: packages/alpine-node-nginx/
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
-          repository: alfabankui/arui-scripts
-          build_args: NODE_VERSION=${{ matrix.versions.node }},ALPINE_VERSION=${{ matrix.versions.alpine }},NODE_BASE_IMAGE=${{ matrix.versions.image }}
-          tags: ${{ matrix.versions.node == env.LATEST_VERSION && format('{0},latest', matrix.versions.node) || matrix.versions.node }}
+#  buildOldNode:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v2
+#
+#      - name: Build and push Docker images
+#        uses: docker/build-push-action@v1
+#        with:
+#          path: packages/alpine-node-nginx/node-14-alpine-3.18/
+#          username: ${{ secrets.DOCKER_USERNAME }}
+#          password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+#          repository: alfabankui/nodejs
+#          tags: 14.21.3-alpine3.18
+#
+#  build:
+#    needs:
+#      - buildOldNode
+#    strategy:
+#      matrix:
+#        versions: [
+#          { node: 14.21.3, alpine: 3.18, image: alfabankui/nodejs },
+#          { node: 16.20.2, alpine: 3.18, image: node },
+#          { node: 18.18.2, alpine: 3.18, image: node },
+#        ]
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v2
+#
+#      - name: Build and push Docker images
+#        uses: docker/build-push-action@v1
+#        with:
+#          path: packages/alpine-node-nginx/
+#          username: ${{ secrets.DOCKER_USERNAME }}
+#          password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+#          repository: alfabankui/arui-scripts
+#          build_args: NODE_VERSION=${{ matrix.versions.node }},ALPINE_VERSION=${{ matrix.versions.alpine }},NODE_BASE_IMAGE=${{ matrix.versions.image }}
+#          tags: ${{ matrix.versions.node == env.LATEST_VERSION && format('{0},latest', matrix.versions.node) || matrix.versions.node }}
