@@ -1,0 +1,51 @@
+ARG NODE_VERSION=latest
+ARG DEBIAN_VERSION=bookworm
+ARG NODE_BASE_IMAGE=node
+
+FROM debian:${DEBIAN_VERSION}
+ENV NGX_BROTLI_COMMIT 6e975bcb015f62e1f303054897783355e2a877dc
+ENV NGINX_VERSION 1.24.0
+
+
+RUN apt-get update && apt-get install -y \
+        libpcre3 libpcre3-dev zlib1g zlib1g-dev openssl libssl-dev git curl build-essential libbrotli-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+
+RUN \
+    mkdir -p /usr/src/ \
+    && cd /usr/src/ \
+    && git clone https://github.com/google/ngx_brotli.git --depth=1 \
+    && cd ./ngx_brotli \
+    && git submodule update --init --depth 1 \
+    && cd .. \
+    && curl -fSL https://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz -o nginx.tar.gz \
+    && tar -zxvf nginx.tar.gz \
+    && cd ./nginx-${NGINX_VERSION} \
+    && ./configure --with-compat --add-dynamic-module=../ngx_brotli \
+    && make modules \
+    && mkdir -p /usr/src/nginx/objs/ \
+    && cp ./objs/*.so /usr/src/nginx/objs/
+
+
+FROM ${NODE_BASE_IMAGE}:${NODE_VERSION}-${DEBIAN_VERSION}
+
+RUN apt-get update && apt-get install -y \
+    nginx gettext-base \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=0 /usr/src/nginx/objs/*.so /etc/nginx/modules/
+
+RUN \
+	useradd --user-group --create-home --no-log-init --shell /bin/bash  \
+        nginx \
+	&& touch /var/log/nginx/access.log /var/log/nginx/error.log \
+	&& ln -sf /dev/stdout /var/log/nginx/access.log \
+	&& ln -sf /dev/stderr /var/log/nginx/error.log
+
+
+COPY nginx-debian.conf /etc/nginx/nginx.conf
+
+EXPOSE 80 443
+
+STOPSIGNAL SIGTERM

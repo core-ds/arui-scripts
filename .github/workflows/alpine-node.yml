@@ -13,7 +13,22 @@ env:
   LATEST_VERSION: 14.21.3
 
 jobs:
+  buildDebian:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
 
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v1
+        with:
+          path: packages/alpine-node-nginx/
+          dockerfile: Dockerfile-debian
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+          repository: alfabankui/arui-scripts
+          build_args: NODE_VERSION=16.20.2
+          tags: 16.20.2-debian
   # build node@14 with alpine 3.18
   buildOldNode:
     runs-on: ubuntu-latest
