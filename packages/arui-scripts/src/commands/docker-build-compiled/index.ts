@@ -25,9 +25,8 @@ import exec from '../util/exec';
             startScriptTemplate: startScript,
             allowLocalDockerfile: false,
             allowLocalStartScript: false,
+            addNodeModulesToDockerIgnore: true,
         });
-
-        await exec('echo "node_modules" >> .dockerignore');
 
         await exec(getDockerBuildCommand({ tempDirName, imageFullName }));
         await fs.remove(pathToTempDir);
