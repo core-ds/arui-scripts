@@ -52,6 +52,7 @@ type PrepareFilesForDockerParams = {
     pathToTempDir: string;
     allowLocalDockerfile: boolean;
     allowLocalStartScript: boolean;
+    addNodeModulesToDockerIgnore: boolean;
 };
 
 export async function prepareFilesForDocker({
@@ -61,6 +62,7 @@ export async function prepareFilesForDocker({
     pathToTempDir,
     allowLocalDockerfile,
     allowLocalStartScript,
+    addNodeModulesToDockerIgnore,
 }: PrepareFilesForDockerParams) {
     await fs.emptyDir(pathToTempDir);
 
@@ -78,6 +80,12 @@ export async function prepareFilesForDocker({
             ? await fs.readFile(configs.localStartScript, 'utf8')
             : startScriptTemplate;
 
+    const dockerIgnoreFilePath = path.join(process.cwd(), '.dockerignore');
+
+    const dockerIgnoreFileContent =
+        addNodeModulesToDockerIgnore &&
+        (await getAndModifyDockerIgnoreContent(dockerIgnoreFilePath));
+
     await Promise.all([
         fs.writeFile(path.join(pathToTempDir, 'Dockerfile'), dockerfile, 'utf8'),
         fs.writeFile(path.join(pathToTempDir, 'nginx.conf'), nginxConf, 'utf8'),
@@ -85,6 +93,9 @@ export async function prepareFilesForDocker({
             encoding: 'utf8',
             mode: 0o555,
         }),
+        addNodeModulesToDockerIgnore &&
+            dockerIgnoreFileContent &&
+            fs.writeFile(dockerIgnoreFilePath, dockerIgnoreFileContent, 'utf-8'),
     ]);
 }
 
@@ -113,4 +124,16 @@ export function getDockerBuildCommand({ tempDirName, imageFullName }: DockerBuil
     } -f "./${tempDirName}/Dockerfile" \\
  --build-arg START_SH_LOCATION="./${tempDirName}/start.sh" \\
  --build-arg NGINX_CONF_LOCATION="./${tempDirName}/nginx.conf" -t ${imageFullName} .`;
+}
+
+async function getAndModifyDockerIgnoreContent(dockerIgnoreFilePath: string) {
+    if (fs.existsSync(dockerIgnoreFilePath)) {
+        return fs
+            .readFile(dockerIgnoreFilePath, 'utf-8')
+            .then((ignores) => `${ignores}\nnode_modules`);
+    }
+
+    await fs.createFile(dockerIgnoreFilePath);
+
+    return 'node_modules';
 }

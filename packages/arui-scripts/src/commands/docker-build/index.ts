@@ -27,6 +27,7 @@ import { getPruningCommand } from '../util/yarn';
             startScriptTemplate: startScript,
             allowLocalDockerfile: true,
             allowLocalStartScript: true,
+            addNodeModulesToDockerIgnore: false,
         });
 
         await fs.remove(configs.buildPath);
