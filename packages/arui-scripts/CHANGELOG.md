@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 15.10.4
+
+### Patch Changes
+
+-   [#157](https://github.com/core-ds/arui-scripts/pull/157) [`9240320`](https://github.com/core-ds/arui-scripts/commit/92403200dbf5f167155ea33cf3375eea42cda57d) Thanks [@Echzio](https://github.com/Echzio)! - Исправлено поведение команды `docker-build:compiled`, теперь она корректно формирует .dockerignore при билде. Исправление бага #156
+
 ## 15.10.3
 
 ### Patch Changes
