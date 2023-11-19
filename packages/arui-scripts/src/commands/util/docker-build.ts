@@ -121,9 +121,7 @@ export function getDockerBuildCommand({ tempDirName, imageFullName }: DockerBuil
 
     return `docker build ${
         canUsePlatformFlag ? '--platform linux/x86_64' : ''
-    } -f "./${tempDirName}/Dockerfile" \\
- --build-arg START_SH_LOCATION="./${tempDirName}/start.sh" \\
- --build-arg NGINX_CONF_LOCATION="./${tempDirName}/nginx.conf" -t ${imageFullName} .`;
+    } -f "./${tempDirName}/Dockerfile" --build-arg START_SH_LOCATION="./${tempDirName}/start.sh" --build-arg NGINX_CONF_LOCATION="./${tempDirName}/nginx.conf" -t ${imageFullName} .`;
 }
 
 async function getAndModifyDockerIgnoreContent(dockerIgnoreFilePath: string) {
