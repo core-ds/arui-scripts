@@ -1,0 +1,35 @@
+name: 'Dependency review'
+on:
+  pull_request:
+    paths:
+      - packages/arui-scripts/**
+
+permissions:
+  discussions: write
+  contents: read
+  pull-requests: write
+
+jobs:
+  dependency-review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v1
+      - name: Npm Install 
+        run: |
+          npm install
+        working-directory: ./packages/arui-scripts
+      - name: Run Audit
+        id: audit
+        uses: oke-py/npm-audit-action@v2
+        with:
+         audit_level: critical
+         github_token: ${{ secrets.GITHUB_TOKEN }}
+         working_directory: ./packages/arui-scripts
+         issue_assignees: oke-py
+         issue_labels: vulnerability
+      - name: Auto approve
+        if: steps.audit.outcome  == 'success'
+        uses: hmarr/auto-approve-action@v3
