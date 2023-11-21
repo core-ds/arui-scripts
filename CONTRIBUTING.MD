@@ -19,4 +19,4 @@
 
 ## Выпуск snapshot-версии
 Snapshot-версия может быть полезна для тестирования изменений перед релизом. Для ее выпуска можно воспользоваться ручным запуском
-github action [Create snapshot release of packages](https://github.com/core-ds/arui-scripts/actions?query=workflow%3A%22Create+snapshot+release+of+packages%22)
+github action [Create snapshot release of packages](https://github.com/core-ds/arui-scripts/actions?query=workflow%3A%22Create+snapshot+release+of+packages%22). Перед запуском github action необходимо не забыть создать changeset командой `yarn changeset`
