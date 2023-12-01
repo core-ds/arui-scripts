@@ -1,4 +1,3 @@
-// TODO: remove eslint-disable-next-line
 import type { GetResourcesRequest, ModuleResources } from '@alfalab/scripts-modules';
 
 import { getAppManifest, readAssetsManifest } from '../read-assets-manifest';
@@ -51,7 +50,6 @@ export function createGetModulesMethod<FrameworkParams extends unknown[] = []>(
                     ...moduleRunParams,
                     hostAppId: getResourcesRequest.hostAppId,
                 },
-                // eslint-disable-next-line no-underscore-dangle
                 appName: appManifest.__metadata__.name,
             };
         },

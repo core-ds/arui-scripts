@@ -1,4 +1,3 @@
-// TODO: remove eslint-disable-next-line
 import type { Plugin, Request } from 'hapi20';
 
 import { createGetModulesMethod, ModulesConfig } from './modules';
@@ -19,7 +18,6 @@ export function createGetModulesHapi20Plugin(
                 options: {
                     ...routeParams,
                 },
-                // eslint-disable-next-line consistent-return
                 handler: async (request, h) => {
                     try {
                         return await modulesMethodSettings.handler(request.payload as any, request);
@@ -28,6 +26,8 @@ export function createGetModulesHapi20Plugin(
                             error: e.message,
                             status: 500,
                         }).code(500);
+
+                        return undefined;
                     }
                 },
             });

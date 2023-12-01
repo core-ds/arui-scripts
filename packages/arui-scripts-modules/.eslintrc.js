@@ -3,9 +3,7 @@ module.exports = {
     extends: ['custom/common'],
     parserOptions: {
         tsconfigRootDir: __dirname,
-        project: [
-            './tsconfig.eslint.json',
-        ],
+        project: ['./tsconfig.eslint.json'],
     },
     overrides: [
         {
@@ -13,6 +11,11 @@ module.exports = {
             rules: {
                 'import/no-extraneous-dependencies': 'off',
             },
-        }
+        },
     ],
+    rules: {
+        'no-underscore-dangle': 'off',
+        '@typescript-eslint/naming-convention': 'off',
+        'no-console': 'off',
+    },
 };

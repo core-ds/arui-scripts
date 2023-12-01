@@ -96,7 +96,6 @@ export function useModuleMounter<LoaderParams, RunParams, ServerState extends Ba
                     return;
                 }
                 setLoadingState('rejected');
-                // eslint-disable-next-line no-console
                 console.error(error);
 
                 return;

@@ -22,7 +22,6 @@ export async function getModule<ModuleType>(containerId: string, moduleId: strin
     }
 
     // webpack любит двойные подчеркивания для внутренних функций
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     await container.init(__webpack_share_scopes__.default);
     const factory = await container.get<ModuleType>(moduleId);
 

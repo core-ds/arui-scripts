@@ -99,7 +99,6 @@ export function useModuleFactory<
                     return;
                 }
                 setLoadingState('rejected');
-                // eslint-disable-next-line no-console
                 console.error(error);
             }
         }
@@ -112,6 +111,7 @@ export function useModuleFactory<
                 abortController.abort();
             }
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [loader]);
 
     return {
