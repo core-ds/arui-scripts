@@ -1,4 +1,3 @@
-// TODO: remove eslint-disable-next-line
 import type { Configuration as WebpackConfiguration, WebpackOptionsNormalized } from 'webpack';
 import type { Configuration as WebpackDevServerConfiguration } from 'webpack-dev-server';
 
@@ -44,7 +43,7 @@ type BoundCreateSingleClientWebpackConfig = OmitFirstArg<typeof createSingleClie
 type ClientWebpackAdditionalArgs = {
     createSingleClientWebpackConfig: BoundCreateSingleClientWebpackConfig;
     findLoader: typeof findLoader;
-    findPlugin: ReturnType<typeof findPlugin<'client'>>
+    findPlugin: ReturnType<typeof findPlugin<'client'>>;
 };
 
 type ServerWebpackAdditionalArgs = {
@@ -75,7 +74,7 @@ type OverrideFunction<
 > = (
     config: Overrides[K],
     appConfig: AppContextWithConfigs,
-    additionalArgs: AdditionalArgs,
+    additionalArgs: AdditionalArgs | unknown,
 ) => Overrides[K];
 
 export type OverrideFile = {
@@ -89,8 +88,7 @@ overrides = appConfigs.overridesPath.map((path) => {
         // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
         const requireResult = require(path);
 
-        // eslint-disable-next-line no-underscore-dangle
-        if (requireResult.__esModule) {
+        if ('__esModule' in requireResult) {
             // ts-node импортирует esModules, из них надо вытягивать default именно так
             return requireResult.default;
         }
@@ -111,27 +109,24 @@ overrides = appConfigs.overridesPath.map((path) => {
  * @param args Дополнительные аргументы, которые будут переданы в функцию оверрайда
  * @returns {*}
  */
-function applyOverrides<
-    T extends Overrides[Key],
-    Key extends keyof Overrides,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    Args = Key extends keyof OverridesAdditionalArgs ? OverridesAdditionalArgs[Key] : undefined,
->(overridesKey: Key | Key[], config: T, args?: any): T {
-    if (typeof overridesKey === 'string') {
-        // eslint-disable-next-line no-param-reassign
-        overridesKey = [overridesKey];
-    }
-    overridesKey.forEach((key) => {
+function applyOverrides<T extends Overrides[Key], Key extends keyof Overrides>(
+    overridesKey: Key | Key[],
+    config: T,
+    args?: unknown,
+): T {
+    let tempConfig = config;
+    const overrideKeys = typeof overridesKey === 'string' ? [overridesKey] : overridesKey;
+
+    overrideKeys.forEach((key) => {
         overrides.forEach((override) => {
-            // eslint-disable-next-line no-prototype-builtins
-            if (override.hasOwnProperty(key)) {
+            if (key in override) {
                 const overrideFn = override[key];
 
                 if (typeof overrideFn !== 'function') {
                     throw new TypeError(`Override ${key} must be a function`);
                 }
-                // eslint-disable-next-line no-param-reassign
-                config = overrideFn(config, appConfigs, args);
+
+                tempConfig = overrideFn(tempConfig, appConfigs, args);
             }
         });
     });

@@ -1,4 +1,3 @@
-// TODO: remove eslint-disable-next-line
 import fs from 'fs';
 import path from 'path';
 
@@ -7,15 +6,7 @@ import filesize from 'filesize';
 import { sync as gzipSize } from 'gzip-size';
 import stripAnsi from 'strip-ansi';
 import { Stats } from 'webpack';
-
-let brotliSize: (content: Buffer) => number = () => NaN;
-
-try {
-    // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
-    brotliSize = require('brotli-size').sync;
-} catch (error) {
-    // empty error
-}
+import * as brotliSize from 'brotli-size';
 
 function canReadAsset(asset: string) {
     return (
@@ -64,7 +55,7 @@ export function calculateAssetsSizes(webpackStats: Stats, rootDir = ''): ClientA
         .map((asset) => {
             const fileContents = fs.readFileSync(path.join(rootDir, asset.name));
             const size = gzipSize(fileContents);
-            const brSize = brotliSize(fileContents);
+            const brSize = brotliSize.sync(fileContents);
             const filename = path.basename(asset.name);
 
             return {
@@ -78,6 +69,7 @@ export function calculateAssetsSizes(webpackStats: Stats, rootDir = ''): ClientA
                 brotliLabel: brSize ? filesize(brSize) : '-',
             };
         });
+
     const totalSizes: Partial<TotalSizes> = (assets || []).reduce(
         (file, total) => ({
             size: total.size + file.size,

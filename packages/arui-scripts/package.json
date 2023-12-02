@@ -137,7 +137,7 @@
         "@types/webpack-manifest-plugin": "3.0.5",
         "@types/webpack-node-externals": "^3.0.0",
         "eslint": "^8.20.0",
-        "eslint-config-custom": "workspace:*",
+        "eslint-config-custom": "file:../eslint-config-custom",
         "prettier": "^2.7.1",
         "semantic-release": "^21.0.7",
         "stylelint": "^14.9.1",

@@ -1,4 +1,3 @@
-// TODO: remove eslint-disable-next-line
 const betaChannelName = process.env.NPM_CHANNEL || 'next';
 
 if (betaChannelName === 'latest') {
@@ -19,7 +18,7 @@ module.exports = {
         {
             name: '*/*',
             channel: betaChannelName,
-            // eslint-disable-next-line no-template-curly-in-string
+            //  eslint-disable-next-line no-template-curly-in-string
             prerelease: '${name.replace(/[^0-9A-Za-z-]/g, "-")}',
         },
     ],

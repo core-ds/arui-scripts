@@ -6817,7 +6817,7 @@ __metadata:
     css-loader: 6.8.1
     css-minimizer-webpack-plugin: 3.4.1
     eslint: ^8.20.0
-    eslint-config-custom: "workspace:*"
+    eslint-config-custom: "file:../eslint-config-custom"
     expose-loader: 3.1.0
     filesize: ^6.4.0
     fork-ts-checker-webpack-plugin: 6.5.3
@@ -10090,6 +10090,13 @@ __metadata:
     eslint-plugin-react: ^7.28.0
     eslint-plugin-react-hooks: ^4.3.0
   checksum: 253178689c3c80eef2567e3aaf0612e18973bc9cf51d9be36074b5dd58210e8b6942200a424bcccbb81ac884e41303479ab09f251a2a97addc2de61efdc9576c
+  languageName: node
+  linkType: hard
+
+"eslint-config-custom@file:../eslint-config-custom::locator=arui-scripts%40workspace%3Apackages%2Farui-scripts":
+  version: 0.0.0
+  resolution: "eslint-config-custom@file:../eslint-config-custom#../eslint-config-custom::hash=566b4e&locator=arui-scripts%40workspace%3Apackages%2Farui-scripts"
+  checksum: 424ecde95a6583b13ebdc939f5de19e8ff282659e775a691f5dc5a3cb0dd6c901c6c6c3db1bf5e435fb1707b419a01540320114a3a0ea953b377eb2de22467e7
   languageName: node
   linkType: hard
 
