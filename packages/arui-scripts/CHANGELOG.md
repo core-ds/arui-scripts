@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 15.10.5
+
+### Patch Changes
+
+-   [#167](https://github.com/core-ds/arui-scripts/pull/167) [`24327b9`](https://github.com/core-ds/arui-scripts/commit/24327b96d6dc2471809747110f1c9be1cd2e4735) Thanks [@Echzio](https://github.com/Echzio)! - исправление docker-build команды для windows
+
 ## 15.10.4
 
 ### Patch Changes
