@@ -131,7 +131,7 @@ function applyOverrides<T extends Overrides[Key], Key extends keyof Overrides>(
         });
     });
 
-    return config;
+    return tempConfig;
 }
 
 export default applyOverrides;
