@@ -18,6 +18,14 @@
         color: green;
         animation: someRandomAnimation 1s ease-in-out infinite alternate;
     }
+
+    &.leftBorder {
+        @media (--desktop-m) {
+            &:before {
+                border-right: 1px solid var(--color-light-border-underline);
+            }
+        }
+    }
 }
 
 @keyframes someRandomAnimation {
