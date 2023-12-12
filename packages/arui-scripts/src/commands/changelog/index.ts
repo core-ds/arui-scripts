@@ -55,7 +55,6 @@ const changelogHeaderRegExp = /^###? \[\d+\.\d+\.\d+]\([^)]+\) \(\d{4}-\d{2}-\d{
         ws.write(getVersionDescription({ features, bugFixes, breakingChanges }));
     };
 
-    // eslint-disable-next-line no-restricted-syntax
     for await (const line of rl) {
         switch (modifyingStatus) {
             // Копируем всё как есть до первого заголовка.

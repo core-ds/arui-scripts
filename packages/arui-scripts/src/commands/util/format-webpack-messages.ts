@@ -1,4 +1,3 @@
-// TODO: remove eslint-disable and eslint-disable-next-line
 /* eslint-disable no-param-reassign */
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
@@ -14,8 +13,7 @@
 // This is quite hacky and hopefully won't be needed when Webpack fixes this.
 // https://github.com/webpack/webpack/issues/2878
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const chalk = require('chalk');
+import chalk from 'chalk';
 
 const friendlySyntaxErrorLabel = 'Syntax error:';
 
@@ -24,7 +22,6 @@ function isLikelyASyntaxError(message: string) {
 }
 
 // Cleans up webpack error messages.
-// eslint-disable-next-line no-unused-vars
 function formatMessage(message: string | { message: string }) {
     if (typeof message !== 'string') {
         message = message.message;

@@ -34,8 +34,7 @@ describe('update-with-presets', () => {
             overridesPath: ['package-overrides-path.js'],
         } as AppContext;
 
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const updatedConfig = updateWithPresets(baseConfig, context);
+        updateWithPresets(baseConfig, context);
 
         expect(context.overridesPath).toEqual([
             'presets/arui-scripts.overrides',

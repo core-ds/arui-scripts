@@ -281,18 +281,18 @@ export const createSingleClientWebpackConfig = (
                                 {
                                     loader: require.resolve('babel-loader'),
                                     options: {
+                                        ...babelConf,
                                         cacheDirectory: mode === 'dev',
                                         cacheCompression: false,
-                                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                        // @ts-ignore
-                                        plugins:
+                                        plugins: [
                                             mode === 'dev'
                                                 ? [
                                                       require.resolve('react-refresh/babel'),
                                                       { skipEnvCheck: true },
                                                   ]
                                                 : undefined,
-                                        ...babelConf,
+                                            ...babelConf.plugins,
+                                        ].filter(Boolean),
                                     },
                                 },
                                 {
