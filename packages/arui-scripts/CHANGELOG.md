@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 15.10.6
+
+### Patch Changes
+
+-   [#172](https://github.com/core-ds/arui-scripts/pull/172) [`f8960f0`](https://github.com/core-ds/arui-scripts/commit/f8960f09358df76daefa564ec7dd845a6a722e2a) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Исправлено добавление префиксов для некоторых селекторов при использовании compat модулей
+
 ## 15.10.5
 
 ### Patch Changes
