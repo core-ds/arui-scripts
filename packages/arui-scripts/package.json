@@ -1,6 +1,6 @@
 {
     "name": "arui-scripts",
-    "version": "15.10.5",
+    "version": "15.10.6",
     "main": "./build/index.js",
     "typings": "./build/index.d.ts",
     "license": "MPL-2.0",
