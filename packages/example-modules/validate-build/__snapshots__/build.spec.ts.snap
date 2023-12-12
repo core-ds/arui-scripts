@@ -56,6 +56,12 @@ exports[`modules should create valid css for ModuleCompat 1`] = `
         -webkit-animation:someRandomAnimation 1s ease-in-out infinite alternate;
                 animation:someRandomAnimation 1s ease-in-out infinite alternate;
     }
+
+    @media (min-width: 1280px){
+            .module-ModuleCompat .primary.leftBorder:before{
+                border-right:1px solid #c5c5c7;
+            }
+        }
 @-webkit-keyframes someRandomAnimation{
     0%{
         -webkit-transform:scaleX(0);
