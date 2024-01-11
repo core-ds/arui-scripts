@@ -4451,15 +4451,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/filesize@npm:^5.0.0":
-  version: 5.0.0
-  resolution: "@types/filesize@npm:5.0.0"
-  dependencies:
-    filesize: "npm:*"
-  checksum: 6bd510787bc8c6d328bd24e257d90234aaa7d642a087bb835991b79e97ff30b1b414098c712010da818cf95127fde9f93698fe23b4e09bd7ab7a06a6cd62ae80
-  languageName: node
-  linkType: hard
-
 "@types/fs-extra@npm:^9.0.13":
   version: 9.0.13
   resolution: "@types/fs-extra@npm:9.0.13"
@@ -4485,15 +4476,6 @@ __metadata:
   dependencies:
     "@types/node": "npm:*"
   checksum: c3070ccdc9ca0f40df747bced1c96c71a61992d6f7c767e8fd24bb6a3c2de26e8b84135ede000b7e79db530a23e7e88dcd9db60eee6395d0f4ce1dae91369dd4
-  languageName: node
-  linkType: hard
-
-"@types/gzip-size@npm:^5.1.1":
-  version: 5.1.1
-  resolution: "@types/gzip-size@npm:5.1.1"
-  dependencies:
-    gzip-size: "npm:*"
-  checksum: 3c333f565956b24b880aa1da9d9744036cd23f93a5d8e540a36d41ddfe14fdfc6e2676ddea321aa9cc7e05138d93307b0b720ea7cbde3d7dd68b24d678ea19c0
   languageName: node
   linkType: hard
 
@@ -4738,15 +4720,6 @@ __metadata:
   dependencies:
     "@types/mime-db": "npm:*"
   checksum: 84d9ff1fdb9e67366aade363e898ad00a843c10dfab9790865268848a2665aa2e87cd2a9374a1e3def4cd7d7ea0c2441885e67df9c8b8b2b5a567f7c2618def4
-  languageName: node
-  linkType: hard
-
-"@types/mini-css-extract-plugin@npm:2.5.1":
-  version: 2.5.1
-  resolution: "@types/mini-css-extract-plugin@npm:2.5.1"
-  dependencies:
-    mini-css-extract-plugin: "npm:*"
-  checksum: 047a8600d49e765e793c009a03af6cb5dcf5c4aa9ee37826d5a37a46bc7d986fd236b7c5eb03089c23462b5c20ee8b97fdb9e126a82312090f33f1e2a22a505f
   languageName: node
   linkType: hard
 
@@ -5028,15 +5001,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/strip-ansi@npm:^5.2.1":
-  version: 5.2.1
-  resolution: "@types/strip-ansi@npm:5.2.1"
-  dependencies:
-    strip-ansi: "npm:*"
-  checksum: 0a8fa5c73874071b656a7d86f81a9158846b8f5762d2daf2e398f2be91e513fa6bada23c98c84c19dbc07d80e3733d223e8e8c4f301e198f658ce14df8bf3b48
-  languageName: node
-  linkType: hard
-
 "@types/tapable@npm:^1":
   version: 1.0.8
   resolution: "@types/tapable@npm:1.0.8"
@@ -5051,15 +5015,6 @@ __metadata:
     "@types/minipass": "npm:*"
     "@types/node": "npm:*"
   checksum: c489e0cf722939105690ad760fa41399f7db7ddea6cffb4f42d5f6927556082af757ccc19cb966530d75ad015df6b0b57d55aa26d8a669b10be64b45bbd64367
-  languageName: node
-  linkType: hard
-
-"@types/terser-webpack-plugin@npm:5.2.0":
-  version: 5.2.0
-  resolution: "@types/terser-webpack-plugin@npm:5.2.0"
-  dependencies:
-    terser-webpack-plugin: "npm:*"
-  checksum: 475b0f160c9f83641255f6516b69d7908b9e3e8e8ab653f3a257690249f9614f9386c0897eba6e4e35182ec0d83f57454d62fb94b38ae7c171891641350072ee
   languageName: node
   linkType: hard
 
@@ -6153,20 +6108,15 @@ __metadata:
     "@types/assets-webpack-plugin": "npm:6.1.2"
     "@types/case-sensitive-paths-webpack-plugin": "npm:2.1.6"
     "@types/compression-webpack-plugin": "npm:4.0.1"
-    "@types/filesize": "npm:^5.0.0"
     "@types/fs-extra": "npm:^9.0.13"
-    "@types/gzip-size": "npm:^5.1.1"
     "@types/jest": "npm:^26.0.24"
     "@types/lodash.merge": "npm:^4.6.7"
-    "@types/mini-css-extract-plugin": "npm:2.5.1"
     "@types/node": "npm:12.20.55"
     "@types/react-dev-utils": "npm:9.0.11"
     "@types/semver": "npm:^7.5.0"
     "@types/shelljs": "npm:^0.8.12"
     "@types/start-server-webpack-plugin": "npm:2.2.2"
-    "@types/strip-ansi": "npm:^5.2.1"
     "@types/tar": "npm:^4.0.5"
-    "@types/terser-webpack-plugin": "npm:5.2.0"
     "@types/webpack": "npm:^5.28.1"
     "@types/webpack-bundle-analyzer": "npm:4.6.0"
     "@types/webpack-dev-server": "npm:^4.7.1"
@@ -9985,13 +9935,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"filesize@npm:*":
-  version: 10.0.12
-  resolution: "filesize@npm:10.0.12"
-  checksum: 47a022b62fbb7e48ac5dddb3d73e3ee08448e60e04b9779999cbfd669557f3b7144af09397a8ff3fe8c5aa187de3425b68bb4a5fc85682adabad7f2e4a8bf6cb
-  languageName: node
-  linkType: hard
-
 "filesize@npm:^6.4.0":
   version: 6.4.0
   resolution: "filesize@npm:6.4.0"
@@ -10753,15 +10696,6 @@ __metadata:
   version: 1.4.0
   resolution: "graphemer@npm:1.4.0"
   checksum: 6dd60dba97007b21e3a829fab3f771803cc1292977fe610e240ea72afd67e5690ac9eeaafc4a99710e78962e5936ab5a460787c2a1180f1cb0ccfac37d29f897
-  languageName: node
-  linkType: hard
-
-"gzip-size@npm:*":
-  version: 7.0.0
-  resolution: "gzip-size@npm:7.0.0"
-  dependencies:
-    duplexer: "npm:^0.1.2"
-  checksum: 52d0bf586307082428b99f7b04d56d756d640e1f84d4a56debf9fb8c972d9db679143b067dd4024ebef42e9f6787e9dc8b9dcad344372b9dc87e55d942276f49
   languageName: node
   linkType: hard
 
@@ -13585,7 +13519,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mini-css-extract-plugin@npm:*, mini-css-extract-plugin@npm:2.7.6":
+"mini-css-extract-plugin@npm:2.7.6":
   version: 2.7.6
   resolution: "mini-css-extract-plugin@npm:2.7.6"
   dependencies:
@@ -17868,21 +17802,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"strip-ansi@npm:*, strip-ansi@npm:^7.0.1":
-  version: 7.1.0
-  resolution: "strip-ansi@npm:7.1.0"
-  dependencies:
-    ansi-regex: "npm:^6.0.1"
-  checksum: 475f53e9c44375d6e72807284024ac5d668ee1d06010740dec0b9744f2ddf47de8d7151f80e5f6190fc8f384e802fdf9504b76a7e9020c9faee7103623338be2
-  languageName: node
-  linkType: hard
-
 "strip-ansi@npm:^3.0.0":
   version: 3.0.1
   resolution: "strip-ansi@npm:3.0.1"
   dependencies:
     ansi-regex: "npm:^2.0.0"
   checksum: 9b974de611ce5075c70629c00fa98c46144043db92ae17748fb780f706f7a789e9989fd10597b7c2053ae8d1513fd707816a91f1879b2f71e6ac0b6a863db465
+  languageName: node
+  linkType: hard
+
+"strip-ansi@npm:^7.0.1":
+  version: 7.1.0
+  resolution: "strip-ansi@npm:7.1.0"
+  dependencies:
+    ansi-regex: "npm:^6.0.1"
+  checksum: 475f53e9c44375d6e72807284024ac5d668ee1d06010740dec0b9744f2ddf47de8d7151f80e5f6190fc8f384e802fdf9504b76a7e9020c9faee7103623338be2
   languageName: node
   linkType: hard
 
@@ -18254,7 +18188,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"terser-webpack-plugin@npm:*, terser-webpack-plugin@npm:5.3.9, terser-webpack-plugin@npm:^5.3.7":
+"terser-webpack-plugin@npm:5.3.9, terser-webpack-plugin@npm:^5.3.7":
   version: 5.3.9
   resolution: "terser-webpack-plugin@npm:5.3.9"
   dependencies:
