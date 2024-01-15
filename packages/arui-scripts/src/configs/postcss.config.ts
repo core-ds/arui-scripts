@@ -1,6 +1,7 @@
 import path from 'path';
 
 import config from './app-configs';
+import supportingBrowsers from './supporting-browsers';
 /**
  * Функция для создания конфигурационного файла postcss
  * @param {String[]} plugins список плагинов
@@ -56,5 +57,8 @@ export const postcssPluginsOptions = {
     },
     'postcss-custom-properties': {
         preserve: false,
+    },
+    autoprefixer: {
+        overrideBrowserslist: supportingBrowsers,
     },
 };

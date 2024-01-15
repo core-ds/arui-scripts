@@ -6172,7 +6172,7 @@ __metadata:
     "@types/webpack-manifest-plugin": 3.0.5
     "@types/webpack-node-externals": ^3.0.0
     assets-webpack-plugin: 7.1.1
-    autoprefixer: ^8.6.5
+    autoprefixer: ^10.3.16
     babel-core: ^7.0.0-bridge.0
     babel-jest: 28.1.3
     babel-loader: 9.1.3
@@ -6311,6 +6311,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"autoprefixer@npm:^10.3.16":
+  version: 10.4.16
+  resolution: "autoprefixer@npm:10.4.16"
+  dependencies:
+    browserslist: ^4.21.10
+    caniuse-lite: ^1.0.30001538
+    fraction.js: ^4.3.6
+    normalize-range: ^0.1.2
+    picocolors: ^1.0.0
+    postcss-value-parser: ^4.2.0
+  peerDependencies:
+    postcss: ^8.1.0
+  bin:
+    autoprefixer: bin/autoprefixer
+  checksum: 45fad7086495048dacb14bb7b00313e70e135b5d8e8751dcc60548889400763705ab16fc2d99ea628b44c3472698fb0e39598f595ba28409c965ab159035afde
+  languageName: node
+  linkType: hard
+
 "autoprefixer@npm:^10.4.14":
   version: 10.4.15
   resolution: "autoprefixer@npm:10.4.15"
@@ -6326,22 +6344,6 @@ __metadata:
   bin:
     autoprefixer: bin/autoprefixer
   checksum: d490b14fb098c043e109fc13cd23628f146af99a493d35b9df3a26f8ec0b4dd8937c5601cdbaeb465b98ea31d3ea05aa7184711d4d93dfb52358d073dcb67032
-  languageName: node
-  linkType: hard
-
-"autoprefixer@npm:^8.6.5":
-  version: 8.6.5
-  resolution: "autoprefixer@npm:8.6.5"
-  dependencies:
-    browserslist: ^3.2.8
-    caniuse-lite: ^1.0.30000864
-    normalize-range: ^0.1.2
-    num2fraction: ^1.2.2
-    postcss: ^6.0.23
-    postcss-value-parser: ^3.2.3
-  bin:
-    autoprefixer: ./bin/autoprefixer
-  checksum: b420026021a49946259ec47f06cc8ab4d01547c57578e440d237c236831ed3db1b5ae1c805ca615061bd6beec6e99f9d6d68f0aee40cffe8809dc3df34c7ceff
   languageName: node
   linkType: hard
 
@@ -6688,18 +6690,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"browserslist@npm:^3.2.8":
-  version: 3.2.8
-  resolution: "browserslist@npm:3.2.8"
-  dependencies:
-    caniuse-lite: ^1.0.30000844
-    electron-to-chromium: ^1.3.47
-  bin:
-    browserslist: ./cli.js
-  checksum: 74d9ab1089a3813f54a7c4f9f6612faa6256799c8e42c7e00e4aae626c17f199049a01707a525a05b1673cd1493936583e51aad295e25249166e7e8fbd0273ba
-  languageName: node
-  linkType: hard
-
 "browserslist@npm:^4.0.0, browserslist@npm:^4.14.5, browserslist@npm:^4.18.1, browserslist@npm:^4.21.10, browserslist@npm:^4.21.4, browserslist@npm:^4.21.9":
   version: 4.21.10
   resolution: "browserslist@npm:4.21.10"
@@ -6871,10 +6861,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"caniuse-lite@npm:^1.0.0, caniuse-lite@npm:^1.0.30000844, caniuse-lite@npm:^1.0.30000864, caniuse-lite@npm:^1.0.30001517, caniuse-lite@npm:^1.0.30001520":
+"caniuse-lite@npm:^1.0.0, caniuse-lite@npm:^1.0.30001517, caniuse-lite@npm:^1.0.30001520":
   version: 1.0.30001522
   resolution: "caniuse-lite@npm:1.0.30001522"
   checksum: 56e3551c02ae595085114073cf242f7d9d54d32255c80893ca9098a44f44fc6eef353936f234f31c7f4cb894dd2b6c9c4626e30649ee29e04d70aa127eeefeb0
+  languageName: node
+  linkType: hard
+
+"caniuse-lite@npm:^1.0.30001538":
+  version: 1.0.30001576
+  resolution: "caniuse-lite@npm:1.0.30001576"
+  checksum: b8b332675fe703d5e57b02df5f100345f2a3796c537a42422f5bfc82d3256b8bad3f4e2788553656d2650006d13a4b5db99725e2a9462cc0c8035ba494ba1857
   languageName: node
   linkType: hard
 
@@ -8833,7 +8830,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-to-chromium@npm:^1.3.47, electron-to-chromium@npm:^1.4.477":
+"electron-to-chromium@npm:^1.4.477":
   version: 1.4.499
   resolution: "electron-to-chromium@npm:1.4.499"
   checksum: 9002f3bcd9018f38b3496c2ced5393c6144d3a09bc5e1ea9866541045f6364841a6d11afe8c5977838835bc70f50f8caee63ba928a910e68ac1eed45afd18120
@@ -10268,6 +10265,13 @@ __metadata:
   version: 4.2.1
   resolution: "fraction.js@npm:4.2.1"
   checksum: 94cc9844bf1e3071734fa70c7410cf26c09636a0e95f956f2f90d839bf516d60f07bac6f33fbe018dbdbba7bda360794c0232810900475295415a164c3c9cf78
+  languageName: node
+  linkType: hard
+
+"fraction.js@npm:^4.3.6":
+  version: 4.3.7
+  resolution: "fraction.js@npm:4.3.7"
+  checksum: e1553ae3f08e3ba0e8c06e43a3ab20b319966dfb7ddb96fd9b5d0ee11a66571af7f993229c88ebbb0d4a816eb813a24ed48207b140d442a8f76f33763b8d1f3f
   languageName: node
   linkType: hard
 
@@ -14094,13 +14098,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"num2fraction@npm:^1.2.2":
-  version: 1.2.2
-  resolution: "num2fraction@npm:1.2.2"
-  checksum: 1da9c6797b505d3f5b17c7f694c4fa31565bdd5c0e5d669553253aed848a580804cd285280e8a73148bd9628839267daee4967f24b53d4e893e44b563e412635
-  languageName: node
-  linkType: hard
-
 "nwsapi@npm:^2.2.2":
   version: 2.2.7
   resolution: "nwsapi@npm:2.2.7"
@@ -15737,7 +15734,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss-value-parser@npm:^3.2.3, postcss-value-parser@npm:^3.3.0, postcss-value-parser@npm:^3.3.1":
+"postcss-value-parser@npm:^3.3.0, postcss-value-parser@npm:^3.3.1":
   version: 3.3.1
   resolution: "postcss-value-parser@npm:3.3.1"
   checksum: 62cd26e1cdbcf2dcc6bcedf3d9b409c9027bc57a367ae20d31dd99da4e206f730689471fd70a2abe866332af83f54dc1fa444c589e2381bf7f8054c46209ce16
