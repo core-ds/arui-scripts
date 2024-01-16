@@ -26,13 +26,13 @@ const babelClientConfig = applyOverrides(['babel', 'babelClient'], {
         require.resolve('@babel/plugin-syntax-dynamic-import'),
         require.resolve('@babel/plugin-transform-proto-to-assign'),
         [require.resolve('@babel/plugin-proposal-decorators'), { legacy: true }],
-        [require.resolve('@babel/plugin-proposal-class-properties'), { loose: true }],
-        [require.resolve('@babel/plugin-proposal-private-methods'), { loose: true }],
-        [require.resolve('@babel/plugin-proposal-private-property-in-object'), { loose: true }],
-        require.resolve('@babel/plugin-proposal-numeric-separator'),
+        [require.resolve('@babel/plugin-transform-class-properties'), { loose: true }],
+        [require.resolve('@babel/plugin-transform-private-methods'), { loose: true }],
+        [require.resolve('@babel/plugin-transform-private-property-in-object'), { loose: true }],
+        require.resolve('@babel/plugin-transform-numeric-separator'),
         require.resolve('@babel/plugin-proposal-export-default-from'),
-        require.resolve('@babel/plugin-proposal-export-namespace-from'),
-        [require.resolve('@babel/plugin-proposal-object-rest-spread'), { useBuiltIns: true }],
+        require.resolve('@babel/plugin-transform-export-namespace-from'),
+        [require.resolve('@babel/plugin-transform-object-rest-spread'), { useBuiltIns: true }],
         [
             require.resolve('@babel/plugin-transform-runtime'),
             {
@@ -45,8 +45,8 @@ const babelClientConfig = applyOverrides(['babel', 'babelClient'], {
                 regenerator: true,
             },
         ],
-        require.resolve('@babel/plugin-proposal-nullish-coalescing-operator'),
-        require.resolve('@babel/plugin-proposal-optional-chaining'),
+        require.resolve('@babel/plugin-transform-nullish-coalescing-operator'),
+        require.resolve('@babel/plugin-transform-optional-chaining'),
     ],
     env: {
         production: {
