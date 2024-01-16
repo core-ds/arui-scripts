@@ -1,5 +1,34 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 16.0.0
+
+### Major Changes
+
+-   [#179](https://github.com/core-ds/arui-scripts/pull/179) [`2a47b41`](https://github.com/core-ds/arui-scripts/commit/2a47b412cf3937542652d5d105357567cb0bdf21) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Прекращена поддержка nodejs@14.
+    Поддерживаемые версии nodejs: `16.20.2, 18.0.0+, 20.0.0+`.
+
+    Базовые образы `alpine-node-nginx` больше не будут публиковаться с тегом `latest`, он остается зафиксированным на версии `14.21.3`.
+
+    Вы можете продолжать использовать `arui-scripts` с nodejs@14, но мы не будем исправлять ошибки, связанные с этой версией nodejs.
+    Совместимость peer зависимостей не гарантируется.
+
+-   [#178](https://github.com/core-ds/arui-scripts/pull/178) [`5158f3a`](https://github.com/core-ds/arui-scripts/commit/5158f3a761d5d85ce506353d6a08cd5d15313411) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Обновление списка поддерживаемых браузеров.
+    Прекращена поддержка IE11.
+
+    Это влияет как на собираемый js-код, так и на стили.
+
+    При желании вы можете переопределить список поддеживаемых браузеров через оверрайды.
+
+    ```ts
+    // arui-scripts.overrides.ts
+    import { OverrideFile } from 'arui-scripts';
+    const override: OverrideFile = {
+        browsers: () => ['last 2 versions', 'not ie < 11'], // или любой другой ваш список
+    };
+
+    export default override;
+    ```
+
 ## 15.11.0
 
 ### Minor Changes
