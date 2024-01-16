@@ -12,9 +12,7 @@ exports[`client should create valid css 1`] = `
         letter-spacing:1.25px;
         text-transform:uppercase;
 
-        -webkit-padding-start:12px;
-
-                padding-inline-start:12px;
+        padding-inline-start:12px;
         padding-block:2px;
         box-shadow:0 0 4px rgba(0, 0, 0, 0.02), 0 -2px 4px rgba(0, 0, 0, 0.04), 0 -2px 4px rgba(0, 0, 0, 0.16);
         color:rgb(236, 142, 133);
@@ -28,9 +26,7 @@ exports[`client should create valid css 1`] = `
     letter-spacing:1.25px;
     text-transform:uppercase;
 
-    -webkit-padding-start:12px;
-
-            padding-inline-start:12px;
+    padding-inline-start:12px;
     padding-block:2px;
     box-shadow:0 0 4px rgba(0, 0, 0, 0.02), 0 -2px 4px rgba(0, 0, 0, 0.04), 0 -2px 4px rgba(0, 0, 0, 0.16);
     color:rgb(236, 142, 133);
@@ -47,22 +43,9 @@ body{
     font-size:20px;
     padding:15px;
     color:#f00;
-    background:-webkit-linear-gradient(105deg, #aacac2, #3929bb);
     background:linear-gradient(345deg, #aacac2, #3929bb);
     background-size:400% 400%;
-    -webkit-animation:Insanity 2s ease infinite;
-            animation:Insanity 2s ease infinite;
-}
-@-webkit-keyframes Insanity{
-    0%{
-        background-position:0 50%;
-    }
-    50%{
-        background-position:100% 50%;
-    }
-    100%{
-        background-position:0 50%;
-    }
+    animation:Insanity 2s ease infinite;
 }
 @keyframes Insanity{
     0%{

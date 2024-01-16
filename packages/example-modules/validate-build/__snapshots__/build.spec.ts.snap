@@ -12,9 +12,7 @@ exports[`modules should create valid css for ModuleCompat 1`] = `
         letter-spacing:1.25px;
         text-transform:uppercase;
 
-        -webkit-padding-start:12px;
-
-                padding-inline-start:12px;
+        padding-inline-start:12px;
         padding-block:2px;
         box-shadow:0 0 4px rgba(0, 0, 0, 0.02), 0 -2px 4px rgba(0, 0, 0, 0.04), 0 -2px 4px rgba(0, 0, 0, 0.16);
         color:rgb(236, 142, 133);
@@ -28,9 +26,7 @@ exports[`modules should create valid css for ModuleCompat 1`] = `
     letter-spacing:1.25px;
     text-transform:uppercase;
 
-    -webkit-padding-start:12px;
-
-            padding-inline-start:12px;
+    padding-inline-start:12px;
     padding-block:2px;
     box-shadow:0 0 4px rgba(0, 0, 0, 0.02), 0 -2px 4px rgba(0, 0, 0, 0.04), 0 -2px 4px rgba(0, 0, 0, 0.16);
     color:rgb(236, 142, 133);
@@ -53,8 +49,7 @@ exports[`modules should create valid css for ModuleCompat 1`] = `
 
     .module-ModuleCompat .primary:hover .primary__footer{
         color:green;
-        -webkit-animation:someRandomAnimation 1s ease-in-out infinite alternate;
-                animation:someRandomAnimation 1s ease-in-out infinite alternate;
+        animation:someRandomAnimation 1s ease-in-out infinite alternate;
     }
 
     @media (min-width: 1280px){
@@ -62,26 +57,13 @@ exports[`modules should create valid css for ModuleCompat 1`] = `
                 border-right:1px solid #c5c5c7;
             }
         }
-@-webkit-keyframes someRandomAnimation{
-    0%{
-        -webkit-transform:scaleX(0);
-                transform:scaleX(0);
-    }
-
-    100%{
-        -webkit-transform:scaleX(1);
-                transform:scaleX(1);
-    }
-}
 @keyframes someRandomAnimation{
     0%{
-        -webkit-transform:scaleX(0);
-                transform:scaleX(0);
+        transform:scaleX(0);
     }
 
     100%{
-        -webkit-transform:scaleX(1);
-                transform:scaleX(1);
+        transform:scaleX(1);
     }
 }
 
