@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 15.11.0
+
+### Minor Changes
+
+-   [#181](https://github.com/core-ds/arui-scripts/pull/181) [`14b9350`](https://github.com/core-ds/arui-scripts/commit/14b9350877e4ba0088245a78bc36037b7b0a11b5) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Обновление версий babel
+
 ## 15.10.6
 
 ### Patch Changes
