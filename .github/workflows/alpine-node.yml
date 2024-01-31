@@ -14,8 +14,6 @@ env:
 
 jobs:
   build:
-    needs:
-      - buildOldNode
     strategy:
       matrix:
         versions: [
