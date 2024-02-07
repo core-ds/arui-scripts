@@ -1,4 +1,3 @@
-/* eslint-disable no-underscore-dangle */
 import { ModuleFederationContainer } from '../../types';
 import { getCompatModule, getModule } from '../get-module';
 

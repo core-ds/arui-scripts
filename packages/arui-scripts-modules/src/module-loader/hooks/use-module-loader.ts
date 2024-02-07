@@ -65,7 +65,6 @@ export function useModuleLoader<ModuleExportType, GetResourcesParams>({
                     return;
                 }
                 setLoadingState('rejected');
-                // eslint-disable-next-line no-console
                 console.error(error);
             }
         }

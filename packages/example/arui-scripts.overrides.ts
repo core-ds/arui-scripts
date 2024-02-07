@@ -1,28 +1,21 @@
-// TODO: remove eslint-disable-next-line
+import path from 'path';
+
 import { OverrideFile } from 'arui-scripts';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import path from 'node:path';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import {RuleSetRule} from 'webpack';
 
 const overrides: OverrideFile = {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     webpackClient: (config, appConfig, { createSingleClientWebpackConfig, findLoader }) => {
         const workerConfig = createSingleClientWebpackConfig(
             { worker: './src/worker.ts' },
             'worker',
         );
 
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        workerConfig.output.filename = 'worker.js';
+        if (workerConfig.output) {
+            workerConfig.output.filename = 'worker.js';
+        }
 
         const rootConfigList = Array.isArray(config) ? config : [config];
 
-        // Делаем стабильные имена классов css модулей для тестирования
-        // eslint-disable-next-line no-restricted-syntax
         for (const rootConfig of rootConfigList) {
             const cssModulesLoader = findLoader(rootConfig, '/\\.module\\.css$/');
 
@@ -53,10 +46,15 @@ const overrides: OverrideFile = {
         const allConfigs = Array.isArray(config) ? config : [config];
 
         return allConfigs.map((config) => {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            // eslint-disable-next-line no-param-reassign
-            config.optimization.minimize = false;
+            if (config.optimization) {
+                return {
+                    ...config,
+                    optimization: {
+                        ...config.optimization,
+                        minimize: false,
+                    }
+                }
+            }
 
             return config;
         });

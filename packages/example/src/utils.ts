@@ -1,16 +1,13 @@
-// TODO: remove eslint-disable
-/* eslint-disable no-param-reassign */
-/* eslint-disable operator-assignment */
 export enum YesNoEnum {
     Yes = 'Yes',
     No = 'No',
 }
 
 export function isSmaller(a: number, b: number) {
-    a = a * 10_000;
-    b = b * 10_000;
+    const calculatedA = a * 10_000;
+    const calculatedB = b * 10_000;
 
-    return a > b ? YesNoEnum.Yes : YesNoEnum.No;
+    return calculatedA > calculatedB ? YesNoEnum.Yes : YesNoEnum.No;
 }
 
 type OptionalChainingTest = {

@@ -1,4 +1,3 @@
-// TODO: remove eslint-disable-next-line
 import React from 'react';
 import ReactDOM from 'react-dom';
 
@@ -9,9 +8,8 @@ const targetElement = document.getElementById('app');
 if (process.env.NODE_ENV !== 'production' && module.hot) {
     ReactDOM.render(<App />, targetElement);
 
-    module.hot.accept('./components/app', () => {
-        // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
-        const NextAppAssignments = require('./components/app').App;
+    module.hot.accept('./components/app', async () => {
+        const NextAppAssignments = await import('./components/app').then(({ App }) => App);
 
         ReactDOM.render(<NextAppAssignments />, targetElement);
     });

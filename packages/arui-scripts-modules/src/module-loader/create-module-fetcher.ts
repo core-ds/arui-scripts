@@ -1,5 +1,3 @@
-// TODO: remove eslint-disable
-/* eslint-disable no-underscore-dangle */
 import { fetchAppManifest } from './utils/fetch-app-manifest';
 import { urlSegmentWithoutEndSlash } from './utils/normalize-url-segment';
 import { ModuleResourcesGetter } from './create-module-loader';
