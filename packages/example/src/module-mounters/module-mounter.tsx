@@ -10,7 +10,7 @@ import {
     useModuleMounter,
 } from '@alfalab/scripts-modules';
 
-const loader = createModuleLoader<MountableModule<void, BaseModuleState>>({
+const loader = createModuleLoader<MountableModule<Record<string, string>, BaseModuleState>>({
     hostAppId: 'example',
     moduleId: 'Module',
     getModuleResources: createModuleFetcher({
@@ -18,10 +18,15 @@ const loader = createModuleLoader<MountableModule<void, BaseModuleState>>({
     }),
 });
 
-export const ModuleMounter = () => {
+type Props = {
+    runParams?: Record<string, string>;
+};
+
+export const ModuleMounter = ({ runParams }: Props) => {
     const { loadingState, targetElementRef } = useModuleMounter({
         loader,
         useShadowDom: true,
+        runParams,
     });
 
     return (

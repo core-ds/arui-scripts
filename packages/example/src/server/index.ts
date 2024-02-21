@@ -8,7 +8,7 @@ const app = express();
 
 app.use('/assets', express.static(path.join(process.cwd(), '.build', 'assets')));
 
-app.get('/', async (req, res) => {
+app.get('/*', async (req, res) => {
     const assets = await readAssetsManifest();
 
     const response = `

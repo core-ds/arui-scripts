@@ -1,24 +1,14 @@
-// TODO: remove eslint-disable-next-line
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { Router } from 'react-router';
+import { createBrowserHistory } from 'history';
 
-import { App } from './components/app';
+import { Routes } from './components/routes';
 
 const targetElement = document.getElementById('app');
+const history = createBrowserHistory();
 
-if (process.env.NODE_ENV !== 'production' && module.hot) {
-    ReactDOM.render(<App />, targetElement);
-
-    module.hot.accept('./components/app', () => {
-        // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
-        const NextAppAssignments = require('./components/app').App;
-
-        ReactDOM.render(<NextAppAssignments />, targetElement);
-    });
-} else {
-    ReactDOM.render(<App />, targetElement);
-}
-
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/assets/worker.js');
-}
+ReactDOM.render(
+    <Router history={history}><Routes /></Router>,
+    targetElement
+);
