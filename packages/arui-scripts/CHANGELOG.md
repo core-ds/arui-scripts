@@ -1,5 +1,13 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 16.0.1
+
+### Patch Changes
+
+-   [#186](https://github.com/core-ds/arui-scripts/pull/186) [`40318c0`](https://github.com/core-ds/arui-scripts/commit/40318c0089fdeba92bc6bd26ae945d6139c94ca7) Thanks [@dependabot](https://github.com/apps/dependabot)! - Обновление бибилиотеки ip с 2.0.0 до 2.0.1
+
+-   [#187](https://github.com/core-ds/arui-scripts/pull/187) [`eef36d9`](https://github.com/core-ds/arui-scripts/commit/eef36d9eb518f31bad1e787b622c310e41593506) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Исправлена проблема с запуском AruiRuntimeModule на серверной стороне
+
 ## 16.0.0
 
 ### Major Changes
