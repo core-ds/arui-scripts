@@ -11,7 +11,7 @@ export class RuntimeModule extends webpack.RuntimeModule {
     // eslint-disable-next-line class-methods-use-this
     generate() {
         return webpack.Template.asString([
-            "if (typeof __webpack_modules__ !== 'undefined') {", // По какой-то причине вебпак пытается выполнить этот код не только в браузере, но и при сборке.
+            "if (typeof __webpack_modules__ !== 'undefined' && typeof document !== 'undefined') {", // По какой-то причине вебпак пытается выполнить этот код не только в браузере, но и при сборке.
             `${FULL_ARUI_RUNTIME_PATH} = { scriptSource: document.currentScript };`,
             '}',
         ]);
