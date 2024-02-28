@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 16.0.2
+
+### Patch Changes
+
+-   [#190](https://github.com/core-ds/arui-scripts/pull/190) [`ce4c92b`](https://github.com/core-ds/arui-scripts/commit/ce4c92b55cb5f5e3410b99f233372b1b90444be5) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Исправлен запуск команды docker-build при использовании докера версии 17-20
+
 ## 16.0.1
 
 ### Patch Changes
