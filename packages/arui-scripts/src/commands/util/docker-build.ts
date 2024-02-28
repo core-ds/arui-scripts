@@ -114,10 +114,11 @@ type DockerBuildCommandParams = {
 
 export function getDockerBuildCommand({ tempDirName, imageFullName }: DockerBuildCommandParams) {
     // если пытаться собрать проект на маках с m1, докер будет пытаться вытянуть базовый образ под свою платформу и
-    // упадет с ошибкой. Чтобы этого избежать - достаточно использовать флаг --platform. Но он поддерживается только начиная
-    // с docker 17.12, а на многих серверах, используемых для сборки до сих пор живет докер 1.13.1
+    // упадет с ошибкой. Чтобы этого избежать - достаточно использовать флаг --platform. Но он поддерживается без экспериментальных
+    // флагов только начиная с docker 20.10.21, а на многих серверах, используемых для сборки до сих пор живет докер 1.13.1
     // Соответственно они будут падать при наличии этого флага.
-    const canUsePlatformFlag = dockerVersionSatisfies('>=17.12');
+    // https://docs.docker.com/engine/release-notes/20.10/
+    const canUsePlatformFlag = dockerVersionSatisfies('>=20.10.21');
 
     return `docker build ${
         canUsePlatformFlag ? '--platform linux/x86_64' : ''
