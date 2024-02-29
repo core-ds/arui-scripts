@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 16.0.3
+
+### Patch Changes
+
+-   [#192](https://github.com/core-ds/arui-scripts/pull/192) [`6d65513`](https://github.com/core-ds/arui-scripts/commit/6d655138c2fa5343e89eeee616e512c706f3a9a9) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Исправлена проверка версии докера при запуске опредленных команд. Теперь проверка так же учитывает версию клиентской части докера
+
 ## 16.0.2
 
 ### Patch Changes
