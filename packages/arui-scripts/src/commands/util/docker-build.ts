@@ -100,11 +100,14 @@ export async function prepareFilesForDocker({
 }
 
 export function dockerVersionSatisfies(request: string) {
-    const dockerVersion = shell.exec("docker version --format '{{.Server.Version}}'", {
+    const dockerServerVersion = shell.exec("docker version --format '{{.Server.Version}}'", {
+        silent: true,
+    });
+    const dockerClientVersion = shell.exec("docker version --format '{{.Client.Version}}'", {
         silent: true,
     });
 
-    return satisfies(dockerVersion.toString(), request);
+    return satisfies(dockerServerVersion.toString(), request) && satisfies(dockerClientVersion.toString(), request);
 }
 
 type DockerBuildCommandParams = {
