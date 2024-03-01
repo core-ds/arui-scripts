@@ -23,6 +23,7 @@ export function getDefaultAppConfig(): AppConfigs {
         useServerHMR: false,
         presets: configFile?.presets || appPackage?.aruiScripts?.presets || null,
         proxy: appPackage.proxy || null,
+        processOptions: appPackage?.aruiScripts?.processOptions || null,
 
         // paths
         buildPath: '.build',

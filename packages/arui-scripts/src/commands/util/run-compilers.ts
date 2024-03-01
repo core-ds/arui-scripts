@@ -15,9 +15,11 @@ export function runCompilers(pathToCompilers: Array<string | string[]>) {
         fs.removeSync(configs.serverOutputPath);
     }
 
+    const { processOptions = [] } = configs;
+
     const compilers = pathToCompilers.map((pathToCompiler) => {
         if (Array.isArray(pathToCompiler)) {
-            const compiler = spawn('node', pathToCompiler, {
+            const compiler = spawn('node', processOptions.concat(pathToCompiler), {
                 stdio: 'inherit',
                 cwd: configs.cwd,
             });
@@ -28,7 +30,7 @@ export function runCompilers(pathToCompilers: Array<string | string[]>) {
             return compiler;
         }
 
-        const compiler = spawn('node', [pathToCompiler], {
+        const compiler = spawn('node', processOptions.concat(pathToCompiler), {
             stdio: 'inherit',
         });
 

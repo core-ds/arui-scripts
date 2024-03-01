@@ -15,6 +15,7 @@ export type AppConfigs = {
     proxy: null | {
         [url: string]: ProxyConfigArrayItem;
     };
+    processOptions: string[];
 
     // paths
     buildPath: string;
