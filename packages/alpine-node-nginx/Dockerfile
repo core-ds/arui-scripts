@@ -162,7 +162,7 @@ RUN \
     # update openssl
     && apk add --no-cache openssl \
     # update expat, FIX CVE-2023-52425
-    && apk add --no-cache expat \
+    && apk add --no-cache expat=2.6.2 \
     # update libxml2, FIX CVE-2024-25062
     && apk add --no-cache libxml2
 
