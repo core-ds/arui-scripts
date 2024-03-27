@@ -14,7 +14,7 @@ alpine-node-nginx
 
 Список доступных версий образа:
 - 16.20.2, 16.20.2-slim
-- 18.19.1, 18.19.1-slim
+- 18.20.0, 18.20.0-slim
 - 20.11.1, 20.11.1-slim
 
 Наиболее актуальный список тегов можно найти на [dockerhub](https://hub.docker.com/r/alfabankui/arui-scripts/tags).
@@ -36,11 +36,11 @@ alpine-node-nginx
 Если вы хотите собрать локально, выполните
 
 ```sh
-docker build --build-arg NODE_VERSION=18.19.0 --build-arg ALPINE_VERSION=3.19 -t alfabankui/arui-scripts:14.17.6 .
+docker build --build-arg NODE_VERSION=18.19.0 --build-arg ALPINE_VERSION=3.19 -t alfabankui/arui-scripts:test .
 ```
 Или для slim версии:
 ```sh
-docker build --build-arg NODE_VERSION=18.19.0 --build-arg ALPINE_VERSION=3.19 -t alfabankui/arui-scripts:14.17.6 -f Dockerfile-slim .
+docker build --build-arg NODE_VERSION=18.19.0 --build-arg ALPINE_VERSION=3.19 -t alfabankui/arui-scripts:test -f Dockerfile-slim .
 ```
 
 ### Локальная сборка на arm-процессорах

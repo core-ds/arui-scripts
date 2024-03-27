@@ -14,11 +14,11 @@ jobs:
       matrix:
         versions: [
           { node: 16.20.2, alpine: 3.18, image: node, dockerfile: Dockerfile, tag: 16.20.2 },
-          { node: 18.19.1, alpine: 3.19, image: node, dockerfile: Dockerfile, tag: 18.19.1 },
+          { node: 18.20.0, alpine: 3.19, image: node, dockerfile: Dockerfile, tag: 18.20.0 },
           { node: 20.11.1, alpine: 3.19, image: node, dockerfile: Dockerfile, tag: 20.11.1 },
 
           { node: 16.20.2, alpine: 3.18, image: node, dockerfile: Dockerfile-slim, tag: 16.20.2-slim },
-          { node: 18.19.1, alpine: 3.19, image: node, dockerfile: Dockerfile-slim, tag: 18.19.1-slim },
+          { node: 18.20.0, alpine: 3.19, image: node, dockerfile: Dockerfile-slim, tag: 18.20.0-slim },
           { node: 20.11.1, alpine: 3.19, image: node, dockerfile: Dockerfile-slim, tag: 20.11.1-slim },
         ]
     runs-on: ubuntu-latest
