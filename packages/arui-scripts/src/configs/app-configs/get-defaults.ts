@@ -36,7 +36,7 @@ export function getDefaultAppConfig(): AppConfigs {
 
         // docker compilation configs
         dockerRegistry: '',
-        baseDockerImage: 'alfabankui/arui-scripts:16.20.2',
+        baseDockerImage: 'alfabankui/arui-scripts:16.20.2-slim',
         nginxRootPath: '/src',
         runFromNonRootUser: true,
         removeDevDependenciesDuringDockerBuild: true,
