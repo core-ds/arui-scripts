@@ -1,5 +1,20 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 16.1.0
+
+### Minor Changes
+
+-   [#198](https://github.com/core-ds/arui-scripts/pull/198) [`c2d6b5d`](https://github.com/core-ds/arui-scripts/commit/c2d6b5d6a54363f32b2e4f80863e6bd477c42c80) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Добавлен новый вид базовых образов - slim версии уже существовавших.
+    В slim версиях отсутствуют многочисленные модули nginx, которые обычно не нужны в проектах.
+
+### Patch Changes
+
+-   [#200](https://github.com/core-ds/arui-scripts/pull/200) [`607bd73`](https://github.com/core-ds/arui-scripts/commit/607bd73504e8ecb72b30c60b9f18784a45dedd98) Thanks [@dependabot](https://github.com/apps/dependabot)! - bump express from 4.18.2 to 4.19.2
+
+-   [#197](https://github.com/core-ds/arui-scripts/pull/197) [`de1f623`](https://github.com/core-ds/arui-scripts/commit/de1f62341986efb075703be7da5cd390473e49a8) Thanks [@dependabot](https://github.com/apps/dependabot)! - bump webpack-dev-middleware from 5.3.3 to 5.3.4
+
+-   [#196](https://github.com/core-ds/arui-scripts/pull/196) [`e497b58`](https://github.com/core-ds/arui-scripts/commit/e497b58f24841b0fb521c9eb3d5b7b884d3b27fc) Thanks [@dependabot](https://github.com/apps/dependabot)! - bump follow-redirects from 1.15.4 to 1.15.6
+
 ## 16.0.3
 
 ### Patch Changes
