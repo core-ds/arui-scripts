@@ -27,7 +27,7 @@
         "@types/hapi20": "npm:@types/hapi__hapi@20",
         "eslint": "^8.20.0",
         "eslint-config-custom": "workspace:*",
-        "express": "^4.18.2",
+        "express": "^4.19.2",
         "jest": "28.1.3",
         "prettier": "^2.7.1",
         "ts-jest": "28.0.8",
