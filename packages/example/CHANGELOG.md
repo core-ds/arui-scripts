@@ -1,5 +1,15 @@
 # example
 
+## 1.1.24
+
+### Patch Changes
+
+-   [#200](https://github.com/core-ds/arui-scripts/pull/200) [`607bd73`](https://github.com/core-ds/arui-scripts/commit/607bd73504e8ecb72b30c60b9f18784a45dedd98) Thanks [@dependabot](https://github.com/apps/dependabot)! - bump express from 4.18.2 to 4.19.2
+
+-   Updated dependencies [[`607bd73`](https://github.com/core-ds/arui-scripts/commit/607bd73504e8ecb72b30c60b9f18784a45dedd98), [`de1f623`](https://github.com/core-ds/arui-scripts/commit/de1f62341986efb075703be7da5cd390473e49a8), [`c2d6b5d`](https://github.com/core-ds/arui-scripts/commit/c2d6b5d6a54363f32b2e4f80863e6bd477c42c80), [`e497b58`](https://github.com/core-ds/arui-scripts/commit/e497b58f24841b0fb521c9eb3d5b7b884d3b27fc)]:
+    -   @alfalab/scripts-server@1.2.2
+    -   arui-scripts@16.1.0
+
 ## 1.1.23
 
 ### Patch Changes
