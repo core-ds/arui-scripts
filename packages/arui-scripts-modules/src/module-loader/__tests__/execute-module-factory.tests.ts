@@ -45,6 +45,21 @@ describe('executeModuleFactory', () => {
         expect(result).toBe('result');
     });
 
+    it('should work when module has a mount field', async () => {
+        const mockModule = {
+            factory: jest.fn().mockResolvedValue('result'),
+        };
+
+        const result = await executeModuleFactory(
+            mockModule as unknown as FactoryModule<unknown, unknown>,
+            { baseUrl: 'example.com', hostAppId: 'app' },
+            'runParams',
+        );
+
+        expect(mockModule.factory).toHaveBeenCalledWith('runParams', { baseUrl: 'example.com', hostAppId: 'app' });
+        expect(result).toBe('result');
+    });
+
     it('should throw an error when module has no default export, factory field or is a function', () => {
         const mockModule = {};
 
