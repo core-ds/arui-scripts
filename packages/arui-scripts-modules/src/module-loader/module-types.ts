@@ -69,6 +69,7 @@ export type FactoryModule<
     ServerState extends BaseModuleState = BaseModuleState,
 > =
     | FactoryModuleFunction<ReturnType, RunParams, ServerState>
-    | { factory: FactoryModuleFunction<ReturnType, RunParams, ServerState> };
+    | { factory: FactoryModuleFunction<ReturnType, RunParams, ServerState>, mount: never }
+    | { mount: FactoryModuleFunction<ReturnType, RunParams, ServerState>, factory: never }
 
 export type WindowWithFactoryModule = WindowWithModule<FactoryModule>;

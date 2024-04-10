@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 
+import { executeModuleFactory } from '../execute-module-factory';
 import { FactoryModule } from '../module-types';
 import { BaseModuleState, Loader } from '../types';
-import { unwrapDefaultExport } from '../utils/unwrap-default-export';
 
 import { LoadingState } from './types';
 
@@ -118,38 +118,4 @@ export function useModuleFactory<
         loadingState,
         module,
     };
-}
-
-export async function executeModuleFactory<ModuleExportType, RunParams, ServerState extends BaseModuleState>(
-    module: FactoryModule<ModuleExportType, RunParams, ServerState>,
-    serverState: ServerState,
-    runParams?: RunParams,
-) {
-    let moduleResult: ModuleExportType;
-
-    /**
-     * Делаем 3 возможных варианта доставки фабрики:
-     * Для compat модулей фабрику можно записать прямо в window
-     * Для compat и для mf модулей делаем также возможным записи в поля factory и default
-     */
-    const unwrappedModule = unwrapDefaultExport(module);
-
-    if (typeof unwrappedModule === 'function') {
-        moduleResult = await unwrappedModule(runParams as RunParams, serverState);
-    } else if (
-        unwrappedModule.factory &&
-        typeof unwrappedModule.factory === 'function'
-    ) {
-        moduleResult = await unwrappedModule.factory(
-            runParams as RunParams,
-            serverState,
-        );
-    } else {
-        throw new Error(
-            `Module ${serverState.hostAppId} does not present a factory function,
-                    try using another hook, e.g. 'useModuleLoader' or 'useModuleMounter'`,
-        );
-    }
-
-    return moduleResult;
 }
