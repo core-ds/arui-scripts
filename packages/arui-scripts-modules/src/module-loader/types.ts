@@ -44,9 +44,10 @@ export type GetModuleStateResult = {
 /**
  * ожидаемое "состояние" модуля
  */
-export type BaseModuleState = {
+export type BaseModuleState<T = unknown> = {
     baseUrl: string;
     hostAppId: string;
+    preloadedState?: T;
 };
 /**
  * Ресурсы, которые нужны модулю для запуска
@@ -78,7 +79,7 @@ export type LoaderParams<GetResourcesParams> = {
     /**
      * Параметры, которые будут переданы в функцию получения ресурсов модуля
      */
-    getResourcesParams: GetResourcesParams;
+    getResourcesParams?: GetResourcesParams;
     /**
      * Опциональный параметр, который используется для поиска элемента, в который нужно вставить css ресурсы модуля.
      */
@@ -86,7 +87,8 @@ export type LoaderParams<GetResourcesParams> = {
     /**
      * Опциональный параметр, который используется для отмены запроса на получение ресурсов модуля.
      */
-    abortSignal?: AbortSignal;};
+    abortSignal?: AbortSignal;
+};
 
 /**
  * Функция, которая загружает модуль и подключает его на страницу.
@@ -94,7 +96,7 @@ export type LoaderParams<GetResourcesParams> = {
  * Возвращает промис, содержащий сам модуль и функцию, которая удаляет ресурсы модуля со страницы.
  */
 export type Loader<GetResourcesParams, ModuleExportType = unknown> = (
-    params: LoaderParams<GetResourcesParams>,
+    params?: LoaderParams<GetResourcesParams>,
 ) => Promise<LoaderResult<ModuleExportType>>;
 
 // Описание типов модулей

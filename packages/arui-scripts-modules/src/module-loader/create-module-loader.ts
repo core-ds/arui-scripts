@@ -68,7 +68,7 @@ export function createModuleLoader<
 > {
     validateUsedWebpackVersion();
 
-    return async ({ abortSignal, getResourcesParams, cssTargetSelector}) => {
+    return async ({ abortSignal, getResourcesParams, cssTargetSelector} = {}) => {
         // Если во время загрузки модуля пришел сигнал об отмене, то отменяем загрузку
         if (abortSignal?.aborted) {
             throw new Error(`Module ${moduleId} loading was aborted`);
