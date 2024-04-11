@@ -1,5 +1,11 @@
 # @alfalab/scripts-modules
 
+## 1.6.1
+
+### Patch Changes
+
+-   [#203](https://github.com/core-ds/arui-scripts/pull/203) [`32c89e8`](https://github.com/core-ds/arui-scripts/commit/32c89e8e077270c951348e54ce9303b07d8e3ff6) Thanks [@Dan28396](https://github.com/Dan28396)! - Добавлена возможность работы с модулями-фабриками, созданными внутренними бибилотеками
+
 ## 1.6.0
 
 ### Minor Changes
