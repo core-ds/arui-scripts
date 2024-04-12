@@ -1,5 +1,11 @@
 # @alfalab/scripts-modules
 
+## 1.6.2
+
+### Patch Changes
+
+-   [#205](https://github.com/core-ds/arui-scripts/pull/205) [`be214e9`](https://github.com/core-ds/arui-scripts/commit/be214e916ad537ecc57971d24f544c62b5b2f86d) Thanks [@Dan28396](https://github.com/Dan28396)! - Исправлены типы лоадера, чтобы можно было использовать его вне хуков и запускать без параметров. BaseModuleState дополнен полем preloadedState, который приходит для модулей, перешедших на вторую версию серверной ручки getModuleResources
+
 ## 1.6.1
 
 ### Patch Changes
