@@ -2,7 +2,7 @@ import { unwrapDefaultExport } from './utils/unwrap-default-export';
 import type { FactoryModule } from './module-types';
 import type { BaseModuleState } from './types';
 
-export async function executeModuleFactory<ModuleExportType, RunParams, ServerState extends BaseModuleState>(
+export async function executeModuleFactory<ModuleExportType, RunParams = undefined, ServerState extends BaseModuleState = BaseModuleState>(
     module: FactoryModule<ModuleExportType, RunParams, ServerState>,
     serverState: ServerState,
     runParams?: RunParams,
