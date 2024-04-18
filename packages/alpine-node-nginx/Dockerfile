@@ -140,12 +140,9 @@ RUN \
 	&& touch /var/log/nginx/access.log /var/log/nginx/error.log \
 	&& ln -sf /dev/stdout /var/log/nginx/access.log \
 	&& ln -sf /dev/stderr /var/log/nginx/error.log \
-    # update openssl
-    && apk add --no-cache openssl \
-    # update expat, FIX CVE-2023-52425
-    && apk add --no-cache expat \
-    # update libxml2, FIX CVE-2024-25062
-    && apk add --no-cache libxml2
+    # update all packages to latest
+    && apk update \
+    && apk upgrade --no-cache
 
 COPY nginx.conf /etc/nginx/nginx.conf
 
