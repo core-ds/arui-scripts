@@ -48,7 +48,7 @@ export function getDefaultAppConfig(): AppConfigs {
         useTscLoader: false,
         webpack4Compatibility: false,
         installServerSourceMaps: false,
-        disableDevWebpackTypecheck: false,
+        disableDevWebpackTypecheck: true,
 
         // image processing
         dataUrlMaxSize: 1536,

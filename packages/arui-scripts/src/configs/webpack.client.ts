@@ -424,9 +424,10 @@ export const createSingleClientWebpackConfig = (
             chunkFilename: mode === 'dev' ? '[id].css' : '[name].[contenthash:8].chunk.css',
             insert: getInsertCssRuntimeMethod() as any,
         }),
-        (mode === 'prod' || !configs.disableDevWebpackTypecheck) &&
-            configs.tsconfig !== null &&
-            new ForkTsCheckerWebpackPlugin(),
+        (mode === 'prod' || !configs.disableDevWebpackTypecheck)
+            && configs.tsconfig !== null
+            && !configs.useTscLoader
+            && new ForkTsCheckerWebpackPlugin(),
         // moment.js очень большая библиотека, которая включает в себя массу локализаций, которые мы не используем.
         // Поэтому мы их просто игнорируем, чтобы не включать в сборку.
         // https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
