@@ -37,6 +37,9 @@ export type AppConfigs = {
 
     // build tuning
     keepPropTypes: boolean;
+    /**
+     * @deprecated использование ts-loader крайне не рекомендуется - он медленнее и не имеет преимуществ перед babel
+     */
     useTscLoader: boolean;
     webpack4Compatibility: boolean;
     installServerSourceMaps: boolean;
