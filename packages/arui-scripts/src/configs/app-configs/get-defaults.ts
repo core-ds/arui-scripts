@@ -49,6 +49,7 @@ export function getDefaultAppConfig(): AppConfigs {
         webpack4Compatibility: false,
         installServerSourceMaps: false,
         disableDevWebpackTypecheck: true,
+        jestUseTsJest: false,
 
         // image processing
         dataUrlMaxSize: 1536,

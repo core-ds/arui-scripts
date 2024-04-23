@@ -10,7 +10,7 @@ describe('validate-settings-keys', () => {
             name: 'ivan',
         };
 
-        jest.spyOn(console, 'warn');
+        jest.spyOn(console, 'warn').mockImplementationOnce(() => {});
 
         validateSettingsKeys(baseSettings, objectWithSettings);
 

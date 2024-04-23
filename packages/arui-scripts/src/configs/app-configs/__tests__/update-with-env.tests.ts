@@ -7,7 +7,13 @@ describe('update-with-env', () => {
     beforeEach(() => {
         jest.resetModules();
         process.env = { ...OLD_ENV };
+        jest.spyOn(console, 'warn').mockImplementation(() => {});
+        jest.spyOn(console, 'error').mockImplementation(() => {});
     });
+
+    afterEach(() => {
+        jest.resetAllMocks();
+    })
 
     afterAll(() => {
         process.env = OLD_ENV;
