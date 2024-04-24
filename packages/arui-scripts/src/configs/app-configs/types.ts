@@ -41,6 +41,7 @@ export type AppConfigs = {
     webpack4Compatibility: boolean;
     installServerSourceMaps: boolean;
     disableDevWebpackTypecheck: boolean;
+    jestUseTsJest: boolean;
 
     // image processing
     dataUrlMaxSize?: number;
