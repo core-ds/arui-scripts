@@ -16,6 +16,7 @@ import { babelDependencies } from './babel-dependencies';
 import babelConf from './babel-server';
 import postcssConf from './postcss';
 import { serverExternalsExemptions } from './server-externals-exemptions';
+import { getWebpackCacheDependencies } from './util/get-webpack-cache-dependencies';
 
 const ReloadServerPlugin = require('../plugins/reload-server-webpack-plugin');
 const WatchMissingNodeModulesPlugin = require('../plugins/watch-missing-node-modules-plugin');
@@ -71,6 +72,7 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
                   name: 'server',
                   buildDependencies: {
                       config: [__filename],
+                      ...getWebpackCacheDependencies(),
                   },
               }
             : false,

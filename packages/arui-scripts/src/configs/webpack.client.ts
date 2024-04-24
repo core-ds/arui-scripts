@@ -28,6 +28,7 @@ import { patchMainWebpackConfigForModules, patchWebpackConfigForCompat } from '.
 import postcssConf from './postcss';
 import { processAssetsPluginOutput } from './process-assets-plugin-output';
 import { AruiRuntimePlugin, getInsertCssRuntimeMethod } from '../plugins/arui-runtime';
+import { getWebpackCacheDependencies } from './util/get-webpack-cache-dependencies';
 
 const PnpWebpackPlugin = require('pnp-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
@@ -239,6 +240,7 @@ export const createSingleClientWebpackConfig = (
                   type: 'filesystem',
                   buildDependencies: {
                       config: [__filename],
+                      ...getWebpackCacheDependencies(),
                   },
               }
             : false,
