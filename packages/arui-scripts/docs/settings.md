@@ -193,7 +193,16 @@ const settings = {
 - `/^thrift-services\/proptypes/`
 
 #### useTscLoader
-Использовать ts-loader вместо babel-loader для обработки ts файлов. У babel-loader есть [ряд ограничений](https://devblogs.microsoft.com/typescript/typescript-and-babel-7/). По умолчанию `false`.
+Использовать ts-loader вместо babel-loader для обработки ts файлов. **Не рекомендуется к использованию**.
+
+babel-loader является предпочтительным инструментом сборки, его стоят заменять только если в вашем проекте используется неподдерживаемый им синтаксис:
+
+- namespaces
+- Кастинг типов через `<Type>value`
+- enum merging
+- legacy import/export (`import = require('module')`, `export = foo`)
+
+Рекомендуется обновить код проекта до поддерживаемого синтаксиса и использовать babel-loader.
 
 #### webpack4Compatibility
 Включить ли режим совместимости с webpack 4. По умолчанию `false`. Подробнее можно почитать в этом [issue](https://github.com/webpack/webpack/issues/14580).
