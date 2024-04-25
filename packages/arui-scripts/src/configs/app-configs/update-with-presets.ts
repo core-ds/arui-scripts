@@ -11,9 +11,7 @@ export function updateWithPresets(config: AppConfigs, context: AppContext) {
         return config;
     }
 
-    const presetsConfigPath = tryResolve(`${config.presets}/arui-scripts.config`, {
-        paths: [context.cwd],
-    });
+    const presetsConfigPath = getPresetsConfigPath(config, context.cwd);
     const presetsOverridesPath = tryResolve(`${config.presets}/arui-scripts.overrides`, {
         paths: [context.cwd],
     });
@@ -36,4 +34,10 @@ export function updateWithPresets(config: AppConfigs, context: AppContext) {
     }
 
     return config;
+}
+
+export function getPresetsConfigPath(config: AppConfigs, cwd: string) {
+    return  tryResolve(`${config.presets}/arui-scripts.config`, {
+        paths: [cwd],
+    });
 }

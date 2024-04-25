@@ -3,7 +3,7 @@ import path from 'path';
 import { tryResolve } from '../util/resolve';
 
 export function readConfigFile(cwd: string) {
-    const appConfigPath = tryResolve(path.join(cwd, '/arui-scripts.config'));
+    const appConfigPath = getConfigFilePath(cwd);
 
     if (appConfigPath) {
         // Мы не можем использовать импорты, нам нужен именно require, потому что мы не знаем заранее не только путь до файла,
@@ -21,4 +21,8 @@ export function readConfigFile(cwd: string) {
     }
 
     return null;
+}
+
+export function getConfigFilePath(cwd: string) {
+    return tryResolve(path.join(cwd, '/arui-scripts.config'));
 }
