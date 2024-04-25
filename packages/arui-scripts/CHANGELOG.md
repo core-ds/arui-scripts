@@ -1,5 +1,27 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 17.0.0
+
+### Major Changes
+
+-   [#209](https://github.com/core-ds/arui-scripts/pull/209) [`4ae24e3`](https://github.com/core-ds/arui-scripts/commit/4ae24e35fd9234c9a819fcaef6dc81f06287d2b1) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Теперь по умолчанию jest будет использовать babel для преобразования ts-кода. Если по какой-то причине это
+    вас не устраивает - вы можете использовать настройку `jestUseTsJest`.
+
+-   [#210](https://github.com/core-ds/arui-scripts/pull/210) [`156f551`](https://github.com/core-ds/arui-scripts/commit/156f5514003339470afcae571a1b5b5deed6837a) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - disableDevWebpackTypecheck теперь включён по умолчанию. Это означает что в консоль вашего браузера больше не будут
+    попадать ошибки тайпскрипта, так же ошибки больше не будут останавливать дев сборку.
+
+    В дев режиме тайп чекинг будет писать сообщения об ошибках только в stdout процесса сборщика.
+
+    Это позволяет значительно ускорить сборку, особенно в проектах со многими конфигурациями вебпака (десктоп/мобилка, модули и тд).
+
+    Если вы хотите вернуть старое поведение - вы можете это сделать установив настройку `disableDevWebpackTypecheck` в `false`.
+
+-   [#208](https://github.com/core-ds/arui-scripts/pull/208) [`cb515e1`](https://github.com/core-ds/arui-scripts/commit/cb515e1255b8fae812b01d7b965b4a8a2ad416ef) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Флаг useTscLoader помечен как deprecated
+
+### Minor Changes
+
+-   [#213](https://github.com/core-ds/arui-scripts/pull/213) [`6eff863`](https://github.com/core-ds/arui-scripts/commit/6eff863b3ca56b1f77fb16f5c46afccd802621bd) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Улучшен механизм инвалидации кешей вебпака
+
 ## 16.1.0
 
 ### Minor Changes
