@@ -1,5 +1,12 @@
 # example
 
+## 1.1.28
+
+### Patch Changes
+
+-   Updated dependencies [[`bfb00ce`](https://github.com/core-ds/arui-scripts/commit/bfb00cec20095d43046669c9bf2ef189d1a5b1e8)]:
+    -   @alfalab/scripts-server@1.2.3
+
 ## 1.1.27
 
 ### Patch Changes

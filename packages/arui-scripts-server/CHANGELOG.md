@@ -1,5 +1,11 @@
 # @alfalab/scripts-server
 
+## 1.2.3
+
+### Patch Changes
+
+-   [#215](https://github.com/core-ds/arui-scripts/pull/215) [`bfb00ce`](https://github.com/core-ds/arui-scripts/commit/bfb00cec20095d43046669c9bf2ef189d1a5b1e8) Thanks [@Haskiro](https://github.com/Haskiro)! - Исправление обработки массива assets из manifest в функции readAssetsManifest
+
 ## 1.2.2
 
 ### Patch Changes
