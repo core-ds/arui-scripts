@@ -23,29 +23,20 @@ export async function getAppManifest() {
 
 export async function readAssetsManifest(bundleNames: string[] = DEFAULT_BUNDLE_NAMES) {
     const manifest = await getAppManifest();
-    const js: string[] = [];
-    const css: string[] = [];
+    let jsArray: string[] = [];
+    let cssArray: string[] = [];
 
     bundleNames.forEach((key) => {
-        if (!manifest[key]) {
-            return;
-        }
+        if (!manifest[key]) return;
 
-        const script = manifest[key].js;
+        const { js, css } = manifest[key];
 
-        if (script) {
-            js.push(script);
-        }
-
-        const style = manifest[key].css;
-
-        if (style) {
-            css.push(style);
-        }
+        if (js) jsArray = jsArray.concat(js);
+        if (css) cssArray = cssArray.concat(css);
     });
 
     return {
-        js,
-        css,
+        js: jsArray,
+        css: cssArray,
     };
 }

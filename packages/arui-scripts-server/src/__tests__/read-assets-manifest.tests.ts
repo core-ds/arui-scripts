@@ -24,7 +24,7 @@ describe('readAssetsManifest', () => {
                         css: 'vendor.css',
                     },
                     main: {
-                        js: 'main.js',
+                        js: ['main1.js', 'main2.js'],
                         css: 'main.css',
                     },
                 }),
@@ -34,7 +34,7 @@ describe('readAssetsManifest', () => {
         const result = await readAssetsManifest(['vendor', 'main']);
 
         expect(result).toEqual({
-            js: ['vendor.js', 'main.js'],
+            js: ['vendor.js', 'main1.js', 'main2.js'],
             css: ['vendor.css', 'main.css'],
         });
     });
