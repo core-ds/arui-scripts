@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 17.0.1
+
+### Patch Changes
+
+-   [#217](https://github.com/core-ds/arui-scripts/pull/217) [`3ba381a`](https://github.com/core-ds/arui-scripts/commit/3ba381a68370727973bc10a66711adc272394161) Thanks [@qrik116](https://github.com/qrik116)! - Исправление импорта jest настроек в jest-preset, для корректного запуска `node 'node_modules/.bin/jest'`
+
 ## 17.0.0
 
 ### Major Changes
