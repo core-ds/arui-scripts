@@ -2,4 +2,4 @@
 'arui-scripts': patch
 ---
 
-fix import jest settings
+Исправление импорта jest настроек в jest-preset, для корректного запуска `node 'node_modules/.bin/jest'`
