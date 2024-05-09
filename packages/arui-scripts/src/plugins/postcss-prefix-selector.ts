@@ -17,12 +17,7 @@ type NodeWithVisitedAndParent = {
     parent?: NodeWithVisitedAndParent;
 };
 
-const KEYFRAME_RULES = [
-    'keyframes',
-    '-webkit-keyframes',
-    '-moz-keyframes',
-    '-o-keyframes',
-];
+const KEYFRAME_RULES = ['keyframes', '-webkit-keyframes', '-moz-keyframes', '-o-keyframes'];
 
 const postCssPrefix: PluginCreator<PostCssPrefixOptions> = (options) => {
     const prefix = options?.prefix || '.prefix ';
@@ -39,7 +34,8 @@ const postCssPrefix: PluginCreator<PostCssPrefixOptions> = (options) => {
             root.walkRules((rule) => {
                 const hasParent = !!rule.parent;
                 const parentIsAtRule = rule.parent && rule.parent.type === 'atrule';
-                const parentIsKeyframe = parentIsAtRule && KEYFRAME_RULES.includes((rule.parent as any).name);
+                const parentIsKeyframe =
+                    parentIsAtRule && KEYFRAME_RULES.includes((rule.parent as any).name);
 
                 if (hasParent && parentIsKeyframe) {
                     // Нам не нужно добавлять префиксы для keyframes и элементов внутри них
@@ -47,17 +43,13 @@ const postCssPrefix: PluginCreator<PostCssPrefixOptions> = (options) => {
                 }
 
                 (rule as NodeWithVisitedAndParent)[VisitedRule] = true;
+
                 if (isAnyParentVisited(rule)) {
                     // если хотя бы один из родителей (кроме root) был посещен, то не добавляем префикс
                     return;
                 }
-                rule.selectors = rule.selectors.map((selector, index) => {
-                    if (index === 0) {
-                        return `${prefix}${selector}`;
-                    }
 
-                    return selector;
-                });
+                rule.selectors = rule.selectors.map((selector) => `${prefix}${selector}`);
             });
         },
     };
@@ -71,7 +63,7 @@ function isAnyParentVisited(rule: NodeWithVisitedAndParent) {
     let { parent } = rule;
 
     while (parent) {
-        if (!parent.parent)  {
+        if (!parent.parent) {
             return false;
         }
         if (parent[VisitedRule]) {
