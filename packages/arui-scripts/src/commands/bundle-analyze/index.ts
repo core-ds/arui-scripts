@@ -3,7 +3,7 @@
 import webpack from 'webpack';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 
-import configs from '../../configs/app-configs';
+import { configs } from '../../configs/app-configs';
 import clientConfig from '../../configs/webpack.client.prod';
 import makeTmpDir from '../util/make-tmp-dir';
 

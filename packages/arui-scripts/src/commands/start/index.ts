@@ -1,20 +1,20 @@
-import configs from '../../configs/app-configs';
+import { configs } from '../../configs/app-configs';
 import { runCompilers } from '../util/run-compilers';
+import { getTscWatchCommand } from '../util/tsc';
 
 process.env.BROWSERSLIST_CONFIG =
     process.env.BROWSERSLIST_CONFIG || require.resolve('../../../.browserslistrc');
 
-if (configs.tsconfig && configs.disableDevWebpackTypecheck) {
-    const TSC_WATCH_COMMAND = [
-        require.resolve('typescript/lib/tsc.js'),
-        '--watch',
-        '--noEmit',
-        '--project',
-        configs.tsconfig,
-        '--skipLibCheck',
-    ];
+const compilersCommands: Array<string | string[]> = [
+    require.resolve('./client'),
+];
 
-    runCompilers([require.resolve('./client'), require.resolve('./server'), TSC_WATCH_COMMAND]);
-} else {
-    runCompilers([require.resolve('./client'), require.resolve('./server')]);
+if (!configs.clientOnly) {
+    compilersCommands.push(require.resolve('./server'));
 }
+
+if (configs.tsconfig && configs.disableDevWebpackTypecheck) {
+    compilersCommands.push(getTscWatchCommand(configs.tsconfig));
+}
+
+runCompilers(compilersCommands);

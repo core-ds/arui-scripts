@@ -15,6 +15,7 @@ export type AppConfigs = {
     proxy: null | {
         [url: string]: ProxyConfigArrayItem;
     };
+    clientOnly: boolean;
 
     // paths
     buildPath: string;

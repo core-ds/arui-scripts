@@ -1,5 +1,9 @@
-import configs from '../configs/app-configs';
+import { configs } from '../configs/app-configs';
 import applyOverrides from '../configs/util/apply-overrides';
+
+const appPathToAdd = configs.clientOnly ? configs.buildPath : '.';
+const appTargetPath = configs.clientOnly ? `/src/${configs.buildPath}` : '/src';
+const nginxConfTargetLocation = configs.clientOnly ? '/etc/nginx/conf.d/default.conf' : '/src/nginx.conf';
 
 const nginxNonRootPart = configs.runFromNonRootUser
     ? `RUN chown -R nginx:nginx /src && \\
@@ -20,11 +24,13 @@ ARG START_SH_LOCATION
 ARG NGINX_CONF_LOCATION
 
 WORKDIR /src
-ADD $START_SH_LOCATION /src/start.sh
-ADD $NGINX_CONF_LOCATION /src/nginx.conf
-${nginxNonRootPart}
-${configs.runFromNonRootUser ? 'ADD --chown=nginx:nginx . /src' : 'ADD . /src'}
+ADD $NGINX_CONF_LOCATION ${nginxConfTargetLocation}
 
+${nginxNonRootPart}
+
+${configs.runFromNonRootUser ? `ADD --chown=nginx:nginx ${appPathToAdd} ${appTargetPath}` : `ADD ${appPathToAdd} ${appTargetPath}`}
+
+${configs.clientOnly ? 'CMD ["nginx"]' : 'CMD ["/bin/sh", "-c" "./start.sh"'}
 `;
 
 export default applyOverrides('Dockerfile', dockerfileTemplate);

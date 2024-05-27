@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 
 import { App } from './components/app';
 
-const targetElement = document.getElementById('app');
+const targetElement = document.getElementById('react-app');
 
 if (process.env.NODE_ENV !== 'production' && module.hot) {
     ReactDOM.render(<App />, targetElement);

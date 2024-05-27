@@ -92,6 +92,7 @@ export default overrides;
   [Файл `nginx.conf`](nginx.md) в корне имеет приоритет над оверрайдами.
 - `start.sh` - шаблон entrypoint докер контейнера. Базовый шаблон [тут](../src/templates/start.template.ts).
 - `serverExternalsExemptions` - список модулей, которые не будут добавлены в список внешних зависимостей сервера. [Подробнее](caveats.md#node-externals).
+- `html` - шаблон для htmlWebpackPlugin, будет использоваться только в режиме [`clientOnly`](./settings.md#clientonly).
 
 Для некоторых конфигураций определены несколько ключей, они будут применяться в том порядке, в котором они приведены в этом файле.
 
@@ -128,7 +129,7 @@ import type { OverrideFile } from 'arui-scripts';
 
 const overrides: OverrideFile = {
     webpackClient: (config, appConfig, { findLoader, findPlugin }) => {
-      // ...        
+      // ...
     }
 };
 

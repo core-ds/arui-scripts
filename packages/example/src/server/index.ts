@@ -18,7 +18,7 @@ app.get('/', async (req, res) => {
 ${assets.css.map((c) => `<link rel='stylesheet' href='/${c}' />`).join('')}
 </head>
 <body>
-<div id='app'></div>
+<div id='react-app'></div>
 ${assets.js.map((c) => `<script type='text/javascript' src='/${c}'></script>`).join('')}
 </body>
 </html>
