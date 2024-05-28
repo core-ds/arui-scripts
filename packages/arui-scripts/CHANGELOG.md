@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 17.1.0
+
+### Minor Changes
+
+-   [#221](https://github.com/core-ds/arui-scripts/pull/221) [`4e7843f`](https://github.com/core-ds/arui-scripts/commit/4e7843f4e2ca53e62e9c15c782ab3ec05e9c0d1e) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Добавлен режим clientOnly, позволяющий использовать arui-scripts для сборки проектов, не требующих серверной части
+
 ## 17.0.2
 
 ### Patch Changes
