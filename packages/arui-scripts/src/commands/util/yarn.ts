@@ -1,6 +1,6 @@
 import shell from 'shelljs';
 
-import configs from '../../configs/app-configs';
+import { configs } from '../../configs/app-configs';
 
 type YarnVersion = '1' | '2+' | 'unavailable';
 
@@ -16,6 +16,9 @@ export function getYarnVersion(): YarnVersion {
 }
 
 export function getPruningCommand(): string {
+    if (configs.clientOnly) {
+        return 'echo "Skipping pruning in client only mode"';
+    }
     const yarnVersion = getYarnVersion();
 
     switch (yarnVersion) {

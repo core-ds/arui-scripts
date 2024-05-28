@@ -36,6 +36,8 @@ type Overrides = {
     nginx: string;
     'start.sh': string;
     serverExternalsExemptions: Array<string | RegExp>;
+
+    html: string;
 };
 
 type OmitFirstArg<F> = F extends (x: any, ...args: infer P) => infer R ? (...args: P) => R : never;

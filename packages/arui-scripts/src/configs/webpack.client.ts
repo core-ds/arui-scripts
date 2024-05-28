@@ -10,6 +10,7 @@ import AssetsPlugin from 'assets-webpack-plugin';
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import CompressionPlugin from 'compression-webpack-plugin';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import svgToMiniDataURI from 'mini-svg-data-uri';
 import TerserPlugin from 'terser-webpack-plugin';
@@ -18,17 +19,19 @@ import webpack, { Configuration } from 'webpack';
 import { WebpackDeduplicationPlugin } from 'webpack-deduplication-plugin';
 import { WebpackManifestPlugin } from 'webpack-manifest-plugin';
 
+import { AruiRuntimePlugin, getInsertCssRuntimeMethod } from '../plugins/arui-runtime';
+import { htmlTemplate } from '../templates/html.template';
+
 import { getImageMin } from './config-extras/minimizers';
 import checkNodeVersion from './util/check-node-version';
 import getEntry, { Entry } from './util/get-entry';
-import configs from './app-configs';
+import { getWebpackCacheDependencies } from './util/get-webpack-cache-dependencies';
+import { configs } from './app-configs';
 import babelConf from './babel-client';
 import { babelDependencies } from './babel-dependencies';
 import { patchMainWebpackConfigForModules, patchWebpackConfigForCompat } from './modules';
 import postcssConf from './postcss';
 import { processAssetsPluginOutput } from './process-assets-plugin-output';
-import { AruiRuntimePlugin, getInsertCssRuntimeMethod } from '../plugins/arui-runtime';
-import { getWebpackCacheDependencies } from './util/get-webpack-cache-dependencies';
 
 const PnpWebpackPlugin = require('pnp-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
@@ -460,6 +463,10 @@ export const createSingleClientWebpackConfig = (
         // See https://github.com/facebookincubator/create-react-app/issues/240
         mode === 'dev' && new CaseSensitivePathsPlugin(),
         new AruiRuntimePlugin(),
+        configs.clientOnly && new HtmlWebpackPlugin({
+            templateContent: htmlTemplate,
+            filename: '../index.html'
+        }),
 
         // production plugins:
         mode === 'prod' && new WebpackManifestPlugin(),

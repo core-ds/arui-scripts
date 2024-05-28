@@ -44,3 +44,4 @@ npm install arui-scripts --save-dev
 - [Настройки компиляторов](docs/compilers.md)
 - [Особенности поведения](docs/caveats.md)
 - [Использование модулей](docs/modules.md)
+- [Client-only режим](./docs/client-only.md)
