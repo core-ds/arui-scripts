@@ -423,16 +423,28 @@ export const createSingleClientWebpackConfig = (
                 ? { 'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV) }
                 : {}),
         }),
-        new MiniCssExtractPlugin({
-            ignoreOrder: true,
-            filename: mode === 'dev' ? '[name].css' : '[name].[contenthash:8].css',
-            chunkFilename: mode === 'dev' ? '[id].css' : '[name].[contenthash:8].chunk.css',
-            insert: getInsertCssRuntimeMethod() as any,
-        }),
-        (mode === 'prod' || !configs.disableDevWebpackTypecheck)
-            && configs.tsconfig !== null
-            && !configs.useTscLoader
-            && new ForkTsCheckerWebpackPlugin(),
+        new MiniCssExtractPlugin(
+            (() => {
+                const prefix = `${configName ? `${configName}-` : ''}`;
+
+                return {
+                    ignoreOrder: true,
+                    filename:
+                        mode === 'dev'
+                            ? `${prefix}[name].css`
+                            : `${prefix}[name].[contenthash:8].css`,
+                    chunkFilename:
+                        mode === 'dev'
+                            ? `${prefix}[name].css`
+                            : `${prefix}[name].[contenthash:8].chunk.css`,
+                    insert: getInsertCssRuntimeMethod() as any,
+                };
+            })(),
+        ),
+        (mode === 'prod' || !configs.disableDevWebpackTypecheck) &&
+            configs.tsconfig !== null &&
+            !configs.useTscLoader &&
+            new ForkTsCheckerWebpackPlugin(),
         // moment.js очень большая библиотека, которая включает в себя массу локализаций, которые мы не используем.
         // Поэтому мы их просто игнорируем, чтобы не включать в сборку.
         // https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
@@ -463,10 +475,11 @@ export const createSingleClientWebpackConfig = (
         // See https://github.com/facebookincubator/create-react-app/issues/240
         mode === 'dev' && new CaseSensitivePathsPlugin(),
         new AruiRuntimePlugin(),
-        configs.clientOnly && new HtmlWebpackPlugin({
-            templateContent: htmlTemplate,
-            filename: '../index.html'
-        }),
+        configs.clientOnly &&
+            new HtmlWebpackPlugin({
+                templateContent: htmlTemplate,
+                filename: '../index.html',
+            }),
 
         // production plugins:
         mode === 'prod' && new WebpackManifestPlugin(),
