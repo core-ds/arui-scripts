@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 17.1.1
+
+### Patch Changes
+
+-   [#223](https://github.com/core-ds/arui-scripts/pull/223) [`028c5d3`](https://github.com/core-ds/arui-scripts/commit/028c5d34f99353e5123b64b6a319428d42aa56bb) Thanks [@qrik116](https://github.com/qrik116)! - Исправлено формирование имени css файлов, с учётом configName
+
 ## 17.1.0
 
 ### Minor Changes
