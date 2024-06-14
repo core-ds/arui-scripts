@@ -170,6 +170,9 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
                         test: /\.(js|mjs)$/,
                         exclude: /@babel(?:\/|\\{1,2})runtime/,
                         loader: require.resolve('babel-loader'),
+                        resolve: {
+                            fullySpecified: false,
+                        },
                         options: {
                             ...babelDependencies,
                             babelrc: false,
