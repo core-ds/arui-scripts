@@ -321,6 +321,9 @@ export const createSingleClientWebpackConfig = (
                         test: /\.(js|mjs)$/,
                         exclude: /@babel(?:\/|\\{1,2})runtime/,
                         loader: require.resolve('babel-loader'),
+                        resolve: {
+                            fullySpecified: false,
+                        },
                         options: {
                             ...babelDependencies,
                             babelrc: false,
