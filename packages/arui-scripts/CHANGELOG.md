@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 17.1.2
+
+### Patch Changes
+
+-   [#225](https://github.com/core-ds/arui-scripts/pull/225) [`f62c2c8`](https://github.com/core-ds/arui-scripts/commit/f62c2c8255d9667e4f3761708311bf5708dca0fb) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Поправлена загрузка js файлов из mjs кода зависимостей. babel-runtime добавляется не как fully specified path, из-за этого при работе с некоторыми библиотеками могли возникать проблемы
+
 ## 17.1.1
 
 ### Patch Changes
