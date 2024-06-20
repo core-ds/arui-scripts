@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 17.1.3
+
+### Patch Changes
+
+-   [#229](https://github.com/core-ds/arui-scripts/pull/229) [`abc994d`](https://github.com/core-ds/arui-scripts/commit/abc994da6977f03fb05c89b3fe0180808d97350c) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Исправлен некорректный CMD в dockerfile который мог приводить к ошибкам при запуске проектов
+
 ## 17.1.2
 
 ### Patch Changes
