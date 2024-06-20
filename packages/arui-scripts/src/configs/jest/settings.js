@@ -27,6 +27,7 @@ module.exports = {
     },
     transform: {
         '^.+\\.jsx?$': require.resolve('./babel-transform'),
+        '^.+\\.mjs$': require.resolve('./babel-transform'),
         '^.+\\.tsx?$': configs.jestUseTsJest
             ? require.resolve('ts-jest')
             : require.resolve('./babel-transform'),
