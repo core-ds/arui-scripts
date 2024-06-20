@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 17.1.4
+
+### Patch Changes
+
+-   [#231](https://github.com/core-ds/arui-scripts/pull/231) [`36747a6`](https://github.com/core-ds/arui-scripts/commit/36747a6b830a0e3b9ff3ec255b3f9e5cede77ca1) Thanks [@baarsa](https://github.com/baarsa)! - Добавлена трансформация .mjs файлов в конфигурации jest
+
 ## 17.1.3
 
 ### Patch Changes
