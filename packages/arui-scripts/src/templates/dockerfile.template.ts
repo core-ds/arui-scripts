@@ -30,7 +30,7 @@ ${nginxNonRootPart}
 
 ${configs.runFromNonRootUser ? `ADD --chown=nginx:nginx ${appPathToAdd} ${appTargetPath}` : `ADD ${appPathToAdd} ${appTargetPath}`}
 
-${configs.clientOnly ? 'CMD ["nginx"]' : 'CMD ["/bin/sh", "-c" "./start.sh"'}
+${configs.clientOnly ? 'CMD ["nginx"]' : ''}
 `;
 
 export default applyOverrides('Dockerfile', dockerfileTemplate);
