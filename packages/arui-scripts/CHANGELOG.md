@@ -1,5 +1,12 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 17.1.5
+
+### Patch Changes
+
+-   [#233](https://github.com/core-ds/arui-scripts/pull/233) [`9398cd6`](https://github.com/core-ds/arui-scripts/commit/9398cd64dcb5b84031142f1d7a40ca46503e82d3) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Исправление команды docker-build: она генерировала некорректный dockerfile,
+    из-за чего контейнер не мог запуститься с ошибкой `Cannot find module '/src/start.sh'`
+
 ## 17.1.4
 
 ### Patch Changes
