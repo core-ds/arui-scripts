@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 17.1.6
+
+### Patch Changes
+
+-   [#235](https://github.com/core-ds/arui-scripts/pull/235) [`a616a5c`](https://github.com/core-ds/arui-scripts/commit/a616a5cfa8be0ccd6a011401b586965534b4a34a) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Убрана ненужная проверка на наличие файлов, необходимых для сборки. Эта проверка и так будет сделана вебпаком, поэтому сммысла от доп проверки на нашем уровне - нет
+
 ## 17.1.5
 
 ### Patch Changes
