@@ -2,15 +2,9 @@ import { spawn } from 'child_process';
 
 import fs from 'fs-extra';
 
-import configs from '../../configs/app-configs';
-
-import checkRequiredFiles from './check-required-files';
+import { configs } from '../../configs/app-configs';
 
 export function runCompilers(pathToCompilers: Array<string | string[]>) {
-    if (!checkRequiredFiles()) {
-        process.exit(1);
-    }
-
     if (fs.pathExistsSync(configs.serverOutputPath)) {
         fs.removeSync(configs.serverOutputPath);
     }
