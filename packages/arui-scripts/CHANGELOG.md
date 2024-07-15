@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 17.1.7
+
+### Patch Changes
+
+-   [#237](https://github.com/core-ds/arui-scripts/pull/237) [`cb39b30`](https://github.com/core-ds/arui-scripts/commit/cb39b30baf2440c6a4363752424b25675160f193) Thanks [@reabiliti](https://github.com/reabiliti)! - Фикс бага добавления полифилов при билде проекта, если используется импорт core-js
+
 ## 17.1.6
 
 ### Patch Changes
