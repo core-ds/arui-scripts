@@ -55,6 +55,13 @@ export const viteConfig = applyOverrides('vite', {
                 find: /^~?@alfalab\/core-components\/vars$/,
                 replacement: '@alfalab/core-components/vars/index.css'
             },
+            // core-components поставляется сразу в виде esm и не esm. При резолве из разных зависимостей
+            // rollup резолвит часть запросов в esm версию, а часть - в cjs. Из-за этого возникает дублирование стилей и кода
+            // делаем так, чтобы все импорты из коров резолвились в одинаковое место
+            {
+                find: /@alfalab\/core-components\/(.*?)\/esm\/(.*)$/,
+                replacement: '@alfalab/core-components/$1/$2',
+            }
         ],
     },
     define: {

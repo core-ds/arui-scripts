@@ -1,4 +1,5 @@
 import express from 'express';
+import { createProxyMiddleware } from 'http-proxy-middleware';
 import { parse } from 'node-html-parser';
 import { createServer as createViteServer } from 'vite';
 
@@ -20,6 +21,12 @@ import {
     const vite = await createViteServer(viteConfig);
 
     app.use(vite.middlewares);
+
+    if (configs.proxy) {
+        Object.keys(configs.proxy).forEach((key) => {
+            app.use(createProxyMiddleware(key, configs.proxy?.[key] as any));
+        });
+    }
 
     const template = await vite.transformIndexHtml('/', viteHtmlTemplate);
     const parsedTemplate = parse(template);
