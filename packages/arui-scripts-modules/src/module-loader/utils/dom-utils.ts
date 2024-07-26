@@ -15,6 +15,10 @@ type ResourceFetcherParams = {
      * AbortSignal, который будет использован для отмены загрузки ресурсов
      */
     abortSignal?: AbortSignal;
+    /**
+     * Подключать ли скрипт как esm модуль. Будет менять аттрибут type у script. Используется для загрузки модулей из vite
+     */
+    esmMode?: boolean;
 };
 
 type GenericResourceFetcherParams = ResourceFetcherParams & {
@@ -45,7 +49,7 @@ export function scriptsFetcher(params: ResourceFetcherParams): Promise<HTMLEleme
         createTag: (src) => {
             const script = document.createElement('script');
 
-            script.type = 'text/javascript';
+            script.type = params.esmMode ? 'module' : 'text/javascript';
             script.src = src;
             script.defer = true;
 

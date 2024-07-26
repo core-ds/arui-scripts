@@ -36,6 +36,7 @@ describe('createModuleFetcher', () => {
             moduleVersion: '1.0',
             appName: 'Test App',
             mountMode: 'compat',
+            esmMode: false,
             moduleState: {
                 baseUrl: 'http://example.com',
                 hostAppId: 'app1',

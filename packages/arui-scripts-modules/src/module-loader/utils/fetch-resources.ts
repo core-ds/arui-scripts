@@ -9,6 +9,7 @@ type MountModuleResourcesParams = {
     scripts: string[];
     styles: string[];
     baseUrl: string;
+    esmMode?: boolean;
     abortSignal?: AbortSignal;
 };
 
@@ -25,6 +26,7 @@ export async function fetchResources({
     scripts,
     styles,
     baseUrl,
+    esmMode,
     abortSignal,
 }: MountModuleResourcesParams) {
     const cssTagsAttributes: Record<string, string> = {
@@ -54,6 +56,7 @@ export async function fetchResources({
             urls: scriptsUrls,
             targetNode: jsTargetNode,
             attributes: jsTagsAttributes,
+            esmMode,
             abortSignal,
         }),
         stylesFetcher({

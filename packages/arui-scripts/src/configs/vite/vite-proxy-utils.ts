@@ -4,8 +4,10 @@ import path from 'path';
 import axios, { AxiosResponse } from 'axios';
 import { Request, Response } from 'express-serve-static-core';
 import { HTMLElement, parse } from 'node-html-parser';
+import { sync as resolve } from 'resolve'
 
 import { configs } from '../app-configs';
+import { ensureDirectory } from '../util/ensure-directory';
 
 // Обработчик запросов за статичными ассетами, сгенеренными серверным бандлом (favicon и тд)
 export async function processAssetsRequests(req: Request, res: Response) {
@@ -44,9 +46,8 @@ export async function fetchDataFromServer(req: Request) {
     });
 }
 
-// Вставляет в html, полученный от ssr корректные ссылки на скрипты для подключения js.
-export function updateHtmlResponse(fetchRes: AxiosResponse, templateScripts: HTMLElement[]) {
-    const responseRoot = parse(fetchRes.data);
+export function updateHtml(html: string, templateScripts: HTMLElement[]) {
+    const responseRoot = parse(html);
     const scripts = responseRoot.querySelectorAll('script');
 
     let nonce: string | undefined;
@@ -69,7 +70,14 @@ export function updateHtmlResponse(fetchRes: AxiosResponse, templateScripts: HTM
             templateScript.setAttribute('nonce', nonce);
         }
         headElement?.appendChild(templateScript);
-    })
+    });
+
+    return responseRoot.toString();
+}
+
+// Вставляет в html, полученный от ssr корректные ссылки на скрипты для подключения js.
+export function updateHtmlResponse(fetchRes: AxiosResponse, templateScripts: HTMLElement[]) {
+    const html = updateHtml(fetchRes.data, templateScripts);
 
     const headers = {
         ...fetchRes.headers,
@@ -77,7 +85,7 @@ export function updateHtmlResponse(fetchRes: AxiosResponse, templateScripts: HTM
 
     delete headers['content-length'];
 
-    return { responseRoot, headers };
+    return { html, headers };
 }
 
 // Проверят, является ли полученный ответ от сервера html
@@ -108,7 +116,7 @@ export function generateFakeWebpackAssets() {
         Object.keys(configs.modules.exposes).forEach((name) => {
             assetsContent[name] = {
                 mode: 'default',
-                js: configs.modules?.exposes?.[name],
+                js: getFullPath(configs.modules?.exposes?.[name] || ''),
             };
         });
     }
@@ -116,19 +124,33 @@ export function generateFakeWebpackAssets() {
     if (configs.compatModules?.exposes) {
         Object.keys(configs.compatModules.exposes).forEach((name) => {
             assetsContent[name] = {
-                js: configs.compatModules?.exposes?.[name].entry,
+                js: getFullPath(configs.compatModules?.exposes?.[name].entry || ''),
             };
         });
     }
-    const content = JSON.stringify(assetsContent);
+
+    return assetsContent;
+}
+
+export function writeFakeWebpackAssets() {
+    const content = JSON.stringify(generateFakeWebpackAssets());
+
+    ensureDirectory(path.join(configs.cwd, configs.buildPath));
 
     fs.writeFileSync(
         path.join(configs.cwd, configs.buildPath, 'webpack-assets.json'),
         content,
         'utf8',
     );
+}
 
-    return assetsContent;
+function getFullPath(file: string) {
+    const fullPath = resolve(file, {
+        basedir: configs.cwd,
+        extensions: ['.js', '.jsx', '.ts', '.tsx'],
+    });
+
+    return path.relative(configs.cwd, fullPath);
 }
 
 export const reloadHtmlResponse = `<html>

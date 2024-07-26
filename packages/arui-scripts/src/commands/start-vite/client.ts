@@ -1,20 +1,11 @@
 import express from 'express';
 import { createProxyMiddleware } from 'http-proxy-middleware';
-import { parse } from 'node-html-parser';
 import { createServer as createViteServer } from 'vite';
 
 import { configs } from '../../configs/app-configs';
+import { createViteMiddleware } from '../../configs/vite/create-vite-middleware';
 import { viteConfig } from '../../configs/vite/vite.config';
-import { viteHtmlTemplate } from '../../configs/vite/vite.html-template';
-import {
-    checkIfIsAssetsRequest,
-    checkIfIsHtmlResponse,
-    fetchDataFromServer,
-    generateFakeWebpackAssets,
-    processAssetsRequests,
-    reloadHtmlResponse,
-    updateHtmlResponse
-} from '../../configs/vite/vite-proxy-utils';
+import { writeFakeWebpackAssets } from '../../configs/vite/vite-proxy-utils';
 
 (async function startViteProxy() {
     const app = express();
@@ -28,55 +19,11 @@ import {
         });
     }
 
-    const template = await vite.transformIndexHtml('/', viteHtmlTemplate);
-    const parsedTemplate = parse(template);
-    const templateScripts = parsedTemplate.querySelectorAll('script');
+    const customProxyMiddleware = await createViteMiddleware(vite);
 
-    app.use('/', async (req, res) => {
-        try {
-            const webpackAssets = generateFakeWebpackAssets();
+    app.use('/', customProxyMiddleware);
 
-            if (req.originalUrl === '/assets/webpack-assets.json') {
-                res
-                    .status(200)
-                    .end(JSON.stringify(webpackAssets));
-
-                return;
-            }
-
-            const isAssetsRequest = checkIfIsAssetsRequest(req);
-
-            if (isAssetsRequest) {
-                await processAssetsRequests(req, res);
-
-                return;
-            }
-
-            const fetchRes = await fetchDataFromServer(req);
-            const isHtmlResponse = checkIfIsHtmlResponse(fetchRes);
-
-            if (!isHtmlResponse) {
-                res
-                    .status(fetchRes.status)
-                    .set(fetchRes.headers)
-                    .end(fetchRes.data);
-
-                return;
-            }
-
-            const { responseRoot, headers } = updateHtmlResponse(fetchRes, templateScripts);
-
-            res
-                .status(fetchRes.status)
-                .set(headers)
-                .end(responseRoot.toString());
-
-        } catch (e) {
-            res
-                .status(200)
-                .end(reloadHtmlResponse)
-        }
-    })
+    writeFakeWebpackAssets();
 
     app.listen({
         port: configs.clientServerPort,

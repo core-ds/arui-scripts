@@ -8,12 +8,22 @@ import { MODULES_ENTRY_NAME } from '../modules';
 import postcssConfig from '../postcss';
 import applyOverrides from '../util/apply-overrides';
 
+import { ExposeModulePlugin } from './expose-module-plugin';
+import { WmfWrapperPlugin } from './wmf-wrapper-plugin';
+
 export const viteConfig = applyOverrides('vite', {
     server: {
         middlewareMode: true,
         hmr: {
             protocol: 'ws',
         },
+    },
+    esbuild: {
+        tsconfigRaw: {
+            compilerOptions: {
+                experimentalDecorators: true,
+            }
+        }
     },
     customLogger: {
         ...createLogger('info'),
@@ -34,6 +44,11 @@ export const viteConfig = applyOverrides('vite', {
     plugins: [
         react({
             jsxRuntime: 'classic',
+            babel: {
+                parserOpts: {
+                    plugins: ['decorators-legacy'],
+                },
+            },
         }),
         tsconfigPaths(),
         configs.modules ? federation({
@@ -41,7 +56,10 @@ export const viteConfig = applyOverrides('vite', {
             filename: configs.modules.exposes ? MODULES_ENTRY_NAME : undefined,
             shared: configs.modules.shared,
             exposes: configs.modules.exposes,
+            remotes: {},
         }) : null,
+        configs.modules ? WmfWrapperPlugin() : null,
+        configs.compatModules?.shared ? ExposeModulePlugin(configs.compatModules.shared) : null,
     ].filter(Boolean),
     resolve: {
         alias: [
