@@ -7,6 +7,7 @@ import { configs } from '../app-configs';
 import { MODULES_ENTRY_NAME } from '../modules';
 import postcssConfig from '../postcss';
 import applyOverrides from '../util/apply-overrides';
+import { getCssModuleLocalIndent } from '../util/get-css-module-local-indent';
 
 import { ExposeModulePlugin } from './expose-module-plugin';
 import { WmfWrapperPlugin } from './wmf-wrapper-plugin';
@@ -98,6 +99,9 @@ export const viteConfig = applyOverrides('vite', {
                 return require(pluginName as string)();
             })
             /* eslint-enable @typescript-eslint/no-var-requires,global-require,import/no-dynamic-require */
-        }
+        },
+        modules: {
+            generateScopedName: getCssModuleLocalIndent,
+        },
     }
 });

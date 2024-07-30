@@ -4947,6 +4947,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/loader-utils@npm:^2.0.6":
+  version: 2.0.6
+  resolution: "@types/loader-utils@npm:2.0.6"
+  dependencies:
+    "@types/node": "*"
+    "@types/webpack": ^4
+  checksum: 62e9d23f2835b0563c5af138a696abf9066c3fa5f6abff567fda3fc9a7be2f0d1a411ce7494318ff5593e0923a6a9f6b18d5094fb6e6c7471bd1bfacece39298
+  languageName: node
+  linkType: hard
+
 "@types/lodash.merge@npm:^4.6.7":
   version: 4.6.7
   resolution: "@types/lodash.merge@npm:4.6.7"
@@ -6371,6 +6381,7 @@ __metadata:
     "@types/compression-webpack-plugin": 4.0.1
     "@types/fs-extra": ^9.0.13
     "@types/jest": ^26.0.24
+    "@types/loader-utils": ^2.0.6
     "@types/lodash.merge": ^4.6.7
     "@types/node": 12.20.55
     "@types/react-dev-utils": 9.0.11
