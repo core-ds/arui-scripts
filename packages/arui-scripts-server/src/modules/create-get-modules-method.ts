@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 // TODO: remove eslint-disable-next-line
 import type { GetResourcesRequest, ModuleResources } from '@alfalab/scripts-modules';
 
@@ -26,16 +27,8 @@ export function createGetModulesMethod<FrameworkParams extends unknown[] = []>(
 
             const module = modules[moduleName];
 
-            if (module.mountMode === 'compat' && !assets[moduleName]) {
+            if (!assets[moduleName]) {
                 assets[moduleName] = await readAssetsManifest([`vendor-${moduleName}`, moduleName]);
-            }
-            if (module.mountMode === 'default') {
-                // для default модулей мы всегда берем просто remoteEntry, это стандартный энтрипоинт для module federation
-                // загрузку стилей при этом на себя берет сам module federation.
-                assets[moduleName] = {
-                    js: ['assets/remoteEntry.js'],
-                    css: [],
-                };
             }
 
             const moduleAssets = assets[moduleName];
@@ -46,13 +39,13 @@ export function createGetModulesMethod<FrameworkParams extends unknown[] = []>(
                 mountMode: module.mountMode,
                 moduleVersion: module.version ?? 'unknown',
                 scripts: moduleAssets.js,
-                styles: moduleAssets.css,
+                styles: moduleAssets.css || [],
                 moduleState: {
                     ...moduleRunParams,
                     hostAppId: getResourcesRequest.hostAppId,
                 },
-                // eslint-disable-next-line no-underscore-dangle
                 appName: appManifest.__metadata__.name,
+                esmMode: appManifest.__metadata__.vite || false,
             };
         },
     };

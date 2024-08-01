@@ -31,6 +31,7 @@ export type AruiAppManifest = {
     __metadata__: {
         version: string;
         name: string;
+        vite?: boolean;
     };
 };
 
@@ -63,6 +64,8 @@ export type ModuleResources<ModuleState extends BaseModuleState = BaseModuleStat
     appName: string;
     /** то, как подключать модуль на страницу. */
     mountMode: MountMode;
+    /** Подключать ли скрипты модуля как esm-модули */
+    esmMode?: boolean;
     /** предподготовленное "состояние" модуля, которое он получит при монтировании на страницу */
     moduleState: ModuleState;
 };

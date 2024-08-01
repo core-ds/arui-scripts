@@ -4,6 +4,7 @@ import { removeModuleResources } from './utils/dom-utils';
 import { fetchResources,getResourcesTargetNodes } from './utils/fetch-resources';
 import { getCompatModule, getModule } from './utils/get-module';
 import { BaseModuleState, GetResourcesRequest, Loader, ModuleResources } from './types';
+import { urlSegmentWithoutEndSlash } from './utils/normalize-url-segment';
 
 export type ModuleResourcesGetter<GetResourcesParams, ModuleState extends BaseModuleState> = (
     params: GetResourcesRequest<GetResourcesParams>,
@@ -85,6 +86,13 @@ export function createModuleLoader<
             cssTargetSelector,
         });
 
+        // Загружаем описание модуля
+        const moduleResources = await getModuleResources({
+            moduleId,
+            hostAppId,
+            params: getResourcesParams as any, // для того чтобы пользователям не пришлось передавать этот параметр если он им не нужен, мы обвешиваемся type-cast'ом
+        });
+
         function moduleUnmount() {
             consumerCounter.decrease(moduleId);
 
@@ -94,37 +102,46 @@ export function createModuleLoader<
                     moduleId,
                     targetNodes: [resourcesNodes.js, resourcesNodes.css],
                 });
-                cleanGlobal(moduleId);
+                if (!moduleResources.esmMode) {
+                    // удаление global для esm не будет работать - скрипт будет выполняться только один раз
+                    // и повторный маунт модуля не сработает
+                    cleanGlobal(moduleId);
+                }
             }
         }
 
-        // Загружаем описание модуля
-        const moduleResources = await getModuleResources({
-            moduleId,
-            hostAppId,
-            params: getResourcesParams as any, // для того чтобы пользователям не пришлось передавать этот параметр если он им не нужен, мы обвешиваемся type-cast'ом
-        });
+        let loadedModule: ModuleExportType | undefined;
 
-        await onBeforeResourcesMount?.(moduleId, moduleResources);
+        if (moduleResources.mountMode === 'default' && moduleResources.esmMode) {
+            // wmf модули из vite. vite не умеет работать как wmf remote в dev-режиме, поэтому нам надо
+            // монтировать его просто как esm импорт
+            await onBeforeResourcesMount?.(moduleId, moduleResources);
+            const moduleUrl = `${urlSegmentWithoutEndSlash(moduleResources.moduleState.baseUrl)}/${moduleResources.scripts[0]}`;
 
-        await fetchResources({
-            cssTargetNode: resourcesNodes.css,
-            jsTargetNode: resourcesNodes.js,
-            cssTargetSelector,
-            moduleId,
-            scripts: moduleResources.scripts,
-            styles: moduleResources.styles,
-            baseUrl: moduleResources.moduleState.baseUrl,
-            abortSignal,
-        });
+            loadedModule = await import(/* webpackIgnore: true *//* @vite-ignore */moduleUrl);
+        } else {
+            await onBeforeResourcesMount?.(moduleId, moduleResources);
 
-        await onBeforeModuleMount?.(moduleId, moduleResources);
+            await fetchResources({
+                cssTargetNode: resourcesNodes.css,
+                jsTargetNode: resourcesNodes.js,
+                cssTargetSelector,
+                moduleId,
+                scripts: moduleResources.scripts,
+                styles: moduleResources.styles,
+                baseUrl: moduleResources.moduleState.baseUrl,
+                esmMode: moduleResources.esmMode,
+                abortSignal,
+            });
 
-        // В зависимости от типа модуля, получаем его контент необходимым способом
-        const loadedModule =
-            moduleResources.mountMode === 'default'
-                ? await getModule<ModuleExportType>(moduleResources.appName, moduleId)
-                : getCompatModule<ModuleExportType>(moduleId);
+            await onBeforeModuleMount?.(moduleId, moduleResources);
+
+            // В зависимости от типа модуля, получаем его контент необходимым способом
+            loadedModule =
+                moduleResources.mountMode === 'default'
+                    ? await getModule<ModuleExportType>(moduleResources.appName, moduleId)
+                    : getCompatModule<ModuleExportType>(moduleId);
+        }
 
         if (!loadedModule) {
             throw new Error(`Module ${ moduleId } is not available`);
@@ -134,9 +151,9 @@ export function createModuleLoader<
 
         return {
             unmount: () => {
-                onBeforeModuleUnmount?.(moduleId, moduleResources, loadedModule);
+                onBeforeModuleUnmount?.(moduleId, moduleResources, loadedModule as ModuleExportType);
                 moduleUnmount();
-                onAfterModuleUnmount?.(moduleId, moduleResources, loadedModule);
+                onAfterModuleUnmount?.(moduleId, moduleResources, loadedModule as ModuleExportType);
             },
             module: loadedModule,
             moduleResources,

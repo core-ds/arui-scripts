@@ -1,4 +1,6 @@
 import { ModuleFederationContainer } from '../types';
+// webpack любит двойные подчеркивания для внутренних функций
+/* eslint-disable no-underscore-dangle */
 
 /**
  * Метод для получения контента уже загруженного модуля
@@ -6,6 +8,14 @@ import { ModuleFederationContainer } from '../types';
  * @param moduleId
  */
 export async function getModule<ModuleType>(containerId: string, moduleId: string) {
+    if (typeof __webpack_init_sharing__ === 'undefined') {
+        if (typeof __vite_federation_wrapper__ === 'undefined') {
+            throw new Error('Не удалось инициализировать module federation. __webpack_init_sharing__ или __vite_federation_wrapper__ не найдены');
+        }
+
+        // загрузка происходит через vite, поэтому мы используем врапер из arui-scripts для инизиализации remote
+        return __vite_federation_wrapper__.getRemote(containerId, moduleId);
+    }
     // module federation работает таким образом:
     // 1. Инициализация shared скоупа. Фактически загружает в него все известные приложению на данный момент модули (и из себя, и из других remote, если есть)
     // 2. вебпак пишет нужный "контейнер" в window. Под контейнером понимается совокупность модулей от какого то приложения
@@ -21,8 +31,6 @@ export async function getModule<ModuleType>(containerId: string, moduleId: strin
         );
     }
 
-    // webpack любит двойные подчеркивания для внутренних функций
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     await container.init(__webpack_share_scopes__.default);
     const factory = await container.get<ModuleType>(moduleId);
 

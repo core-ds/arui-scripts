@@ -8,6 +8,7 @@
 const commands: Record<string, () => void> = {
     start: () => require('../commands/start'),
     'start:prod': () => require('../commands/start-prod'),
+    'start-vite': () => require('../commands/start-vite'),
     build: () => require('../commands/build'),
     'docker-build': () => require('../commands/docker-build'),
     'docker-build:compiled': () => require('../commands/docker-build-compiled'),

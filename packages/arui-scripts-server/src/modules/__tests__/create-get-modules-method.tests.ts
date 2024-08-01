@@ -54,6 +54,7 @@ describe('createGetModulesMethod', () => {
             styles: ['vendor.css', 'main.css'],
             moduleState: { baseUrl: '', hostAppId: 'test' },
             appName: 'module-app-name',
+            esmMode: false,
         });
 
         expect(getModuleState).toBeCalledWith({ moduleId: 'test', hostAppId: 'test' });
@@ -67,6 +68,10 @@ describe('createGetModulesMethod', () => {
                 },
             }),
         );
+
+        (readAssetsManifest as any).mockImplementationOnce(() => Promise.resolve({
+            js: ['assets/remoteEntry.js'],
+        }));
 
         const getModuleState = jest.fn(() => Promise.resolve({ baseUrl: '' }));
         const { handler } = createGetModulesMethod({
@@ -86,6 +91,45 @@ describe('createGetModulesMethod', () => {
             styles: [],
             moduleState: { baseUrl: '', hostAppId: 'test' },
             appName: 'module-app-name',
+            esmMode: false,
+        });
+
+        expect(getModuleState).toBeCalledWith({ moduleId: 'test', hostAppId: 'test' });
+    });
+
+    it('should set esm mode when build metadata created with vite', async () => {
+        (getAppManifest as any).mockImplementationOnce(() =>
+            Promise.resolve({
+                __metadata__: {
+                    name: 'module-app-name',
+                    vite: true,
+                },
+            }),
+        );
+
+        (readAssetsManifest as any).mockImplementationOnce(() => Promise.resolve({
+            js: ['assets/remoteEntry.js'],
+        }));
+
+        const getModuleState = jest.fn(() => Promise.resolve({ baseUrl: '' }));
+        const { handler } = createGetModulesMethod({
+            test: {
+                mountMode: 'default',
+                getModuleState,
+                version: '1.0.0',
+            },
+        });
+
+        const result = await handler({ moduleId: 'test', hostAppId: 'test', params: undefined });
+
+        expect(result).toEqual({
+            mountMode: 'default',
+            moduleVersion: '1.0.0',
+            scripts: ['assets/remoteEntry.js'],
+            styles: [],
+            moduleState: { baseUrl: '', hostAppId: 'test' },
+            appName: 'module-app-name',
+            esmMode: true,
         });
 
         expect(getModuleState).toBeCalledWith({ moduleId: 'test', hostAppId: 'test' });

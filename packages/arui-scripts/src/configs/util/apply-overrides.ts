@@ -1,7 +1,7 @@
 // TODO: remove eslint-disable-next-line
 import type { Configuration as WebpackConfiguration, WebpackOptionsNormalized } from 'webpack';
 import type { Configuration as WebpackDevServerConfiguration } from 'webpack-dev-server';
-
+import type { InlineConfig } from 'vite';
 import appConfigs from '../app-configs';
 import { AppContextWithConfigs } from '../app-configs/types';
 import { createSingleClientWebpackConfig } from '../webpack.client';
@@ -21,6 +21,9 @@ type Overrides = {
     webpackServerProd: WebpackConfiguration;
     devServer: WebpackDevServerConfiguration;
     stats: WebpackOptionsNormalized['stats'];
+
+    vite: InlineConfig;
+    viteHtml: string;
 
     babel: any; // TODO: где взять typedef-ы для бабеля?
     babelClient: any;

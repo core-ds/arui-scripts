@@ -49,6 +49,7 @@ export function createModuleFetcher({
             moduleVersion: manifest.__metadata__.version || 'unknown',
             appName: manifest.__metadata__.name,
             mountMode: mode,
+            esmMode: manifest.__metadata__.vite || false,
             moduleState: {
                 baseUrl,
                 hostAppId,
