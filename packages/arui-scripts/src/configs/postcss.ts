@@ -4,6 +4,7 @@ import { createPostcssConfig, postcssPlugins, postcssPluginsOptions } from './po
 const postcssConfig = applyOverrides(
     'postcss',
     createPostcssConfig(postcssPlugins, postcssPluginsOptions),
+    { createPostcssConfig, postcssPluginsOptions, postcssPlugins },
 );
 
 export default postcssConfig;

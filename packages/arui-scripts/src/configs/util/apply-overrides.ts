@@ -54,6 +54,12 @@ type ServerWebpackAdditionalArgs = {
     findPlugin: ReturnType<typeof findPlugin<'server'>>;
 };
 
+type PostCssAdditionalArgs = {
+    createPostcssConfig: (plugins: string[], options: Record<string, unknown>) => string[] | unknown[];
+    postcssPluginsOptions: Record<string, unknown>;
+    postcssPlugins: string[];
+};
+
 /**
  * Дополнительные аргументы, которые будут переданы в функцию оверрайда
  */
@@ -67,6 +73,7 @@ type OverridesAdditionalArgs = {
     webpackServer: ServerWebpackAdditionalArgs;
     webpackServerDev: ServerWebpackAdditionalArgs;
     webpackServerProd: ServerWebpackAdditionalArgs;
+    postcss: PostCssAdditionalArgs;
 };
 
 type OverrideFunction<

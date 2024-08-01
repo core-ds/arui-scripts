@@ -61,20 +61,15 @@ const overrides: OverrideFile = {
             return config;
         });
     },
-    postcss: (config) => {
-        const overridesConfig = config
-        .map(name => {
-            if (name !== 'postcss-mixins') return name;
+    postcss: (config, appConfig, { createPostcssConfig, postcssPluginsOptions, postcssPlugins }) => {
+        const options = {
+            ...postcssPluginsOptions,
+            'postcss-mixins': {
+                mixinsFiles: [path.join(process.cwd(), '../../node_modules/@alfalab/core-components/vars/typography.css')],
+            },
+        };
 
-            return [
-                name,
-                {
-                    mixinsFiles: [path.join(process.cwd(), '../../node_modules/@alfalab/core-components/vars/typography.css')]
-                }
-            ]
-        })
-
-        return overridesConfig;
+        return createPostcssConfig(postcssPlugins, options);
     }
 };
 
