@@ -50,28 +50,7 @@ export default overrides;
 - `babel-client` - конфигурация `babel` для клиентского кода. Ключи: `babel`, `babelClient`.
 - `babel-server` - конфигурация `babel` для серверноого кода. Ключи: `babel`, `babelServer`.
 - `dev-server` - конфигурация `webpack-dev-server`. Ключи: `devServer`.
-- `postcss` - конфигурация для `postcss`. Ключи: `postcss`.
-  > `config` postcss содержит массив с уже инициализированными плагинами, параметры которых уже зафиксированны. Если необходимо изменить параметры плагинов можно пересоздать конфиг, таким образом:
-    ```javascript
-    import {
-        createPostcssConfig, // функция для создания конфигурационного файла postcss
-        postcssPlugins, // список плагинов
-        postcssPluginsOptions, // коллекция конфигураций плагинов
-    } from 'arui-scripts/build/configs/postcss.config';
-
-    module.exports = {
-        postcss: (config) => {
-            const { files } = postcssPluginsOptions['@csstools/postcss-global-data'];
-            const newOption = {
-                ...postcssPluginsOptions,
-                '@csstools/postcss-global-data': {
-                    files:files.concat(['./vars.css'])
-                }
-            };
-            return createPostcssConfig(postcssPlugins, newOption);
-        },
-    };
-    ```
+- `postcss` - конфигурация плагинов для [`postcss`](https://github.com/postcss/postcss#webpack). Ключи: `postcss`.
 - `stats-options` - конфигурация для [webpack-stats](https://webpack.js.org/configuration/stats/). Ключи: `stats`.
 - `webpack.client.dev` - конфигурация для клиентского webpack в dev режиме.
   Ключи: `webpack`, `webpackClient`, `webpackDev`, `webpackClientDev`.
