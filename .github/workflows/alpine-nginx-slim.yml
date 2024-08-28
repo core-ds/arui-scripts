@@ -1,4 +1,4 @@
-name: Build docker images
+name: Build docker nginx images
 
 on:
   workflow_dispatch:
@@ -6,14 +6,14 @@ on:
     branches:
       - master
     paths:
-      - packages/alpine-nginx-slim/**
+      - packages/alpine-node-nginx/**
 
 jobs:
   build:
     strategy:
       matrix:
         versions: [
-          { alpine: 3.19, dockerfile: Dockerfile, tag: nginx-1.24.0-slim },
+          { alpine: 3.19, dockerfile: Dockerfile-nginx-slim, tag: nginx-1.24.0-slim },
         ]
     runs-on: ubuntu-latest
     steps:
@@ -23,8 +23,8 @@ jobs:
       - name: Build and push Docker images
         uses: docker/build-push-action@v1
         with:
-          path: packages/alpine-nginx-slim/
-          dockerfile: packages/alpine-nginx-slim/${{ matrix.versions.dockerfile }}
+          path: packages/alpine-node-nginx/
+          dockerfile: packages/alpine-node-nginx/${{ matrix.versions.dockerfile }}
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
           repository: alfabankui/arui-scripts
