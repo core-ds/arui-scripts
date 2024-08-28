@@ -5,8 +5,8 @@ import { getAppManifest, readAssetsManifest } from '../read-assets-manifest';
 
 import { ModulesConfig } from './types';
 
-export function createGetModulesMethod<FrameworkParams extends unknown[] = []>(
-    modules: ModulesConfig<FrameworkParams>,
+export function createGetModulesMethod<FrameworkParams extends unknown[] = [], GetResourcesParams = void>(
+    modules: ModulesConfig<FrameworkParams, GetResourcesParams>,
 ) {
     const assets: Record<string, Awaited<ReturnType<typeof readAssetsManifest>>> = {};
 
@@ -14,7 +14,7 @@ export function createGetModulesMethod<FrameworkParams extends unknown[] = []>(
         method: 'POST',
         path: '/api/getModuleResources',
         handler: async (
-            getResourcesRequest: GetResourcesRequest,
+            getResourcesRequest: GetResourcesRequest<GetResourcesParams>,
             ...params: FrameworkParams
         ): Promise<ModuleResources> => {
             const appManifest = await getAppManifest();

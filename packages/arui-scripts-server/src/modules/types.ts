@@ -4,15 +4,15 @@ import type {
     MountMode,
 } from '@alfalab/scripts-modules';
 
-export type ModuleDescriptor<FrameworkParams extends unknown[] = []> = {
+export type ModuleDescriptor<FrameworkParams extends unknown[] = [], GetResourcesParams = void> = {
     mountMode: MountMode;
     version?: string;
     getModuleState: (
-        getResourcesRequest: GetResourcesRequest,
+        getResourcesRequest: GetResourcesRequest<GetResourcesParams>,
         ...params: FrameworkParams
     ) => Promise<GetModuleStateResult>;
 };
 
-export type ModulesConfig<FrameworkParams extends unknown[] = []> = {
-    [moduleId: string]: ModuleDescriptor<FrameworkParams>;
+export type ModulesConfig<FrameworkParams extends unknown[] = [], GetResourcesParams = void> = {
+    [moduleId: string]: ModuleDescriptor<FrameworkParams, GetResourcesParams>;
 };
