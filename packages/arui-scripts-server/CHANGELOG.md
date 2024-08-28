@@ -1,5 +1,11 @@
 # @alfalab/scripts-server
 
+## 1.3.0
+
+### Minor Changes
+
+-   [#244](https://github.com/core-ds/arui-scripts/pull/244) [`2b7664b`](https://github.com/core-ds/arui-scripts/commit/2b7664bea1f8cb247f8248b3793b33961d4d9cf2) Thanks [@e-ogri](https://github.com/e-ogri)! - Добавление дженерика для функции createGetModulesMethod
+
 ## 1.2.3
 
 ### Patch Changes
