@@ -6,6 +6,7 @@
 const fs = require('fs');
 const { pathsToModuleNameMapper } = require('ts-jest');
 const { parseConfigFileTextToJson } = require('typescript');
+const { swcClientConfig } = require('../swc');
 
 const configs = require('../app-configs').default;
 
@@ -18,6 +19,18 @@ if (configs.tsconfig) {
     tsConfigPaths = tsConfig.config.compilerOptions?.paths || {};
 }
 
+let tsxTransformer = require.resolve('./babel-transform');
+const jsTransformer = configs.useSwc
+    ? [require.resolve('@swc/jest'), swcClientConfig]
+    : require.resolve('./babel-transform');
+
+if (configs.useSwc) {
+    tsxTransformer = [require.resolve('@swc/jest'), swcClientConfig];
+}
+if (configs.jestUseTsJest) {
+    tsxTransformer = require.resolve('ts-jest');
+}
+
 module.exports = {
     testRegex: 'src/.*(((/__test__/|/__tests__/).*)|(test|spec|tests)).(jsx?|tsx?)$',
     moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
@@ -26,11 +39,9 @@ module.exports = {
         url: 'http://localhost',
     },
     transform: {
-        '^.+\\.jsx?$': require.resolve('./babel-transform'),
-        '^.+\\.mjs$': require.resolve('./babel-transform'),
-        '^.+\\.tsx?$': configs.jestUseTsJest
-            ? require.resolve('ts-jest')
-            : require.resolve('./babel-transform'),
+        '^.+\\.jsx?$': jsTransformer,
+        '^.+\\.mjs$': jsTransformer,
+        '^.+\\.tsx?$': tsxTransformer,
         '^(?!.*\\.(js|jsx|ts|tsx|css|json)$)': require.resolve('./file-transform'),
     },
     moduleNameMapper: {

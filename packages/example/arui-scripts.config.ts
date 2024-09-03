@@ -8,6 +8,7 @@ const aruiScriptsConfig: PackageSettings = {
     componentsTheme: '../../node_modules/@alfalab/core-components/themes/corp.css',
     keepCssVars: false,
     debug: true,
+    useSwc: true,
     compatModules: {
         shared: {
             'react': 'react',

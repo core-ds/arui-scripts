@@ -7,9 +7,10 @@ import build from './build-wrapper';
 import config from '../../configs/webpack.server.prod';
 
 console.log(chalk.magenta('Building server...'));
-
+console.time('build server');
 build(config as any)
     .then(({ warnings }) => {
+        console.timeEnd('build server');
         if (warnings.length) {
             console.log(chalk.yellow('Server compiled with warnings.\n'));
             console.log(warnings.join('\n\n'));

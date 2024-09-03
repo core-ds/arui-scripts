@@ -10,6 +10,7 @@ const aruiScriptsConfig: PackageSettings = {
     clientEntry: './src/client',
     componentsTheme: '../../node_modules/@alfalab/core-components/themes/corp.css',
     keepCssVars: false,
+    useSwc: true,
     debug: true,
     compatModules: {
         shared: {
