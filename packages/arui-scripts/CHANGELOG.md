@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 17.2.0
+
+### Minor Changes
+
+-   [#249](https://github.com/core-ds/arui-scripts/pull/249) [`8a47674`](https://github.com/core-ds/arui-scripts/commit/8a476744fca2fe1cd5af7d64fe55c28be196af35) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Добавлена возможность сборки coverage с кода при NODE_ENV=cypress или USE_ISTANBUL=enabled. Coverage собирается только при использовании babel
+
 ## 17.1.7
 
 ### Patch Changes
