@@ -1,5 +1,5 @@
 import applyOverrides from './util/apply-overrides';
-import configs from './app-configs';
+import { configs } from './app-configs';
 import browsers from './supporting-browsers';
 
 const babelClientConfig = applyOverrides(['babel', 'babelClient'], {
@@ -47,7 +47,8 @@ const babelClientConfig = applyOverrides(['babel', 'babelClient'], {
         ],
         require.resolve('@babel/plugin-transform-nullish-coalescing-operator'),
         require.resolve('@babel/plugin-transform-optional-chaining'),
-    ],
+        configs.collectCoverage && require.resolve('babel-plugin-istanbul'),
+    ].filter(Boolean),
     env: {
         production: {
             plugins: [

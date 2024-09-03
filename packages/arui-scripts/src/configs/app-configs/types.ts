@@ -46,6 +46,7 @@ export type AppConfigs = {
     installServerSourceMaps: boolean;
     disableDevWebpackTypecheck: boolean;
     jestUseTsJest: boolean;
+    collectCoverage: boolean;
 
     // image processing
     dataUrlMaxSize?: number;

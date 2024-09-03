@@ -26,7 +26,8 @@ const config = applyOverrides(['babel', 'babelServer'], {
         [require.resolve('@babel/plugin-transform-runtime'), { helpers: false }],
         require.resolve('@babel/plugin-transform-nullish-coalescing-operator'),
         require.resolve('@babel/plugin-transform-optional-chaining'),
-    ],
+        configs.collectCoverage && require.resolve('babel-plugin-istanbul'),
+    ].filter(Boolean),
     env: {
         production: {
             plugins: [
