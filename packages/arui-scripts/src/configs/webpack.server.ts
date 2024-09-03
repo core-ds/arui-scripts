@@ -11,12 +11,13 @@ import webpack, { Configuration } from 'webpack';
 import nodeExternals from 'webpack-node-externals';
 
 import getEntry from './util/get-entry';
+import { getWebpackCacheDependencies } from './util/get-webpack-cache-dependencies';
 import configs from './app-configs';
 import { babelDependencies } from './babel-dependencies';
 import babelConf from './babel-server';
 import postcssConf from './postcss';
 import { serverExternalsExemptions } from './server-externals-exemptions';
-import { getWebpackCacheDependencies } from './util/get-webpack-cache-dependencies';
+import { swcServerConfig } from './swc';
 
 const ReloadServerPlugin = require('../plugins/reload-server-webpack-plugin');
 const WatchMissingNodeModulesPlugin = require('../plugins/watch-missing-node-modules-plugin');
@@ -130,14 +131,21 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
                     {
                         test: configs.useTscLoader ? /\.(js|jsx|mjs)$/ : /\.(js|jsx|mjs|ts|tsx)$/,
                         include: configs.appSrc,
-                        loader: require.resolve('babel-loader'),
-                        options: {
-                            ...babelConf,
-                            // This is a feature of `babel-loader` for webpack (not Babel itself).
-                            // It enables caching results in ./node_modules/.cache/babel-loader/
-                            // directory for faster rebuilds.
-                            cacheDirectory: mode === 'dev',
-                        },
+                        ...(configs.useSwc
+                            ? {
+                                loader: require.resolve('swc-loader'),
+                                options: swcServerConfig,
+                            }
+                            : {
+                                loader: require.resolve('babel-loader'),
+                                options: {
+                                    ...babelConf,
+                                    // This is a feature of `babel-loader` for webpack (not Babel itself).
+                                    // It enables caching results in ./node_modules/.cache/babel-loader/
+                                    // directory for faster rebuilds.
+                                    cacheDirectory: mode === 'dev',
+                                },
+                            }),
                     },
                     configs.tsconfig &&
                         configs.useTscLoader && {
@@ -169,18 +177,24 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
                     {
                         test: /\.(js|mjs)$/,
                         exclude: /@babel(?:\/|\\{1,2})runtime/,
-                        loader: require.resolve('babel-loader'),
                         resolve: {
                             fullySpecified: false,
                         },
-                        options: {
-                            ...babelDependencies,
-                            babelrc: false,
-                            configFile: false,
-                            compact: false,
-                            cacheDirectory: mode === 'dev',
-                            cacheCompression: false,
-                        },
+                        ...(configs.useSwc
+                            ? {
+                                loader: require.resolve('swc-loader'),
+                            }
+                            : {
+                                loader: require.resolve('babel-loader'),
+                                options: {
+                                    ...babelDependencies,
+                                    babelrc: false,
+                                    configFile: false,
+                                    compact: false,
+                                    cacheDirectory: mode === 'dev',
+                                    cacheCompression: false,
+                                },
+                            }),
                     },
                     // replace css imports with empty files
                     {

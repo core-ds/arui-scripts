@@ -1,6 +1,6 @@
 import { configs } from '../../configs/app-configs';
-import { getTscWatchCommand } from '../util/tsc';
 import { runCompilers } from '../util/run-compilers';
+import { getTscWatchCommand } from '../util/tsc';
 
 process.env.BROWSERSLIST_CONFIG =
     process.env.BROWSERSLIST_CONFIG || require.resolve('../../../.browserslistrc');

@@ -47,6 +47,7 @@ export function getDefaultAppConfig(): AppConfigs {
         // build tuning
         keepPropTypes: false,
         useTscLoader: false,
+        useSwc: false,
         webpack4Compatibility: false,
         installServerSourceMaps: false,
         disableDevWebpackTypecheck: true,
