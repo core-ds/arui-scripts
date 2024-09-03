@@ -51,6 +51,7 @@ export function getDefaultAppConfig(): AppConfigs {
         installServerSourceMaps: false,
         disableDevWebpackTypecheck: true,
         jestUseTsJest: false,
+        collectCoverage: process.env.NODE_ENV === 'cypress' || process.env.USE_ISTANBUL === 'enabled',
 
         // image processing
         dataUrlMaxSize: 1536,
