@@ -31,6 +31,7 @@ type Overrides = {
     swc: SwcOptions;
     swcServer: SwcOptions;
     swcClient: SwcOptions;
+    swcJest: SwcOptions;
 
     postcss: any[]; // TODO: где взять typedef-ы для postcss
     browsers: string[];

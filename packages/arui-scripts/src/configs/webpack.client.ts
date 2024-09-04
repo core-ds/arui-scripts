@@ -265,10 +265,12 @@ export const createSingleClientWebpackConfig = (
                             ? /\.(js|jsx|mjs|cjs)$/
                             : /\.(js|jsx|mjs|ts|tsx|cjs)$/,
                         include: configs.appSrc,
-                        ...(configs.useSwc
+                        ...(configs.useSwcLoader
                             ? {
                                 loader: require.resolve('swc-loader'),
                                 options: {
+                                    cacheDirectory: mode === 'dev',
+                                    cacheCompression: false,
                                     ...swcClientConfig,
                                     jsc: {
                                         ...swcClientConfig.jsc,
@@ -343,9 +345,13 @@ export const createSingleClientWebpackConfig = (
                         resolve: {
                             fullySpecified: false,
                         },
-                        ...(configs.useSwc
+                        ...(configs.useSwcLoader
                             ? {
                                 loader: require.resolve('swc-loader'),
+                                options: {
+                                    cacheDirectory: mode === 'dev',
+                                    cacheCompression: false,
+                                },
                             }
                             : {
                                 loader: require.resolve('babel-loader'),
