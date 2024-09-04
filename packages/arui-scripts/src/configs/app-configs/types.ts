@@ -42,11 +42,12 @@ export type AppConfigs = {
      * @deprecated использование ts-loader крайне не рекомендуется - он медленнее и не имеет преимуществ перед babel
      */
     useTscLoader: boolean;
-    useSwc: boolean;
+    useSwcLoader: boolean;
     webpack4Compatibility: boolean;
     installServerSourceMaps: boolean;
     disableDevWebpackTypecheck: boolean;
     jestUseTsJest: boolean;
+    jestUseSwc: boolean;
     collectCoverage: boolean;
 
     // image processing

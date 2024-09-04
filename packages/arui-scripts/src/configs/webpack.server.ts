@@ -131,7 +131,7 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
                     {
                         test: configs.useTscLoader ? /\.(js|jsx|mjs)$/ : /\.(js|jsx|mjs|ts|tsx)$/,
                         include: configs.appSrc,
-                        ...(configs.useSwc
+                        ...(configs.useSwcLoader
                             ? {
                                 loader: require.resolve('swc-loader'),
                                 options: swcServerConfig,
@@ -180,7 +180,7 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
                         resolve: {
                             fullySpecified: false,
                         },
-                        ...(configs.useSwc
+                        ...(configs.useSwcLoader
                             ? {
                                 loader: require.resolve('swc-loader'),
                             }

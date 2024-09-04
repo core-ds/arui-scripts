@@ -6,7 +6,7 @@
 const fs = require('fs');
 const { pathsToModuleNameMapper } = require('ts-jest');
 const { parseConfigFileTextToJson } = require('typescript');
-const { swcClientConfig } = require('../swc');
+const { swcJestConfig } = require('../swc');
 
 const configs = require('../app-configs').default;
 
@@ -20,12 +20,12 @@ if (configs.tsconfig) {
 }
 
 let tsxTransformer = require.resolve('./babel-transform');
-const jsTransformer = configs.useSwc
-    ? [require.resolve('@swc/jest'), swcClientConfig]
+const jsTransformer = configs.jestUseSwc
+    ? [require.resolve('@swc/jest'), swcJestConfig]
     : require.resolve('./babel-transform');
 
-if (configs.useSwc) {
-    tsxTransformer = [require.resolve('@swc/jest'), swcClientConfig];
+if (configs.jestUseSwc) {
+    tsxTransformer = [require.resolve('@swc/jest'), swcJestConfig];
 }
 if (configs.jestUseTsJest) {
     tsxTransformer = require.resolve('ts-jest');

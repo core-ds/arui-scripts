@@ -8,4 +8,12 @@ export function warnAboutDeprecations(config: AppContextWithConfigs) {
             'для получения дополнительной информации.'
         );
     }
+
+    if (config.useSwcLoader && config.useTscLoader) {
+        console.warn('Одновременное использование опций `useSwcLoader` и `useTscLoader` не поддерживается, выберите что-то одно');
+    }
+
+    if (config.jestUseSwc && config.jestUseTsJest) {
+        console.warn('Одновременное использование опций `jestUseSwc` и `jestUseTsJest` не поддерживается, выберите что-то одно');
+    }
 }

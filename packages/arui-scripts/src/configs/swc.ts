@@ -31,3 +31,5 @@ const swcConfig: Options = {
 export const swcClientConfig = applyOverrides(['swc', 'swcClient'], swcConfig);
 
 export const swcServerConfig = applyOverrides(['swc', 'swcServer'], swcConfig);
+
+export const swcJestConfig = applyOverrides(['swc', 'swcJest'], swcConfig);
