@@ -1,29 +1,35 @@
 @alfalab/client-event-bus
 
-Плагин, возвращающий общий event-bus для корпоративных приложений. Должен использоваться в бизнесовых проектах, которые хотят
-что-либо публиковать или подписываться на события из общей шины данных.
+Библиотека позволяет обмениваться данными в приложениях с модульной архитектурой (module federation), используя событийную модель браузера.
+Это особенно актуально для приложений на базе `Webpack Module Federation`, обеспечивая взаимодействие без создания жестких зависимостей.
 
 По сути представляет собой [`EventEmitter`](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget) с добавлением методов для
 получения последнего отправленного события уже после того, как это событие произошло.
 
-Для того чтобы добавить типизацию событий на проекте, не трогая основной пакет - вы можете добавить файл `event-types.d.ts` со следующим содержимым:
+Для того чтобы добавить типизацию событий на проекте, не трогая основной пакет, можно сделать следующее:
+
+`constants/event-bus.ts` - заводим ключ, по которому создается шина данных
 ```ts
-// constants/event-bus
-export const BUS_KEY = 'project-name';
+// constants/event-bus.ts
+export const BUS_KEY = 'my-first-bus';
+```
 
-
-// types/event-bus
+`types/event-bus.ts` - определяем типы событий
+```ts
+// types/event-bus.ts
 type EventType = 'busValueFirst' | 'busValueSecond'
 type EventPayload = string | null
 
 export type EventTypes = Record<EventType, EventPayload>;
+```
 
-
+`types/event-types.d.ts` - добавляем файл для типизации функций `getEventBus` и `createBus`
+```ts
 // types/event-types.d.ts
 import type { AbstractAppEventBus } from '@alfalab/client-event-bus';
 
-import type { EventTypes } from '~types/event-bus'
 import { BUS_KEY } from '~/constants/event-bus';
+import type { EventTypes } from '~types/event-bus'
 
 export declare type EventBus = AbstractAppEventBus<EventTypes>;
 
@@ -43,8 +49,7 @@ declare module '@alfalab/client-event-bus' {
 
 Для именования событий предлагается следующие договоренности:
 
-- Имя события начинается с названия вашего проекта, исключая `corp-` и `-ui`. То есть если ваш проект называется `corp-cards-ui` событие должно начинаться с `cards_`.
-Для `corp-shared-ui` это соответственно `shared_`.
+- Имя события начинается с названия вашего проекта, исключая префикс вашей системы/направления (`corp-`, `ufr-` и так далее) и суффикс `-ui`. То есть если ваш проект называется `ufr-cards-ui` событие должно начинаться с `cards_`, `corp-sales-ui` это соответственно `sales_`.
 - Название события пишется в `camelCase`.
 
 ## Возвращаемое значение
