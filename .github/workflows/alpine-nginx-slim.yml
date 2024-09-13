@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         versions: [
-          { alpine: 3.20, dockerfile: Dockerfile-nginx-slim, tag: nginx-1.27.1-slim },
+          { alpine: '3.20', dockerfile: Dockerfile-nginx-slim, tag: 'nginx-1.27.1-slim' },
         ]
     runs-on: ubuntu-latest
     steps:
