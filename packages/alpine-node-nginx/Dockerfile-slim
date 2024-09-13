@@ -7,7 +7,7 @@ ARG NODE_BASE_IMAGE=node
 # this one does not have a lot of unused nginx modules
 
 FROM alpine:${ALPINE_VERSION}
-ENV NGINX_VERSION 1.24.0
+ENV NGINX_VERSION 1.27.1
 ENV NGX_BROTLI_COMMIT 6e975bcb015f62e1f303054897783355e2a877dc
 ENV NGINX_CONFIG "\
     		--prefix=/etc/nginx \
