@@ -1,5 +1,4 @@
 {
     "extends": "./tsconfig.json",
-    // для корректной работы @typescript-eslint/parser
     "include": ["src", "./*.js", "./*.ts", ".eslintrc.js"]
 }
