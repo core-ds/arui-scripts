@@ -11,3 +11,4 @@ package-lock.json
 tsconfig.tsbuildinfo
 .turbo
 build
+.DS_Store
