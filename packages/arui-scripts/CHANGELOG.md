@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 17.2.1
+
+### Patch Changes
+
+-   [#263](https://github.com/core-ds/arui-scripts/pull/263) [`6b22d44`](https://github.com/core-ds/arui-scripts/commit/6b22d44f6b3e8e6c5a6e2ef7454a5fbff2c5d0e4) Thanks [@kiskv](https://github.com/kiskv)! - Исправлено падение при использовании tsconfig, который не содержит поля compilerOptions
+
 ## 17.2.0
 
 ### Minor Changes
