@@ -7,7 +7,7 @@ const babelClientConfig = applyOverrides(['babel', 'babelClient'], {
         [
             require.resolve('@babel/preset-env'),
             {
-                targets: { browsers },
+                targets: browsers,
                 loose: true,
                 // Allow importing core-js in entrypoint and use browserlist to select polyfills
                 useBuiltIns: 'entry',
