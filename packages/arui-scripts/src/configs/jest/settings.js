@@ -15,7 +15,7 @@ if (configs.tsconfig) {
     const tsConfigText = fs.readFileSync(configs.tsconfig, 'utf8');
     const tsConfig = parseConfigFileTextToJson(configs.tsconfig, tsConfigText);
 
-    tsConfigPaths = tsConfig.config.compilerOptions.paths || {};
+    tsConfigPaths = tsConfig.config.compilerOptions?.paths || {};
 }
 
 module.exports = {
@@ -31,16 +31,14 @@ module.exports = {
         '^.+\\.tsx?$': configs.jestUseTsJest
             ? require.resolve('ts-jest')
             : require.resolve('./babel-transform'),
-        '^(?!.*\\.(js|jsx|ts|tsx|css|json)$)': require.resolve('./file-transform')
+        '^(?!.*\\.(js|jsx|ts|tsx|css|json)$)': require.resolve('./file-transform'),
     },
     moduleNameMapper: {
         // replace all css files with simple empty exports
         '\\.css$': require.resolve('./css-mock'),
         ...pathsToModuleNameMapper(tsConfigPaths, { prefix: '<rootDir>/' }),
     },
-    snapshotSerializers: [
-        require.resolve('jest-snapshot-serializer-class-name-to-string')
-    ],
+    snapshotSerializers: [require.resolve('jest-snapshot-serializer-class-name-to-string')],
     globals: {
         'ts-jest': {
             tsconfig: configs.tsconfig,
