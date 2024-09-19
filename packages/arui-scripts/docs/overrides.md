@@ -72,6 +72,9 @@ export default overrides;
 - `start.sh` - шаблон entrypoint докер контейнера. Базовый шаблон [тут](../src/templates/start.template.ts).
 - `serverExternalsExemptions` - список модулей, которые не будут добавлены в список внешних зависимостей сервера. [Подробнее](caveats.md#node-externals).
 - `html` - шаблон для htmlWebpackPlugin, будет использоваться только в режиме [`clientOnly`](./settings.md#clientonly).
+- `swc-client` - конфигурация `swc` для клиентского кода. Ключи: `swc`, `swcClient`.
+- `swc-server` - конфигурация `swc` для серверного кода. Ключи: `swc`, `swcServer`.
+- `swc-jest` - конфигурация `swc` для тестов. Ключи: `swc`, `swcJest`.
 
 Для некоторых конфигураций определены несколько ключей, они будут применяться в том порядке, в котором они приведены в этом файле.
 

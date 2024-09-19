@@ -32,6 +32,7 @@ import { babelDependencies } from './babel-dependencies';
 import { patchMainWebpackConfigForModules, patchWebpackConfigForCompat } from './modules';
 import postcssConf from './postcss';
 import { processAssetsPluginOutput } from './process-assets-plugin-output';
+import { swcClientConfig } from './swc';
 
 const PnpWebpackPlugin = require('pnp-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
@@ -263,21 +264,43 @@ export const createSingleClientWebpackConfig = (
                             ? /\.(js|jsx|mjs|cjs)$/
                             : /\.(js|jsx|mjs|ts|tsx|cjs)$/,
                         include: configs.appSrc,
-                        loader: require.resolve('babel-loader'),
-                        options: {
-                            ...babelConf,
-                            cacheDirectory: mode === 'dev',
-                            cacheCompression: false,
-                            plugins: [
-                                ...babelConf.plugins,
-                                mode === 'dev'
-                                    ? [
-                                          require.resolve('react-refresh/babel'),
-                                          { skipEnvCheck: true },
-                                      ]
-                                    : undefined,
-                            ].filter(Boolean),
-                        },
+                        ...(configs.useSwcLoader
+                            ? {
+                                loader: require.resolve('swc-loader'),
+                                options: {
+                                    cacheDirectory: mode === 'dev',
+                                    cacheCompression: false,
+                                    ...swcClientConfig,
+                                    jsc: {
+                                        ...swcClientConfig.jsc,
+                                        transform: {
+                                            ...swcClientConfig.jsc?.transform,
+                                            react: {
+                                                ...swcClientConfig.jsc?.transform?.react,
+                                                refresh: mode === 'dev',
+                                            },
+                                        },
+                                    },
+                                },
+                            }
+                            : {
+                                loader: require.resolve('babel-loader'),
+                                options: {
+                                    ...babelConf,
+                                    cacheDirectory: mode === 'dev',
+                                    cacheCompression: false,
+                                    plugins: [
+                                        ...babelConf.plugins,
+                                        mode === 'dev'
+                                            ? [
+                                                require.resolve('react-refresh/babel'),
+                                                { skipEnvCheck: true },
+                                            ]
+                                            : undefined,
+                                    ].filter(Boolean),
+                                },
+                            }
+                        ),
                     },
                     configs.tsconfig &&
                         configs.useTscLoader && {
@@ -286,10 +309,9 @@ export const createSingleClientWebpackConfig = (
                                 {
                                     loader: require.resolve('babel-loader'),
                                     options: {
+                                        ...babelConf,
                                         cacheDirectory: mode === 'dev',
                                         cacheCompression: false,
-                                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                        // @ts-ignore
                                         plugins:
                                             mode === 'dev'
                                                 ? [
@@ -297,7 +319,6 @@ export const createSingleClientWebpackConfig = (
                                                       { skipEnvCheck: true },
                                                   ]
                                                 : undefined,
-                                        ...babelConf,
                                     },
                                 },
                                 {
@@ -320,18 +341,29 @@ export const createSingleClientWebpackConfig = (
                     {
                         test: /\.(js|mjs)$/,
                         exclude: /@babel(?:\/|\\{1,2})runtime/,
-                        loader: require.resolve('babel-loader'),
                         resolve: {
                             fullySpecified: false,
                         },
-                        options: {
-                            ...babelDependencies,
-                            babelrc: false,
-                            configFile: false,
-                            compact: false,
-                            cacheDirectory: mode === 'dev',
-                            cacheCompression: false,
-                        },
+                        ...(configs.useSwcLoader
+                            ? {
+                                loader: require.resolve('swc-loader'),
+                                options: {
+                                    cacheDirectory: mode === 'dev',
+                                    cacheCompression: false,
+                                },
+                            }
+                            : {
+                                loader: require.resolve('babel-loader'),
+                                options: {
+                                    ...babelDependencies,
+                                    babelrc: false,
+                                    configFile: false,
+                                    compact: false,
+                                    cacheDirectory: mode === 'dev',
+                                    cacheCompression: false,
+                                },
+                            }
+                        ),
                     },
                     // process simple css files with postcss loader and css loader
                     {

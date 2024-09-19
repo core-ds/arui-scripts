@@ -23,6 +23,18 @@ export function testOptionalChaining(smth: OptionalChainingTest) {
     return smth?.foo?.bar;
 }
 
+export class SomethingWithPrivateFields {
+    #name = 'really private';
+
+    getName() {
+        return this.#name;
+    }
+}
+
+export function withNullishCoalescing(something: null | string) {
+    return something ?? 'other value';
+}
+
 export const constObject = {
     name: 'someString',
 } as const;
