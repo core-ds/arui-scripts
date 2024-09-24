@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 17.3.0
+
+### Minor Changes
+
+-   [#262](https://github.com/core-ds/arui-scripts/pull/262) [`a4ea53d`](https://github.com/core-ds/arui-scripts/commit/a4ea53d746983d8dfe32157b4a4472c4f5e1bdaa) Thanks [@dzvyagin](https://github.com/dzvyagin)! - Исправление передачи таргет браузеров в babel-client
+
 ## 17.2.1
 
 ### Patch Changes
