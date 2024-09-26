@@ -29,6 +29,7 @@ import { getWebpackCacheDependencies } from './util/get-webpack-cache-dependenci
 import { configs } from './app-configs';
 import babelConf from './babel-client';
 import { babelDependencies } from './babel-dependencies';
+import { addEnvToHtmlTemplate, ClientConfigPlugin } from './client-env-config';
 import { patchMainWebpackConfigForModules, patchWebpackConfigForCompat } from './modules';
 import postcssConf from './postcss';
 import { processAssetsPluginOutput } from './process-assets-plugin-output';
@@ -480,9 +481,12 @@ export const createSingleClientWebpackConfig = (
         new AruiRuntimePlugin(),
         configs.clientOnly &&
             new HtmlWebpackPlugin({
-                templateContent: htmlTemplate,
+                templateContent: mode === 'dev'
+                    ? addEnvToHtmlTemplate(htmlTemplate)
+                    : htmlTemplate, // оставляем env шаблоны как есть для прод сборки - их будет менять start.sh
                 filename: '../index.html',
             }),
+        mode === 'dev' && configs.clientOnly && new ClientConfigPlugin(),
 
         // production plugins:
         mode === 'prod' && new WebpackManifestPlugin(),

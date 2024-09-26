@@ -12,6 +12,9 @@ const template = `<!doctype html>
   </head>
   <body>
   <div id="react-app"></div>
+  <script id="env-settings" type="application/json">
+  <%= envConfig %>
+  </script>
   </body>
 </html>`;
 

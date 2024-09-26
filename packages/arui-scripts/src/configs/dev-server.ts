@@ -5,6 +5,7 @@ import path from 'path';
 
 import applyOverrides from './util/apply-overrides';
 import { configs } from './app-configs';
+import { ENV_CONFIG_FILENAME } from './client-env-config';
 
 const serverProxyConfig = {
     '/**': {
@@ -58,8 +59,9 @@ const devServerConfig = applyOverrides('devServer', {
     },
     devMiddleware: {
         publicPath: `/${configs.publicPath}`,
-        // dev-сервер не может корректно обработать файлы, которые лежат на уровень выше чем publicPath, а html, создаваемый для client-only режима как раз такой
-        writeToDisk: (filename) => filename.endsWith('.html'),
+        // dev-сервер не может корректно обработать файлы, которые лежат на уровень выше чем publicPath, а html,
+        // создаваемый для client-only режима как раз такой. Так же работает и env-config.json
+        writeToDisk: (filename) => filename.endsWith('.html') || filename.endsWith(ENV_CONFIG_FILENAME),
     },
     static: [configs.serverOutputPath],
     proxy: Object.assign(configs.proxy || {}, configs.clientOnly ? {} : serverProxyConfig),
