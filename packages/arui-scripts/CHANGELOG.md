@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 17.4.0
+
+### Minor Changes
+
+-   [#266](https://github.com/core-ds/arui-scripts/pull/266) [`cf14904`](https://github.com/core-ds/arui-scripts/commit/cf14904e4a6412a193077ccc6e8e6216eda2e475) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Добавлен механизм работы с конфигурацией для client-only режима
+
 ## 17.3.0
 
 ### Minor Changes
