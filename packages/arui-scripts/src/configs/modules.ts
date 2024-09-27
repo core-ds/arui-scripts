@@ -114,7 +114,10 @@ export function patchWebpackConfigForCompat(
     };
     // Название переменной вебпака, которую он будет использовать для загрузки чанков. Важно чтобы для разных модулей они отличались,
     // иначе несколько модулей из одного приложения будут конфликтовать между собой
-    webpackConf.output!.uniqueName = module.name;
+    const uniqueName = module.name;
+
+    // Для того чтобы модули могли подключаться из разных мест, нам необходимо использовать publicPath = auto. Для корректной работы в IE надо подключaть https://github.com/amiller-gh/currentScript-polyfill
+    webpackConf.output = { ...webpackConf.output, publicPath: 'auto', uniqueName };
 
     const cssPrefix = getCssPrefixForModule(module);
 
