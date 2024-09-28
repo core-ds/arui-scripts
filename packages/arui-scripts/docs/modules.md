@@ -338,10 +338,10 @@ export const MyAwesomeComponent = () => {
 трудоемкой задачей, особенно если у вас уже есть большая кодовая база.
 
 arui-scripts предоставляет два решения для этой проблемы:
-- _compat_ модули
+- _css-prefix_
 - использование shadow dom
 
-## compat модули
+## css-prefix
 
 Суть метода заключается в том, что ко всем стилям модуля будет добавляться префикс, который позволит изолировать
 стили модуля от стилей приложения-потребителя.
@@ -354,7 +354,7 @@ arui-scripts предоставляет два решения для этой п
 1. Изменить конфигурацию модуля в `arui-scripts.config.ts`:
 
 ```ts
-// ./arui-scripts.config.ts
+// ./arui-scripts.config.ts compatModules
 import type { PackageSettings } from 'arui-scripts';
 
 const aruiScriptsConfig: PackageSettings = {
@@ -377,6 +377,30 @@ const aruiScriptsConfig: PackageSettings = {
             'AnotherModule': {
                 entry: './src/modules/another-module/index',
             },
+        }
+    }
+}
+
+export default aruiScriptsConfig;
+```
+
+```ts
+// ./arui-scripts.config.ts module federation
+import type { PackageSettings } from 'arui-scripts';
+
+const aruiScriptsConfig: PackageSettings = {
+    modules: {
+        shared: {
+            'react': '^17.0.0',
+            'react-dom': '^17.0.0',
+        },
+        exposes: {
+            'Module': './src/modules/module/index',
+        },
+        options: {
+            'Module': {
+                cssPrefix: '.my-module'
+            }
         }
     }
 }

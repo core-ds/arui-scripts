@@ -22,6 +22,21 @@ export function patchMainWebpackConfigForModules(webpackConf: webpack.Configurat
         return webpackConf;
     }
 
+    const moduleOptions = configs.modules.options || {};
+
+    Object.keys(moduleOptions).forEach((moduleName) => {
+        const {cssPrefix} = moduleOptions[moduleName]
+
+        if (cssPrefix) {
+            // Добавляем префикс для css-классов, чтобы изолировать стили модуля от стилей основного приложения
+            const cssRule = findLoader(webpackConf, '/\\.css$/');
+            const cssModulesRule = findLoader(webpackConf, '/\\.module\\.css$/');
+
+            addPrefixCssRule(cssRule, cssPrefix);
+            addPrefixCssRule(cssModulesRule, `:global(${cssPrefix})`);
+        }
+    });
+
     webpackConf.output.publicPath = haveExposedDefaultModules()
         ? 'auto' // Для того чтобы модули могли подключаться из разных мест, нам необходимо использовать auto. Для корректной работы в IE надо подключaть https://github.com/amiller-gh/currentScript-polyfill
         : configs.publicPath;
