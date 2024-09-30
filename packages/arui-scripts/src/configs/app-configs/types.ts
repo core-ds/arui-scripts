@@ -89,9 +89,7 @@ export type AppConfigs = {
         name?: string;
         shared: any; // webpack don't expose this type
         exposes?: Record<string, string>;
-        options?: {
-            [moduleId: string]: ModuleConfigBase;
-        };
+        options?: ModuleConfigBase;
     } | null;
 };
 

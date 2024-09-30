@@ -398,9 +398,7 @@ const aruiScriptsConfig: PackageSettings = {
             'Module': './src/modules/module/index',
         },
         options: {
-            'Module': {
-                cssPrefix: '.my-module'
-            }
+            cssPrefix: '.my-module'
         }
     }
 }
