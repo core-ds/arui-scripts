@@ -22,6 +22,12 @@ export function patchMainWebpackConfigForModules(webpackConf: webpack.Configurat
         return webpackConf;
     }
 
+    const {cssPrefix} = configs.modules.options || {};
+
+    if (cssPrefix) {
+        addCssPrefix(webpackConf, cssPrefix);
+    }
+
     webpackConf.output.publicPath = haveExposedDefaultModules()
         ? 'auto' // Для того чтобы модули могли подключаться из разных мест, нам необходимо использовать auto. Для корректной работы в IE надо подключaть https://github.com/amiller-gh/currentScript-polyfill
         : configs.publicPath;
@@ -73,6 +79,14 @@ export function getExposeLoadersFormCompatModules() {
     });
 }
 
+function addCssPrefix(webpackConf: webpack.Configuration, cssPrefix: string){
+    const cssRule = findLoader(webpackConf, '/\\.css$/');
+    const cssModulesRule = findLoader(webpackConf, '/\\.module\\.css$/');
+
+    addPrefixCssRule(cssRule, cssPrefix);
+    addPrefixCssRule(cssModulesRule, `:global(${cssPrefix})`);
+}
+
 function addPrefixCssRule(rule: webpack.RuleSetRule | undefined, prefix: string) {
     if (!rule || !rule.use || !Array.isArray(rule.use)) {
         return;
@@ -122,12 +136,7 @@ export function patchWebpackConfigForCompat(
     const cssPrefix = getCssPrefixForModule(module);
 
     if (cssPrefix) {
-        // Добавляем префикс для css-классов, чтобы изолировать стили модуля от стилей основного приложения
-        const cssRule = findLoader(webpackConf, '/\\.css$/');
-        const cssModulesRule = findLoader(webpackConf, '/\\.module\\.css$/');
-
-        addPrefixCssRule(cssRule, cssPrefix);
-        addPrefixCssRule(cssModulesRule, `:global(${cssPrefix})`);
+        addCssPrefix(webpackConf, cssPrefix);
     }
 
     return webpackConf;

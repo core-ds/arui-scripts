@@ -89,13 +89,17 @@ export type AppConfigs = {
         name?: string;
         shared: any; // webpack don't expose this type
         exposes?: Record<string, string>;
+        options?: ModuleConfigBase;
     } | null;
 };
 
-type CompatModuleConfigBase = {
+export type ModuleConfigBase = {
+    cssPrefix?: false | string;
+};
+
+type CompatModuleConfigBase  = ModuleConfigBase & {
     entry: string;
     externals?: Record<string, string>;
-    cssPrefix?: false | string;
 };
 
 export type CompatModuleConfig = CompatModuleConfigBase & {
