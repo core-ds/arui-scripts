@@ -1,5 +1,15 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 18.0.0
+
+### Major Changes
+
+-   [#271](https://github.com/core-ds/arui-scripts/pull/271) [`ccff520`](https://github.com/core-ds/arui-scripts/commit/ccff52095274dc558574d08002d31cc3ecda7fa2) Thanks [@Lecklark](https://github.com/Lecklark)! - Исправление настройки output.publicPath в конфиге webpack для compat модулей
+
+### Patch Changes
+
+-   [#273](https://github.com/core-ds/arui-scripts/pull/273) [`b96804d`](https://github.com/core-ds/arui-scripts/commit/b96804dfb2e34dd7008c4a93e7c1103cbda9615c) Thanks [@VladislavNsk](https://github.com/VladislavNsk)! - Добавлена возможность задавать css префикс для MF модулей
+
 ## 17.4.0
 
 ### Minor Changes
