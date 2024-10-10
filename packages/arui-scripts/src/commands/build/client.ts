@@ -9,7 +9,7 @@ import config from '../../configs/webpack.client.prod';
 import { MultiStats } from 'webpack';
 
 console.log(chalk.magenta('Building client...'));
-console.time('build client');
+
 build(config)
     .then(({ stats, warnings }) => {
         console.timeEnd('build client');
