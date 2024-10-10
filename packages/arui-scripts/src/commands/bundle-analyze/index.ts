@@ -19,7 +19,7 @@ import makeTmpDir from '../util/make-tmp-dir';
                 generateStatsFile: true,
                 statsFilename: configs.statsOutputPath,
                 analyzerPort: 'auto',
-            }),
+            }) as unknown as webpack.WebpackPluginInstance, // webpack-bundle-analyzer has incorrect types
         ];
         webpackConfig.output = {
             ...webpackConfig.output,
