@@ -18,7 +18,8 @@
         "lint:scripts": "eslint \"**/*.{js,jsx,ts,tsx}\" --ext .js,.jsx,.ts,.tsx",
         "lint": "yarn lint:scripts",
         "lint:fix": "yarn lint:scripts --fix",
-        "format": "prettier --write $INIT_CWD/{config,src}/**/*.{ts,tsx,js,jsx,css}"
+        "format": "prettier --write $INIT_CWD/{config,src}/**/*.{ts,tsx,js,jsx,css}",
+        "audit": "yarn npm audit --severity high --environment production"
     },
     "devDependencies": {
         "@alfalab/scripts-modules": "workspace:*",
