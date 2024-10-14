@@ -533,7 +533,7 @@ module.exports = {
 от папки, содержащей package.json. Так что это может быть как папка в проекте, так и пакет из node_modules).
 
 Сам пакет с пресетами может содержать два файла:
-- `arui-scirpts.config.js`
+- `arui-scripts.config.js`
 - `arui-scripts.overrides.js`
 
 ### arui-scripts.config.js
