@@ -16,20 +16,13 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
       - name: Use Node.js 18.x
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
-      - name: Npm Install 
+      - name: yarn install
         run: |
-          npm install -g npm@6
-          cd ./packages/arui-scripts/
-          npm install --force
+          yarn install --immutable
       - name: Run Audit
         id: audit
-        uses: oke-py/npm-audit-action@v2
-        with:
-         audit_level: critical
-         github_token: ${{ secrets.GITHUB_TOKEN }}
-         working_directory: ./packages/arui-scripts
-         issue_assignees: oke-py
-         issue_labels: vulnerability
+        run: |
+          yarn turbo audit

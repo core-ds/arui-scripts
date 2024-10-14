@@ -15,6 +15,7 @@
         "lint": {},
         "validate": {
             "dependsOn": ["build:app"]
-        }
+        },
+        "audit": {}
     }
 }
