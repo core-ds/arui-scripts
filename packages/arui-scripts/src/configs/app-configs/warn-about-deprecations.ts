@@ -9,11 +9,10 @@ export function warnAboutDeprecations(config: AppContextWithConfigs) {
         );
     }
 
-    if (config.useSwcLoader && config.useTscLoader) {
-        console.warn('Одновременное использование опций `useSwcLoader` и `useTscLoader` не поддерживается, выберите что-то одно');
-    }
-
-    if (config.jestUseSwc && config.jestUseTsJest) {
-        console.warn('Одновременное использование опций `jestUseSwc` и `jestUseTsJest` не поддерживается, выберите что-то одно');
+    if (config.webpack4Compatibility) {
+        console.warn(
+            'Опция `webpack4Compatibility` будет удалена в будущих версиях arui-scripts.',
+            'Обратитесь к issue в webpack https://github.com/webpack/webpack/issues/14580 для получения дополнительной информации',
+        );
     }
 }

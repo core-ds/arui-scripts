@@ -12,7 +12,6 @@ console.log(chalk.magenta('Building client...'));
 
 build(config)
     .then(({ stats, warnings }) => {
-        console.timeEnd('build client');
         if (warnings.length) {
             console.log(chalk.yellow('Client compiled with warnings.\n'));
             console.log(warnings.join('\n\n'));

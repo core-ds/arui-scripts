@@ -42,12 +42,18 @@ export type AppConfigs = {
      * @deprecated использование ts-loader крайне не рекомендуется - он медленнее и не имеет преимуществ перед babel
      */
     useTscLoader: boolean;
-    useSwcLoader: boolean;
+    codeLoader: 'babel' | 'tsc' | 'swc';
+    /**
+     * @deprecated эта настройка будет удалена в будущих версиях скриптов
+     */
     webpack4Compatibility: boolean;
     installServerSourceMaps: boolean;
     disableDevWebpackTypecheck: boolean;
+    /**
+     * @deprecated используйте настройку jestCodeTransformer
+     */
     jestUseTsJest: boolean;
-    jestUseSwc: boolean;
+    jestCodeTransformer: 'babel' | 'tsc' | 'swc';
     collectCoverage: boolean;
 
     // image processing

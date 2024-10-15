@@ -10,8 +10,8 @@ const aruiScriptsConfig: PackageSettings = {
     clientEntry: './src/client',
     componentsTheme: '../../node_modules/@alfalab/core-components/themes/corp.css',
     keepCssVars: false,
-    useSwcLoader: true,
-    jestUseSwc: true,
+    codeLoader: 'swc',
+    jestCodeTransformer: 'swc',
     debug: true,
     compatModules: {
         shared: {

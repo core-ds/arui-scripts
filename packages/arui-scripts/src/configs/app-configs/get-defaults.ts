@@ -47,12 +47,12 @@ export function getDefaultAppConfig(): AppConfigs {
         // build tuning
         keepPropTypes: false,
         useTscLoader: false,
-        useSwcLoader: false,
+        codeLoader: 'babel',
         webpack4Compatibility: false,
         installServerSourceMaps: false,
         disableDevWebpackTypecheck: true,
         jestUseTsJest: false,
-        jestUseSwc: false,
+        jestCodeTransformer: 'babel',
         collectCoverage: process.env.NODE_ENV === 'cypress' || process.env.USE_ISTANBUL === 'enabled',
 
         // image processing
