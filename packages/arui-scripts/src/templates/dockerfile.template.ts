@@ -30,7 +30,7 @@ ADD $NGINX_CONF_LOCATION ${nginxConfTargetLocation}
 ${nginxNonRootPart}
 
 ${configs.runFromNonRootUser ? `ADD --chown=nginx:nginx ${appPathToAdd} ${appTargetPath}` : `ADD ${appPathToAdd} ${appTargetPath}`}
-${configs.clientOnly ? 'COPY env-config.jso[n] /src/ # конструкция с [n] нужная чтобы копирование было опциональным. Если файла не будет - сборка не упадёт' : ''}
+${configs.clientOnly ? 'COPY env-config.jso[n] /src/' : ''}
 ${configs.clientOnly ? 'CMD ["nginx"]' : ''}
 `;
 
