@@ -1,5 +1,28 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 18.1.0
+
+### Minor Changes
+
+-   [#251](https://github.com/core-ds/arui-scripts/pull/251) [`7f628ef`](https://github.com/core-ds/arui-scripts/commit/7f628ef8b81285d80b41570be1ee8686b549a46b) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Добавляем возможность использовать swc для загрузки кода в webpack и jest.
+
+    -   Добавлена настройка `codeLoader` для выбора используемого загрузчика кода.
+        Настройка заменяет собой уже существовавшую `useTscLoader` и добавляет возможность использовать в качестве
+        загрузчика swc.
+        Использование swc значительно ускоряет сборку (до 2 раз), без особых негативных последствий.
+
+    -   Добавлена настройка `jestCodeTransformer` для выбора обработчика кода для jest.
+        Заменяет собой `jestUseTsJest` и добавляет возможность использовать `@swc/jest`. swc в jest немного меняет поведение при использовании
+        spyOn для esm модулей.
+
+    -   Флаг `useTscLoader` помечен как deprecated и будет удален в следующем мажорном релизе. Используйте `codeLoader: 'tsc'`.
+    -   Флаг `jestUseTsJest` помечен как deprecated и будет удален в следующем мажорном релизе. Используйте `jestCodeTransformer: 'tsc'`.
+    -   Флаг `webpack4Compatibility` помечен как deprecated и будет удален в следующем мажорном релизе.
+
+### Patch Changes
+
+-   [#277](https://github.com/core-ds/arui-scripts/pull/277) [`20e19ae`](https://github.com/core-ds/arui-scripts/commit/20e19aebabe69d6563ce2e0f6d7b9f5b71c6d16d) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Из шаблона докерфайла убрана кирилица, которая ломала сборку на некоторых CI
+
 ## 18.0.0
 
 ### Major Changes
