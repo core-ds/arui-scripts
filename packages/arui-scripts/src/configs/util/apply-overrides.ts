@@ -1,6 +1,7 @@
 // TODO: remove eslint-disable-next-line
 import type { Configuration as WebpackConfiguration, WebpackOptionsNormalized } from 'webpack';
 import type { Configuration as WebpackDevServerConfiguration } from 'webpack-dev-server';
+import type { Options as SwcOptions } from '@swc/core'
 
 import appConfigs from '../app-configs';
 import { AppContextWithConfigs } from '../app-configs/types';
@@ -26,6 +27,11 @@ type Overrides = {
     babelClient: any;
     babelServer: any;
     babelDependencies: any;
+
+    swc: SwcOptions;
+    swcServer: SwcOptions;
+    swcClient: SwcOptions;
+    swcJest: SwcOptions;
 
     postcss: any[]; // TODO: где взять typedef-ы для postcss
     browsers: string[];

@@ -6,17 +6,9 @@
 const fs = require('fs');
 const { pathsToModuleNameMapper } = require('ts-jest');
 const { parseConfigFileTextToJson } = require('typescript');
+const { swcJestConfig } = require('../swc');
 
 const configs = require('../app-configs').default;
-
-let tsConfigPaths = {};
-
-if (configs.tsconfig) {
-    const tsConfigText = fs.readFileSync(configs.tsconfig, 'utf8');
-    const tsConfig = parseConfigFileTextToJson(configs.tsconfig, tsConfigText);
-
-    tsConfigPaths = tsConfig.config.compilerOptions?.paths || {};
-}
 
 module.exports = {
     testRegex: 'src/.*(((/__test__/|/__tests__/).*)|(test|spec|tests)).(jsx?|tsx?)$',
@@ -26,17 +18,15 @@ module.exports = {
         url: 'http://localhost',
     },
     transform: {
-        '^.+\\.jsx?$': require.resolve('./babel-transform'),
-        '^.+\\.mjs$': require.resolve('./babel-transform'),
-        '^.+\\.tsx?$': configs.jestUseTsJest
-            ? require.resolve('ts-jest')
-            : require.resolve('./babel-transform'),
+        '^.+\\.jsx?$': getJsTransformer(),
+        '^.+\\.mjs$': getJsTransformer(),
+        '^.+\\.tsx?$': getTsTransformer(),
         '^(?!.*\\.(js|jsx|ts|tsx|css|json)$)': require.resolve('./file-transform'),
     },
     moduleNameMapper: {
         // replace all css files with simple empty exports
         '\\.css$': require.resolve('./css-mock'),
-        ...pathsToModuleNameMapper(tsConfigPaths, { prefix: '<rootDir>/' }),
+        ...pathsToModuleNameMapper(getPathMapping(), { prefix: '<rootDir>/' }),
     },
     snapshotSerializers: [require.resolve('jest-snapshot-serializer-class-name-to-string')],
     globals: {
@@ -45,3 +35,34 @@ module.exports = {
         },
     },
 };
+
+function getPathMapping() {
+    if (!configs.tsconfig) {
+        return {};
+    }
+
+    const tsConfigText = fs.readFileSync(configs.tsconfig, 'utf8');
+    const tsConfig = parseConfigFileTextToJson(configs.tsconfig, tsConfigText);
+
+    return tsConfig.config.compilerOptions?.paths || {};
+}
+
+function getTsTransformer() {
+    if (configs.jestCodeTransformer === 'tsc') {
+        return require.resolve('ts-jest');
+    }
+
+    if (configs.jestCodeTransformer === 'swc') {
+        return [require.resolve('@swc/jest'), swcJestConfig];
+    }
+
+    return require.resolve('./babel-transform')
+}
+
+function getJsTransformer() {
+    if (configs.jestCodeTransformer === 'swc') {
+        return [require.resolve('@swc/jest'), swcJestConfig];
+    }
+
+    return require.resolve('./babel-transform');
+}

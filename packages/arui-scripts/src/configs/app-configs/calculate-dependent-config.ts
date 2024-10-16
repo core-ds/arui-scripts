@@ -10,9 +10,11 @@ import { AppConfigs, AppContext } from './types';
 /**
  * Обновление ключей конфига, зависящих от других. Это нужно делать в самый последний момент
  */
-export function calculateDependentConfig(config: AppConfigs) {
+export function calculateDependentConfig(config: AppConfigs): AppConfigs {
     return {
         ...config,
+        codeLoader: config.useTscLoader ? 'tsc' : config.codeLoader,
+        jestCodeTransformer: config.jestUseTsJest ? 'tsc' : config.jestCodeTransformer,
         clientPolyfillsEntry: getPolyfills(config),
     };
 }

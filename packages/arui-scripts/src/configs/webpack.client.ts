@@ -33,6 +33,7 @@ import { addEnvToHtmlTemplate, ClientConfigPlugin } from './client-env-config';
 import { patchMainWebpackConfigForModules, patchWebpackConfigForCompat } from './modules';
 import postcssConf from './postcss';
 import { processAssetsPluginOutput } from './process-assets-plugin-output';
+import { swcClientConfig } from './swc';
 
 const PnpWebpackPlugin = require('pnp-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
@@ -258,82 +259,12 @@ export const createSingleClientWebpackConfig = (
                 // match the requirements. When no loader matches it will fall
                 // back to the "file" loader at the end of the loader list.
                 oneOf: [
-                    // Process JS with Babel.
-                    {
-                        test: configs.useTscLoader
-                            ? /\.(js|jsx|mjs|cjs)$/
-                            : /\.(js|jsx|mjs|ts|tsx|cjs)$/,
-                        include: configs.appSrc,
-                        loader: require.resolve('babel-loader'),
-                        options: {
-                            ...babelConf,
-                            cacheDirectory: mode === 'dev',
-                            cacheCompression: false,
-                            plugins: [
-                                ...babelConf.plugins,
-                                mode === 'dev'
-                                    ? [
-                                          require.resolve('react-refresh/babel'),
-                                          { skipEnvCheck: true },
-                                      ]
-                                    : undefined,
-                            ].filter(Boolean),
-                        },
-                    },
-                    configs.tsconfig &&
-                        configs.useTscLoader && {
-                            test: /\.tsx?$/,
-                            use: [
-                                {
-                                    loader: require.resolve('babel-loader'),
-                                    options: {
-                                        cacheDirectory: mode === 'dev',
-                                        cacheCompression: false,
-                                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                        // @ts-ignore
-                                        plugins:
-                                            mode === 'dev'
-                                                ? [
-                                                      require.resolve('react-refresh/babel'),
-                                                      { skipEnvCheck: true },
-                                                  ]
-                                                : undefined,
-                                        ...babelConf,
-                                    },
-                                },
-                                {
-                                    loader: require.resolve('ts-loader'),
-                                    options: {
-                                        getCustomTransformers: () => ({
-                                            before:
-                                                mode === 'dev' ? [ReactRefreshTypeScript()] : [],
-                                        }),
-                                        onlyCompileBundledFiles: true,
-                                        transpileOnly: true,
-                                        happyPackMode: true,
-                                        configFile: configs.tsconfig,
-                                    },
-                                },
-                            ],
-                        },
-                    // Process any JS outside of the app with Babel.
-                    // Unlike the application JS, we only compile the standard ES features.
-                    {
-                        test: /\.(js|mjs)$/,
-                        exclude: /@babel(?:\/|\\{1,2})runtime/,
-                        loader: require.resolve('babel-loader'),
-                        resolve: {
-                            fullySpecified: false,
-                        },
-                        options: {
-                            ...babelDependencies,
-                            babelrc: false,
-                            configFile: false,
-                            compact: false,
-                            cacheDirectory: mode === 'dev',
-                            cacheCompression: false,
-                        },
-                    },
+                    // Обработка основного кода приложения
+                    getCodeLoader(mode),
+                    // обработка ts кода если codeLoader = tsc
+                    getTsLoaderIfEnabled(mode),
+                    // Обработка внешнего для приложения кода (node_modules)
+                    getExternalCodeLoader(mode),
                     // process simple css files with postcss loader and css loader
                     {
                         test: /\.css$/,
@@ -447,7 +378,7 @@ export const createSingleClientWebpackConfig = (
         ),
         (mode === 'prod' || !configs.disableDevWebpackTypecheck) &&
             configs.tsconfig !== null &&
-            !configs.useTscLoader &&
+            configs.codeLoader !== 'tsc' &&
             new ForkTsCheckerWebpackPlugin(),
         // moment.js очень большая библиотека, которая включает в себя массу локализаций, которые мы не используем.
         // Поэтому мы их просто игнорируем, чтобы не включать в сборку.
@@ -563,3 +494,124 @@ export const createClientWebpackConfig = (mode: 'dev' | 'prod') => {
 
     return [appWebpackConfig, ...modulesWebpackConfigs];
 };
+
+function getCodeLoader(mode: 'dev' | 'prod'): webpack.RuleSetRule {
+    if (configs.codeLoader === 'swc') {
+        return {
+            test: /\.(js|jsx|mjs|ts|tsx|cjs)$/,
+            include: configs.appSrc,
+            loader: require.resolve('swc-loader'),
+            options: {
+                cacheDirectory: mode === 'dev',
+                cacheCompression: false,
+                ...swcClientConfig,
+                jsc: {
+                    ...swcClientConfig.jsc,
+                    transform: {
+                        ...swcClientConfig.jsc?.transform,
+                        react: {
+                            ...swcClientConfig.jsc?.transform?.react,
+                            refresh: mode === 'dev',
+                        },
+                    },
+                },
+            },
+        };
+    }
+
+    return {
+        test: configs.codeLoader === 'tsc'
+            ? /\.(js|jsx|mjs|cjs)$/
+            : /\.(js|jsx|mjs|ts|tsx|cjs)$/,
+        include: configs.appSrc,
+        loader: require.resolve('babel-loader'),
+        options: {
+            ...babelConf,
+            cacheDirectory: mode === 'dev',
+            cacheCompression: false,
+            plugins: [
+                ...babelConf.plugins,
+                mode === 'dev'
+                    ? [
+                        require.resolve('react-refresh/babel'),
+                        { skipEnvCheck: true },
+                    ]
+                    : undefined,
+            ].filter(Boolean),
+        },
+    };
+}
+
+function getTsLoaderIfEnabled(mode: 'dev' | 'prod'): webpack.RuleSetRule | false {
+    if (configs.codeLoader !== 'tsc' || !configs.tsconfig) {
+        return false;
+    }
+
+    return {
+        test: /\.tsx?$/,
+        use: [
+            {
+                loader: require.resolve('babel-loader'),
+                options: {
+                    ...babelConf,
+                    cacheDirectory: mode === 'dev',
+                    cacheCompression: false,
+                    plugins:
+                        mode === 'dev'
+                            ? [
+                                require.resolve('react-refresh/babel'),
+                                { skipEnvCheck: true },
+                            ]
+                            : undefined,
+                },
+            },
+            {
+                loader: require.resolve('ts-loader'),
+                options: {
+                    getCustomTransformers: () => ({
+                        before:
+                            mode === 'dev' ? [ReactRefreshTypeScript()] : [],
+                    }),
+                    onlyCompileBundledFiles: true,
+                    transpileOnly: true,
+                    happyPackMode: true,
+                    configFile: configs.tsconfig,
+                },
+            },
+        ],
+    }
+}
+
+function getExternalCodeLoader(mode: 'dev' | 'prod'): webpack.RuleSetRule {
+    const baseLoaderConfig = {
+        test: /\.(js|mjs)$/,
+        exclude: /@babel(?:\/|\\{1,2})runtime/,
+        resolve: {
+            fullySpecified: false,
+        },
+    };
+
+    if (configs.codeLoader === 'swc') {
+        return {
+            ...baseLoaderConfig,
+            loader: require.resolve('swc-loader'),
+            options: {
+                cacheDirectory: mode === 'dev',
+                cacheCompression: false,
+            },
+        };
+    }
+
+    return {
+        ...baseLoaderConfig,
+        loader: require.resolve('babel-loader'),
+        options: {
+            ...babelDependencies,
+            babelrc: false,
+            configFile: false,
+            compact: false,
+            cacheDirectory: mode === 'dev',
+            cacheCompression: false,
+        },
+    };
+}
