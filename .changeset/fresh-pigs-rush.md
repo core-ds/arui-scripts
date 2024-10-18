@@ -1,0 +1,5 @@
+---
+'arui-scripts': major
+---
+
+rspack

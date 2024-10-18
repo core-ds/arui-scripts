@@ -5,19 +5,17 @@ import path from 'path';
 
 import getCSSModuleLocalIdent from 'react-dev-utils/getCSSModuleLocalIdent';
 import ReactRefreshTypeScript from 'react-refresh-typescript';
-import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
+import rspack, { Configuration } from '@rspack/core';
+import ReactRefreshPlugin from '@rspack/plugin-react-refresh';
 import AssetsPlugin from 'assets-webpack-plugin';
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import CompressionPlugin from 'compression-webpack-plugin';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
-import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import svgToMiniDataURI from 'mini-svg-data-uri';
+import { RspackManifestPlugin } from 'rspack-manifest-plugin';
 import TerserPlugin from 'terser-webpack-plugin';
-import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
-import webpack, { Configuration } from 'webpack';
 import { WebpackDeduplicationPlugin } from 'webpack-deduplication-plugin';
-import { WebpackManifestPlugin } from 'webpack-manifest-plugin';
 
 import { AruiRuntimePlugin, getInsertCssRuntimeMethod } from '../plugins/arui-runtime';
 import { htmlTemplate } from '../templates/html.template';
@@ -25,7 +23,6 @@ import { htmlTemplate } from '../templates/html.template';
 import { getImageMin } from './config-extras/minimizers';
 import checkNodeVersion from './util/check-node-version';
 import getEntry, { Entry } from './util/get-entry';
-import { getWebpackCacheDependencies } from './util/get-webpack-cache-dependencies';
 import { configs } from './app-configs';
 import babelConf from './babel-client';
 import { babelDependencies } from './babel-dependencies';
@@ -35,7 +32,6 @@ import postcssConf from './postcss';
 import { processAssetsPluginOutput } from './process-assets-plugin-output';
 import { swcClientConfig } from './swc';
 
-const PnpWebpackPlugin = require('pnp-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 
 const noopPath = require.resolve('./util/noop');
@@ -154,6 +150,9 @@ export const createSingleClientWebpackConfig = (
     // in production mode we need to fail on first error
     bail: mode === 'prod',
     context: configs.cwd,
+    experiments: {
+        css: false,
+    },
     output: {
         assetModuleFilename: 'static/media/[name].[hash:8][ext]',
         // Add /* filename */ comments to generated require()s in the output.
@@ -179,18 +178,17 @@ export const createSingleClientWebpackConfig = (
                           commons: {
                               chunks: 'initial',
                               minChunks: 2,
-                              maxInitialRequests: 5, // The default limit is too small to showcase the effect
                               minSize: 0, // This is example is too small to create commons chunks
                           },
                           vendor: {
                               test: /node_modules/,
                               chunks: 'initial',
-                              name: (_: unknown, chunks: any[], cacheGroupKey: string) => {
+                              name: (_, chunks, cacheGroupKey) => {
                                   if (!configName) {
                                       return 'vendor';
                                   }
                                   // Нам нужно сделать так, чтобы у разных конфигураций были разные имена чанков
-                                  const allChunksNames = chunks.map((item) => item.name).join('~');
+                                  const allChunksNames = (chunks as Array<{name: string}>).map((item) => item.name).join('~');
 
                                   return `${cacheGroupKey}-${allChunksNames}`;
                               },
@@ -219,40 +217,13 @@ export const createSingleClientWebpackConfig = (
         // `web` extension prefixes have been added for better support
         // for React Native Web.
         extensions: ['.web.js', '.mjs', '.cjs', '.js', '.json', '.web.jsx', '.jsx', '.ts', '.tsx'],
-        plugins: [
-            configs.tsconfig &&
-                new TsconfigPathsPlugin({
-                    configFile: configs.tsconfig,
-                    extensions: [
-                        '.web.js',
-                        '.mjs',
-                        '.js',
-                        '.json',
-                        '.web.jsx',
-                        '.jsx',
-                        '.ts',
-                        '.tsx',
-                    ],
-                }),
-        ].filter(Boolean) as NonNullable<webpack.Configuration['resolve']>['plugins'],
+        tsConfig: configs.tsconfig ? { configFile: configs.tsconfig } : undefined,
     },
     resolveLoader: {
-        plugins: [PnpWebpackPlugin.moduleLoader(module)],
     },
     cache:
-        mode === 'dev'
-            ? {
-                  type: 'filesystem',
-                  buildDependencies: {
-                      config: [__filename],
-                      ...getWebpackCacheDependencies(),
-                  },
-              }
-            : false,
+        mode === 'dev',
     module: {
-        // typescript interface will be removed from modules, and we will get an error on correct code
-        // see https://github.com/webpack/webpack/issues/7378
-        strictExportPresence: !configs.tsconfig,
         rules: [
             {
                 // "oneOf" will traverse all following loaders until one will
@@ -271,7 +242,7 @@ export const createSingleClientWebpackConfig = (
                         exclude: /\.module\.css$/,
                         use: [
                             {
-                                loader: MiniCssExtractPlugin.loader,
+                                loader: rspack.CssExtractRspackPlugin.loader,
                                 options: { publicPath: './' },
                             },
                             {
@@ -296,7 +267,7 @@ export const createSingleClientWebpackConfig = (
                         test: /\.module\.css$/,
                         use: [
                             {
-                                loader: MiniCssExtractPlugin.loader,
+                                loader: rspack.CssExtractRspackPlugin.loader,
                                 options: { publicPath: './' },
                             },
                             {
@@ -340,7 +311,7 @@ export const createSingleClientWebpackConfig = (
                             },
                         },
                     },
-                ].filter(Boolean) as webpack.RuleSetRule[],
+                ].filter(Boolean) as rspack.RuleSetRule[],
             },
             // ** STOP ** Are you adding a new loader?
             // Make sure to add the new loader(s) before asset modules
@@ -349,7 +320,7 @@ export const createSingleClientWebpackConfig = (
     plugins: [
         assetsPlugin,
         clientAssetsPlugin,
-        new webpack.DefinePlugin({
+        new rspack.DefinePlugin({
             // Tell Webpack to provide empty mocks for process.env.
             'process.env': '{}',
             // В прод режиме webpack автоматически подставляет NODE_ENV=production, но нам нужно чтобы эта переменная
@@ -358,7 +329,7 @@ export const createSingleClientWebpackConfig = (
                 ? { 'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV) }
                 : {}),
         }),
-        new MiniCssExtractPlugin(
+        new rspack.CssExtractRspackPlugin(
             (() => {
                 const prefix = `${configName ? `${configName}-` : ''}`;
 
@@ -383,7 +354,7 @@ export const createSingleClientWebpackConfig = (
         // moment.js очень большая библиотека, которая включает в себя массу локализаций, которые мы не используем.
         // Поэтому мы их просто игнорируем, чтобы не включать в сборку.
         // https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
-        new webpack.IgnorePlugin({
+        new rspack.IgnorePlugin({
             resourceRegExp: /^\.\/locale$/,
             contextRegExp: /moment$/,
         }),
@@ -401,10 +372,7 @@ export const createSingleClientWebpackConfig = (
                 rootPath: configs.cwd,
             }),
         // dev plugins:
-        mode === 'dev' &&
-            new ReactRefreshWebpackPlugin({
-                overlay: false,
-            }),
+        mode === 'dev' && new ReactRefreshPlugin(),
         // Watcher doesn't work well if you mistype casing in a path so we use
         // a plugin that prints an error when you attempt to do this.
         // See https://github.com/facebookincubator/create-react-app/issues/240
@@ -420,7 +388,7 @@ export const createSingleClientWebpackConfig = (
         mode === 'dev' && configs.clientOnly && new ClientConfigPlugin(),
 
         // production plugins:
-        mode === 'prod' && new WebpackManifestPlugin(),
+        mode === 'prod' && new RspackManifestPlugin({}),
         mode === 'prod' &&
             new CompressionPlugin({
                 filename: '[file].gz',
@@ -445,14 +413,11 @@ export const createSingleClientWebpackConfig = (
         // This should works fine, since proptypes usage should be eliminated in production mode
         mode === 'prod' &&
             !configs.keepPropTypes &&
-            new webpack.NormalModuleReplacementPlugin(/^react-style-proptype$/, noopPath),
+            new rspack.NormalModuleReplacementPlugin(/^react-style-proptype$/, noopPath),
         mode === 'prod' &&
             !configs.keepPropTypes &&
-            new webpack.NormalModuleReplacementPlugin(/^thrift-services\/proptypes/, noopPath),
-    ].filter(Boolean) as webpack.WebpackPluginInstance[],
-    experiments: {
-        backCompat: configs.webpack4Compatibility,
-    },
+            new rspack.NormalModuleReplacementPlugin(/^thrift-services\/proptypes/, noopPath),
+    ].filter(Boolean) as rspack.RspackPluginInstance[],
     // Без этого комиляция трирегилась на изменение в node_modules и приводила к утечке памяти
     watchOptions: {
         ignored: new RegExp(configs.watchIgnorePath.join('|')),
@@ -495,12 +460,12 @@ export const createClientWebpackConfig = (mode: 'dev' | 'prod') => {
     return [appWebpackConfig, ...modulesWebpackConfigs];
 };
 
-function getCodeLoader(mode: 'dev' | 'prod'): webpack.RuleSetRule {
+function getCodeLoader(mode: 'dev' | 'prod'): rspack.RuleSetRule {
     if (configs.codeLoader === 'swc') {
         return {
             test: /\.(js|jsx|mjs|ts|tsx|cjs)$/,
             include: configs.appSrc,
-            loader: require.resolve('swc-loader'),
+            loader: 'builtin:swc-loader',
             options: {
                 cacheDirectory: mode === 'dev',
                 cacheCompression: false,
@@ -542,7 +507,7 @@ function getCodeLoader(mode: 'dev' | 'prod'): webpack.RuleSetRule {
     };
 }
 
-function getTsLoaderIfEnabled(mode: 'dev' | 'prod'): webpack.RuleSetRule | false {
+function getTsLoaderIfEnabled(mode: 'dev' | 'prod'): rspack.RuleSetRule | false {
     if (configs.codeLoader !== 'tsc' || !configs.tsconfig) {
         return false;
     }
@@ -582,7 +547,7 @@ function getTsLoaderIfEnabled(mode: 'dev' | 'prod'): webpack.RuleSetRule | false
     }
 }
 
-function getExternalCodeLoader(mode: 'dev' | 'prod'): webpack.RuleSetRule {
+function getExternalCodeLoader(mode: 'dev' | 'prod'): rspack.RuleSetRule {
     const baseLoaderConfig = {
         test: /\.(js|mjs)$/,
         exclude: /@babel(?:\/|\\{1,2})runtime/,

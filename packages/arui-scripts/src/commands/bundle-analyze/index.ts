@@ -1,6 +1,6 @@
 // TODO: remove eslint-disable
 /* eslint-disable no-param-reassign */
-import webpack from 'webpack';
+import { rspack, WebpackPluginInstance } from '@rspack/core';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 
 import { configs } from '../../configs/app-configs';
@@ -19,7 +19,7 @@ import makeTmpDir from '../util/make-tmp-dir';
                 generateStatsFile: true,
                 statsFilename: configs.statsOutputPath,
                 analyzerPort: 'auto',
-            }) as unknown as webpack.WebpackPluginInstance, // webpack-bundle-analyzer has incorrect types
+            }) as unknown as WebpackPluginInstance, // webpack-bundle-analyzer has incorrect types
         ];
         webpackConfig.output = {
             ...webpackConfig.output,
@@ -29,5 +29,5 @@ import makeTmpDir from '../util/make-tmp-dir';
 
     await Promise.all(promises);
 
-    webpack(clientWebpackConfigs).run(() => {});
+    rspack(clientWebpackConfigs).run(() => {});
 })();

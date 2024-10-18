@@ -1,7 +1,8 @@
 // TODO: remove eslint-disable-next-line
-import type { Configuration as WebpackConfiguration, WebpackOptionsNormalized } from 'webpack';
-import type { Configuration as WebpackDevServerConfiguration } from 'webpack-dev-server';
+import type { Configuration as WebpackConfiguration, RspackOptionsNormalized } from '@rspack/core';
+import type rspack from '@rspack/core';
 import type { Options as SwcOptions } from '@swc/core'
+import type { Configuration as WebpackDevServerConfiguration } from 'webpack-dev-server';
 
 import appConfigs from '../app-configs';
 import { AppContextWithConfigs } from '../app-configs/types';
@@ -11,17 +12,17 @@ import { findLoader } from './find-loader';
 import { findPlugin } from './find-plugin';
 
 type Overrides = {
-    webpack: WebpackConfiguration | WebpackConfiguration[];
-    webpackClient: WebpackConfiguration | WebpackConfiguration[];
-    webpackDev: WebpackConfiguration | WebpackConfiguration[];
-    webpackClientDev: WebpackConfiguration | WebpackConfiguration[];
-    webpackServer: WebpackConfiguration;
-    webpackServerDev: WebpackConfiguration;
-    webpackProd: WebpackConfiguration;
-    webpackClientProd: WebpackConfiguration | WebpackConfiguration[];
-    webpackServerProd: WebpackConfiguration;
+    webpack: rspack.Configuration | rspack.Configuration[];
+    webpackClient: rspack.Configuration | WebpackConfiguration[];
+    webpackDev: rspack.Configuration | rspack.Configuration[];
+    webpackClientDev: rspack.Configuration | rspack.Configuration[];
+    webpackServer: rspack.Configuration;
+    webpackServerDev: rspack.Configuration;
+    webpackProd: rspack.Configuration;
+    webpackClientProd: rspack.Configuration | rspack.Configuration[];
+    webpackServerProd: rspack.Configuration;
     devServer: WebpackDevServerConfiguration;
-    stats: WebpackOptionsNormalized['stats'];
+    stats: RspackOptionsNormalized['stats'];
 
     babel: any; // TODO: где взять typedef-ы для бабеля?
     babelClient: any;
