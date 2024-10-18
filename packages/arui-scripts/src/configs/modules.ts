@@ -1,6 +1,6 @@
 // TODO: remove eslint-disable
 /* eslint-disable no-param-reassign */
-import webpack from 'webpack';
+import rspack from '@rspack/core'
 
 import { postCssPrefix } from '../plugins/postcss-prefix-selector';
 
@@ -14,7 +14,7 @@ export function haveExposedDefaultModules() {
 
 export const MODULES_ENTRY_NAME = 'remoteEntry.js';
 
-export function patchMainWebpackConfigForModules(webpackConf: webpack.Configuration) {
+export function patchMainWebpackConfigForModules(webpackConf: rspack.Configuration) {
     // Добавляем expose loader для библиотек, которые мы хотим вынести в глобальную область видимости
     webpackConf.module!.rules!.unshift(...getExposeLoadersFormCompatModules());
 
@@ -33,7 +33,7 @@ export function patchMainWebpackConfigForModules(webpackConf: webpack.Configurat
         : configs.publicPath;
 
     webpackConf.plugins!.push(
-        new webpack.container.ModuleFederationPlugin({
+        new rspack.container.ModuleFederationPlugin({
             name: configs.modules.name || configs.normalizedName,
             filename: configs.modules.exposes ? MODULES_ENTRY_NAME : undefined,
             shared: configs.modules.shared,
@@ -79,7 +79,7 @@ export function getExposeLoadersFormCompatModules() {
     });
 }
 
-function addCssPrefix(webpackConf: webpack.Configuration, cssPrefix: string){
+function addCssPrefix(webpackConf: rspack.Configuration, cssPrefix: string){
     const cssRule = findLoader(webpackConf, '/\\.css$/');
     const cssModulesRule = findLoader(webpackConf, '/\\.module\\.css$/');
 
@@ -87,7 +87,7 @@ function addCssPrefix(webpackConf: webpack.Configuration, cssPrefix: string){
     addPrefixCssRule(cssModulesRule, `:global(${cssPrefix})`);
 }
 
-function addPrefixCssRule(rule: webpack.RuleSetRule | undefined, prefix: string) {
+function addPrefixCssRule(rule: rspack.RuleSetRule | undefined, prefix: string) {
     if (!rule || !rule.use || !Array.isArray(rule.use)) {
         return;
     }
@@ -120,7 +120,7 @@ function addPrefixCssRule(rule: webpack.RuleSetRule | undefined, prefix: string)
 
 export function patchWebpackConfigForCompat(
     module: CompatModuleConfig,
-    webpackConf: webpack.Configuration,
+    webpackConf: rspack.Configuration,
 ) {
     webpackConf.externals = {
         ...((webpackConf.externals as Record<string, any>) || {}),

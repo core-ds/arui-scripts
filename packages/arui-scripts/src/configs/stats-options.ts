@@ -1,8 +1,8 @@
-import type { WebpackOptionsNormalized } from 'webpack';
+import type { RspackOptionsNormalized } from '@rspack/core';
 
 import applyOverrides from './util/apply-overrides';
 
-const statsOptions: WebpackOptionsNormalized['stats'] = applyOverrides('stats', {
+const statsOptions: RspackOptionsNormalized['stats'] = applyOverrides('stats', {
     // Add asset Information
     assets: false,
     // Add information about cached (not built) modules

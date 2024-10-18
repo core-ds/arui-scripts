@@ -2,11 +2,11 @@
 import fs from 'fs';
 import path from 'path';
 
+import { Stats } from '@rspack/core';
 import chalk from 'chalk';
 import filesize from 'filesize';
 import { sync as gzipSize } from 'gzip-size';
 import stripAnsi from 'strip-ansi';
-import { Stats } from 'webpack';
 
 let brotliSize: (content: Buffer) => number = () => NaN;
 
