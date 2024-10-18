@@ -1,9 +1,13 @@
-class WatchMissingNodeModulesPlugin {
-    constructor(nodeModulesPath) {
+import { type Compiler } from 'webpack';
+
+export class WatchMissingNodeModulesPlugin {
+    nodeModulesPath: string;
+
+    constructor(nodeModulesPath: string) {
         this.nodeModulesPath = nodeModulesPath;
     }
 
-    apply(compiler) {
+    apply(compiler: Compiler) {
         compiler.hooks.emit.tap('WatchMissingNodeModulesPlugin', (compilation) => {
             const missingDeps = Array.from(compilation.missingDependencies);
             const { nodeModulesPath } = this;
@@ -16,5 +20,3 @@ class WatchMissingNodeModulesPlugin {
         });
     }
 }
-
-module.exports = WatchMissingNodeModulesPlugin;

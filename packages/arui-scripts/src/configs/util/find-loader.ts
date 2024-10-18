@@ -1,11 +1,11 @@
 // TODO: remove eslint-disable and eslint-disable-next-line
 /* eslint-disable no-restricted-syntax */
-import webpack from 'webpack';
+import rspack from '@rspack/core';
 
 export function findLoader(
-    config: webpack.Configuration,
+    config: rspack.Configuration,
     testRule: string,
-): webpack.RuleSetRule | undefined {
+): rspack.RuleSetRule | undefined {
     for (const rule of config.module!.rules!) {
         if (rule === '...' || !rule) {
             // Webpack имеет странный тип для rules, который позволяет в него положить строку '...'. Успокаиваем TS

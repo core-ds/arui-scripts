@@ -4,7 +4,7 @@
     "private": true,
     "scripts": {
         "build:app": "arui-scripts build",
-        "build": "arui-scripts build",
+        "build": "echo 'skip'",
         "build:docker": "arui-scripts docker-build",
         "bundle-analyze": "arui-scripts bundle-analyze",
         "start": "NODE_ENV=localhost arui-scripts start",

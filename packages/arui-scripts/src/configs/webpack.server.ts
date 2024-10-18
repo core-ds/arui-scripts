@@ -4,23 +4,21 @@ import fs from 'fs';
 import path from 'path';
 
 import getCSSModuleLocalIdent from 'react-dev-utils/getCSSModuleLocalIdent';
+import webpack, { Configuration } from '@rspack/core';
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import { RunScriptWebpackPlugin } from 'run-script-webpack-plugin';
-import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
-import webpack, { Configuration } from 'webpack';
 import nodeExternals from 'webpack-node-externals';
 
+import { ReloadServerPlugin } from '../plugins/reload-server-plugin';
+import { WatchMissingNodeModulesPlugin } from '../plugins/watch-missing-node-modules-plugin';
+
 import getEntry from './util/get-entry';
-import { getWebpackCacheDependencies } from './util/get-webpack-cache-dependencies';
 import configs from './app-configs';
 import { babelDependencies } from './babel-dependencies';
 import babelConf from './babel-server';
 import postcssConf from './postcss';
 import { serverExternalsExemptions } from './server-externals-exemptions';
 import { swcServerConfig } from './swc';
-
-const ReloadServerPlugin = require('../plugins/reload-server-webpack-plugin');
-const WatchMissingNodeModulesPlugin = require('../plugins/watch-missing-node-modules-plugin');
 
 const assetsIgnoreBanner = fs.readFileSync(require.resolve('./util/node-assets-ignore'), 'utf8');
 const sourceMapSupportBanner = fs.readFileSync(
@@ -46,7 +44,7 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
     mode: mode === 'dev' ? 'development' : 'production',
     // fail on first error in production mode
     bail: mode === 'prod',
-    devtool: mode === 'dev' ? configs.devSourceMaps : 'source-map',
+    devtool: mode === 'dev' ? configs.devSourceMaps : 'source-map' as any,
     target: 'node',
     node: {
         __filename: true,
@@ -66,17 +64,7 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
         devtoolModuleFilenameTemplate: (info: any) =>
             path.relative(configs.appSrc, info.absoluteResourcePath).replace(/\\/g, '/'),
     },
-    cache:
-        mode === 'dev'
-            ? {
-                  type: 'filesystem',
-                  name: 'server',
-                  buildDependencies: {
-                      config: [__filename],
-                      ...getWebpackCacheDependencies(),
-                  },
-              }
-            : false,
+    cache: mode === 'dev',
     externalsPresets: { node: true },
     externals: [
         nodeExternals({
@@ -103,27 +91,12 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
         // `web` extension prefixes have been added for better support
         // for React Native Web.
         extensions: ['.web.js', '.mjs', '.js', '.json', '.web.jsx', '.jsx', '.ts', '.tsx'],
-        plugins: [
-            configs.tsconfig &&
-                new TsconfigPathsPlugin({
-                    configFile: configs.tsconfig,
-                    extensions: [
-                        '.web.js',
-                        '.mjs',
-                        '.js',
-                        '.json',
-                        '.web.jsx',
-                        '.jsx',
-                        '.ts',
-                        '.tsx',
-                    ],
-                }),
-        ].filter(Boolean) as NonNullable<webpack.Configuration['resolve']>['plugins'],
+        tsConfig: configs.tsconfig ? { configFile: configs.tsconfig } : undefined,
     },
     module: {
         // typescript interface will be removed from modules, and we will get an error on correct code
         // see https://github.com/webpack/webpack/issues/7378
-        strictExportPresence: !configs.tsconfig,
+        // strictExportPresence: !configs.tsconfig,
         rules: [
             {
                 oneOf: [
@@ -195,7 +168,7 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
                 : new ReloadServerPlugin({
                       script: path.join(configs.serverOutputPath, configs.serverOutput),
                   })),
-        mode === 'dev' && new webpack.NoEmitOnErrorsPlugin(),
+        // mode === 'dev' && new webpack.NoEmitOnErrorsPlugin(),
         // Watcher doesn't work well if you mistype casing in a path so we use
         // a plugin that prints an error when you attempt to do this.
         // See https://github.com/facebookincubator/create-react-app/issues/240
@@ -206,10 +179,7 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
         // See https://github.com/facebookincubator/create-react-app/issues/186
         mode === 'dev' && new WatchMissingNodeModulesPlugin(configs.appNodeModules),
         mode === 'dev' && configs.useServerHMR && new webpack.HotModuleReplacementPlugin(),
-    ].filter(Boolean) as webpack.WebpackPluginInstance[],
-    experiments: {
-        backCompat: configs.webpack4Compatibility,
-    },
+    ].filter(Boolean) as webpack.RspackPluginInstance[],
     // Без этого комиляция трирегилась на изменение в node_modules и приводила к утечке памяти
     watchOptions: {
         ignored: new RegExp(configs.watchIgnorePath.join('|')),
@@ -226,7 +196,7 @@ function getCodeLoader(mode: 'dev' | 'prod'): webpack.RuleSetRule {
         return {
             test: /\.(js|jsx|mjs|ts|tsx|cjs)$/,
             include: configs.appSrc,
-            loader: require.resolve('swc-loader'),
+            loader: 'builtin:swc-loader',
             options: swcServerConfig,
         };
     }
@@ -290,7 +260,7 @@ function getExternalCodeLoader(mode: 'dev' | 'prod'): webpack.RuleSetRule {
     if (configs.codeLoader === 'swc') {
         return {
             ...baseLoaderConfig,
-            loader: require.resolve('swc-loader'),
+            loader: 'builtin:swc-loader',
         };
     }
 
