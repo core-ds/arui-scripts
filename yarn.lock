@@ -6367,7 +6367,7 @@ __metadata:
     style-loader: 3.3.3
     stylelint: ^14.9.1
     swc-loader: ^0.2.6
-    swc-plugin-coverage-instrument: ^0.0.24
+    swc-plugin-coverage-instrument: ^0.0.25
     tar: 6.2.1
     terser-webpack-plugin: 5.3.9
     ts-jest: 28.0.8
@@ -18509,10 +18509,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"swc-plugin-coverage-instrument@npm:^0.0.24":
-  version: 0.0.24
-  resolution: "swc-plugin-coverage-instrument@npm:0.0.24"
-  checksum: 3f9e775b026d6993a2502450a813ca441b17abd8571219b218773d52bc2d8aa52169b23e3a0598077d5ba919c9abb2dcf6ec0ad925cda8b42a1c4705121a09a0
+"swc-plugin-coverage-instrument@npm:^0.0.25":
+  version: 0.0.25
+  resolution: "swc-plugin-coverage-instrument@npm:0.0.25"
+  checksum: a1ce0d674496f89ed7a49c888efe71e2deb5e8244de1149d962aeffa0f635129fe7eab74e0ebbc2ed6d72e78f2c8e102812edd0c05418888ccbb26fac3dcbebd
   languageName: node
   linkType: hard
 
