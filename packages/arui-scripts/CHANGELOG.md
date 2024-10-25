@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 18.2.0
+
+### Minor Changes
+
+-   [#280](https://github.com/core-ds/arui-scripts/pull/280) [`70749fe`](https://github.com/core-ds/arui-scripts/commit/70749fe801978bd728fd155a9e8b3626a5583d6d) Thanks [@VladislavNsk](https://github.com/VladislavNsk)! - Поднята версия swc-plugin-coverage-instrument
+
 ## 18.1.0
 
 ### Minor Changes
