@@ -83,20 +83,6 @@ function getProxyConfig(): ProxyConfigArray {
         proxyConfig.push(serverProxyConfig);
     }
 
-    if (userProxyConfig && !Array.isArray(userProxyConfig)) {
-        console.warn(
-            'arui-scripts config.proxy изменил сигнатуру - теперь это должен быть массив, см https://webpack.js.org/configuration/dev-server/#devserverproxy\n',
-            'Пытаемся преобразовать конфигурацию в новый вид, но если будут возникать ошибки - лучше обновить конфигурацию на проекте'
-        );
-
-        Object.keys(userProxyConfig).forEach((key) => {
-            proxyConfig.push({
-                context: [key],
-                ...userProxyConfig[key],
-            });
-        });
-    }
-
     if (Array.isArray(userProxyConfig)) {
         proxyConfig.push(...userProxyConfig);
     }
