@@ -13,9 +13,7 @@ export type AppConfigs = {
     devServerCors: boolean;
     useServerHMR: boolean;
     presets: string | null;
-    proxy: null | {
-        [url: string]: ProxyConfigArrayItem;
-    };
+    proxy: ProxyConfigArrayItem[];
     clientOnly: boolean;
 
     // paths
