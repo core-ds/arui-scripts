@@ -20,7 +20,7 @@ import { WebpackDeduplicationPlugin } from 'webpack-deduplication-plugin';
 import { AruiRuntimePlugin, getInsertCssRuntimeMethod } from '../plugins/arui-runtime';
 import { htmlTemplate } from '../templates/html.template';
 
-import { getImageMin } from './config-extras/minimizers';
+import { getImageMinLoader } from './config-extras/minimizers';
 import checkNodeVersion from './util/check-node-version';
 import getEntry, { Entry } from './util/get-entry';
 import { configs } from './app-configs';
@@ -63,7 +63,6 @@ function getMinimizeConfig(mode: 'dev' | 'prod') {
         return {
             minimize: true,
             minimizer: [
-                ...getImageMin(),
                 new TerserPlugin({
                     terserOptions: {
                         parse: {
@@ -302,6 +301,7 @@ export const createSingleClientWebpackConfig = (
                             },
                         },
                     },
+                    mode === 'prod' && getImageMinLoader(),
                     {
                         exclude: [/\.(js|jsx|mjs|cjs|ts|tsx)$/, /\.(html|ejs)$/, /\.json$/],
                         type: 'asset',
