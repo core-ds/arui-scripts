@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 18.3.0
+
+### Minor Changes
+
+-   [#283](https://github.com/core-ds/arui-scripts/pull/283) [`c84f2f6`](https://github.com/core-ds/arui-scripts/commit/c84f2f6260101a886b86029841f6fce4b3145ead) Thanks [@dryabinin94](https://github.com/dryabinin94)! - Исправление реализации префикса для :root селектора для правильной работы css переменных
+
 ## 18.2.0
 
 ### Minor Changes
