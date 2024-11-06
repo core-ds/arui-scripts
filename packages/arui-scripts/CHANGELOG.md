@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 18.4.0
+
+### Minor Changes
+
+-   [#282](https://github.com/core-ds/arui-scripts/pull/282) [`5c94eea`](https://github.com/core-ds/arui-scripts/commit/5c94eea4895e3c4094fbb0824d22f6c547f86ec5) Thanks [@e-ogri](https://github.com/e-ogri)! - Добавление возможности использовать preset в jest конфигурации приложений, для переопределения настроек тестирования
+
 ## 18.3.0
 
 ### Minor Changes
