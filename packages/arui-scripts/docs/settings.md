@@ -173,6 +173,23 @@ const settings = {
 #### nginxRootPath
 Базовый путь, до файлов в контейнере, который будет использоваться в nginx. По умолчанию `'/src'`.
 
+#### nginx
+
+Некоторые настройки для базовой конфигурации `nginx` (`/etc/nginx/nginx.conf`).
+До этого их нельзя было перезаписать обычными overrides.
+
+```json
+"aruiScripts": {
+    "nginx": {
+        "workerProcesses": 2,
+        "workerRlimitNoFile": 20000,
+        "workerConnections": 19000,
+        "eventsUse": "epoll",
+        "daemon": "off"
+    }
+}
+```
+
 #### runFromNonRootUser
 Сборка образа под пользователем nginx. Нужна для совместимости с k8s, т.к там зачастую запрещен запуск контейнера из под root По умолчанию `true`.
 
