@@ -153,6 +153,3 @@ RUN sed "s/{{WORKER_PROCESSES}}/${WORKERS}/g" /tmp/nginx.template.conf > /etc/ng
 EXPOSE 80 443
 
 STOPSIGNAL SIGTERM
-
-ADD nginx.conf /etc/nginx/
-# End copy
