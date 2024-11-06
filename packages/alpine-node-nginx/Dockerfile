@@ -145,7 +145,11 @@ RUN \
     && apk update \
     && apk upgrade --no-cache
 
-RUN sed "s/{{WORKER_PROCESSES}}/${WORKERS}/g" nginx.template.conf > /etc/nginx/nginx.conf;
+# Copy the template configuration file into the image
+COPY nginx.template.conf /tmp/nginx.template.conf
+# set worker_processes based on WORKERS value
+RUN sed "s/{{WORKER_PROCESSES}}/${WORKERS}/g" /tmp/nginx.template.conf > /etc/nginx/nginx.conf; \
+    rm -rf /tmp/nginx.template.conf;
 
 EXPOSE 80 443
 
