@@ -8,6 +8,8 @@ type PostCssPrefixOptions = {
 
 const VisitedRule = Symbol('VisitedRule');
 
+const ROOT_SELECTOR = ':root';
+
 type RootWithVisitedRule = Root & {
     [VisitedRule]?: boolean;
 };
@@ -49,7 +51,18 @@ const postCssPrefix: PluginCreator<PostCssPrefixOptions> = (options) => {
                     return;
                 }
 
-                rule.selectors = rule.selectors.map((selector) => `${prefix}${selector}`);
+                rule.selectors = rule.selectors.map((selector) => {
+                    /**
+                     * Оборачивам только самим префиксом без :root.
+                     * Позволяет инкапсулировать css переменные под классом.
+                     * В таком случае они будут доступны в модулях приложений после использования флага keepCssVars.
+                    */
+                    if (selector === ROOT_SELECTOR) {
+                        return prefix;
+                    }
+
+                    return `${prefix}${selector}`;
+                });
             });
         },
     };
