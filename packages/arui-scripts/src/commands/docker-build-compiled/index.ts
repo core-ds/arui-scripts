@@ -1,6 +1,7 @@
 import fs from 'fs-extra';
 
 import configs from '../../configs/app-configs';
+import nginxBaseConfTemplate from '../../templates/base-nginx.conf.template';
 import dockerfileTemplate from '../../templates/dockerfile-compiled.template';
 import nginxConfTemplate from '../../templates/nginx.conf.template';
 import startScript from '../../templates/start.template';
@@ -22,6 +23,7 @@ import exec from '../util/exec';
             pathToTempDir,
             dockerfileTemplate,
             nginxConfTemplate,
+            nginxBaseConfTemplate,
             startScriptTemplate: startScript,
             allowLocalDockerfile: false,
             allowLocalStartScript: false,

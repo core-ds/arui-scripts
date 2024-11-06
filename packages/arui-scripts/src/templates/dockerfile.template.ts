@@ -4,6 +4,7 @@ import applyOverrides from '../configs/util/apply-overrides';
 const appPathToAdd = configs.clientOnly ? configs.buildPath : '.';
 const appTargetPath = configs.clientOnly ? `/src/${configs.buildPath}` : '/src';
 const nginxConfTargetLocation = configs.clientOnly ? '/etc/nginx/conf.d/default.conf' : '/src/nginx.conf';
+const { nginx } = configs;
 
 const nginxNonRootPart = configs.runFromNonRootUser
     ? `RUN chown -R nginx:nginx /src && \\
@@ -22,10 +23,12 @@ const dockerfileTemplate = `
 FROM ${configs.baseDockerImage}
 ARG START_SH_LOCATION
 ARG NGINX_CONF_LOCATION
+ARG NGINX_BASE_CONF_LOCATION
 
 WORKDIR /src
 ADD $START_SH_LOCATION /src/start.sh
 ADD $NGINX_CONF_LOCATION ${nginxConfTargetLocation}
+${nginx ? 'ADD $NGINX_BASE_CONF_LOCATION /etc/nginx/nginx.conf' : ''}
 
 ${nginxNonRootPart}
 

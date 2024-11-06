@@ -14,6 +14,7 @@ jobs:
       matrix:
         versions: [
           { alpine: '3.20', dockerfile: Dockerfile-nginx-slim, tag: 'nginx-1.27.1-slim' },
+          { alpine: '3.20', dockerfile: Dockerfile-nginx-slim, workers: 2, tag: 'nginx-1.27.1-w2-slim' },
         ]
     runs-on: ubuntu-latest
     steps:
@@ -28,5 +29,5 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
           repository: alfabankui/arui-scripts
-          build_args: ALPINE_VERSION=${{ matrix.versions.alpine }}
+          build_args: ALPINE_VERSION=${{ matrix.versions.alpine }},WORKERS=${{matrix.versions.workers}}
           tags: ${{ matrix.versions.tag }}
