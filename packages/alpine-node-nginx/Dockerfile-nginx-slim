@@ -1,5 +1,4 @@
 ARG ALPINE_VERSION=3.19
-ARG WORKERS=auto
 # Copied from https://github.com/fholzer/docker-nginx-brotli/blob/master/Dockerfile
 # this is a build container, target one is in the end
 # this one does not have a lot of unused nginx modules
@@ -102,7 +101,7 @@ RUN \
 ## end copy
 
 FROM alpine:${ALPINE_VERSION}
-
+ARG WORKERS=auto
 COPY --from=0 /tmp/runDeps.txt /tmp/runDeps.txt
 COPY --from=0 /etc/nginx /etc/nginx
 COPY --from=0 /usr/sbin/nginx /usr/sbin/nginx-debug /usr/sbin/
