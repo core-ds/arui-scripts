@@ -1,5 +1,5 @@
 ARG ALPINE_VERSION=3.19
-ARG WORKERS='auto'
+ARG WORKERS=auto
 # Copied from https://github.com/fholzer/docker-nginx-brotli/blob/master/Dockerfile
 # this is a build container, target one is in the end
 # this one does not have a lot of unused nginx modules
@@ -123,12 +123,8 @@ RUN \
     && apk update \
     && apk upgrade --no-cache
 
-# Conditionally select the config file based on WORKERS value
-RUN if [ "$WORKERS" = "auto" ]; then \
-        cp nginx.conf /etc/nginx/nginx.conf; \
-    else \
-        sed "s/{{WORKER_PROCESSES}}/${WORKERS}/g" nginx-workers-limited.template.conf > /etc/nginx/nginx.conf; \
-    fi
+# set worker_processes based on WORKERS value
+RUN sed "s/{{WORKER_PROCESSES}}/${WORKERS}/g" nginx.template.conf > /etc/nginx/nginx.conf;
 
 STOPSIGNAL SIGTERM
 

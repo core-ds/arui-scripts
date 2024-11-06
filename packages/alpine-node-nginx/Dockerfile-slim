@@ -1,6 +1,7 @@
 ARG NODE_VERSION=latest
 ARG ALPINE_VERSION=3.14
 ARG NODE_BASE_IMAGE=node
+ARG WORKERS=auto
 
 # Copied from https://github.com/fholzer/docker-nginx-brotli/blob/master/Dockerfile
 # this is a build container, target one is in the end
@@ -125,7 +126,7 @@ RUN \
     && apk update \
     && apk upgrade --no-cache
 
-COPY nginx.conf /etc/nginx/nginx.conf
+RUN sed "s/{{WORKER_PROCESSES}}/${WORKERS}/g" nginx.template.conf > /etc/nginx/nginx.conf;
 
 EXPOSE 80 443
 
