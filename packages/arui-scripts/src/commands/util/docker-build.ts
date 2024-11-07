@@ -105,7 +105,7 @@ export async function prepareFilesForDocker({
             fs.writeFile(path.join(pathToTempDir, 'Dockerfile'), dockerfile, 'utf8'),
             fs.writeFile(path.join(pathToTempDir, nginxConfigFileName), nginxConf, 'utf8'),
             nginxBaseConf &&
-                fs.writeFile(path.join(pathToTempDir, baseNginxConfigFileName), nginxConf, 'utf8'),
+                fs.writeFile(path.join(pathToTempDir, baseNginxConfigFileName), nginxBaseConf, 'utf8'),
             fs.writeFile(path.join(pathToTempDir, 'start.sh'), startScript, {
                 encoding: 'utf8',
                 mode: 0o555,
