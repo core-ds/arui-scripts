@@ -31,13 +31,13 @@ export type AppConfigs = {
     dockerRegistry: string;
     baseDockerImage: string;
     nginxRootPath: string;
-    nginx?: {
+    nginx: {
         workerProcesses?: number;
         workerRlimitNoFile?: number;
         workerConnections?: number;
         eventsUse?: string;
         daemon?: string;
-    };
+    } | null;
     runFromNonRootUser: boolean;
     removeDevDependenciesDuringDockerBuild: boolean;
     // archive compilation configs
