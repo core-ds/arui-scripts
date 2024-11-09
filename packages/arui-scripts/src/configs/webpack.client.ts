@@ -20,6 +20,8 @@ import { WebpackDeduplicationPlugin } from 'webpack-deduplication-plugin';
 import { WebpackManifestPlugin } from 'webpack-manifest-plugin';
 
 import { AruiRuntimePlugin, getInsertCssRuntimeMethod } from '../plugins/arui-runtime';
+import { insertPlugin } from '../plugins/insert-plugin';
+import { postCssGlobalData } from '../plugins/postcss-global-data/postcss-global-data';
 import { htmlTemplate } from '../templates/html.template';
 
 import { getImageMin } from './config-extras/minimizers';
@@ -285,7 +287,10 @@ export const createSingleClientWebpackConfig = (
                                 loader: require.resolve('postcss-loader'),
                                 options: {
                                     postcssOptions: {
-                                        plugins: postcssConf,
+                                        // добавляем postCssGlobalData плагин перед postcss-custom-media
+                                        plugins: insertPlugin(postcssConf, 'postcss-custom-media', postCssGlobalData({
+                                            files: [path.join(__dirname, 'mq.css'), configs.componentsTheme].filter(Boolean) as string[]
+                                        }))
                                     },
                                 },
                             },
@@ -313,7 +318,10 @@ export const createSingleClientWebpackConfig = (
                                 loader: require.resolve('postcss-loader'),
                                 options: {
                                     postcssOptions: {
-                                        plugins: postcssConf,
+                                        // добавляем postCssGlobalData плагин перед postcss-custom-media
+                                        plugins: insertPlugin(postcssConf, 'postcss-custom-media', postCssGlobalData({
+                                            files: [path.join(__dirname, 'mq.css'), configs.componentsTheme].filter(Boolean) as string[]
+                                        }))
                                     },
                                 },
                             },

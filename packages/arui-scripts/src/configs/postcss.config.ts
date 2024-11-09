@@ -1,5 +1,3 @@
-import path from 'path';
-
 import config from './app-configs';
 import supportingBrowsers from './supporting-browsers';
 /**
@@ -28,7 +26,6 @@ export const postcssPlugins = [
     'postcss-mixins',
     'postcss-for',
     'postcss-each',
-    '@csstools/postcss-global-data',
     'postcss-custom-media',
     'postcss-color-mod-function',
     !config.keepCssVars && 'postcss-custom-properties',
@@ -45,9 +42,6 @@ export const postcssPlugins = [
 export const postcssPluginsOptions = {
     'postcss-import': {
         path: ['./src'],
-    },
-    '@csstools/postcss-global-data': {
-        files: [path.join(__dirname, 'mq.css'), config.componentsTheme].filter(Boolean) as string[],
     },
     'postcss-url': {
         url: 'rebase',
