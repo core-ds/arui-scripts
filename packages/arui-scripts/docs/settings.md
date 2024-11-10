@@ -176,7 +176,6 @@ const settings = {
 #### nginx
 
 Некоторые настройки для базовой конфигурации `nginx` (`/etc/nginx/nginx.conf`).
-До этого их нельзя было перезаписать обычными overrides.
 
 ```json
 "aruiScripts": {
