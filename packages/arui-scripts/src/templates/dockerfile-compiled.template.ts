@@ -5,6 +5,8 @@ import applyOverrides from '../configs/util/apply-overrides';
 const installProductionCommand = getInstallProductionCommand();
 const yarnVersion = getYarnVersion();
 
+const { nginx } = configs;
+
 // В зависимости от используемого мендежера зависимостей для их установки нужно копировать разный набор файлов
 const filesRequiredToInstallDependencies = [
     'package.json',
@@ -18,12 +20,14 @@ const dockerfileTemplate = `
 FROM ${configs.baseDockerImage}
 ARG START_SH_LOCATION
 ARG NGINX_CONF_LOCATION
+ARG NGINX_BASE_CONF_LOCATION
 
 WORKDIR /src
 
 # Полу-статичные файлы, могут легко кешироваться
 ADD $START_SH_LOCATION /src/start.sh
 ADD $NGINX_CONF_LOCATION /src/nginx.conf
+${nginx ? 'ADD $NGINX_BASE_CONF_LOCATION /etc/nginx/nginx.conf' : ''}
 
 # Зависимости. При некоторой удаче могут кешироваться и соответственно кешировать установку зависимостей
 ${filesRequiredToInstallDependencies

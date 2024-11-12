@@ -40,6 +40,7 @@ type Overrides = {
     Dockerfile: string;
     DockerfileCompiled: string;
     nginx: string;
+    nginxConf: string;
     'start.sh': string;
     serverExternalsExemptions: Array<string | RegExp>;
 

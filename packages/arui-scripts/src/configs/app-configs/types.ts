@@ -31,6 +31,13 @@ export type AppConfigs = {
     dockerRegistry: string;
     baseDockerImage: string;
     nginxRootPath: string;
+    nginx: {
+        workerProcesses?: number;
+        workerRlimitNoFile?: number;
+        workerConnections?: number;
+        eventsUse?: string;
+        daemon?: string;
+    } | null;
     runFromNonRootUser: boolean;
     removeDevDependenciesDuringDockerBuild: boolean;
     // archive compilation configs
@@ -105,7 +112,7 @@ export type ModuleConfigBase = {
     cssPrefix?: false | string;
 };
 
-type CompatModuleConfigBase  = ModuleConfigBase & {
+type CompatModuleConfigBase = ModuleConfigBase & {
     entry: string;
     externals?: Record<string, string>;
 };
@@ -132,6 +139,7 @@ export type AppContext = {
 
     tsconfig: string | null;
     localNginxConf: string | null;
+    localNginxBaseConf: string | null;
     localDockerfile: string | null;
     localStartScript: string | null;
 

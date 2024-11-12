@@ -9,6 +9,9 @@ import { AppConfigs, AppContext } from './types';
 const CWD = process.cwd();
 const absoluteSrcPath = path.resolve(CWD, 'src');
 
+export const nginxConfigFileName = 'nginx.conf';
+export const baseNginxConfigFileName = 'base-nginx.conf';
+
 export function getDefaultAppConfig(): AppConfigs {
     const appPackage = getPackageJson();
     const configFile = readConfigFile(CWD);
@@ -39,6 +42,7 @@ export function getDefaultAppConfig(): AppConfigs {
         dockerRegistry: '',
         baseDockerImage: 'alfabankui/arui-scripts:16.20.2-slim',
         nginxRootPath: '/src',
+        nginx: null,
         runFromNonRootUser: true,
         removeDevDependenciesDuringDockerBuild: true,
         // archive compilation configs
@@ -106,7 +110,8 @@ export function getDefaultAppContext(): AppContext {
     const projectTsConfigPath = path.join(CWD, 'tsconfig.json');
     const yarnLockFilePath = path.join(CWD, 'yarn.lock');
     const overridesPath = tryResolve(path.join(CWD, 'arui-scripts.overrides'));
-    const nginxConfFilePath = path.join(CWD, 'nginx.conf');
+    const nginxConfFilePath = path.join(CWD, nginxConfigFileName);
+    const nginxBaseConfFilePath = path.join(CWD, baseNginxConfigFileName);
     const dockerfileFilePath = path.join(CWD, 'Dockerfile');
     const startScriptFilePath = path.join(CWD, 'start.sh');
 
@@ -130,6 +135,7 @@ export function getDefaultAppContext(): AppContext {
         // compilation configs locations
         tsconfig: fs.existsSync(projectTsConfigPath) ? projectTsConfigPath : null,
         localNginxConf: fs.existsSync(nginxConfFilePath) ? nginxConfFilePath : null,
+        localNginxBaseConf: fs.existsSync(nginxBaseConfFilePath) ? nginxBaseConfFilePath : null,
         localDockerfile: fs.existsSync(dockerfileFilePath) ? dockerfileFilePath : null,
         localStartScript: fs.existsSync(startScriptFilePath) ? startScriptFilePath : null,
 

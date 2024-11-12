@@ -69,6 +69,9 @@ export default overrides;
 - `nginx` - шаблон конфигурации для nginx внутри контейнера.
   Базовый шаблон [тут](../src/templates/nginx.conf.template.ts).
   [Файл `nginx.conf`](nginx.md) в корне имеет приоритет над оверрайдами.
+- `nginxConf` - шаблон базовой конфигурации для nginx внутри  контейнера
+  Базовый шаблон аналогичный тому, который добавлется в базовый образ [тут](../src/templates/base-nginx.conf.template.ts).
+  [Файл `base-nginx.conf`](base-nginx.md) в корне имеет приоритет над оверрайдами.
 - `start.sh` - шаблон entrypoint докер контейнера. Базовый шаблон [тут](../src/templates/start.template.ts).
 - `serverExternalsExemptions` - список модулей, которые не будут добавлены в список внешних зависимостей сервера. [Подробнее](caveats.md#node-externals).
 - `html` - шаблон для htmlWebpackPlugin, будет использоваться только в режиме [`clientOnly`](./settings.md#clientonly).
