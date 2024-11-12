@@ -1,5 +1,25 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 18.5.0
+
+### Minor Changes
+
+-   [#286](https://github.com/core-ds/arui-scripts/pull/286) [`d003647`](https://github.com/core-ds/arui-scripts/commit/d00364743ab9a11e11393841b31a5ead2fd12b2f) Thanks [@makdv](https://github.com/makdv)! - #### Добавлена возможность перезаписывать некоторые параметры для базового конфига nginx (/etc/nginx/nginx.conf).
+
+    Пример добавления нового свойства `nginx` (в примере указаны значения, которые и так будут использованы по-умолчанию)
+
+    ```json
+    "aruiScripts": {
+        "nginx": {
+            "workerProcesses": 2,
+            "workerRlimitNoFile": 20000,
+            "workerConnections": 19000,
+            "eventsUse": "epoll",
+            "daemon": "off"
+        }
+    }
+    ```
+
 ## 18.4.0
 
 ### Minor Changes
