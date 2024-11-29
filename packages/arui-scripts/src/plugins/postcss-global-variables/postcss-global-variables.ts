@@ -6,7 +6,7 @@ type PluginOptions = {
     files?: string[];
 };
 
-const postCssGlobalData: PluginCreator<PluginOptions> = (opts?: PluginOptions) => {
+const postCssGlobalVariables: PluginCreator<PluginOptions> = (opts?: PluginOptions) => {
 	const options = {
         files: [],
         ...opts,
@@ -18,13 +18,14 @@ const postCssGlobalData: PluginCreator<PluginOptions> = (opts?: PluginOptions) =
     let rulesSelectors = new Set<Rule>();
 
     return {
-        postcssPlugin: '@alfalab/postcss-global-data',
+        postcssPlugin: '@alfalab/postcss-global-variables',
         prepare(): Plugin {
             return {
-                postcssPlugin: '@alfalab/postcss-global-data',
+                postcssPlugin: '@alfalab/postcss-global-variables',
                 Once(root, postcssHelpers): void {
                     if (!Object.keys(parsedVariables).length) {
                         options.files.forEach((filePath) => {
+                            console.log('parse file: ', filePath);
                             const importedCss = parseImport(root, postcssHelpers, filePath);
 
                             parseVariables(importedCss, parsedVariables);
@@ -47,6 +48,6 @@ const postCssGlobalData: PluginCreator<PluginOptions> = (opts?: PluginOptions) =
     };
 };
 
-postCssGlobalData.postcss = true;
+postCssGlobalVariables.postcss = true;
 
-export { postCssGlobalData };
+export { postCssGlobalVariables };

@@ -16,7 +16,7 @@ export function parseImport(root: Root, postcssHelpers: Helpers, filePath: strin
 
     postcssHelpers.result.messages.push({
         type: 'dependency',
-        plugin: 'postcss-global-data',
+        plugin: 'postcss-global-environments',
         file: resolvedPath,
         parent: root.source?.input?.file,
     });

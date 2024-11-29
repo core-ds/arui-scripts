@@ -10,9 +10,6 @@ import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
 import webpack, { Configuration } from 'webpack';
 import nodeExternals from 'webpack-node-externals';
 
-import { insertPlugin } from '../plugins/insert-plugin';
-import { postCssGlobalData } from '../plugins/postcss-global-data/postcss-global-data';
-
 import getEntry from './util/get-entry';
 import { getWebpackCacheDependencies } from './util/get-webpack-cache-dependencies';
 import configs from './app-configs';
@@ -158,10 +155,7 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
                                 loader: require.resolve('postcss-loader'),
                                 options: {
                                     postcssOptions: {
-                                        // добавляем postCssGlobalData плагин перед postcss-custom-media
-                                        plugins: insertPlugin(postcssConf, 'postcss-custom-media', postCssGlobalData({
-                                            files: [path.join(__dirname, 'mq.css'), configs.componentsTheme].filter(Boolean) as string[]
-                                        }))
+                                        plugins: postcssConf,
                                     },
                                 },
                             },

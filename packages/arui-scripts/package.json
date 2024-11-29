@@ -36,7 +36,6 @@
         "@babel/preset-react": "^7.23.3",
         "@babel/preset-typescript": "^7.23.3",
         "@babel/runtime": "^7.23.8",
-        "@csstools/postcss-global-data": "^2.0.1",
         "@pmmmwh/react-refresh-webpack-plugin": "0.5.11",
         "@swc/core": "^1.7.35",
         "@swc/jest": "^0.2.36",
