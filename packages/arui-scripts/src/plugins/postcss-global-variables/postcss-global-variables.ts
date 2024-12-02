@@ -25,7 +25,6 @@ const postCssGlobalVariables: PluginCreator<PluginOptions> = (opts?: PluginOptio
                 Once(root, postcssHelpers): void {
                     if (!Object.keys(parsedVariables).length) {
                         options.files.forEach((filePath) => {
-                            console.log('parse file: ', filePath);
                             const importedCss = parseImport(root, postcssHelpers, filePath);
 
                             parseVariables(importedCss, parsedVariables);

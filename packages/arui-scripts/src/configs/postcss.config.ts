@@ -21,14 +21,11 @@ export function createPostcssConfig(
     options: Record<string, unknown>,
 ): PostcssPlugin[] {
     return plugins.map((pluginName) => {
-        console.log('pluginName: ', pluginName);
         if (typeof pluginName === 'string') {
             return pluginName in options
                 ? [pluginName, options[pluginName]]
                 : pluginName;
         }
-
-        console.log('pluginName.name', pluginName.name);
 
         return () => pluginName(options[pluginName.name]);
     });
