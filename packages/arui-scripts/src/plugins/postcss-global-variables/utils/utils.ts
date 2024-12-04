@@ -43,12 +43,12 @@ export const parseMediaQuery = (importedFile: Root, parsedCustomMedia: Record<st
 };
 
 export function addGlobalVariable(cssValue: string, rootSelector: Rule, parsedVariables: Record<string, string>) {
-    const variableMatches = cssValue.match(/var\(--([^)]+)\)/g);
+    const variableMatches = cssValue.match(/var\(\s*--([^)]+)\s*\)/g);
 
     if (variableMatches) {
         variableMatches.forEach((match) => {
             // var(--gap-24) => --gap-24
-            const variableName = match.slice(4, -1);
+            const variableName = match.slice(4, -1).trim();
 
             if (parsedVariables[variableName]) {
                 rootSelector.append(new Declaration({ prop: variableName, value: parsedVariables[variableName] }));

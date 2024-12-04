@@ -1,6 +1,6 @@
 import path from 'path';
 
-import type { Plugin, PluginCreator, Processor } from 'postcss';
+import type { PluginCreator } from 'postcss';
 
 import { postCssGlobalVariables } from '../plugins/postcss-global-variables/postcss-global-variables';
 
@@ -8,7 +8,7 @@ import config from './app-configs';
 import supportingBrowsers from './supporting-browsers';
 
 type PostCssPluginName = string | PluginCreator<any>;
-type PostcssPlugin = string | [string, unknown] | (() => Plugin | Processor);
+type PostcssPlugin = string | [string, unknown] | {name: string; plugin: PluginCreator<any>; options?: unknown};
 
 /**
  * Функция для создания конфигурационного файла postcss
@@ -27,7 +27,11 @@ export function createPostcssConfig(
                 : pluginName;
         }
 
-        return () => pluginName(options[pluginName.name]);
+        return {
+            name: pluginName.name,
+            plugin: pluginName,
+            options: options[pluginName.name]
+        }
     });
 }
 

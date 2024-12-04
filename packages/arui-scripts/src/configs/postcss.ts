@@ -6,6 +6,8 @@ const postcssConfig = applyOverrides(
     createPostcssConfig(postcssPlugins, postcssPluginsOptions),
     // тк дается возможность переопределять options для плагинов импортируемых напрямую
     // инициализировать их нужно после оверайдов
-).map((plugin) => typeof plugin === 'function' ? plugin() : plugin);
+).map((plugin) => typeof plugin === 'string' || Array.isArray(plugin)
+    ? plugin
+    : plugin.plugin(plugin.options));
 
 export default postcssConfig;
