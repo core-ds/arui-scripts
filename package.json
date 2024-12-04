@@ -25,7 +25,7 @@
     "scripts": {
         "publish-packages": "yarn test && changeset version && changeset publish",
         "build": "turbo run build",
-        "test": "turbo run build build:app lint test validate",
+        "test": "turbo run build build:app test validate",
         "lint": "turbo run lint"
     },
     "prettier": "arui-presets-lint/prettier",
@@ -56,5 +56,5 @@
             ]
         }
     },
-    "packageManager": "yarn@3.1.1"
+    "packageManager": "yarn@4.5.3"
 }
