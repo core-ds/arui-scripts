@@ -1,23 +1,37 @@
 import path from 'path';
 
+import type { PluginCreator } from 'postcss';
+
+import { postCssGlobalVariables } from '../plugins/postcss-global-variables/postcss-global-variables';
+
 import config from './app-configs';
 import supportingBrowsers from './supporting-browsers';
+
+type PostCssPluginName = string | PluginCreator<any>;
+type PostcssPlugin = string | [string, unknown] | {name: string; plugin: PluginCreator<any>; options?: unknown};
+
 /**
  * Функция для создания конфигурационного файла postcss
- * @param {String[]} plugins список плагинов
+ * @param {PostCssPluginName[]} plugins список плагинов
  * @param {Object} options коллекция конфигураций плагинов, где ключ - название плагина, а значение - аргумент для инициализации
  * @returns {*}
  */
 export function createPostcssConfig(
-    plugins: string[],
+    plugins: PostCssPluginName[],
     options: Record<string, unknown>,
-): string[] | unknown[] {
+): PostcssPlugin[] {
     return plugins.map((pluginName) => {
-        if (pluginName in options) {
-            return [pluginName, options[pluginName]];
+        if (typeof pluginName === 'string') {
+            return pluginName in options
+                ? [pluginName, options[pluginName]]
+                : pluginName;
         }
 
-        return pluginName;
+        return {
+            name: pluginName.name,
+            plugin: pluginName,
+            options: options[pluginName.name]
+        }
     });
 }
 
@@ -28,7 +42,7 @@ export const postcssPlugins = [
     'postcss-mixins',
     'postcss-for',
     'postcss-each',
-    '@csstools/postcss-global-data',
+    postCssGlobalVariables,
     'postcss-custom-media',
     'postcss-color-mod-function',
     !config.keepCssVars && 'postcss-custom-properties',
@@ -40,13 +54,13 @@ export const postcssPlugins = [
     'autoprefixer',
     'postcss-inherit',
     'postcss-discard-comments',
-].filter(Boolean) as string[];
+].filter(Boolean) as PostCssPluginName[];
 
 export const postcssPluginsOptions = {
     'postcss-import': {
         path: ['./src'],
     },
-    '@csstools/postcss-global-data': {
+    'postCssGlobalVariables': {
         files: [path.join(__dirname, 'mq.css'), config.componentsTheme].filter(Boolean) as string[],
     },
     'postcss-url': {
