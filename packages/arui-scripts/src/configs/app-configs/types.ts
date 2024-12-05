@@ -1,3 +1,4 @@
+import { type DevTool } from '@rspack/core/dist/config/zod';
 import { ProxyConfigArrayItem } from 'webpack-dev-server';
 
 /**
@@ -8,13 +9,11 @@ export type AppConfigs = {
     clientServerPort: number;
     serverPort: number;
     debug: boolean;
-    devSourceMaps: string;
+    devSourceMaps: DevTool;
     devServerCors: boolean;
     useServerHMR: boolean;
     presets: string | null;
-    proxy: null | {
-        [url: string]: ProxyConfigArrayItem;
-    };
+    proxy: ProxyConfigArrayItem[];
     clientOnly: boolean;
 
     // paths

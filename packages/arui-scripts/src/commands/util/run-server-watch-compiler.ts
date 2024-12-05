@@ -1,10 +1,11 @@
-import webpack from 'webpack';
+import { Configuration,rspack } from '@rspack/core';
 
 import configs from '../../configs/app-configs';
 import printCompilerOutput from '../start/print-compiler-output';
 
-export function runServerWatchCompiler(config: webpack.Configuration) {
-    const serverCompiler = webpack(config);
+export function runServerWatchCompiler(config: Configuration) {
+
+    const serverCompiler = rspack(config);
 
     serverCompiler.hooks.compile.tap('server', () => console.log('Compiling server...'));
     serverCompiler.hooks.invalid.tap('server', () => console.log('Compiling server...'));
