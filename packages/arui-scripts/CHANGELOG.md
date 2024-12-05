@@ -1,5 +1,34 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 18.6.0
+
+### Minor Changes
+
+-   [#287](https://github.com/core-ds/arui-scripts/pull/287) [`fb3b80d`](https://github.com/core-ds/arui-scripts/commit/fb3b80db242978d88eb6c0eac382498b3aa04459) Thanks [@VladislavNsk](https://github.com/VladislavNsk)! - Добавлен кастомный плагин postcss-global-variables, для оптимизации времени обработки глобальных переменных.
+    @csstools/postcss-global-data _удален_
+
+    Проекты, которые использовали в оверрайдах кастомные настройки для плагина @csstools/postcss-global-data, должны перейти на использование postcss-global-variables следующим образом
+
+    ```
+    postcss: (config) => {
+      const overrideConfig = config.map((plugin) => {
+        if (plugin.name === 'postCssGlobalVariables') {
+          return {
+            ...plugin,
+            options: plugin.options.concat([
+              // ваши файлы
+            ])
+          }
+        }
+        return plugin;
+      });
+
+      return overrideConfig;
+    }
+    ```
+
+    Плагин работает только с глобальными переменными, если вам надо вставить что-то другое, отличное от глобальных переменных, вам нужно будет добавить @csstools/postcss-global-data в свой проект самостоятельно
+
 ## 18.5.0
 
 ### Minor Changes
