@@ -2741,15 +2741,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@csstools/postcss-global-data@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "@csstools/postcss-global-data@npm:2.0.1"
-  peerDependencies:
-    postcss: ^8.4
-  checksum: 10/21e7057b7f527481c7374810c3b49a2d47414b39f4408c5d182bb6aab62d190da5b6173aa1accacb091994d1158cee2a651fbf2977957bbcf1fc654669886c1a
-  languageName: node
-  linkType: hard
-
 "@csstools/postcss-gradients-interpolation-method@npm:^3.0.6":
   version: 3.0.6
   resolution: "@csstools/postcss-gradients-interpolation-method@npm:3.0.6"
@@ -6485,7 +6476,6 @@ __metadata:
     "@babel/preset-react": "npm:^7.23.3"
     "@babel/preset-typescript": "npm:^7.23.3"
     "@babel/runtime": "npm:^7.23.8"
-    "@csstools/postcss-global-data": "npm:^2.0.1"
     "@pmmmwh/react-refresh-webpack-plugin": "npm:0.5.11"
     "@swc/core": "npm:^1.7.35"
     "@swc/jest": "npm:^0.2.36"
