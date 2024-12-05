@@ -35,6 +35,7 @@ const postCssGlobalVariables: PluginCreator<PluginOptions> = (opts?: PluginOptio
                     const rootRule = insertParsedCss(root, parsedVariables, parsedCustomMedia);
 
                     root.append(rootRule);
+                    rulesSelectors.add(rootRule)
                 },
                 OnceExit(): void {
                     rulesSelectors.forEach((rule) => {
