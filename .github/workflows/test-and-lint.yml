@@ -1,0 +1,42 @@
+name: Run tests
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x, 22.x]
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: yarn install and test
+      run: |
+        yarn install --immutable
+        yarn run test
+      env:
+        CI: true
+
+  lint:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js 22.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22.x'
+    - name: yarn install and lint
+      run: |
+        yarn install --immutable
+        yarn run lint
+      env:
+        CI: true
