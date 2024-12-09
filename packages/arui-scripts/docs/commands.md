@@ -119,7 +119,7 @@ arui-scripts archive-build
 
 ### bundle-analyze
 
-Запускает [webpack-bundle-analyzer](https://www.npmjs.com/package/webpack-bundle-analyzer) для анализа размера бандлов.
+Запускает [webpack-bundle-analyzer](https://www.npmjs.com/package/webpack-bundle-analyzer) и [rsdoctor](https://rsdoctor.dev/) для анализа бандла и сборки.
 Так же при запуске будет генерироваться [stats-файл](https://webpack.js.org/api/stats/), который можно использовать в
 [сторонних](http://webpack.github.io/analyse/) инструментах, например для понимания почему тот или иной модуль попал в бандл.
 По умолчанию файл будет писаться в `.build/stats.json`, вы можете поменять это через отдельную [настройку statsOutputFilename](settings.md#statsOutputFilename).
