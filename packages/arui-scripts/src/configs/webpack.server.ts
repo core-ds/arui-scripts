@@ -4,7 +4,13 @@ import fs from 'fs';
 import path from 'path';
 
 import getCSSModuleLocalIdent from 'react-dev-utils/getCSSModuleLocalIdent';
-import webpack, { Configuration } from '@rspack/core';
+import {
+    BannerPlugin,
+    Configuration,
+    HotModuleReplacementPlugin,
+    RspackPluginInstance,
+    RuleSetRule,
+} from '@rspack/core';
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import { RunScriptWebpackPlugin } from 'run-script-webpack-plugin';
 import nodeExternals from 'webpack-node-externals';
@@ -94,9 +100,6 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
         tsConfig: configs.tsconfig ? { configFile: configs.tsconfig } : undefined,
     },
     module: {
-        // typescript interface will be removed from modules, and we will get an error on correct code
-        // see https://github.com/webpack/webpack/issues/7378
-        // strictExportPresence: !configs.tsconfig,
         rules: [
             {
                 oneOf: [
@@ -142,18 +145,18 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
                             publicPath: configs.publicPath,
                         },
                     },
-                ].filter(Boolean) as webpack.RuleSetRule[],
+                ].filter(Boolean) as RuleSetRule[],
             },
         ],
     },
     plugins: [
-        new webpack.BannerPlugin({
+        new BannerPlugin({
             banner: assetsIgnoreBanner,
             raw: true,
             entryOnly: false,
         }),
         configs.installServerSourceMaps &&
-            new webpack.BannerPlugin({
+            new BannerPlugin({
                 banner: sourceMapSupportBanner,
                 raw: true,
                 entryOnly: false,
@@ -168,7 +171,6 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
                 : new ReloadServerPlugin({
                       script: path.join(configs.serverOutputPath, configs.serverOutput),
                   })),
-        // mode === 'dev' && new webpack.NoEmitOnErrorsPlugin(),
         // Watcher doesn't work well if you mistype casing in a path so we use
         // a plugin that prints an error when you attempt to do this.
         // See https://github.com/facebookincubator/create-react-app/issues/240
@@ -178,8 +180,8 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
         // makes the discovery automatic so you don't have to restart.
         // See https://github.com/facebookincubator/create-react-app/issues/186
         mode === 'dev' && new WatchMissingNodeModulesPlugin(configs.appNodeModules),
-        mode === 'dev' && configs.useServerHMR && new webpack.HotModuleReplacementPlugin(),
-    ].filter(Boolean) as webpack.RspackPluginInstance[],
+        mode === 'dev' && configs.useServerHMR && new HotModuleReplacementPlugin(),
+    ].filter(Boolean) as RspackPluginInstance[],
     // Без этого комиляция трирегилась на изменение в node_modules и приводила к утечке памяти
     watchOptions: {
         ignored: new RegExp(configs.watchIgnorePath.join('|')),
@@ -191,7 +193,7 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
     },
 });
 
-function getCodeLoader(mode: 'dev' | 'prod'): webpack.RuleSetRule {
+function getCodeLoader(mode: 'dev' | 'prod'): RuleSetRule {
     if (configs.codeLoader === 'swc') {
         return {
             test: /\.(js|jsx|mjs|ts|tsx|cjs)$/,
@@ -217,7 +219,7 @@ function getCodeLoader(mode: 'dev' | 'prod'): webpack.RuleSetRule {
     };
 }
 
-function getTsLoaderIfEnabled(mode: 'dev' | 'prod'): webpack.RuleSetRule | false {
+function getTsLoaderIfEnabled(mode: 'dev' | 'prod'): RuleSetRule | false {
     if (configs.codeLoader !== 'tsc' || !configs.tsconfig) {
         return false;
     }
@@ -248,7 +250,7 @@ function getTsLoaderIfEnabled(mode: 'dev' | 'prod'): webpack.RuleSetRule | false
     };
 }
 
-function getExternalCodeLoader(mode: 'dev' | 'prod'): webpack.RuleSetRule {
+function getExternalCodeLoader(mode: 'dev' | 'prod'): RuleSetRule {
     const baseLoaderConfig = {
         test: /\.(js|mjs)$/,
         exclude: /@babel(?:\/|\\{1,2})runtime/,

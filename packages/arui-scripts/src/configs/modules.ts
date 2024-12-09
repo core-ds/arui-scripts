@@ -1,6 +1,6 @@
 // TODO: remove eslint-disable
 /* eslint-disable no-param-reassign */
-import rspack from '@rspack/core'
+import * as rspack from '@rspack/core'
 
 import { postCssPrefix } from '../plugins/postcss-prefix-selector';
 

@@ -1,28 +1,15 @@
-import { type ProxyConfigMap,ProxyConfigArrayItem } from 'webpack-dev-server';
+import { RspackDevServer } from '@rspack/dev-server';
 
 import { AppContextWithConfigs } from './types';
 
+type ProxyConfigArrayItem = RspackDevServer['options']['proxy'][0];
+
 export function warnAboutDeprecations(config: AppContextWithConfigs) {
-    if (config.useTscLoader) {
-        console.warn(
-            'Использование опции `useTscLoader` не рекомендуется и будет удалено в будущих версиях. ',
-            'Обратитесь к документации https://github.com/core-ds/arui-scripts/blob/master/packages/arui-scripts/docs/settings.md#usetscloader',
-            'для получения дополнительной информации.'
-        );
-    }
-
-    if (config.webpack4Compatibility) {
-        console.warn(
-            'Опция `webpack4Compatibility` будет удалена в будущих версиях arui-scripts.',
-            'Обратитесь к issue в webpack https://github.com/webpack/webpack/issues/14580 для получения дополнительной информации',
-        );
-    }
-
     if (!Array.isArray(config.proxy) && config.proxy) {
         console.warn(
             'Передача config.proxy как объекта больше не поддерживается. ',
             'arui-scripts попробует привести конфигурацию к корректному виду, но это не всегда может работать корректно',
-            'См документацию webpack https://webpack.js.org/configuration/dev-server/#devserverproxy'
+            'Правильный формат конфигурации можно посмотреть в документации rspack: https://rspack.dev/guide/features/dev-server#proxy'
         );
 
         // eslint-disable-next-line no-param-reassign
@@ -30,7 +17,7 @@ export function warnAboutDeprecations(config: AppContextWithConfigs) {
     }
 }
 
-function convertObjectProxyConfigurationToArray(proxyConfiguration: ProxyConfigMap) {
+function convertObjectProxyConfigurationToArray(proxyConfiguration: Record<string, ProxyConfigArrayItem>) {
     const arrayProxy: ProxyConfigArrayItem[] = [];
 
     Object.keys(proxyConfiguration).forEach((context) => {

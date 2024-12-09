@@ -1,5 +1,6 @@
 // TODO: remove eslint-disable
 /* eslint-disable no-param-reassign */
+import { RsdoctorRspackPlugin } from '@rsdoctor/rspack-plugin';
 import { rspack, WebpackPluginInstance } from '@rspack/core';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 
@@ -20,6 +21,7 @@ import makeTmpDir from '../util/make-tmp-dir';
                 statsFilename: configs.statsOutputPath,
                 analyzerPort: 'auto',
             }) as unknown as WebpackPluginInstance, // webpack-bundle-analyzer has incorrect types
+            new RsdoctorRspackPlugin({}),
         ];
         webpackConfig.output = {
             ...webpackConfig.output,

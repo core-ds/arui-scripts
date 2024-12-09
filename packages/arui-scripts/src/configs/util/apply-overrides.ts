@@ -1,6 +1,5 @@
 // TODO: remove eslint-disable-next-line
-import type { Configuration as WebpackConfiguration, RspackOptionsNormalized } from '@rspack/core';
-import type rspack from '@rspack/core';
+import type * as rspack from '@rspack/core';
 import type { Options as SwcOptions } from '@swc/core'
 import type { Configuration as WebpackDevServerConfiguration } from 'webpack-dev-server';
 
@@ -13,7 +12,7 @@ import { findPlugin } from './find-plugin';
 
 type Overrides = {
     webpack: rspack.Configuration | rspack.Configuration[];
-    webpackClient: rspack.Configuration | WebpackConfiguration[];
+    webpackClient: rspack.Configuration | rspack.Configuration[];
     webpackDev: rspack.Configuration | rspack.Configuration[];
     webpackClientDev: rspack.Configuration | rspack.Configuration[];
     webpackServer: rspack.Configuration;
@@ -22,7 +21,7 @@ type Overrides = {
     webpackClientProd: rspack.Configuration | rspack.Configuration[];
     webpackServerProd: rspack.Configuration;
     devServer: WebpackDevServerConfiguration;
-    stats: RspackOptionsNormalized['stats'];
+    stats: rspack.RspackOptionsNormalized['stats'];
 
     babel: any; // TODO: где взять typedef-ы для бабеля?
     babelClient: any;

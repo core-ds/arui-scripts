@@ -1,5 +1,5 @@
-import { type DevTool } from '@rspack/core/dist/config/zod';
-import { ProxyConfigArrayItem } from 'webpack-dev-server';
+import { DevTool } from '@rspack/core';
+import { RspackDevServer } from '@rspack/dev-server';
 
 /**
  * Конфигурация arui-scripts, которая может быть переопределена приложением
@@ -13,7 +13,7 @@ export type AppConfigs = {
     devServerCors: boolean;
     useServerHMR: boolean;
     presets: string | null;
-    proxy: ProxyConfigArrayItem[];
+    proxy: RspackDevServer['options']['proxy'];
     clientOnly: boolean;
 
     // paths
@@ -44,21 +44,9 @@ export type AppConfigs = {
 
     // build tuning
     keepPropTypes: boolean;
-    /**
-     * @deprecated использование ts-loader крайне не рекомендуется - он медленнее и не имеет преимуществ перед babel
-     */
-    useTscLoader: boolean;
     codeLoader: 'babel' | 'tsc' | 'swc';
-    /**
-     * @deprecated эта настройка будет удалена в будущих версиях скриптов
-     */
-    webpack4Compatibility: boolean;
     installServerSourceMaps: boolean;
     disableDevWebpackTypecheck: boolean;
-    /**
-     * @deprecated используйте настройку jestCodeTransformer
-     */
-    jestUseTsJest: boolean;
     jestCodeTransformer: 'babel' | 'tsc' | 'swc';
     collectCoverage: boolean;
 
