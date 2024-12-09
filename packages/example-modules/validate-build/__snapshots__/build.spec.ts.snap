@@ -19,7 +19,7 @@ exports[`modules should create valid css for ModuleCompat 1`] = `
         background-color:#cd1501;
     }
 
-.module-ModuleCompat .styles-module-paragraph-RR62e{
+.module-ModuleCompat .styles-module-paragraph-UdpKs{
     font-size:12px;
     line-height:16px;
     font-weight:700;
