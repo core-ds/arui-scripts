@@ -5,7 +5,15 @@ import path from 'path';
 
 import getCSSModuleLocalIdent from 'react-dev-utils/getCSSModuleLocalIdent';
 import ReactRefreshTypeScript from 'react-refresh-typescript';
-import rspack, { Configuration } from '@rspack/core';
+import {
+    Configuration,
+    CssExtractRspackPlugin,
+    DefinePlugin,
+    IgnorePlugin,
+    NormalModuleReplacementPlugin,
+    RspackPluginInstance,
+    RuleSetRule,
+} from '@rspack/core';
 import ReactRefreshPlugin from '@rspack/plugin-react-refresh';
 import AssetsPlugin from 'assets-webpack-plugin';
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
@@ -182,15 +190,16 @@ export const createSingleClientWebpackConfig = (
                           vendor: {
                               test: /node_modules/,
                               chunks: 'initial',
-                              name: (_, chunks, cacheGroupKey) => {
+                              // Почему то rspack предоставляет некорректные типы для этой функции.
+                              name: ((_: unknown, chunks: Array<{name: string}>, cacheGroupKey: string) => {
                                   if (!configName) {
                                       return 'vendor';
                                   }
                                   // Нам нужно сделать так, чтобы у разных конфигураций были разные имена чанков
-                                  const allChunksNames = (chunks as Array<{name: string}>).map((item) => item.name).join('~');
+                                  const allChunksNames = chunks.map((item) => item.name).join('~');
 
                                   return `${cacheGroupKey}-${allChunksNames}`;
-                              },
+                              }) as any, // eslint-disable-line @typescript-eslint/no-explicit-any
                               priority: 10,
                               enforce: true,
                           },
@@ -241,7 +250,7 @@ export const createSingleClientWebpackConfig = (
                         exclude: /\.module\.css$/,
                         use: [
                             {
-                                loader: rspack.CssExtractRspackPlugin.loader,
+                                loader: CssExtractRspackPlugin.loader,
                                 options: { publicPath: './' },
                             },
                             {
@@ -266,7 +275,7 @@ export const createSingleClientWebpackConfig = (
                         test: /\.module\.css$/,
                         use: [
                             {
-                                loader: rspack.CssExtractRspackPlugin.loader,
+                                loader: CssExtractRspackPlugin.loader,
                                 options: { publicPath: './' },
                             },
                             {
@@ -311,7 +320,7 @@ export const createSingleClientWebpackConfig = (
                             },
                         },
                     },
-                ].filter(Boolean) as rspack.RuleSetRule[],
+                ].filter(Boolean) as RuleSetRule[],
             },
             // ** STOP ** Are you adding a new loader?
             // Make sure to add the new loader(s) before asset modules
@@ -320,7 +329,7 @@ export const createSingleClientWebpackConfig = (
     plugins: [
         assetsPlugin,
         clientAssetsPlugin,
-        new rspack.DefinePlugin({
+        new DefinePlugin({
             // Tell Webpack to provide empty mocks for process.env.
             'process.env': '{}',
             // В прод режиме webpack автоматически подставляет NODE_ENV=production, но нам нужно чтобы эта переменная
@@ -329,7 +338,7 @@ export const createSingleClientWebpackConfig = (
                 ? { 'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV) }
                 : {}),
         }),
-        new rspack.CssExtractRspackPlugin(
+        new CssExtractRspackPlugin(
             (() => {
                 const prefix = `${configName ? `${configName}-` : ''}`;
 
@@ -354,7 +363,7 @@ export const createSingleClientWebpackConfig = (
         // moment.js очень большая библиотека, которая включает в себя массу локализаций, которые мы не используем.
         // Поэтому мы их просто игнорируем, чтобы не включать в сборку.
         // https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
-        new rspack.IgnorePlugin({
+        new IgnorePlugin({
             resourceRegExp: /^\.\/locale$/,
             contextRegExp: /moment$/,
         }),
@@ -413,11 +422,11 @@ export const createSingleClientWebpackConfig = (
         // This should works fine, since proptypes usage should be eliminated in production mode
         mode === 'prod' &&
             !configs.keepPropTypes &&
-            new rspack.NormalModuleReplacementPlugin(/^react-style-proptype$/, noopPath),
+            new NormalModuleReplacementPlugin(/^react-style-proptype$/, noopPath),
         mode === 'prod' &&
             !configs.keepPropTypes &&
-            new rspack.NormalModuleReplacementPlugin(/^thrift-services\/proptypes/, noopPath),
-    ].filter(Boolean) as rspack.RspackPluginInstance[],
+            new NormalModuleReplacementPlugin(/^thrift-services\/proptypes/, noopPath),
+    ].filter(Boolean) as RspackPluginInstance[],
     // Без этого комиляция трирегилась на изменение в node_modules и приводила к утечке памяти
     watchOptions: {
         ignored: new RegExp(configs.watchIgnorePath.join('|')),
@@ -460,7 +469,7 @@ export const createClientWebpackConfig = (mode: 'dev' | 'prod') => {
     return [appWebpackConfig, ...modulesWebpackConfigs];
 };
 
-function getCodeLoader(mode: 'dev' | 'prod'): rspack.RuleSetRule {
+function getCodeLoader(mode: 'dev' | 'prod'): RuleSetRule {
     if (configs.codeLoader === 'swc') {
         return {
             test: /\.(js|jsx|mjs|ts|tsx|cjs)$/,
@@ -507,7 +516,7 @@ function getCodeLoader(mode: 'dev' | 'prod'): rspack.RuleSetRule {
     };
 }
 
-function getTsLoaderIfEnabled(mode: 'dev' | 'prod'): rspack.RuleSetRule | false {
+function getTsLoaderIfEnabled(mode: 'dev' | 'prod'): RuleSetRule | false {
     if (configs.codeLoader !== 'tsc' || !configs.tsconfig) {
         return false;
     }
@@ -547,7 +556,7 @@ function getTsLoaderIfEnabled(mode: 'dev' | 'prod'): rspack.RuleSetRule | false 
     }
 }
 
-function getExternalCodeLoader(mode: 'dev' | 'prod'): rspack.RuleSetRule {
+function getExternalCodeLoader(mode: 'dev' | 'prod'): RuleSetRule {
     const baseLoaderConfig = {
         test: /\.(js|mjs)$/,
         exclude: /@babel(?:\/|\\{1,2})runtime/,

@@ -75,6 +75,7 @@ describe('override plugins with findPlugin', () => {
     });
 
     describe("server's findPlugin", () => {
+        // TODO
         // it('should return original server dev config with modified BannerPlugin: options.banner = "sell garage"', () => {
         //     const devConfig = createServerConfig('dev');
         //

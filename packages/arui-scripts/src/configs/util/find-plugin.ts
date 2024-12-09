@@ -1,7 +1,12 @@
 import { Cluster } from 'cluster';
 
 import { ReactRefreshPluginOptions } from '@pmmmwh/react-refresh-webpack-plugin/types/lib/types';
-import rspack, { type CssExtractRspackPluginOptions } from '@rspack/core';
+import {
+    type CssExtractRspackPluginOptions,
+    Configuration,
+    DefinePlugin,
+    NormalModuleReplacementPlugin,
+} from '@rspack/core';
 import AssetsPlugin from 'assets-webpack-plugin';
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import CompressionPlugin from 'compression-webpack-plugin';
@@ -21,7 +26,7 @@ type PluginsListClient = {
         options: AssetsPlugin.Options;
     };
     DefinePlugin: {
-        definitions: ConstructorParameters<typeof rspack.DefinePlugin>[number];
+        definitions: ConstructorParameters<typeof DefinePlugin>[number];
     };
     CssExtractRspackPlugin: {
         options: CssExtractRspackPluginOptions;
@@ -59,7 +64,7 @@ type PluginsListClient = {
     CompressionPlugin: {
         options: ConstructorParameters<typeof CompressionPlugin>[number];
     };
-    NormalModuleReplacementPlugin: rspack.NormalModuleReplacementPlugin;
+    NormalModuleReplacementPlugin: NormalModuleReplacementPlugin;
 };
 
 /*
@@ -99,7 +104,7 @@ type SelectedPluginsList<Type extends 'client' | 'server'> = Type extends 'clien
  */
 export function findPlugin<Type extends 'client' | 'server'>() {
     return <PluginName extends keyof SelectedPluginsList<Type>>(
-        config: rspack.Configuration | rspack.Configuration,
+        config: Configuration,
         pluginName: PluginName,
     ) => {
         if (!config.plugins || !pluginName) return [];

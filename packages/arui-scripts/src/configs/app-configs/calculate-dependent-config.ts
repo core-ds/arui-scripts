@@ -13,8 +13,6 @@ import { AppConfigs, AppContext } from './types';
 export function calculateDependentConfig(config: AppConfigs): AppConfigs {
     return {
         ...config,
-        codeLoader: config.useTscLoader ? 'tsc' : config.codeLoader,
-        jestCodeTransformer: config.jestUseTsJest ? 'tsc' : config.jestCodeTransformer,
         clientPolyfillsEntry: getPolyfills(config),
     };
 }
