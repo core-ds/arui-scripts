@@ -2,20 +2,20 @@
 /* eslint no-console: 0 */
 
 import chalk from 'chalk';
-import webpack from 'webpack';
+import { rspack, Stats, MultiStats, Configuration } from '@rspack/core';
 import formatWebpackMessages from '../util/format-webpack-messages';
 
 type BuildResult = {
-    stats: webpack.Stats | webpack.MultiStats;
+    stats: Stats | MultiStats;
     warnings: string[];
     previousFileSizes: unknown;
 };
 
 function build(
-    config: webpack.Configuration | webpack.Configuration[],
+    config: Configuration | Configuration[],
     previousFileSizes?: unknown,
 ) {
-    let compiler = webpack(config as webpack.Configuration);
+    let compiler = rspack(config);
     return new Promise<BuildResult>((resolve, reject) => {
         compiler.run((err: any, stats: any) => {
             if (err) {

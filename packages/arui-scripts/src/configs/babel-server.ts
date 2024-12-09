@@ -8,7 +8,7 @@ const config = applyOverrides(['babel', 'babelServer'], {
             { modules: false, targets: { node: 'current' }, loose: true },
         ],
         configs.tsconfig !== null &&
-            !configs.useTscLoader &&
+            configs.codeLoader !== 'tsc' &&
             require.resolve('@babel/preset-typescript'),
         require.resolve('@babel/preset-react'),
     ].filter(Boolean),
