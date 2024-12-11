@@ -1,5 +1,11 @@
 # @alfalab/client-event-bus
 
+## 2.0.2
+
+### Patch Changes
+
+-   [#293](https://github.com/core-ds/arui-scripts/pull/293) [`1157100`](https://github.com/core-ds/arui-scripts/commit/115710068391b7977b7c5c134f537bb57d70ff4b) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Исправлен тип для useEventBusValue, теперь он принимает то, что возвращает getEventBus без приведения типов
+
 ## 2.0.1
 
 ### Patch Changes
