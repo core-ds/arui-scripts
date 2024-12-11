@@ -6,7 +6,7 @@ export function useEventBusValue<
     EventTypes extends AbstractKnownEventTypes,
     Event extends keyof EventTypes,
 >(
-    eventBus: AbstractAppEventBus<EventTypes> | undefined,
+    eventBus: AbstractAppEventBus<EventTypes> | undefined | null,
     eventName: Event,
 ): EventTypes[Event] | undefined {
     const [lastValue, setLastValue] = useState(eventBus?.getLastEventDetail?.(eventName));
