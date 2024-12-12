@@ -1,4 +1,4 @@
-import { Compiler } from 'webpack';
+import { Compiler } from '@rspack/core';
 
 import { ENV_CONFIG_FILENAME } from './constants';
 import { getEnvConfigContent } from './get-env-config';

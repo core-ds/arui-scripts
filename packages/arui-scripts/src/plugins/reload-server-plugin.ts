@@ -1,13 +1,17 @@
-// TODO: remove eslint-disable
-/* eslint-disable @typescript-eslint/no-var-requires */
-const cluster = require('cluster');
-const path = require('path');
+import cluster from 'cluster';
+import path from 'path';
+
+import { type Compiler } from 'webpack';
 
 const defaultOptions = {
     script: 'server.js',
 };
 
-module.exports = class ReloadServerPlugin {
+export class ReloadServerPlugin {
+    workers: cluster.Worker[] = [];
+
+    done: null | (() => void) = null;
+
     constructor({ script } = defaultOptions) {
         this.done = null;
         this.workers = [];
@@ -25,8 +29,8 @@ module.exports = class ReloadServerPlugin {
         });
     }
 
-    apply(compiler) {
-        const afterEmit = (compilation, callback) => {
+    apply(compiler: Compiler) {
+        compiler.hooks.afterEmit.tapAsync('ReloadServerPlugin', (compilation, callback) => {
             this.done = callback;
             this.workers.forEach((worker) => {
                 try {
@@ -39,12 +43,6 @@ module.exports = class ReloadServerPlugin {
             this.workers = [];
 
             cluster.fork();
-        };
-
-        if (compiler.hooks) {
-            compiler.hooks.afterEmit.tapAsync('ReloadServerPlugin', afterEmit);
-        } else {
-            compiler.plugin('after-emit', afterEmit);
-        }
+        });
     }
-};
+}

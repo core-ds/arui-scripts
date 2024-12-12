@@ -1,13 +1,18 @@
 import { Cluster } from 'cluster';
 
 import { ReactRefreshPluginOptions } from '@pmmmwh/react-refresh-webpack-plugin/types/lib/types';
+import {
+    type CssExtractRspackPluginOptions,
+    Configuration,
+    DefinePlugin,
+    NormalModuleReplacementPlugin,
+} from '@rspack/core';
 import AssetsPlugin from 'assets-webpack-plugin';
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import CompressionPlugin from 'compression-webpack-plugin';
 import { ForkTsCheckerWebpackPluginOptions } from 'fork-ts-checker-webpack-plugin/lib/ForkTsCheckerWebpackPluginOptions';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import { RunScriptWebpackPlugin } from 'run-script-webpack-plugin';
-import webpack from 'webpack';
 import { WebpackDeduplicationPlugin } from 'webpack-deduplication-plugin';
 import { WebpackManifestPlugin } from 'webpack-manifest-plugin';
 
@@ -21,7 +26,10 @@ type PluginsListClient = {
         options: AssetsPlugin.Options;
     };
     DefinePlugin: {
-        definitions: ConstructorParameters<typeof webpack.DefinePlugin>[number];
+        definitions: ConstructorParameters<typeof DefinePlugin>[number];
+    };
+    CssExtractRspackPlugin: {
+        options: CssExtractRspackPluginOptions;
     };
     MiniCssExtractPlugin: {
         options: MiniCssExtractPlugin.PluginOptions;
@@ -39,7 +47,6 @@ type PluginsListClient = {
             | {
                   checkResource: (resource: string, context: string) => boolean;
               };
-        checkIgnore: (resolveData: webpack.ResolveData) => undefined | false;
     };
     WebpackDeduplicationPlugin: WebpackDeduplicationPlugin;
     ReactRefreshPlugin: {
@@ -57,7 +64,7 @@ type PluginsListClient = {
     CompressionPlugin: {
         options: ConstructorParameters<typeof CompressionPlugin>[number];
     };
-    NormalModuleReplacementPlugin: webpack.NormalModuleReplacementPlugin;
+    NormalModuleReplacementPlugin: NormalModuleReplacementPlugin;
 };
 
 /*
@@ -67,9 +74,6 @@ type PluginsListClient = {
         2. NoEmitOnErrorsPlugin
  */
 type PluginsListServer = {
-    BannerPlugin: {
-        options: webpack.BannerPlugin['options'];
-    };
     RunScriptWebpackPlugin: {
         options: ConstructorParameters<typeof RunScriptWebpackPlugin>[number];
     };
@@ -100,7 +104,7 @@ type SelectedPluginsList<Type extends 'client' | 'server'> = Type extends 'clien
  */
 export function findPlugin<Type extends 'client' | 'server'>() {
     return <PluginName extends keyof SelectedPluginsList<Type>>(
-        config: webpack.Configuration,
+        config: Configuration,
         pluginName: PluginName,
     ) => {
         if (!config.plugins || !pluginName) return [];

@@ -19,7 +19,7 @@ exports[`client should create valid css 1`] = `
         background-color:#cd1501;
     }
 
-.styles-module-paragraph-Jd8ok{
+.styles-module-paragraph-xATBD{
     font-size:12px;
     line-height:16px;
     font-weight:700;
@@ -63,21 +63,21 @@ body{
     vertical-align:middle;
 }
 
-.app-module-root-v3y8h{
+.app-module-root-B6jGk{
     padding:10px;
 } @media (min-width: 600px) and (max-width: 1023px){
-    .app-module-root-v3y8h{
+    .app-module-root-B6jGk{
         padding:24px;
     }
 } @media (min-width: 1024px){
-    .app-module-root-v3y8h{
+    .app-module-root-B6jGk{
         padding:32px;
     }
 } @media (max-width: 599px){
-    .app-module-root-v3y8h{
+    .app-module-root-B6jGk{
         padding:8px;
     }
-} .app-module-title-NCKQE{
+} .app-module-title-ja29j{
     color:#202022;
     border-radius:99px;
 }
