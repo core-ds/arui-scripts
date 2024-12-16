@@ -4427,7 +4427,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@swc/core@npm:^1.7.35":
+"@swc/core@npm:1.7.35":
   version: 1.7.35
   resolution: "@swc/core@npm:1.7.35"
   dependencies:
@@ -6477,7 +6477,7 @@ __metadata:
     "@babel/preset-typescript": "npm:^7.23.3"
     "@babel/runtime": "npm:^7.23.8"
     "@pmmmwh/react-refresh-webpack-plugin": "npm:0.5.11"
-    "@swc/core": "npm:^1.7.35"
+    "@swc/core": "npm:1.7.35"
     "@swc/jest": "npm:^0.2.36"
     "@types/assets-webpack-plugin": "npm:6.1.2"
     "@types/case-sensitive-paths-webpack-plugin": "npm:2.1.6"
