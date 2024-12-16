@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 18.6.1
+
+### Patch Changes
+
+-   [#296](https://github.com/core-ds/arui-scripts/pull/296) [`7c73716`](https://github.com/core-ds/arui-scripts/commit/7c737160caeb4a057e48962f29e10c208e2aede4) Thanks [@VladislavNsk](https://github.com/VladislavNsk)! - Фиксируем версию swc/core тк на версии 1.10 не работает плагин swc-plugin-coverage-instrument
+
 ## 18.6.0
 
 ### Minor Changes
