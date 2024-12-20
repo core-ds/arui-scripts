@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 18.7.0
+
+### Minor Changes
+
+-   [#298](https://github.com/core-ds/arui-scripts/pull/298) [`d43df89`](https://github.com/core-ds/arui-scripts/commit/d43df89a749af4d8942c53dbfc0291ca45c18231) Thanks [@KalashnikovTV](https://github.com/KalashnikovTV)! - Убрана каретка у вебпака, зафиксирована версия 5.95.0
+
 ## 18.6.1
 
 ### Patch Changes
