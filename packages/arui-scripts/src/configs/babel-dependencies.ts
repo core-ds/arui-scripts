@@ -11,7 +11,7 @@ export const babelDependencies = applyOverrides('babelDependencies', {
                 useBuiltIns: 'entry',
                 // Set the corejs version we are using to avoid warnings in console
                 // This will need to change once we upgrade to corejs@3
-                corejs: "3.32",
+                corejs: '3.32',
                 // Exclude transforms that make all code slower
                 exclude: ['transform-typeof-symbol'],
             },
