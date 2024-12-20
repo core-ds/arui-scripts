@@ -1,7 +1,6 @@
-// TODO: remove eslint-disable-next-line
+import type { Options as SwcOptions } from '@swc/core'
 import type { Configuration as WebpackConfiguration, WebpackOptionsNormalized } from 'webpack';
 import type { Configuration as WebpackDevServerConfiguration } from 'webpack-dev-server';
-import type { Options as SwcOptions } from '@swc/core'
 
 import appConfigs from '../app-configs';
 import { AppContextWithConfigs } from '../app-configs/types';
