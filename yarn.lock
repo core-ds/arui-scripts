@@ -4422,7 +4422,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rsdoctor/rspack-plugin@npm:^0.4.11":
+"@rsdoctor/rspack-plugin@npm:0.4.11":
   version: 0.4.11
   resolution: "@rsdoctor/rspack-plugin@npm:0.4.11"
   dependencies:
@@ -4605,7 +4605,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rspack/cli@npm:^1.1.5":
+"@rspack/cli@npm:1.1.5":
   version: 1.1.5
   resolution: "@rspack/cli@npm:1.1.5"
   dependencies:
@@ -4626,7 +4626,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rspack/core@npm:^1.1.5":
+"@rspack/core@npm:1.1.5":
   version: 1.1.5
   resolution: "@rspack/core@npm:1.1.5"
   dependencies:
@@ -4643,7 +4643,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rspack/dev-server@npm:1.0.9, @rspack/dev-server@npm:^1.0.9":
+"@rspack/dev-server@npm:1.0.9":
   version: 1.0.9
   resolution: "@rspack/dev-server@npm:1.0.9"
   dependencies:
@@ -4670,17 +4670,17 @@ __metadata:
   linkType: hard
 
 "@rspack/plugin-react-refresh@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "@rspack/plugin-react-refresh@npm:1.0.0"
+  version: 1.0.1
+  resolution: "@rspack/plugin-react-refresh@npm:1.0.1"
   dependencies:
-    error-stack-parser: "npm:^2.0.6"
-    html-entities: "npm:^2.1.0"
+    error-stack-parser: "npm:^2.1.4"
+    html-entities: "npm:^2.5.2"
   peerDependencies:
     react-refresh: ">=0.10.0 <1.0.0"
   peerDependenciesMeta:
     react-refresh:
       optional: true
-  checksum: 10/09d76ba4ac93c012a8a90fb0a6aef717ec0fd78dc620d1f0a7e26493cb696a1c9ba20d639f9eed57074a180fc58226be6b084b172f668fe4bbe2f13e6982fe35
+  checksum: 10/dbef08401b37f106632cf75713132076223b8445858e7a109acc5c2467e7e131a2f1c778af4e6fbd94e96b2abb8ce3b31458f8885f39f244ca221233c32a7097
   languageName: node
   linkType: hard
 
@@ -4834,7 +4834,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@swc/core@npm:^1.10.1":
+"@swc/core@npm:1.10.1":
   version: 1.10.1
   resolution: "@swc/core@npm:1.10.1"
   dependencies:
@@ -7065,12 +7065,12 @@ __metadata:
     "@babel/preset-typescript": "npm:^7.23.3"
     "@babel/runtime": "npm:^7.23.8"
     "@pmmmwh/react-refresh-webpack-plugin": "npm:0.5.11"
-    "@rsdoctor/rspack-plugin": "npm:^0.4.11"
-    "@rspack/cli": "npm:^1.1.5"
-    "@rspack/core": "npm:^1.1.5"
-    "@rspack/dev-server": "npm:^1.0.9"
+    "@rsdoctor/rspack-plugin": "npm:0.4.11"
+    "@rspack/cli": "npm:1.1.5"
+    "@rspack/core": "npm:1.1.5"
+    "@rspack/dev-server": "npm:1.0.9"
     "@rspack/plugin-react-refresh": "npm:^1.0.0"
-    "@swc/core": "npm:^1.10.1"
+    "@swc/core": "npm:1.10.1"
     "@swc/jest": "npm:^0.2.36"
     "@types/assets-webpack-plugin": "npm:6.1.2"
     "@types/case-sensitive-paths-webpack-plugin": "npm:2.1.6"
@@ -7147,7 +7147,7 @@ __metadata:
     react-refresh: "npm:0.10.0"
     react-refresh-typescript: "npm:2.0.2"
     rimraf: "npm:^2.7.1"
-    rspack-manifest-plugin: "npm:^5.0.1"
+    rspack-manifest-plugin: "npm:5.0.1"
     run-script-webpack-plugin: "npm:0.0.11"
     semver: "npm:^7.5.4"
     shelljs: "npm:0.8.5"
@@ -10304,7 +10304,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"error-stack-parser@npm:^2.0.6":
+"error-stack-parser@npm:^2.0.6, error-stack-parser@npm:^2.1.4":
   version: 2.1.4
   resolution: "error-stack-parser@npm:2.1.4"
   dependencies:
@@ -12427,7 +12427,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"html-entities@npm:^2.4.0":
+"html-entities@npm:^2.4.0, html-entities@npm:^2.5.2":
   version: 2.5.2
   resolution: "html-entities@npm:2.5.2"
   checksum: 10/4ec12ebdf2d5ba8192c68e1aef3c1e4a4f36b29246a0a88464fe278a54517d0196d3489af46a3145c7ecacb4fc5fd50497be19eb713b810acab3f0efcf36fdc2
@@ -19150,7 +19150,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rspack-manifest-plugin@npm:^5.0.1":
+"rspack-manifest-plugin@npm:5.0.1":
   version: 5.0.1
   resolution: "rspack-manifest-plugin@npm:5.0.1"
   dependencies:
