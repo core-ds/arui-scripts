@@ -39,7 +39,7 @@ const cssModuleRegex = /\.module\.css$/;
 function getSingleEntry(entryPoint: string[], mode: 'dev' | 'prod') {
     const prefix =
         mode === 'dev' && configs.useServerHMR
-            ? [`${require.resolve('webpack/hot/poll')}?1000`]
+            ? [`${require.resolve('@rspack/core/hot/poll')}?1000`]
             : [];
 
     return [...prefix, ...entryPoint];
