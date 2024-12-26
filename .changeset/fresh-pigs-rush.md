@@ -18,3 +18,7 @@
 - Если вы использовали `babel-plugin-istanbul` для сбора code coverage - с настройками по умолчанию это больше не будет работать из-за замены babel на swc.
 Рекомендуется использовать настройку [collectCoverage](https://github.com/core-ds/arui-scripts/blob/master/packages/arui-scripts/docs/settings.md#collectcoverage).
 - Команда [bundle-analyze](https://github.com/core-ds/arui-scripts/blob/master/packages/arui-scripts/docs/commands.md#bundle-analyze) теперь так же запускает [rsdoctor](https://rsdoctor.dev/).
+- Изменен дефолт для `devSourceMaps`, теперь по умолчанию используется `inline-cheap-source-map`.
+
+При активном использовании оверрайдов скорее всего вы столкнетесь с различиями в конфигурациях. Информацию о том, как
+мигрировать с webpack на rspack, и о различиях в их конфигурациях можно найти в [документации rspack](https://rspack.dev/guide/migration/webpack).
