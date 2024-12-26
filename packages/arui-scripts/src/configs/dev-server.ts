@@ -12,14 +12,18 @@ import { ENV_CONFIG_FILENAME } from './client-env-config';
 const serverProxyConfig = {
     context: ['/**'],
     target: `http://127.0.0.1:${configs.serverPort}`,
-    bypass: (req: http.IncomingMessage) => {
+    router: (req: http.IncomingMessage) => {
         const assetsRoot = path.normalize(`/${configs.publicPath}`).replace(/\\/g, '/');
 
         if (req?.url?.startsWith(assetsRoot)) {
             return req.url;
         }
 
-        return null;
+        return {
+            protocol: 'http:',
+            host: '127.0.0.1',
+            port: configs.serverPort,
+        };
     },
     ...(configs.devSourceMaps && configs.devSourceMaps.includes('eval') || configs.devServerCors
         ? {
