@@ -75,26 +75,6 @@ describe('override plugins with findPlugin', () => {
     });
 
     describe("server's findPlugin", () => {
-        // TODO
-        // it('should return original server dev config with modified BannerPlugin: options.banner = "sell garage"', () => {
-        //     const devConfig = createServerConfig('dev');
-        //
-        //     const [BannerPlugin] = findPlugin<'server'>()(devConfig, 'BannerPlugin');
-        //
-        //     BannerPlugin.options.banner = 'sell garage';
-        //
-        //     expect(devConfig).toMatchObject<typeof devConfig>({
-        //         ...devConfig,
-        //         plugins: getPlugins(devConfig.plugins, 'BannerPlugin', (pluginOptions) => ({
-        //             ...pluginOptions,
-        //             options: {
-        //                 ...pluginOptions.options,
-        //                 banner: 'sell garage',
-        //             },
-        //         })),
-        //     });
-        // });
-
         it('should return original server dev config with modified WatchMissingNodeModulesPlugin: nodeModulesPath = ./123', () => {
             const devConfig = createServerConfig('dev');
 

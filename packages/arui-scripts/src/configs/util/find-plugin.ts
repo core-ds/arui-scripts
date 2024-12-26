@@ -7,6 +7,7 @@ import {
     DefinePlugin,
     NormalModuleReplacementPlugin,
 } from '@rspack/core';
+import { BannerPluginOptions } from '@rspack/core/dist/builtin-plugin/BannerPlugin';
 import AssetsPlugin from 'assets-webpack-plugin';
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import CompressionPlugin from 'compression-webpack-plugin';
@@ -74,6 +75,9 @@ type PluginsListClient = {
         2. NoEmitOnErrorsPlugin
  */
 type PluginsListServer = {
+    BannerPlugin: {
+        options: BannerPluginOptions;
+    };
     RunScriptWebpackPlugin: {
         options: ConstructorParameters<typeof RunScriptWebpackPlugin>[number];
     };
