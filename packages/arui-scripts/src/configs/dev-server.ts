@@ -12,18 +12,14 @@ import { ENV_CONFIG_FILENAME } from './client-env-config';
 const serverProxyConfig = {
     context: ['/**'],
     target: `http://127.0.0.1:${configs.serverPort}`,
-    router: (req: http.IncomingMessage) => {
+    bypass: (req: http.IncomingMessage) => {
         const assetsRoot = path.normalize(`/${configs.publicPath}`).replace(/\\/g, '/');
 
         if (req?.url?.startsWith(assetsRoot)) {
             return req.url;
         }
 
-        return {
-            protocol: 'http:',
-            host: '127.0.0.1',
-            port: configs.serverPort,
-        };
+        return null;
     },
     ...(configs.devSourceMaps && configs.devSourceMaps.includes('eval') || configs.devServerCors
         ? {
@@ -68,7 +64,7 @@ const devServerConfig = applyOverrides('devServer', {
         // создаваемый для client-only режима как раз такой. Так же работает и env-config.json
         writeToDisk: (filename) => filename.endsWith('.html') || filename.endsWith(ENV_CONFIG_FILENAME),
     },
-    static: [configs.serverOutputPath],
+    static: [configs.serverOutputPath, configs.clientOutputPath],
     proxy: getProxyConfig(),
     headers: configs.devServerCors
         ? {
