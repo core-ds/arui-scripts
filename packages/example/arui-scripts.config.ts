@@ -20,12 +20,10 @@ const aruiScriptsConfig: PackageSettings = {
         shared: {
             'react': {
                 eager: true,
-                singleton: true,
                 requiredVersion: '^17.0.0',
             },
             'react-dom': {
                 eager: true,
-                singleton: true,
                 requiredVersion: '^17.0.0',
             }
         }

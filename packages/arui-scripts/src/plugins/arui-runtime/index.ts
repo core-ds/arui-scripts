@@ -1,14 +1,14 @@
-import webpack from 'webpack';
+import { Compiler, RuntimeGlobals } from '@rspack/core';
 
 import { RuntimeModule } from './arui-runtime-module';
 
 export class AruiRuntimePlugin {
-    apply(compiler: webpack.Compiler) {
+    apply(compiler: Compiler) {
         compiler.hooks.compilation.tap(
             this.constructor.name,
             (compilation) => {
                 compilation.hooks.runtimeRequirementInTree
-                    .for(webpack.RuntimeGlobals.require)
+                    .for(RuntimeGlobals.require)
                     .tap(this.constructor.name, (chunk) => {
                         compilation.addRuntimeModule(chunk, new RuntimeModule());
 

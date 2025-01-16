@@ -21,11 +21,11 @@ export function getDefaultAppConfig(): AppConfigs {
         clientServerPort: 8080,
         serverPort: 3000,
         debug: false,
-        devSourceMaps: 'eval',
+        devSourceMaps: 'inline-cheap-source-map', // так получаются нормальные сорсмапы, с eval - они не работают
         devServerCors: false,
         useServerHMR: false,
         presets: configFile?.presets || appPackage?.aruiScripts?.presets || null,
-        proxy: appPackage.proxy || null,
+        proxy: appPackage.proxy || [],
         clientOnly: false,
 
         // paths
@@ -50,13 +50,10 @@ export function getDefaultAppConfig(): AppConfigs {
 
         // build tuning
         keepPropTypes: false,
-        useTscLoader: false,
-        codeLoader: 'babel',
-        webpack4Compatibility: false,
+        codeLoader: 'swc',
         installServerSourceMaps: false,
         disableDevWebpackTypecheck: true,
-        jestUseTsJest: false,
-        jestCodeTransformer: 'babel',
+        jestCodeTransformer: 'swc',
         collectCoverage: process.env.NODE_ENV === 'cypress' || process.env.USE_ISTANBUL === 'enabled',
 
         // image processing

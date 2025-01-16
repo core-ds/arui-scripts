@@ -18,7 +18,7 @@ const babelClientConfig = applyOverrides(['babel', 'babelClient'], {
             },
         ],
         configs.tsconfig !== null &&
-            !configs.useTscLoader &&
+            configs.codeLoader !== 'tsc' &&
             require.resolve('@babel/preset-typescript'),
         require.resolve('@babel/preset-react'),
     ].filter(Boolean),
