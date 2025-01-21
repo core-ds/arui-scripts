@@ -1,5 +1,13 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 19.0.1
+
+### Patch Changes
+
+-   [#303](https://github.com/core-ds/arui-scripts/pull/303) [`342c717`](https://github.com/core-ds/arui-scripts/commit/342c7171017056214e0ecc3cd7c866f7cce64e88) Thanks [@Echzio](https://github.com/Echzio)! - исправление парсинга postcss, в котором неправильно парсились @media
+
+-   [#301](https://github.com/core-ds/arui-scripts/pull/301) [`77bbf31`](https://github.com/core-ds/arui-scripts/commit/77bbf3108257192d056ebf779bc737800b60375c) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Исправлена проблема при обработке маленьких svg (меньше, чем [config.dataUrlMaxSize](https://github.com/core-ds/arui-scripts/blob/master/packages/arui-scripts/docs/settings.md#dataurlmaxsize)): теперь они корректно преобразуются в data-url
+
 ## 19.0.0
 
 ### Major Changes
