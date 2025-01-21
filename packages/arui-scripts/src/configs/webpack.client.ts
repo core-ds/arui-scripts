@@ -302,7 +302,7 @@ export const createSingleClientWebpackConfig = (
                         test: /\.svg/,
                         type: 'asset',
                         generator: {
-                            dataUrl: (content: Buffer) => svgToMiniDataURI(content.toString()),
+                            dataUrl: (file: { filename: string; content: string | Buffer  }) => svgToMiniDataURI(file.content.toString()),
                         },
                         parser: {
                             dataUrlCondition: {

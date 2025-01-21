@@ -33,6 +33,11 @@ export class App extends React.Component<object, AppState> {
                 <PostcssFeatures />
 
                 <Typography.Text>
+                    Тут должна быть SVG иконка часов:
+                    <div className={styles.inlineSvgIcon} />
+                </Typography.Text>
+
+                <Typography.Text>
                     Check hot-loader: <br />
                     Button is clicked {this.state.clickCount} times Clicked more than 10 times?{' '}
                     <br />
