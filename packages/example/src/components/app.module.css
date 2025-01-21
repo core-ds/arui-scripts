@@ -25,3 +25,9 @@
     color: var(--button-accent-base-bg-color);
     border-radius: var(--border-radius-pill);
 }
+
+.inlineSvgIcon {
+    width: 22px;
+    height: 22px;
+    background: url("./clock.svg") no-repeat;
+}
