@@ -7,3 +7,21 @@
     color: color-mod(var(--color-static-status-red) blend(rgba(255, 255, 255, 0.5) 50%));
     background-color: var(--color-static-graphic-milano-red);
 }
+
+@media not screen and (--desktop) {
+    .mediaTest {
+        color: red;
+    }
+}
+
+@media (--desktop), (--mobile) {
+    .mediaTest2 {
+        color: red;
+    }
+}
+
+@media (--desktop-m) {
+    .mediaTest3 {
+        color: red;
+    }
+}

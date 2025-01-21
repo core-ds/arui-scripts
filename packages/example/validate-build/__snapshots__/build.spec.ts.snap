@@ -33,6 +33,24 @@ exports[`client should create valid css 1`] = `
     background-color:#cd1501;
 }
 
+@media not screen and (min-width: 1024px){
+    .styles-module-mediaTest-XSYFb{
+        color:red;
+    }
+}
+
+@media (min-width: 1024px),(max-width: 599px){
+    .styles-module-mediaTest2-snIxp{
+        color:red;
+    }
+}
+
+@media (min-width: 1280px){
+    .styles-module-mediaTest3-NP4vm{
+        color:red;
+    }
+}
+
 body{
     background:aliceblue;
 }
