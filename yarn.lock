@@ -5713,6 +5713,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/postcss-media-query-parser@npm:0.2.4":
+  version: 0.2.4
+  resolution: "@types/postcss-media-query-parser@npm:0.2.4"
+  checksum: 10/20bfaea8d981fd4028fd14df4c57127dc50f9db80304557fae411524cc082557b1240058f6e2267f8917e99cdea1f5a4dae9446c7b66f04e450eabd1c1585287
+  languageName: node
+  linkType: hard
+
 "@types/prettier@npm:^2.1.5":
   version: 2.7.3
   resolution: "@types/prettier@npm:2.7.3"
@@ -7079,6 +7086,7 @@ __metadata:
     "@types/jest": "npm:^29.5.14"
     "@types/lodash.merge": "npm:^4.6.7"
     "@types/node": "npm:12.20.55"
+    "@types/postcss-media-query-parser": "npm:0.2.4"
     "@types/react-dev-utils": "npm:9.0.11"
     "@types/semver": "npm:^7.5.0"
     "@types/shelljs": "npm:^0.8.12"
@@ -7136,6 +7144,7 @@ __metadata:
     postcss-import: "npm:^15.0.0"
     postcss-inherit: "npm:^4.0.0"
     postcss-loader: "npm:^7.0.0"
+    postcss-media-query-parser: "npm:^0.2.3"
     postcss-mixins: "npm:^9.0.0"
     postcss-nested: "npm:^6.0.0"
     postcss-omit-import-tilde: "npm:^1.0.0"

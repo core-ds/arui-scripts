@@ -2,6 +2,8 @@ import fs from 'fs';
 import path from 'path';
 
 import { AtRule, Declaration, Helpers, Root, Rule } from 'postcss';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import mediaParser from 'postcss-media-query-parser';
 
 export const getMediaQueryName = (rule: AtRule) => rule.params.split(' ')[0];
 
@@ -68,15 +70,26 @@ export const insertParsedCss = (root: Root, parsedVariables: Record<string, stri
     });
 
     root.walkAtRules('media', (rule) => {
-        const mediaFullName = getMediaQueryName(rule);
+        // парсим параметры
+        const mediaParsed = mediaParser(rule.params);
+        // регулярка для (--desktop), (--mobile), (--desktop-m) и тд
+        const parseRule = /--\w+-?\w+/gi;
 
-        if (mediaFullName.startsWith('(--')) {
-            const mediaName = mediaFullName.slice(1, -1);
+        mediaParsed.nodes?.forEach(({ value }) => {
+            // value приходит в виде (--desktop); not screen and (--mobile) и тд
+            if (parseRule.test(value)) {
+                // берем все вхождения --desktop, --mobile
+                const mediaName = value.match(parseRule);
 
-            if (parsedCustomMedia[mediaName]) {
-                root.append(parsedCustomMedia[mediaName]);
+                // итерируемся по [--desktop, --mobile]
+                mediaName?.forEach((rule) => {
+                    // подставляем значения если у нас есть под это custom-media
+                    if (parsedCustomMedia[rule]) {
+                        root.append(parsedCustomMedia[rule]);
+                    }
+                });
             }
-        }
+        });
     });
 
     return rootRule;
