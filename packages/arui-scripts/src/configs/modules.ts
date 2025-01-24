@@ -3,10 +3,11 @@
 import * as rspack from '@rspack/core'
 
 import { postCssPrefix } from '../plugins/postcss-prefix-selector';
+import { TurnOffSplitRemoteEntry } from '../plugins/turn-off-split-remote-entry';
 
 import { CompatModuleConfig } from './app-configs/types';
 import { findLoader } from './util/find-loader';
-import configs from './app-configs';
+import { configs } from './app-configs';
 
 export function haveExposedDefaultModules() {
     return configs.modules?.exposes;
@@ -15,14 +16,19 @@ export function haveExposedDefaultModules() {
 export const MODULES_ENTRY_NAME = 'remoteEntry.js';
 
 export function patchMainWebpackConfigForModules(webpackConf: rspack.Configuration) {
+    if (!webpackConf.module?.rules || !webpackConf.plugins) {
+        // делаем TS счастливым, на самом деле module и plugins у нас будут всегда
+        return webpackConf;
+    }
+
     // Добавляем expose loader для библиотек, которые мы хотим вынести в глобальную область видимости
-    webpackConf.module!.rules!.unshift(...getExposeLoadersFormCompatModules());
+    webpackConf.module.rules.unshift(...getExposeLoadersFormCompatModules());
 
     if (!configs.modules || !webpackConf.output || !webpackConf.plugins) {
         return webpackConf;
     }
 
-    const {cssPrefix} = configs.modules.options || {};
+    const { cssPrefix } = configs.modules.options || {};
 
     if (cssPrefix) {
         addCssPrefix(webpackConf, cssPrefix);
@@ -32,13 +38,14 @@ export function patchMainWebpackConfigForModules(webpackConf: rspack.Configurati
         ? 'auto' // Для того чтобы модули могли подключаться из разных мест, нам необходимо использовать auto. Для корректной работы в IE надо подключaть https://github.com/amiller-gh/currentScript-polyfill
         : configs.publicPath;
 
-    webpackConf.plugins!.push(
+    webpackConf.plugins.push(
         new rspack.container.ModuleFederationPlugin({
             name: configs.modules.name || configs.normalizedName,
             filename: configs.modules.exposes ? MODULES_ENTRY_NAME : undefined,
             shared: configs.modules.shared,
             exposes: configs.modules.exposes,
         }),
+        new TurnOffSplitRemoteEntry(configs.modules.name || configs.normalizedName),
     );
 
     return webpackConf;

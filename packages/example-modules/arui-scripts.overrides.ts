@@ -42,8 +42,6 @@ const overrides: OverrideFile = {
         const allConfigs = Array.isArray(config) ? config : [config];
 
         return allConfigs.map((config) => {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
             config.optimization.minimize = false;
 
             return config;
