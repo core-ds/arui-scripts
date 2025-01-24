@@ -5,6 +5,7 @@
     "scripts": {
         "build:app": "arui-scripts build",
         "start": "NODE_ENV=localhost arui-scripts start",
+        "start:prod": "NODE_ENV=localhost arui-scripts start:prod",
         "validate": "jest \"validate-build/*\" --config jest.config.validate-build.js",
         "lint:css": "stylelint ./src/**/*.css",
         "lint:scripts": "eslint \"**/*.{js,jsx,ts,tsx}\" --ext .js,.jsx,.ts,.tsx",
