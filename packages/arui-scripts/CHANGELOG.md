@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 19.0.2
+
+### Patch Changes
+
+-   [#304](https://github.com/core-ds/arui-scripts/pull/304) [`f97f2ba`](https://github.com/core-ds/arui-scripts/commit/f97f2ba9fd22473e2a3725dfc3699c6b0577ed15) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Исправлена проблема с загрузкой WMF модулей в prod сборке
+
 ## 19.0.1
 
 ### Patch Changes
