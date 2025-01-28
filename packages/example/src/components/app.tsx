@@ -8,6 +8,7 @@ import { ModulesTabs } from '#/components/modules-tabs';
 
 import { isSmaller } from '../utils';
 
+import clientIcon from './client.png';
 import { PostcssFeatures } from './postcss-features';
 
 import './style.css';
@@ -33,12 +34,19 @@ export class App extends React.Component<object, AppState> {
                 <PostcssFeatures />
 
                 <Typography.Text>
-                    Тут должна быть SVG иконка часов:
+                    Тут должна быть SVG иконка часов, она инлайнится в base64:
                     <div className={styles.inlineSvgIcon} />
                 </Typography.Text>
 
                 <Typography.Text>
-                    Check hot-loader: <br />
+                    А тут - картинка загруженная как полноценное изображение
+                </Typography.Text>
+                <div>
+                    <img src={clientIcon} alt="Картинка с клиента" width={128}/>
+                </div>
+
+                <Typography.Text>
+                Check hot-loader: <br />
                     Button is clicked {this.state.clickCount} times Clicked more than 10 times?{' '}
                     <br />
                     {isSmaller(this.state.clickCount, 10)}

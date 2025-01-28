@@ -75,7 +75,8 @@ const overrides: OverrideFile = {
         })
 
         return overridesConfig;
-    }
+    },
+    html: template => template.replace('<head>', '<head><base href="/" />'),
 };
 
 export default overrides;

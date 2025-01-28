@@ -59,7 +59,7 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
     entry: getEntry(configs.serverEntry, getSingleEntry, mode),
     context: configs.cwd,
     output: {
-        assetModuleFilename: 'static/media/[name].[hash:8][ext]',
+        assetModuleFilename: `${configs.assetsPath}/static/media/[name].[hash:8][ext]`,
         // Add /* filename */ comments to generated require()s in the output.
         pathinfo: true,
         path: configs.serverOutputPath,
@@ -141,8 +141,7 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
                         exclude: [/\.(js|jsx|mjs|ts|tsx)$/, /\.(html|ejs)$/, /\.json$/],
                         type: 'asset/resource',
                         generator: {
-                            outputPath: configs.publicPath,
-                            publicPath: configs.publicPath,
+                            publicPath: '/'
                         },
                     },
                 ].filter(Boolean) as RuleSetRule[],
