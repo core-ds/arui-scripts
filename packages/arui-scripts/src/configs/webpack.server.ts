@@ -12,6 +12,7 @@ import {
     RuleSetRule,
 } from '@rspack/core';
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
+import svgToMiniDataURI from 'mini-svg-data-uri';
 import { RunScriptWebpackPlugin } from 'run-script-webpack-plugin';
 import nodeExternals from 'webpack-node-externals';
 
@@ -138,10 +139,23 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
                         ],
                     },
                     {
-                        exclude: [/\.(js|jsx|mjs|ts|tsx)$/, /\.(html|ejs)$/, /\.json$/],
+                        test: /\.svg/,
+                        type: 'asset',
+                        generator: {
+                            dataUrl: (file: { filename: string; content: string | Buffer  }) => svgToMiniDataURI(file.content.toString()),
+                            publicPath: ''
+                        },
+                        parser: {
+                            dataUrlCondition: {
+                                maxSize: configs.dataUrlMaxSize,
+                            },
+                        },
+                    },
+                    {
+                        exclude: [/\.(js|jsx|mjs|ts|tsx)$/, /\.(html|ejs)$/, /\.json$/, /\.svg$/],
                         type: 'asset/resource',
                         generator: {
-                            publicPath: '/'
+                            publicPath: ''
                         },
                     },
                 ].filter(Boolean) as RuleSetRule[],
