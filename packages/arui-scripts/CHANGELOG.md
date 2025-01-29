@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 19.0.3
+
+### Patch Changes
+
+-   [#306](https://github.com/core-ds/arui-scripts/pull/306) [`9c9b71d`](https://github.com/core-ds/arui-scripts/commit/9c9b71dcda22b2c391838094da680a6a3214a005) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Исправлена загрузка картинок подключенных на сервере
+
 ## 19.0.2
 
 ### Patch Changes
