@@ -16,6 +16,10 @@ export function haveExposedDefaultModules() {
 export const MODULES_ENTRY_NAME = 'remoteEntry.js';
 
 export function patchMainWebpackConfigForModules(webpackConf: rspack.Configuration) {
+    if (configs.disableModulesSupport) {
+        // проект хочет сам разбираться с WMF и прочими вещами, полностью отключаем обработку модулей на своей стороне
+        return webpackConf;
+    }
     if (!webpackConf.module?.rules || !webpackConf.plugins) {
         // делаем TS счастливым, на самом деле module и plugins у нас будут всегда
         return webpackConf;
@@ -25,6 +29,10 @@ export function patchMainWebpackConfigForModules(webpackConf: rspack.Configurati
     webpackConf.module.rules.unshift(...getExposeLoadersFormCompatModules());
 
     if (!configs.modules || !webpackConf.output || !webpackConf.plugins) {
+        // webpack по умолчанию всегда добавлял runtime для шаринга, даже когда модули не включены.
+        // Rspack этого больше не делает, поэтому добавляем плагин для рантайма самостоятельно
+        webpackConf.plugins.push(new rspack.sharing.ProvideSharedPlugin({ provides: {} }));
+
         return webpackConf;
     }
 
