@@ -1,5 +1,12 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 19.0.4
+
+### Patch Changes
+
+-   [`2d7538a`](https://github.com/core-ds/arui-scripts/commit/2d7538af1ac0d6af0fe081f8379f0f381c4234a9) Thanks [@Heymdall](https://github.com/Heymdall)! - Исправлена работа с wmf модулями в случае, если в проекте полностью отсутствует конфигурация для WMF модулей.
+    Добавлена настройка `disableModulesSupport`, которая полностью исключает работу arui-scripts с любыми плагинами, связанными с wmf.
+
 ## 19.0.3
 
 ### Patch Changes
