@@ -84,6 +84,7 @@ export function getDefaultAppConfig(): AppConfigs {
         keepCssVars: false,
 
         // Modules
+        disableModulesSupport: false,
         compatModules: null,
         modules: null,
     };

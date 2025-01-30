@@ -79,6 +79,7 @@ export type AppConfigs = {
     keepCssVars: boolean;
 
     // Modules
+    disableModulesSupport: boolean;
     compatModules: {
         shared?: {
             [libraryName: string]: string;
