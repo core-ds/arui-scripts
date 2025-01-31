@@ -14,6 +14,7 @@ const loader = createModuleLoader<MountableModule<{ some: string }, BaseModuleSt
     hostAppId: 'example',
     moduleId: 'ServerStateModule',
     getModuleResources: createServerStateModuleFetcher({ baseUrl: 'http://localhost:8082' }),
+    resourcesCache: 'single-item',
 });
 
 export const ServerStateModuleMounter = () => {

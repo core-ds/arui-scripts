@@ -1,8 +1,9 @@
 import { cleanGlobal } from './utils/clean-global';
 import { getConsumerCounter } from './utils/consumers-counter';
 import { removeModuleResources } from './utils/dom-utils';
-import { fetchResources,getResourcesTargetNodes } from './utils/fetch-resources';
+import { fetchResources, getResourcesTargetNodes } from './utils/fetch-resources';
 import { getCompatModule, getModule } from './utils/get-module';
+import { addCleanupMethod, cleanupModule, getModulesCache } from './utils/modules-cache';
 import { BaseModuleState, GetResourcesRequest, Loader, ModuleResources } from './types';
 
 export type ModuleResourcesGetter<GetResourcesParams, ModuleState extends BaseModuleState> = (
@@ -44,6 +45,8 @@ export type CreateModuleLoaderParams<
     onBeforeModuleUnmount?: ModuleLoaderHookWithModule<ModuleExportType, ModuleState>;
     /** хук, вызываем после удаления ресурсов модуля со страницы */
     onAfterModuleUnmount?: ModuleLoaderHookWithModule<ModuleExportType, ModuleState>;
+    /** политика кеширования ресурсов модуля. Если 'none' - ресурсы модуля будут удалены из кеша после его удаления со страницы. Если 'single-item' - в кеше будет храниться значения для текущего значения loaderParams. */
+    resourcesCache?: 'none' | 'single-item';
 };
 
 const consumerCounter = getConsumerCounter();
@@ -57,6 +60,7 @@ export function createModuleLoader<
     hostAppId,
     getModuleResources,
     resourcesTargetNode,
+    resourcesCache = 'none',
     onBeforeResourcesMount,
     onBeforeModuleMount,
     onAfterModuleMount,
@@ -68,7 +72,40 @@ export function createModuleLoader<
 > {
     validateUsedWebpackVersion();
 
-    return async ({ abortSignal, getResourcesParams, cssTargetSelector} = {}) => {
+    const modulesCache = getModulesCache();
+
+    async function getModuleResourcesWithCache(getResourcesParams: GetResourcesParams) {
+        const paramsSerialized = JSON.stringify(getResourcesParams);
+
+        if (resourcesCache === 'single-item' && modulesCache[moduleId] && modulesCache[moduleId][paramsSerialized]) {
+            return modulesCache[moduleId][paramsSerialized] as ModuleResources<ModuleState>;
+        }
+
+        // Если мы делаем запрос - значит либо данные не закешированы, либо в кеши лежат данные не для тех параметров.
+        // В любом случае нам надо удалить ресурсы и почистить глобальные переменные
+        cleanupModule(moduleId);
+
+        const resources = await getModuleResources({
+            moduleId,
+            hostAppId,
+            params: getResourcesParams,
+        });
+
+        if (resourcesCache === 'single-item') {
+            // Добавляем результаты загрузки в кеш если кеширование включено
+            if (!modulesCache[moduleId]) {
+                modulesCache[moduleId] = {};
+            }
+            modulesCache[moduleId][paramsSerialized] = resources;
+        }
+
+        return resources;
+    }
+
+    return async ({ abortSignal, getResourcesParams, cssTargetSelector, useShadowDom } = {}) => {
+        if (useShadowDom && resourcesCache === 'single-item') {
+            throw new Error('Загрузка модулей в shadow DOM при использовании `resourceCache: single-item` не поддерживается.')
+        }
         // Если во время загрузки модуля пришел сигнал об отмене, то отменяем загрузку
         if (abortSignal?.aborted) {
             throw new Error(`Module ${moduleId} loading was aborted`);
@@ -88,35 +125,50 @@ export function createModuleLoader<
         function moduleUnmount() {
             consumerCounter.decrease(moduleId);
 
-            if (consumerCounter.getCounter(moduleId) === 0) {
-                // Если на странице больше нет потребителей модуля, то удаляем его ресурсы - скрипты, стили и глобальные переменные
+            function cleanup() {
                 removeModuleResources({
                     moduleId,
                     targetNodes: [resourcesNodes.js, resourcesNodes.css],
                 });
                 cleanGlobal(moduleId);
             }
+
+            if (resourcesCache === 'single-item') {
+                // если включено кеширование - мы не удаляем ресурсы модуля, но запоминаем как удалить этот модуль
+                addCleanupMethod(moduleId, cleanup);
+
+                return;
+            }
+
+            if (consumerCounter.getCounter(moduleId) === 0) {
+                // Если на странице больше нет потребителей модуля, то удаляем его ресурсы - скрипты, стили и глобальные переменные
+                cleanup();
+            }
         }
 
+        const isModuleResourcesCached = resourcesCache === 'single-item'
+            && modulesCache[moduleId]
+            && modulesCache[moduleId][JSON.stringify(getResourcesParams)];
+
         // Загружаем описание модуля
-        const moduleResources = await getModuleResources({
-            moduleId,
-            hostAppId,
-            params: getResourcesParams as any, // для того чтобы пользователям не пришлось передавать этот параметр если он им не нужен, мы обвешиваемся type-cast'ом
-        });
+        const moduleResources = await getModuleResourcesWithCache(
+            getResourcesParams as GetResourcesParams,
+        );
 
-        await onBeforeResourcesMount?.(moduleId, moduleResources);
+        if (!isModuleResourcesCached) {
+            await onBeforeResourcesMount?.(moduleId, moduleResources);
 
-        await fetchResources({
-            cssTargetNode: resourcesNodes.css,
-            jsTargetNode: resourcesNodes.js,
-            cssTargetSelector,
-            moduleId,
-            scripts: moduleResources.scripts,
-            styles: moduleResources.styles,
-            baseUrl: moduleResources.moduleState.baseUrl,
-            abortSignal,
-        });
+            await fetchResources({
+                cssTargetNode: resourcesNodes.css,
+                jsTargetNode: resourcesNodes.js,
+                cssTargetSelector,
+                moduleId,
+                scripts: moduleResources.scripts,
+                styles: moduleResources.styles,
+                baseUrl: moduleResources.moduleState.baseUrl,
+                abortSignal,
+            });
+        }
 
         await onBeforeModuleMount?.(moduleId, moduleResources);
 

@@ -88,6 +88,10 @@ export type LoaderParams<GetResourcesParams> = {
      * Опциональный параметр, который используется для отмены запроса на получение ресурсов модуля.
      */
     abortSignal?: AbortSignal;
+    /**
+     * Флаг о том, что при подключении модуль хочет использовать shadowDom
+     */
+    useShadowDom?: boolean;
 };
 
 /**

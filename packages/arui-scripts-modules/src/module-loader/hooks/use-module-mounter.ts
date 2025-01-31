@@ -72,7 +72,8 @@ export function useModuleMounter<LoaderParams, RunParams, ServerState extends Ba
                 const result = await loader({
                     getResourcesParams: loaderParams as LoaderParams,
                     abortSignal: abortController.signal,
-                    cssTargetSelector
+                    cssTargetSelector,
+                    useShadowDom,
                 });
 
                 if (abortController.signal.aborted) {
