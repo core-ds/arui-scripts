@@ -16,7 +16,7 @@ alpine-node-nginx
 - 16.20.2, 16.20.2-slim (EOL - этот образ более обновляться не будет)
 - 18.20.4, 18.20.4-slim
 - 20.17.0, 20.17.0-slim
-- 22.8.0, 22.8.0-slim
+- 22.13.1, 22.13.1-slim
 - nginx-1.27.1-slim
 
 Наиболее актуальный список тегов можно найти на [dockerhub](https://hub.docker.com/r/alfabankui/arui-scripts/tags).
