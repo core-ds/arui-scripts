@@ -1,8 +1,9 @@
 import { createModuleLoader } from '../create-module-loader';
-import { getCompatModule,getModule } from '../utils/get-module';
-import { fetchResources } from '../utils/fetch-resources';
 import * as cleanGlobal from '../utils/clean-global';
 import * as domUtils from '../utils/dom-utils';
+import { fetchResources } from '../utils/fetch-resources';
+import { getCompatModule, getModule } from '../utils/get-module';
+import { cleanupModulesCache } from '../utils/modules-cache';
 
 jest.mock('../utils/fetch-resources', () => ({
     fetchResources: jest.fn(() => []),
@@ -239,6 +240,7 @@ describe('createModuleLoader', () => {
         (getModule as jest.Mock).mockResolvedValue({});
 
         const { unmount } = await loader({ getResourcesParams: undefined });
+
         await loader({ getResourcesParams: undefined });
 
         unmount();
@@ -285,6 +287,7 @@ describe('createModuleLoader', () => {
             });
 
             const abortController = new AbortController();
+
             abortController.abort();
 
             await expect(loader({ getResourcesParams: undefined, abortSignal: abortController.signal })).rejects.toThrow(
@@ -355,6 +358,104 @@ describe('createModuleLoader', () => {
 
             expect(domUtils.removeModuleResources).toHaveBeenCalledWith({ moduleId: 'another-id', targetNodes: [] });
             expect(cleanGlobal.cleanGlobal).toHaveBeenCalledWith('another-id');
+        });
+    });
+
+    describe('resourceCache: single-item', () => {
+        beforeEach(() => {
+            cleanupModulesCache();
+        });
+
+        it('should throw an error if useShadowDom and resourcesCache is single-item', async () => {
+            const getModuleResources = jest.fn();
+            const loader = createModuleLoader({
+                moduleId: 'test',
+                hostAppId: 'test',
+                getModuleResources,
+                resourcesCache: 'single-item',
+            });
+
+            await expect(loader({ getResourcesParams: undefined, useShadowDom: true })).rejects.toThrow(
+                'Загрузка модулей в shadow DOM при использовании `resourceCache: single-item` не поддерживается.'
+            );
+        });
+
+        it('should cache module resources', async () => {
+            const getModuleResources = jest.fn();
+            const loader = createModuleLoader<unknown, Record<string, unknown>>({
+                moduleId: 'test',
+                hostAppId: 'test',
+                getModuleResources,
+                resourcesCache: 'single-item',
+            });
+
+            getModuleResources.mockResolvedValueOnce({
+                scripts: [],
+                styles: [],
+                moduleState: {},
+                mountMode: 'default',
+            });
+
+            (getModule as jest.Mock).mockResolvedValue({});
+
+            await loader({ getResourcesParams: { a: 1 } });
+            await loader({ getResourcesParams: { a: 1 } });
+
+            expect(getModuleResources).toHaveBeenCalledTimes(1);
+        });
+
+        it('should have different cache for different modules', async () => {
+            const getModuleResources = jest.fn();
+            const loader1 = createModuleLoader({
+                moduleId: 'test',
+                hostAppId: 'test',
+                getModuleResources,
+            });
+
+            const loader2 = createModuleLoader({
+                moduleId: 'test2',
+                hostAppId: 'test',
+                getModuleResources,
+            });
+
+            getModuleResources.mockResolvedValue({
+                scripts: [],
+                styles: [],
+                moduleState: {},
+                mountMode: 'default',
+            });
+
+            (getModule as jest.Mock).mockResolvedValue({});
+
+            await loader1({ getResourcesParams: undefined });
+            await loader2({ getResourcesParams: undefined });
+
+            expect(getModuleResources).toHaveBeenCalledTimes(2);
+        });
+
+        it('should not use cache when getResourcesParams changes', async () => {
+            const getModuleResources = jest.fn();
+            const loader = createModuleLoader<unknown, Record<string, unknown>>({
+                moduleId: 'test',
+                hostAppId: 'test',
+                getModuleResources,
+                resourcesCache: 'single-item',
+            });
+
+            getModuleResources.mockResolvedValue({
+                scripts: [],
+                styles: [],
+                moduleState: {},
+                mountMode: 'default',
+            });
+
+            (getModule as jest.Mock).mockResolvedValue({});
+
+            await loader({ getResourcesParams: { a: 1 } });
+            await loader({ getResourcesParams: { b: 2 } });
+            await loader({ getResourcesParams: { a: 1 } });
+
+            expect(getModuleResources).toHaveBeenCalledTimes(3);
         });
     });
 });

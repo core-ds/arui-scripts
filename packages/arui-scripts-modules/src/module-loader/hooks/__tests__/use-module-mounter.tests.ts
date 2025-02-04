@@ -73,6 +73,7 @@ describe('useModuleMounter', () => {
             getResourcesParams: loaderParams,
             cssTargetSelector: 'head',
             abortSignal: expect.any(AbortSignal),
+            useShadowDom: false,
         });
 
         jest.advanceTimersByTime(1);
