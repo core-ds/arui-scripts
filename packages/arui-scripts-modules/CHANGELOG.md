@@ -1,5 +1,11 @@
 # @alfalab/scripts-modules
 
+## 1.7.0
+
+### Minor Changes
+
+-   [#311](https://github.com/core-ds/arui-scripts/pull/311) [`9e33c1d`](https://github.com/core-ds/arui-scripts/commit/9e33c1d5bb675d7356eb8b5ebcfb0fe38050a630) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - В `createModuleLoader` добавлен параметр `resourceCache`, который позволяет настроить кеширование ресурсов модуля
+
 ## 1.6.2
 
 ### Patch Changes
