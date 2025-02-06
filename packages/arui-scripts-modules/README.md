@@ -208,3 +208,38 @@ async function mySuperMethod() {
 }
 
 ```
+
+### `createLazyMounter`
+
+Возвращает функцию-загрузчик, которую можно использовать совместно с `React.lazy` и `React.Suspense`.
+Модули, примонтированные таким образом будут загружаться **только один раз**, их ресурсы не будут удаляться из DOM.
+
+```tsx
+import React from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
+
+import {
+    createLazyMounter,
+    createModuleLoader,
+    MountableModule,
+} from '@alfalab/scripts-modules';
+
+type ModuleRunParams = {
+    username: string;
+};
+
+const loader = createModuleLoader<MountableModule<ModuleRunParams>>({
+    // ...
+});
+const LazyModule = React.lazy(createLazyMounter({ loader }));
+
+const MyApp = () => (
+    <ErrorBoundary fallback={ <div>Ошибка!</div> }>
+        <React.Suspense fallback={ <div>Загрузка...</div> }>
+            <LazyModule
+                username="Unknown" // props определяется по ModuleRunParams
+            />
+        </React.Suspense>
+    </ErrorBoundary>
+);
+```
