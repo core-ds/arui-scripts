@@ -13,7 +13,7 @@ export const ServerStateModule = (props: {
 
         <pre>{JSON.stringify(props.serverState, null, 4)}</pre>
 
-        <p className={styles.redText}>Данные, полученные из клиента:</p>
+        <p className={styles['other-order-edit-page_horizontal']}>Данные, полученные из клиента:</p>
 
         <pre>{JSON.stringify(props.runParams, null, 4)}</pre>
     </div>
