@@ -330,6 +330,51 @@ export const MyAwesomeComponent = () => {
 }
 ```
 
+# Подключение модулей с использованием react.lazy
+Для того чтобы подключить модуль используя механизм [suspense](https://react.dev/reference/react/Suspense), библиотека предоставляет функцию-хелпер `createLazyMounter`:
+
+```tsx
+import React from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
+
+import {
+    createLazyMounter,
+    createModuleLoader,
+    MountableModule,
+} from '@alfalab/scripts-modules';
+
+type ModuleRunParams = {
+    username: string;
+};
+
+const loader = createModuleLoader<MountableModule<ModuleRunParams>>({
+    // ...
+});
+const LazyModule = React.lazy(createLazyMounter({
+    loader,
+    loaderParams: {}, // опционально
+}));
+
+const MyApp = () => (
+    <ErrorBoundary fallback={ <div>Ошибка!</div> }>
+        <React.Suspense fallback={ <div>Загрузка...</div> }>
+            <LazyModule
+                username="Unknown" // props определяется по ModuleRunParams
+            />
+        </React.Suspense>
+    </ErrorBoundary>
+);
+```
+
+У такого способа подключения есть ряд ограничений:
+1. Нет поддержки shadow DOM
+2. `loaderParams` будет передаваться в модуль только один раз, их изменения не будут приводить к перемонтированию модуля
+3. Модуль никогда не будет удаляться из DOM.
+4. Менее гибкая обработка ошибок - при подключении через `useModuleMounter` вы легко можете добавить механизм ретраев, с `lazy` - только показать сообщение об ошибке
+
+Использовать такой способ стоит только для "статичных" модулей, которые всегда остаются на странице и при этом не зависят от loaderParams.
+
+
 # Изоляция стилей
 Если ваши приложения активно используют глобальные стили (то есть не с css-modules или css-in-js), вы вполне
 можете столкнуться с проблемой конфликтов стилей между модулями и приложением-потребителем.
@@ -536,6 +581,10 @@ const loader = createModuleLoader({
 Как альтернативу стоит рассмотреть использование кеширования на уровне http протокола, это дает приемлемую скорость работы без рисков утечки памяти и использования "старой" версии ресурсов.
 
 **Внимание!** Использование `resourcesCache: 'single-item'` не будет работать вместе с `useShadowDom` из-за особенностей работы со стилями.
+
+## Кеширование при использовании `createLazyMounter`
+
+Если вы используете `createLazyMounter` - модуль будет загружаться лишь один раз, не зависимо от используемых `loaderParams`.
 
 # Другие типы модулей
 

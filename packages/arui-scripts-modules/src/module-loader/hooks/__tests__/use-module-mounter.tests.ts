@@ -1,4 +1,4 @@
-import { cleanup,renderHook } from '@testing-library/react-hooks';
+import { cleanup, renderHook, waitFor } from '@testing-library/react';
 
 import { useModuleMountTarget } from '../use-module-mount-target';
 import { useModuleMounter } from '../use-module-mounter';
@@ -48,7 +48,7 @@ describe('useModuleMounter', () => {
             },
         }))
 
-        const { result, waitForNextUpdate, rerender } = renderHook(() =>
+        const { result, rerender } = renderHook(() =>
             useModuleMounter({
                 loader,
                 loaderParams,
@@ -77,9 +77,10 @@ describe('useModuleMounter', () => {
         });
 
         jest.advanceTimersByTime(1);
-        await waitForNextUpdate();
+        await waitFor(() => {
+            expect(result.current.loadingState).toBe('fulfilled');
+        });
 
-        expect(result.current.loadingState).toBe('fulfilled');
         expect(mountableModule.mount).toHaveBeenCalledWith(
             mountTargetNode,
             runParams,
@@ -103,7 +104,7 @@ describe('useModuleMounter', () => {
             afterTargetMountCallback: jest.fn(),
         });
 
-        const { unmount, waitForNextUpdate } = renderHook(() =>
+        const { unmount, result } = renderHook(() =>
             useModuleMounter({
                 loader,
                 loaderParams,
@@ -113,7 +114,9 @@ describe('useModuleMounter', () => {
             })
         );
 
-        await waitForNextUpdate();
+        await waitFor(() => {
+            expect(result.current.loadingState).toBe('fulfilled');
+        });
 
         unmount();
 
@@ -135,7 +138,7 @@ describe('useModuleMounter', () => {
             afterTargetMountCallback: jest.fn(),
         });
 
-        const { rerender, waitForNextUpdate } = renderHook(
+        const { rerender, result } = renderHook(
             (props) => useModuleMounter(props),
             {
                 initialProps: {
@@ -148,7 +151,9 @@ describe('useModuleMounter', () => {
             }
         );
 
-        await waitForNextUpdate();
+        await waitFor(() => {
+            expect(result.current.loadingState).toBe('fulfilled');
+        });
 
         rerender({
             loader,
@@ -171,7 +176,7 @@ describe('useModuleMounter', () => {
             afterTargetMountCallback: jest.fn(),
         });
 
-        const { result, waitForNextUpdate } = renderHook(() =>
+        const { result } = renderHook(() =>
             useModuleMounter({
                 loader,
                 loaderParams,
@@ -183,8 +188,8 @@ describe('useModuleMounter', () => {
 
         expect(result.current.loadingState).toBe('pending');
 
-        await waitForNextUpdate();
-
-        expect(result.current.loadingState).toBe('rejected');
+        await waitFor(() => {
+            expect(result.current.loadingState).toBe('rejected');
+        });
     });
 });

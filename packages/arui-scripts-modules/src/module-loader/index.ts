@@ -12,3 +12,4 @@ export { executeModuleFactory } from './execute-module-factory';
 export { useModuleLoader } from './hooks/use-module-loader';
 export { useModuleMounter } from './hooks/use-module-mounter';
 export { useModuleFactory } from './hooks/use-module-factory';
+export { createLazyMounter } from './create-lazy-mounter';

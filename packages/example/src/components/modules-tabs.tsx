@@ -10,6 +10,7 @@ import { ModuleMounter } from '#/module-mounters/module-mounter';
 import { ServerStateCompatModuleMounter } from '#/module-mounters/server-state-compat-module-mounter';
 import { ServerStateFactoryModuleMounter } from '#/module-mounters/server-state-factory-module-mounter';
 import { ServerStateModuleMounter } from '#/module-mounters/server-state-module-mounter';
+import { SuspenseMounter } from '#/module-mounters/suspense-mounter';
 
 const tabs = {
     '1': {
@@ -51,6 +52,11 @@ const tabs = {
             'Модуль-фабрика, сделанный через compat режим, который просто предоставляет какие то функции и данные',
         component: FactoryCompatModuleMaunter,
     },
+    '8': {
+        title: 'Suspense mounter',
+        description: 'Монтирование модулей с помощью react.lazy',
+        component: SuspenseMounter,
+    }
 } as const;
 
 type TabId = keyof typeof tabs;
@@ -61,6 +67,7 @@ export const ModulesTabs = () => {
     return (
         <div>
             <Tabs
+                scrollable={true}
                 selectedId={activeTab}
                 onChange={(_, { selectedId }) => {
                     setActiveTab(selectedId as TabId);
