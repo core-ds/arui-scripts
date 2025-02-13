@@ -16,12 +16,12 @@ jobs:
           { node: '16.20.2', alpine: '3.18', image: node, dockerfile: Dockerfile, tag: '16.20.2' },
           { node: '18.20.6', alpine: '3.20', image: node, dockerfile: Dockerfile, tag: '18.20.6' },
           { node: '20.18.2', alpine: '3.20', image: node, dockerfile: Dockerfile, tag: '20.18.2' },
-          { node: '22.14.0', alpine: '3.20', image: node, dockerfile: Dockerfile, tag: '22.14.0' },
+          { node: '22.13.1', alpine: '3.20', image: node, dockerfile: Dockerfile, tag: '22.13.1' },
 
           { node: '16.20.2', alpine: '3.18', image: node, dockerfile: Dockerfile-slim, tag: '16.20.2-slim' },
           { node: '18.20.6', alpine: '3.20', image: node, dockerfile: Dockerfile-slim, tag: '18.20.6-slim' },
           { node: '20.18.2', alpine: '3.20', image: node, dockerfile: Dockerfile-slim, tag: '20.18.2-slim' },
-          { node: '22.14.0', alpine: '3.20', image: node, dockerfile: Dockerfile-slim, tag: '22.14.0-slim' },
+          { node: '22.13.1', alpine: '3.20', image: node, dockerfile: Dockerfile-slim, tag: '22.13.1-slim' },
         ]
     runs-on: ubuntu-latest
     steps:
