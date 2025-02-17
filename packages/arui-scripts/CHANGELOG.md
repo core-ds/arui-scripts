@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 19.0.5
+
+### Patch Changes
+
+-   [#319](https://github.com/core-ds/arui-scripts/pull/319) [`e2c6ff4`](https://github.com/core-ds/arui-scripts/commit/e2c6ff453e4a9ae86dc471501d7505a9fc8e5774) Thanks [@RG100-EMUX](https://github.com/RG100-EMUX)! - Исправлена ошибка с совместимостью, которая не позволяла запускать arui-scripts test
+
 ## 19.0.4
 
 ### Patch Changes
