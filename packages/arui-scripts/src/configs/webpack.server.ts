@@ -265,7 +265,7 @@ function getTsLoaderIfEnabled(mode: 'dev' | 'prod'): RuleSetRule | false {
 
 function getExternalCodeLoader(mode: 'dev' | 'prod'): RuleSetRule {
     const baseLoaderConfig = {
-        test: /\.(js|mjs)$/,
+        test: /\.(js|mjs|cjs)$/,
         exclude: /@babel(?:\/|\\{1,2})runtime/,
         resolve: {
             fullySpecified: false,
