@@ -38,31 +38,32 @@ const htmlPath = `/src/${configs.buildPath}/index.html`;
 
 const clientOnlyStartTemplate = `#!/bin/sh
 
-# Мы подставляем значения из env в env-config.json если он есть, и кладем его в публичную папку.
-# Дополнительно подставляем контент полученного файла в index.html
-# Так как контент env-config может быть многострочным - дополнительно обрабатываем его через awk.
+# Проверяем наличие файла env-config.json. 
+# Если он существует, подставляем значения переменных окружения в него и сохраняем в публичной папке.
 if [ -f ${envConfigPath} ]; then
-    envsubst < ${envConfigPath} > ${envConfigTargetPath}
+    envsubst < ${envConfigPath} > ${envConfigTargetPath} 2> /tmp/envsubst_error.log
+    if [ $? -eq 0 ]; then
+        echo "Файл ${envConfigTargetPath} успешно создан."
+    else
+        echo "Ошибка: Не удалось создать файл ${envConfigTargetPath}. Подробности в /tmp/envsubst_error.log"
+        cat /tmp/envsubst_error.log
+        exit 1
+    fi
 
-    # Define the placeholder and the file paths
-    PLACEHOLDER='<%= envConfig %>'
-    SETTINGS_FILE='${envConfigTargetPath}'
-    TARGET_FILE='${htmlPath}'
+    # Экранируем плейсхолдер для корректной работы sed.
+    ESCAPED_PLACEHOLDER=$(echo "<%= envConfig %>" | sed 's/[\\/&]/\\\\&/g')
 
-    # Escape the placeholder for sed usage
-    ESCAPED_PLACEHOLDER=$(echo "$PLACEHOLDER" | sed 's/[\\/&]/\\\\&/g')
+    # Читаем содержимое файла env-config.json и подготавливаем его для подстановки.
+    SETTINGS_CONTENT=$(awk '{printf "%s\\\\n", $0}' "${envConfigTargetPath}")
 
-    # Read the content of the settings and prepare it for substitution
-    SETTINGS_CONTENT=$(awk '{printf "%s\\\\n", $0}' "$SETTINGS_FILE")
+    # Заменяем плейсхолдер в HTML-файле на содержимое env-config.json.
+    cat ${htmlPath} | sed "s/$ESCAPED_PLACEHOLDER/$SETTINGS_CONTENT/" > /tmp/index.html
 
-    # Replace the placeholder in the target file with the content of settings
-    cat ${htmlPath} \\
-      | sed "s/$ESCAPED_PLACEHOLDER/$SETTINGS_CONTENT/" \\
-      > /tmp/index.html
-
+    # Перемещаем обновленный HTML-файл в итоговое местоположение.
     mv /tmp/index.html ${htmlPath}
 fi
 
+# Запускаем сервер nginx.
 nginx`;
 
 export default applyOverrides('start.sh', configs.clientOnly ? clientOnlyStartTemplate : startTemplate);
