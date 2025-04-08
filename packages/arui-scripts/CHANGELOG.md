@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 19.0.6
+
+### Patch Changes
+
+-   [#323](https://github.com/core-ds/arui-scripts/pull/323) [`efb4b6d`](https://github.com/core-ds/arui-scripts/commit/efb4b6df30805cb27aa2879d382c11d26e02f041) Thanks [@Sm1t](https://github.com/Sm1t)! - Добавлено расширение cjs в getExternalCodeLoader, так как некоторые внешние библиотеки экспортируют .cjs, например redux ^5.0.0
+
 ## 19.0.5
 
 ### Patch Changes
