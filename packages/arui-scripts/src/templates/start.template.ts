@@ -42,9 +42,7 @@ const clientOnlyStartTemplate = `#!/bin/sh
 # Дополнительно подставляем контент полученного файла в index.html
 # Так как контент env-config может быть многострочным - дополнительно обрабатываем его через awk.
 if [ -f ${envConfigPath} ]; then
-   cat ${envConfigPath} \\
-    | envsubst \\
-    > ${envConfigTargetPath}
+    envsubst < ${envConfigPath} > ${envConfigTargetPath}
 
     # Define the placeholder and the file paths
     PLACEHOLDER='<%= envConfig %>'
