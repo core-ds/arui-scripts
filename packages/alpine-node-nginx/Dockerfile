@@ -2,7 +2,7 @@ ARG NODE_VERSION=latest
 ARG ALPINE_VERSION=3.14
 ARG NODE_BASE_IMAGE=node
 
-# Copied from https://github.com/fholzer/docker-nginx-brotli/blob/master/Dockerfile
+# Based on https://github.com/fholzer/docker-nginx-brotli/blob/master/Dockerfile
 # this is a build container, target one is in the end
 
 FROM alpine:${ALPINE_VERSION}
@@ -41,8 +41,9 @@ ENV NGNIX_CONFIG "\
     		--with-file-aio \
     		--with-http_v2_module \
     		--add-module=/usr/src/ngx_brotli \
+    		--with-debug \
     	"
-
+# todo: remove --with-debug flag
 RUN \
 	apk add --no-cache --virtual .build-deps \
 		gcc \
@@ -71,13 +72,14 @@ SHELL ["/bin/bash", "-x", "-c"]
 
 COPY gpg/ /tmp/gpg
 
+COPY ngnix-brotli /tmp/ngnix-brotli
+
+# add nginx-brotli module
 RUN \
 	mkdir -p /usr/src/ngx_brotli \
 	&& cd /usr/src/ngx_brotli \
 	&& git init \
-	&& git remote add origin https://github.com/google/ngx_brotli.git \
-	&& git fetch --depth 1 origin $NGX_BROTLI_COMMIT \
-	&& git checkout --recurse-submodules -q FETCH_HEAD \
+    && mv /tmp/ngnix-brotli/* ./ \
 	&& git submodule update --init --depth 1 \
 	&& cd .. \
 	&& curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz \
@@ -91,7 +93,7 @@ RUN \
 
 RUN \
 	cd /usr/src/nginx-$NGINX_VERSION \
-	&& ./configure $NGNIX_CONFIG --with-debug \
+	&& ./configure $NGNIX_CONFIG \
 	&& make -j$(getconf _NPROCESSORS_ONLN) \
 	&& mv objs/nginx objs/nginx-debug \
 	&& mv objs/ngx_http_image_filter_module.so objs/ngx_http_image_filter_module-debug.so \
