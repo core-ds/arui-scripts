@@ -49,7 +49,7 @@ describe('dom utils', () => {
     });
 
     describe('resource fetchers', () => {
-        let timerId: number;
+        let timerId: ReturnType<typeof setTimeout>;
 
         beforeEach(() => {
             global.fetch = jest.fn(async () => ({ text: async () => '' })) as jest.Mock;

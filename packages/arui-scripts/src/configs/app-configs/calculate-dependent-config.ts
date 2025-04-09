@@ -42,6 +42,28 @@ export function calculateDependentContext(config: AppConfigs, context: AppContex
         babelRuntimeVersion = require('@babel/runtime/package.json').version;
     }
 
+    const allDictionaryPath = config.dictionaryCompression.dictionaryPath
+        .map((p) => {
+            if (!path.isAbsolute(p)) {
+                return path.join(process.cwd(), p);
+            }
+
+            return p;
+        });
+
+    const singleFilesDictionaries = [] as string[];
+    const previousVersionPath = [] as string[];
+
+    allDictionaryPath.forEach((p) => {
+        const statResult = fs.statSync(p);
+
+        if (statResult.isFile()) {
+            singleFilesDictionaries.push(p);
+        } else {
+            previousVersionPath.push(p);
+        }
+    })
+
     return {
         ...context,
         publicPath: `${config.assetsPath}/`,
@@ -50,5 +72,7 @@ export function calculateDependentContext(config: AppConfigs, context: AppContex
         statsOutputPath: path.resolve(context.cwd, config.buildPath, config.statsOutputFilename),
         watchIgnorePath: ['node_modules', config.buildPath],
         babelRuntimeVersion,
+        compressionPredefinedDictionaryPath: singleFilesDictionaries,
+        compressionPreviousVersionPath: previousVersionPath,
     };
 }
