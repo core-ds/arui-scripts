@@ -2,6 +2,7 @@
 /* eslint-disable global-require */
 /* eslint-disable @typescript-eslint/no-var-requires */
 import path from 'path';
+import * as zlib from 'zlib';
 
 import getCSSModuleLocalIdent from 'react-dev-utils/getCSSModuleLocalIdent';
 import ReactRefreshTypeScript from 'react-refresh-typescript';
@@ -408,12 +409,14 @@ export const createSingleClientWebpackConfig = (
             }),
         mode === 'prod' &&
             checkNodeVersion(10) &&
-            new CompressionPlugin({
+            new CompressionPlugin<zlib.BrotliOptions>({
                 filename: '[file].br',
                 algorithm: 'brotliCompress',
                 test: /\.(js|css|html|svg)$/,
                 compressionOptions: {
-                    level: 11,
+                    params: {
+                        [zlib.constants.BROTLI_PARAM_QUALITY]: 11
+                    },
                 },
                 threshold: 10240,
                 minRatio: 0.8,
