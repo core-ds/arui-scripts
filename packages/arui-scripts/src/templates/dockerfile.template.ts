@@ -34,7 +34,6 @@ ${nginxNonRootPart}
 
 ${configs.runFromNonRootUser ? `ADD --chown=nginx:nginx ${appPathToAdd} ${appTargetPath}` : `ADD ${appPathToAdd} ${appTargetPath}`}
 ${configs.clientOnly ? 'COPY env-config.jso[n] /src/' : ''}
-${configs.clientOnly ? 'CMD ["nginx"]' : ''}
 `;
 
 export default applyOverrides('Dockerfile', dockerfileTemplate);
