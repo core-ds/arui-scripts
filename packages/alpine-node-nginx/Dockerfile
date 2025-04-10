@@ -7,7 +7,6 @@ ARG NODE_BASE_IMAGE=node
 
 FROM alpine:${ALPINE_VERSION}
 ENV NGINX_VERSION 1.27.1
-ENV NGX_BROTLI_COMMIT 6e975bcb015f62e1f303054897783355e2a877dc
 ENV NGNIX_CONFIG "\
     		--prefix=/etc/nginx \
     		--sbin-path=/usr/sbin/nginx \
@@ -41,9 +40,8 @@ ENV NGNIX_CONFIG "\
     		--with-file-aio \
     		--with-http_v2_module \
     		--add-module=/usr/src/ngx_brotli \
-    		--with-debug \
     	"
-# todo: remove --with-debug flag
+
 RUN \
 	apk add --no-cache --virtual .build-deps \
 		gcc \
