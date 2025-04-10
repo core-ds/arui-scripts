@@ -1,4 +1,3 @@
-
 /*
  * Copyright (C) Igor Sysoev
  * Copyright (C) Nginx, Inc.
@@ -33,6 +32,9 @@ static ngx_int_t handler(ngx_http_request_t* req);
 static void* create_conf(ngx_conf_t* root_cfg);
 static char* merge_conf(ngx_conf_t* root_cfg, void* parent, void* child);
 static ngx_int_t init(ngx_conf_t* root_cfg);
+static ngx_int_t check_dcb_accept_encoding(ngx_http_request_t* req);
+static ngx_int_t parse_dictionary_id(ngx_http_request_t* req, ngx_str_t* file_prefix, ngx_str_t* cache_id);
+static ngx_int_t serve_dcb_file(ngx_http_request_t* req, ngx_str_t* original_path, ngx_str_t* file_prefix, ngx_str_t* cache_id);
 
 /* << Forward declarations*/
 
@@ -81,6 +83,137 @@ static /* const */ char kEncoding[] = "br";
 static const size_t kEncodingLen = 2;
 static /* const */ u_char kSuffix[] = ".br";
 static const size_t kSuffixLen = 3;
+static /* const */ u_char kDcbSuffix[] = ".dcb";
+static const size_t kDcbSuffixLen = 4;
+static /* const */ char kDcbEncoding[] = "dcb";
+static const size_t kDcbEncodingLen = 3;
+static const u_char kUseAsDictionary[] = "Use-As-Dictionary";
+static const u_char kDictionaryId[] = "dictionary-id";
+
+// Helper function to find the last occurrence of a character in a string
+static u_char* find_last_char(u_char* str, size_t len, u_char c) {
+  u_char* p = str + len - 1;
+  while (p >= str) {
+    if (*p == c) {
+      return p;
+    }
+    p--;
+  }
+  return NULL;
+}
+
+// Helper function to find the first occurrence of a character in a string
+static u_char* find_first_char(u_char* str, size_t len, u_char c) {
+  u_char* p = str;
+  u_char* end = str + len;
+  while (p < end) {
+    if (*p == c) {
+      return p;
+    }
+    p++;
+  }
+  return NULL;
+}
+
+// Function to set the Use-As-Dictionary header
+static ngx_int_t set_use_as_dictionary_header(ngx_http_request_t* req, ngx_str_t* path) {
+  ngx_str_t uri = req->uri;
+  ngx_str_t filename;
+  ngx_str_t pathname;
+  ngx_str_t basename;
+  ngx_str_t ext;
+  ngx_str_t fileId;
+  ngx_table_elt_t* header;
+  u_char* p;
+  u_char* dot;
+  u_char* second_dot;
+  u_char* last_slash;
+  u_char* header_value;
+  size_t header_len;
+
+  // Skip the leading slash
+  if (uri.data[0] == '/') {
+    uri.data++;
+    uri.len--;
+  }
+
+  // Find the last slash to separate pathname and filename
+  last_slash = find_last_char(uri.data, uri.len, '/');
+  if (last_slash) {
+    pathname.data = uri.data;
+    pathname.len = last_slash - uri.data;
+    filename.data = last_slash + 1;
+    filename.len = uri.data + uri.len - filename.data;
+  } else {
+    pathname.data = NULL;
+    pathname.len = 0;
+    filename.data = uri.data;
+    filename.len = uri.len;
+  }
+
+  // Check if filename matches the pattern *.*.*
+  dot = find_first_char(filename.data, filename.len, '.');
+  if (!dot) return NGX_OK;
+
+  second_dot = find_first_char(dot + 1, filename.data + filename.len - (dot + 1), '.');
+  if (!second_dot) return NGX_OK;
+
+  // Extract basename, ext, and fileId
+  basename.data = filename.data;
+  basename.len = dot - filename.data;
+
+  ext.data = second_dot + 1;
+  ext.len = filename.data + filename.len - ext.data;
+
+  fileId.data = dot + 1;
+  fileId.len = second_dot - fileId.data;
+
+  // Calculate header value length
+  header_len = 8; // "match=\"/"
+  header_len += pathname.len;
+  header_len += 1; // "/"
+  header_len += basename.len;
+  header_len += 3; // ".*."
+  header_len += ext.len;
+  header_len += 6; // "\",id=\""
+  header_len += basename.len;
+  header_len += 1; // "."
+  header_len += fileId.len;
+  header_len += 1; // "\""
+
+  // Allocate memory for header value
+  header_value = ngx_palloc(req->pool, header_len);
+  if (!header_value) return NGX_ERROR;
+
+  // Format header value
+  p = header_value;
+  p = ngx_cpymem(p, "match=\"/", 8);
+
+  if (pathname.len > 0) {
+    p = ngx_cpymem(p, pathname.data, pathname.len);
+    p = ngx_cpymem(p, "/", 1);
+  }
+
+  p = ngx_cpymem(p, basename.data, basename.len);
+  p = ngx_cpymem(p, ".*.", 3);
+  p = ngx_cpymem(p, ext.data, ext.len);
+  p = ngx_cpymem(p, "\",id=\"", 6);
+  p = ngx_cpymem(p, basename.data, basename.len);
+  p = ngx_cpymem(p, ".", 1);
+  p = ngx_cpymem(p, fileId.data, fileId.len);
+  p = ngx_cpymem(p, "\"", 1);
+
+  // Create and set the header
+  header = ngx_list_push(&req->headers_out.headers);
+  if (!header) return NGX_ERROR;
+
+  header->hash = 1;
+  ngx_str_set(&header->key, kUseAsDictionary);
+  header->value.data = header_value;
+  header->value.len = header_len;
+
+  return NGX_OK;
+}
 
 static ngx_int_t check_accept_encoding(ngx_http_request_t* req) {
   ngx_table_elt_t* accept_encoding_entry;
@@ -141,6 +274,267 @@ static ngx_int_t check_eligility(ngx_http_request_t* req) {
   return NGX_OK;
 }
 
+/* Check if the request accepts DCB encoding */
+static ngx_int_t check_dcb_accept_encoding(ngx_http_request_t* req) {
+  ngx_table_elt_t* accept_encoding_entry;
+  ngx_str_t* accept_encoding;
+  u_char* cursor;
+
+  accept_encoding_entry = req->headers_in.accept_encoding;
+  if (accept_encoding_entry == NULL) return NGX_DECLINED;
+  accept_encoding = &accept_encoding_entry->value;
+
+  /* Simply check if "dcb" is present in the Accept-Encoding header */
+  cursor = ngx_strcasestrn(accept_encoding->data, kDcbEncoding, kDcbEncodingLen - 1);
+  if (cursor == NULL) return NGX_DECLINED;
+
+  ngx_log_debug0(NGX_LOG_DEBUG_HTTP, req->connection->log, 0, "dcb is present in accept-encoding");
+
+  return NGX_OK;
+}
+
+/* Parse the dictionary-id header and extract file_prefix and cache_id */
+static ngx_int_t parse_dictionary_id(ngx_http_request_t* req, ngx_str_t* file_prefix, ngx_str_t* cache_id) {
+  ngx_table_elt_t* dictionary_id_entry;
+  ngx_str_t* dictionary_id;
+  u_char* dot;
+  ngx_list_part_t* part;
+  ngx_table_elt_t* h;
+  ngx_str_t dictionary_id_str;
+  u_char* start;
+  u_char* end;
+
+  /* Find the dictionary-id header in the headers list */
+  part = &req->headers_in.headers.part;
+  dictionary_id_entry = NULL;
+
+  /* Create a non-const string for comparison */
+  dictionary_id_str.data = (u_char*)kDictionaryId;
+  dictionary_id_str.len = sizeof(kDictionaryId) - 1;
+
+  while (part) {
+    h = part->elts;
+    for (ngx_uint_t i = 0; i < part->nelts; i++) {
+      if (h[i].key.len == dictionary_id_str.len &&
+          ngx_strncasecmp(h[i].key.data, dictionary_id_str.data, dictionary_id_str.len) == 0) {
+        dictionary_id_entry = &h[i];
+        break;
+      }
+    }
+
+    if (dictionary_id_entry) {
+      break;
+    }
+
+    part = part->next;
+  }
+
+  if (dictionary_id_entry == NULL) return NGX_DECLINED;
+  dictionary_id = &dictionary_id_entry->value;
+
+  /* Handle quoted values */
+  start = dictionary_id->data;
+  end = dictionary_id->data + dictionary_id->len;
+
+  /* Skip leading whitespace */
+  while (start < end && (*start == ' ' || *start == '\t')) {
+    start++;
+  }
+
+  /* Check if the value is quoted */
+  if (start < end && *start == '"') {
+    start++; /* Skip the opening quote */
+
+    /* Find the closing quote */
+    while (start < end && *(end-1) == '"') {
+      end--;
+    }
+  }
+
+  /* Skip trailing whitespace */
+  while (start < end && (*(end-1) == ' ' || *(end-1) == '\t')) {
+    end--;
+  }
+
+  /* Find the dot separator within the trimmed value */
+  dot = find_first_char(start, end - start, '.');
+  if (dot == NULL) return NGX_DECLINED;
+
+  /* Set file_prefix to the part before the dot */
+  file_prefix->data = start;
+  file_prefix->len = dot - start;
+
+  /* Set cache_id to the part after the dot */
+  cache_id->data = dot + 1;
+  cache_id->len = end - cache_id->data;
+
+  return NGX_OK;
+}
+
+/* Serve a DCB file if it exists */
+static ngx_int_t serve_dcb_file(ngx_http_request_t* req, ngx_str_t* original_path, ngx_str_t* file_prefix, ngx_str_t* cache_id) {
+  ngx_int_t rc;
+  u_char* last;
+  ngx_str_t path;
+  size_t root;
+  ngx_log_t* log;
+  ngx_http_core_loc_conf_t* location_cfg;
+  ngx_open_file_info_t file_info;
+  ngx_table_elt_t* content_encoding_entry;
+  ngx_buf_t* buf;
+  ngx_chain_t out;
+  ngx_str_t filename;
+  u_char* last_slash;
+  u_char* p;
+
+  /* Get the original path without the .br suffix */
+  path = *original_path;
+  path.len -= kSuffixLen;
+
+  /* Find the last slash to separate pathname and filename */
+  last_slash = find_last_char(path.data, path.len, '/');
+  if (last_slash) {
+    filename.data = last_slash + 1;
+    filename.len = path.data + path.len - filename.data;
+  } else {
+    filename.data = path.data;
+    filename.len = path.len;
+  }
+
+  /* Check if filename starts with file_prefix */
+  if (filename.len < file_prefix->len ||
+      ngx_strncmp(filename.data, file_prefix->data, file_prefix->len) != 0) {
+    return NGX_DECLINED;
+  }
+
+  /* Create the DCB file path */
+  last = ngx_http_map_uri_to_path(req, &path, &root, kDcbSuffixLen + cache_id->len + 1);
+  if (last == NULL) return NGX_HTTP_INTERNAL_SERVER_ERROR;
+
+  /* Append the cache_id and .dcb suffix */
+  p = last;
+  p = ngx_cpymem(p, ".", 1);
+  p = ngx_cpymem(p, cache_id->data, cache_id->len);
+  p = ngx_cpymem(p, kDcbSuffix, kDcbSuffixLen);
+  *p = '\0';
+  path.len += cache_id->len + kDcbSuffixLen;
+
+  log = req->connection->log;
+  ngx_log_debug1(NGX_LOG_DEBUG_HTTP, log, 0, "http dcb filename: \"%s\"",
+                 path.data);
+
+  /* Prepare to read the file. */
+  location_cfg = ngx_http_get_module_loc_conf(req, ngx_http_core_module);
+  ngx_memzero(&file_info, sizeof(ngx_open_file_info_t));
+  file_info.read_ahead = location_cfg->read_ahead;
+  file_info.directio = location_cfg->directio;
+  file_info.valid = location_cfg->open_file_cache_valid;
+  file_info.min_uses = location_cfg->open_file_cache_min_uses;
+  file_info.errors = location_cfg->open_file_cache_errors;
+  file_info.events = location_cfg->open_file_cache_events;
+  rc = ngx_http_set_disable_symlinks(req, location_cfg, &path, &file_info);
+  if (rc != NGX_OK) return NGX_HTTP_INTERNAL_SERVER_ERROR;
+
+  /* Try to fetch file and process errors. */
+  rc = ngx_open_cached_file(location_cfg->open_file_cache, &path, &file_info,
+                            req->pool);
+  if (rc != NGX_OK) {
+    ngx_uint_t level;
+    switch (file_info.err) {
+      case 0:
+        return NGX_HTTP_INTERNAL_SERVER_ERROR;
+
+      case NGX_ENOENT:
+      case NGX_ENOTDIR:
+      case NGX_ENAMETOOLONG:
+        return NGX_DECLINED;
+
+#if (NGX_HAVE_OPENAT)
+      case NGX_EMLINK:
+      case NGX_ELOOP:
+#endif
+      case NGX_EACCES:
+        level = NGX_LOG_ERR;
+        break;
+
+      default:
+        level = NGX_LOG_CRIT;
+        break;
+    }
+    ngx_log_error(level, log, file_info.err, "%s \"%s\" failed",
+                  file_info.failed, path.data);
+    return NGX_DECLINED;
+  }
+
+  /* So far so good. */
+  ngx_log_debug1(NGX_LOG_DEBUG_HTTP, log, 0, "http static dcb fd: %d",
+                 file_info.fd);
+
+  /* Only files are supported. */
+  if (file_info.is_dir) {
+    ngx_log_debug0(NGX_LOG_DEBUG_HTTP, log, 0, "http dir");
+    return NGX_DECLINED;
+  }
+#if !(NGX_WIN32)
+  if (!file_info.is_file) {
+    ngx_log_error(NGX_LOG_CRIT, log, 0, "\"%s\" is not a regular file",
+                  path.data);
+    return NGX_HTTP_NOT_FOUND;
+  }
+#endif
+
+  /* Prepare request push the body. */
+  req->root_tested = !req->error_page;
+  rc = ngx_http_discard_request_body(req);
+  if (rc != NGX_OK) return rc;
+  log->action = "sending response to client";
+  req->headers_out.status = NGX_HTTP_OK;
+  req->headers_out.content_length_n = file_info.size;
+  req->headers_out.last_modified_time = file_info.mtime;
+  rc = ngx_http_set_etag(req);
+  if (rc != NGX_OK) return NGX_HTTP_INTERNAL_SERVER_ERROR;
+  rc = ngx_http_set_content_type(req);
+  if (rc != NGX_OK) return NGX_HTTP_INTERNAL_SERVER_ERROR;
+
+  /* Set "Content-Encoding" header to "dcb". */
+  content_encoding_entry = ngx_list_push(&req->headers_out.headers);
+  if (content_encoding_entry == NULL) return NGX_HTTP_INTERNAL_SERVER_ERROR;
+  content_encoding_entry->hash = 1;
+  ngx_str_set(&content_encoding_entry->key, kContentEncoding);
+  ngx_str_set(&content_encoding_entry->value, kDcbEncoding);
+  req->headers_out.content_encoding = content_encoding_entry;
+
+  /* Set "Use-As-Dictionary" header if applicable */
+  rc = set_use_as_dictionary_header(req, &path);
+  if (rc != NGX_OK) return NGX_HTTP_INTERNAL_SERVER_ERROR;
+
+  /* Setup response body. */
+  buf = ngx_pcalloc(req->pool, sizeof(ngx_buf_t));
+  if (buf == NULL) return NGX_HTTP_INTERNAL_SERVER_ERROR;
+  buf->file = ngx_pcalloc(req->pool, sizeof(ngx_file_t));
+  if (buf->file == NULL) return NGX_HTTP_INTERNAL_SERVER_ERROR;
+  buf->file_pos = 0;
+  buf->file_last = file_info.size;
+  buf->in_file = buf->file_last ? 1 : 0;
+  buf->last_buf = (req == req->main) ? 1 : 0;
+  buf->last_in_chain = 1;
+  buf->file->fd = file_info.fd;
+  buf->file->name = path;
+  buf->file->log = log;
+  buf->file->directio = file_info.is_directio;
+  out.buf = buf;
+  out.next = NULL;
+
+  /* Push the response header. */
+  rc = ngx_http_send_header(req);
+  if (rc == NGX_ERROR || rc > NGX_OK || req->header_only) {
+    return rc;
+  }
+
+  /* Push the response body. */
+  return ngx_http_output_filter(req, &out);
+}
+
 static ngx_int_t handler(ngx_http_request_t* req) {
   configuration_t* cfg;
   ngx_int_t rc;
@@ -153,6 +547,8 @@ static ngx_int_t handler(ngx_http_request_t* req) {
   ngx_table_elt_t* content_encoding_entry;
   ngx_buf_t* buf;
   ngx_chain_t out;
+  ngx_str_t file_prefix;
+  ngx_str_t cache_id;
 
   /* Only GET and HEAD requensts are supported. */
   if (!(req->method & (NGX_HTTP_GET | NGX_HTTP_HEAD))) return NGX_DECLINED;
@@ -171,6 +567,27 @@ static ngx_int_t handler(ngx_http_request_t* req) {
     req->gzip_vary = 1;
     rc = check_eligility(req);
     if (rc != NGX_OK) return NGX_DECLINED;
+  }
+
+  /* Check if DCB is in accept-encoding and dictionary-id is present */
+  if (check_dcb_accept_encoding(req) == NGX_OK &&
+        parse_dictionary_id(req, &file_prefix, &cache_id) == NGX_OK) {
+
+    /* Get path for the original file (without .br suffix) */
+    last = ngx_http_map_uri_to_path(req, &path, &root, kSuffixLen);
+    if (last == NULL) return NGX_HTTP_INTERNAL_SERVER_ERROR;
+    /* +1 for reinstating the terminating 0. */
+    ngx_cpystrn(last, kSuffix, kSuffixLen + 1);
+    path.len += kSuffixLen;
+
+    /* Try to serve the DCB file */
+    rc = serve_dcb_file(req, &path, &file_prefix, &cache_id);
+    if (rc != NGX_DECLINED) {
+      return rc;
+    }
+    /* If we get here, either DCB is not supported/requested or the DCB file was not found */
+    /* Fall back to serving the .br file as before */
+    ngx_log_debug0(NGX_LOG_DEBUG_HTTP, req->connection->log, 0, "Failed to serve dcb file to supporting browser");
   }
 
   /* Get path and append the suffix. */
@@ -267,6 +684,10 @@ static ngx_int_t handler(ngx_http_request_t* req) {
   ngx_str_set(&content_encoding_entry->key, kContentEncoding);
   ngx_str_set(&content_encoding_entry->value, kEncoding);
   req->headers_out.content_encoding = content_encoding_entry;
+
+  /* Set "Use-As-Dictionary" header if applicable */
+  rc = set_use_as_dictionary_header(req, &path);
+  if (rc != NGX_OK) return NGX_HTTP_INTERNAL_SERVER_ERROR;
 
   /* Setup response body. */
   buf = ngx_pcalloc(req->pool, sizeof(ngx_buf_t));
