@@ -12,6 +12,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@alfalab/brotli-dcb-builder@workspace:packages/brotli-dcb-builder":
+  version: 0.0.0-use.local
+  resolution: "@alfalab/brotli-dcb-builder@workspace:packages/brotli-dcb-builder"
+  dependencies:
+    "@types/command-line-args": "npm:^5.2.3"
+    brotli-dictionary: "npm:^1.4.0"
+    command-line-args: "npm:^6.0.1"
+    eslint: "npm:^8.20.0"
+    eslint-config-custom: "workspace:*"
+    jest: "npm:28.1.3"
+    prettier: "npm:^2.7.1"
+    ts-jest: "npm:28.0.8"
+    ts-node: "npm:10.9.2"
+    typescript: "npm:4.9.5"
+  languageName: unknown
+  linkType: soft
+
 "@alfalab/client-event-bus@workspace:packages/client-event-bus":
   version: 0.0.0-use.local
   resolution: "@alfalab/client-event-bus@workspace:packages/client-event-bus"
@@ -5100,6 +5117,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/command-line-args@npm:^5.2.3":
+  version: 5.2.3
+  resolution: "@types/command-line-args@npm:5.2.3"
+  checksum: 10/3d90db5b4bbaabd049654a0d12fa378989ab0d76a0f98d4c606761b5a08ce76458df0f9bb175219e187b4cd57e285e6f836d23e86b2c3d997820854cc3ed9121
+  languageName: node
+  linkType: hard
+
 "@types/compression-webpack-plugin@npm:4.0.1":
   version: 4.0.1
   resolution: "@types/compression-webpack-plugin@npm:4.0.1"
@@ -6840,6 +6864,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"array-back@npm:^6.2.2":
+  version: 6.2.2
+  resolution: "array-back@npm:6.2.2"
+  checksum: 10/baae1e3a1687300a307d3bdf09715f6415e1099b5729d3d8e397309fb1e43d90b939d694602892172aaca7e0aeed38da89d04aa4951637d31c2a21350809e003
+  languageName: node
+  linkType: hard
+
 "array-buffer-byte-length@npm:^1.0.0":
   version: 1.0.0
   resolution: "array-buffer-byte-length@npm:1.0.0"
@@ -7675,6 +7706,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"brotli-dictionary@npm:^1.4.0":
+  version: 1.4.0
+  resolution: "brotli-dictionary@npm:1.4.0"
+  checksum: 10/4f60bde7ff13fbe5a0ad00e54bd5153a53880b732d039b64811d26718fe90d8a937fa08d8e7f2368f0dd8cd3e63785ae00870c1b4b509d54a837365f2a32af8d
+  languageName: node
+  linkType: hard
+
 "brotli-size@npm:^4.0.0":
   version: 4.0.0
   resolution: "brotli-size@npm:4.0.0"
@@ -8275,6 +8313,23 @@ __metadata:
     lodash.camelcase: "npm:^4.3.0"
     typical: "npm:^4.0.0"
   checksum: 10/e6a42652ae8843fbb56e2fba1e85da00a16a0482896bb1849092e1bc70b8bf353d945e69732bf4ae98370ff84e8910ff4933af8f2f747806a6b2cb5074799fdb
+  languageName: node
+  linkType: hard
+
+"command-line-args@npm:^6.0.1":
+  version: 6.0.1
+  resolution: "command-line-args@npm:6.0.1"
+  dependencies:
+    array-back: "npm:^6.2.2"
+    find-replace: "npm:^5.0.2"
+    lodash.camelcase: "npm:^4.3.0"
+    typical: "npm:^7.2.0"
+  peerDependencies:
+    "@75lb/nature": "*"
+  peerDependenciesMeta:
+    "@75lb/nature":
+      optional: true
+  checksum: 10/7c668539fa28ad2ca85e376c72d93a0088a852c82d56b34d32ad6cc2e8f8e937108ae9276dc903311e0e803d8dbe6518868ab9cae9aa13d8de8b44e8ecc8256d
   languageName: node
   linkType: hard
 
@@ -11466,6 +11521,18 @@ __metadata:
   dependencies:
     array-back: "npm:^3.0.1"
   checksum: 10/6b04bcfd79027f5b84aa1dfe100e3295da989bdac4b4de6b277f4d063e78f5c9e92ebc8a1fec6dd3b448c924ba404ee051cc759e14a3ee3e825fa1361025df08
+  languageName: node
+  linkType: hard
+
+"find-replace@npm:^5.0.2":
+  version: 5.0.2
+  resolution: "find-replace@npm:5.0.2"
+  peerDependencies:
+    "@75lb/nature": "*"
+  peerDependenciesMeta:
+    "@75lb/nature":
+      optional: true
+  checksum: 10/d2cf7cbaa343a418960af1b9ed5c982aba966f101e834d2b37217f1962e7223c1bf0a21742b67381c92ab5c47ebd65dd334ee77ac5f6a9180741c691aa78fc8f
   languageName: node
   linkType: hard
 
@@ -20899,6 +20966,44 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ts-node@npm:10.9.2":
+  version: 10.9.2
+  resolution: "ts-node@npm:10.9.2"
+  dependencies:
+    "@cspotcode/source-map-support": "npm:^0.8.0"
+    "@tsconfig/node10": "npm:^1.0.7"
+    "@tsconfig/node12": "npm:^1.0.7"
+    "@tsconfig/node14": "npm:^1.0.0"
+    "@tsconfig/node16": "npm:^1.0.2"
+    acorn: "npm:^8.4.1"
+    acorn-walk: "npm:^8.1.1"
+    arg: "npm:^4.1.0"
+    create-require: "npm:^1.1.0"
+    diff: "npm:^4.0.1"
+    make-error: "npm:^1.1.1"
+    v8-compile-cache-lib: "npm:^3.0.1"
+    yn: "npm:3.1.1"
+  peerDependencies:
+    "@swc/core": ">=1.2.50"
+    "@swc/wasm": ">=1.2.50"
+    "@types/node": "*"
+    typescript: ">=2.7"
+  peerDependenciesMeta:
+    "@swc/core":
+      optional: true
+    "@swc/wasm":
+      optional: true
+  bin:
+    ts-node: dist/bin.js
+    ts-node-cwd: dist/bin-cwd.js
+    ts-node-esm: dist/bin-esm.js
+    ts-node-script: dist/bin-script.js
+    ts-node-transpile-only: dist/bin-transpile.js
+    ts-script: dist/bin-script-deprecated.js
+  checksum: 10/a91a15b3c9f76ac462f006fa88b6bfa528130dcfb849dd7ef7f9d640832ab681e235b8a2bc58ecde42f72851cc1d5d4e22c901b0c11aa51001ea1d395074b794
+  languageName: node
+  linkType: hard
+
 "ts-node@npm:9.1.1":
   version: 9.1.1
   resolution: "ts-node@npm:9.1.1"
@@ -21266,6 +21371,13 @@ __metadata:
   version: 4.0.0
   resolution: "typical@npm:4.0.0"
   checksum: 10/aefe2c24b025cda22534ae2594df4a1df5db05b5fe3692890fd51db741ca4f18937a149f968b8d56d9a7b0756e7cd8843b1907bea21987ff4a06619c54d5a575
+  languageName: node
+  linkType: hard
+
+"typical@npm:^7.2.0":
+  version: 7.3.0
+  resolution: "typical@npm:7.3.0"
+  checksum: 10/fae1e7dd0a127bdf940228ff89f6221cfdd3c1ceb2cf506fadd69b8c7aef6e8bbda98ca1026d63341e52a29393672c7e144c1d33c7d6eba93e4e17cd4710b40a
   languageName: node
   linkType: hard
 
