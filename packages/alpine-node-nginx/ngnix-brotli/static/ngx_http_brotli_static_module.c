@@ -35,6 +35,7 @@ static ngx_int_t init(ngx_conf_t* root_cfg);
 static ngx_int_t check_dcb_accept_encoding(ngx_http_request_t* req);
 static ngx_int_t parse_dictionary_id(ngx_http_request_t* req, ngx_str_t* file_prefix, ngx_str_t* cache_id);
 static ngx_int_t serve_dcb_file(ngx_http_request_t* req, ngx_str_t* original_path, ngx_str_t* file_prefix, ngx_str_t* cache_id);
+static ngx_int_t serve_static_file(ngx_http_request_t* req, ngx_str_t* path, const char* encoding, size_t encoding_len);
 
 /* << Forward declarations*/
 
@@ -371,18 +372,146 @@ static ngx_int_t parse_dictionary_id(ngx_http_request_t* req, ngx_str_t* file_pr
   return NGX_OK;
 }
 
-/* Serve a DCB file if it exists */
-static ngx_int_t serve_dcb_file(ngx_http_request_t* req, ngx_str_t* original_path, ngx_str_t* file_prefix, ngx_str_t* cache_id) {
+/* Serve a static file with the specified encoding */
+static ngx_int_t serve_static_file(ngx_http_request_t* req, ngx_str_t* path, const char* encoding, size_t encoding_len) {
   ngx_int_t rc;
-  u_char* last;
-  ngx_str_t path;
-  size_t root;
   ngx_log_t* log;
   ngx_http_core_loc_conf_t* location_cfg;
   ngx_open_file_info_t file_info;
   ngx_table_elt_t* content_encoding_entry;
   ngx_buf_t* buf;
   ngx_chain_t out;
+  ngx_str_t encoding_str;
+
+  log = req->connection->log;
+  ngx_log_debug1(NGX_LOG_DEBUG_HTTP, log, 0, "http filename: \"%s\"",
+                 path->data);
+
+  /* Prepare to read the file. */
+  location_cfg = ngx_http_get_module_loc_conf(req, ngx_http_core_module);
+  ngx_memzero(&file_info, sizeof(ngx_open_file_info_t));
+  file_info.read_ahead = location_cfg->read_ahead;
+  file_info.directio = location_cfg->directio;
+  file_info.valid = location_cfg->open_file_cache_valid;
+  file_info.min_uses = location_cfg->open_file_cache_min_uses;
+  file_info.errors = location_cfg->open_file_cache_errors;
+  file_info.events = location_cfg->open_file_cache_events;
+  rc = ngx_http_set_disable_symlinks(req, location_cfg, path, &file_info);
+  if (rc != NGX_OK) return NGX_HTTP_INTERNAL_SERVER_ERROR;
+
+  /* Try to fetch file and process errors. */
+  rc = ngx_open_cached_file(location_cfg->open_file_cache, path, &file_info,
+                            req->pool);
+  if (rc != NGX_OK) {
+    ngx_uint_t level;
+    switch (file_info.err) {
+      case 0:
+        return NGX_HTTP_INTERNAL_SERVER_ERROR;
+
+      case NGX_ENOENT:
+      case NGX_ENOTDIR:
+      case NGX_ENAMETOOLONG:
+        return NGX_DECLINED;
+
+#if (NGX_HAVE_OPENAT)
+      case NGX_EMLINK:
+      case NGX_ELOOP:
+#endif
+      case NGX_EACCES:
+        level = NGX_LOG_ERR;
+        break;
+
+      default:
+        level = NGX_LOG_CRIT;
+        break;
+    }
+    ngx_log_error(level, log, file_info.err, "%s \"%s\" failed",
+                  file_info.failed, path->data);
+    return NGX_DECLINED;
+  }
+
+  /* So far so good. */
+  ngx_log_debug1(NGX_LOG_DEBUG_HTTP, log, 0, "http static fd: %d",
+                 file_info.fd);
+
+  /* Only files are supported. */
+  if (file_info.is_dir) {
+    ngx_log_debug0(NGX_LOG_DEBUG_HTTP, log, 0, "http dir");
+    return NGX_DECLINED;
+  }
+#if !(NGX_WIN32)
+  if (!file_info.is_file) {
+    ngx_log_error(NGX_LOG_CRIT, log, 0, "\"%s\" is not a regular file",
+                  path->data);
+    return NGX_HTTP_NOT_FOUND;
+  }
+#endif
+
+  /* Prepare request push the body. */
+  req->root_tested = !req->error_page;
+  rc = ngx_http_discard_request_body(req);
+  if (rc != NGX_OK) return rc;
+  log->action = "sending response to client";
+  req->headers_out.status = NGX_HTTP_OK;
+  req->headers_out.content_length_n = file_info.size;
+  req->headers_out.last_modified_time = file_info.mtime;
+  rc = ngx_http_set_etag(req);
+  if (rc != NGX_OK) return NGX_HTTP_INTERNAL_SERVER_ERROR;
+  rc = ngx_http_set_content_type(req);
+  if (rc != NGX_OK) return NGX_HTTP_INTERNAL_SERVER_ERROR;
+
+  /* Set "Content-Encoding" header. */
+  content_encoding_entry = ngx_list_push(&req->headers_out.headers);
+  if (content_encoding_entry == NULL) return NGX_HTTP_INTERNAL_SERVER_ERROR;
+  content_encoding_entry->hash = 1;
+#if nginx_version >= 1023000
+  content_encoding_entry->next = NULL;
+#endif
+  ngx_str_set(&content_encoding_entry->key, kContentEncoding);
+
+  /* Create a proper ngx_str_t for the encoding value */
+  encoding_str.data = (u_char*)encoding;
+  encoding_str.len = encoding_len;
+  content_encoding_entry->value = encoding_str;
+
+  req->headers_out.content_encoding = content_encoding_entry;
+
+  /* Set "Use-As-Dictionary" header if applicable */
+  rc = set_use_as_dictionary_header(req, path);
+  if (rc != NGX_OK) return NGX_HTTP_INTERNAL_SERVER_ERROR;
+
+  /* Setup response body. */
+  buf = ngx_pcalloc(req->pool, sizeof(ngx_buf_t));
+  if (buf == NULL) return NGX_HTTP_INTERNAL_SERVER_ERROR;
+  buf->file = ngx_pcalloc(req->pool, sizeof(ngx_file_t));
+  if (buf->file == NULL) return NGX_HTTP_INTERNAL_SERVER_ERROR;
+  buf->file_pos = 0;
+  buf->file_last = file_info.size;
+  buf->in_file = buf->file_last ? 1 : 0;
+  buf->last_buf = (req == req->main) ? 1 : 0;
+  buf->last_in_chain = 1;
+  buf->file->fd = file_info.fd;
+  buf->file->name = *path;
+  buf->file->log = log;
+  buf->file->directio = file_info.is_directio;
+  out.buf = buf;
+  out.next = NULL;
+
+  /* Push the response header. */
+  rc = ngx_http_send_header(req);
+  if (rc == NGX_ERROR || rc > NGX_OK || req->header_only) {
+    return rc;
+  }
+
+  /* Push the response body. */
+  return ngx_http_output_filter(req, &out);
+}
+
+/* Serve a DCB file if it exists */
+static ngx_int_t serve_dcb_file(ngx_http_request_t* req, ngx_str_t* original_path, ngx_str_t* file_prefix, ngx_str_t* cache_id) {
+  u_char* last;
+  ngx_str_t path;
+  size_t root;
   ngx_str_t filename;
   u_char* last_slash;
   u_char* p;
@@ -419,120 +548,8 @@ static ngx_int_t serve_dcb_file(ngx_http_request_t* req, ngx_str_t* original_pat
   *p = '\0';
   path.len += cache_id->len + kDcbSuffixLen;
 
-  log = req->connection->log;
-  ngx_log_debug1(NGX_LOG_DEBUG_HTTP, log, 0, "http dcb filename: \"%s\"",
-                 path.data);
-
-  /* Prepare to read the file. */
-  location_cfg = ngx_http_get_module_loc_conf(req, ngx_http_core_module);
-  ngx_memzero(&file_info, sizeof(ngx_open_file_info_t));
-  file_info.read_ahead = location_cfg->read_ahead;
-  file_info.directio = location_cfg->directio;
-  file_info.valid = location_cfg->open_file_cache_valid;
-  file_info.min_uses = location_cfg->open_file_cache_min_uses;
-  file_info.errors = location_cfg->open_file_cache_errors;
-  file_info.events = location_cfg->open_file_cache_events;
-  rc = ngx_http_set_disable_symlinks(req, location_cfg, &path, &file_info);
-  if (rc != NGX_OK) return NGX_HTTP_INTERNAL_SERVER_ERROR;
-
-  /* Try to fetch file and process errors. */
-  rc = ngx_open_cached_file(location_cfg->open_file_cache, &path, &file_info,
-                            req->pool);
-  if (rc != NGX_OK) {
-    ngx_uint_t level;
-    switch (file_info.err) {
-      case 0:
-        return NGX_HTTP_INTERNAL_SERVER_ERROR;
-
-      case NGX_ENOENT:
-      case NGX_ENOTDIR:
-      case NGX_ENAMETOOLONG:
-        return NGX_DECLINED;
-
-#if (NGX_HAVE_OPENAT)
-      case NGX_EMLINK:
-      case NGX_ELOOP:
-#endif
-      case NGX_EACCES:
-        level = NGX_LOG_ERR;
-        break;
-
-      default:
-        level = NGX_LOG_CRIT;
-        break;
-    }
-    ngx_log_error(level, log, file_info.err, "%s \"%s\" failed",
-                  file_info.failed, path.data);
-    return NGX_DECLINED;
-  }
-
-  /* So far so good. */
-  ngx_log_debug1(NGX_LOG_DEBUG_HTTP, log, 0, "http static dcb fd: %d",
-                 file_info.fd);
-
-  /* Only files are supported. */
-  if (file_info.is_dir) {
-    ngx_log_debug0(NGX_LOG_DEBUG_HTTP, log, 0, "http dir");
-    return NGX_DECLINED;
-  }
-#if !(NGX_WIN32)
-  if (!file_info.is_file) {
-    ngx_log_error(NGX_LOG_CRIT, log, 0, "\"%s\" is not a regular file",
-                  path.data);
-    return NGX_HTTP_NOT_FOUND;
-  }
-#endif
-
-  /* Prepare request push the body. */
-  req->root_tested = !req->error_page;
-  rc = ngx_http_discard_request_body(req);
-  if (rc != NGX_OK) return rc;
-  log->action = "sending response to client";
-  req->headers_out.status = NGX_HTTP_OK;
-  req->headers_out.content_length_n = file_info.size;
-  req->headers_out.last_modified_time = file_info.mtime;
-  rc = ngx_http_set_etag(req);
-  if (rc != NGX_OK) return NGX_HTTP_INTERNAL_SERVER_ERROR;
-  rc = ngx_http_set_content_type(req);
-  if (rc != NGX_OK) return NGX_HTTP_INTERNAL_SERVER_ERROR;
-
-  /* Set "Content-Encoding" header to "dcb". */
-  content_encoding_entry = ngx_list_push(&req->headers_out.headers);
-  if (content_encoding_entry == NULL) return NGX_HTTP_INTERNAL_SERVER_ERROR;
-  content_encoding_entry->hash = 1;
-  ngx_str_set(&content_encoding_entry->key, kContentEncoding);
-  ngx_str_set(&content_encoding_entry->value, kDcbEncoding);
-  req->headers_out.content_encoding = content_encoding_entry;
-
-  /* Set "Use-As-Dictionary" header if applicable */
-  rc = set_use_as_dictionary_header(req, &path);
-  if (rc != NGX_OK) return NGX_HTTP_INTERNAL_SERVER_ERROR;
-
-  /* Setup response body. */
-  buf = ngx_pcalloc(req->pool, sizeof(ngx_buf_t));
-  if (buf == NULL) return NGX_HTTP_INTERNAL_SERVER_ERROR;
-  buf->file = ngx_pcalloc(req->pool, sizeof(ngx_file_t));
-  if (buf->file == NULL) return NGX_HTTP_INTERNAL_SERVER_ERROR;
-  buf->file_pos = 0;
-  buf->file_last = file_info.size;
-  buf->in_file = buf->file_last ? 1 : 0;
-  buf->last_buf = (req == req->main) ? 1 : 0;
-  buf->last_in_chain = 1;
-  buf->file->fd = file_info.fd;
-  buf->file->name = path;
-  buf->file->log = log;
-  buf->file->directio = file_info.is_directio;
-  out.buf = buf;
-  out.next = NULL;
-
-  /* Push the response header. */
-  rc = ngx_http_send_header(req);
-  if (rc == NGX_ERROR || rc > NGX_OK || req->header_only) {
-    return rc;
-  }
-
-  /* Push the response body. */
-  return ngx_http_output_filter(req, &out);
+  /* Use the common function to serve the file */
+  return serve_static_file(req, &path, kDcbEncoding, kDcbEncodingLen);
 }
 
 static ngx_int_t handler(ngx_http_request_t* req) {
@@ -541,12 +558,6 @@ static ngx_int_t handler(ngx_http_request_t* req) {
   u_char* last;
   ngx_str_t path;
   size_t root;
-  ngx_log_t* log;
-  ngx_http_core_loc_conf_t* location_cfg;
-  ngx_open_file_info_t file_info;
-  ngx_table_elt_t* content_encoding_entry;
-  ngx_buf_t* buf;
-  ngx_chain_t out;
   ngx_str_t file_prefix;
   ngx_str_t cache_id;
 
@@ -597,123 +608,8 @@ static ngx_int_t handler(ngx_http_request_t* req) {
   ngx_cpystrn(last, kSuffix, kSuffixLen + 1);
   path.len += kSuffixLen;
 
-  log = req->connection->log;
-  ngx_log_debug1(NGX_LOG_DEBUG_HTTP, log, 0, "http filename: \"%s\"",
-                 path.data);
-
-  /* Prepare to read the file. */
-  location_cfg = ngx_http_get_module_loc_conf(req, ngx_http_core_module);
-  ngx_memzero(&file_info, sizeof(ngx_open_file_info_t));
-  file_info.read_ahead = location_cfg->read_ahead;
-  file_info.directio = location_cfg->directio;
-  file_info.valid = location_cfg->open_file_cache_valid;
-  file_info.min_uses = location_cfg->open_file_cache_min_uses;
-  file_info.errors = location_cfg->open_file_cache_errors;
-  file_info.events = location_cfg->open_file_cache_events;
-  rc = ngx_http_set_disable_symlinks(req, location_cfg, &path, &file_info);
-  if (rc != NGX_OK) return NGX_HTTP_INTERNAL_SERVER_ERROR;
-
-  /* Try to fetch file and process errors. */
-  rc = ngx_open_cached_file(location_cfg->open_file_cache, &path, &file_info,
-                            req->pool);
-  if (rc != NGX_OK) {
-    ngx_uint_t level;
-    switch (file_info.err) {
-      case 0:
-        return NGX_HTTP_INTERNAL_SERVER_ERROR;
-
-      case NGX_ENOENT:
-      case NGX_ENOTDIR:
-      case NGX_ENAMETOOLONG:
-        return NGX_DECLINED;
-
-#if (NGX_HAVE_OPENAT)
-      case NGX_EMLINK:
-      case NGX_ELOOP:
-#endif
-      case NGX_EACCES:
-        level = NGX_LOG_ERR;
-        break;
-
-      default:
-        level = NGX_LOG_CRIT;
-        break;
-    }
-    ngx_log_error(level, log, file_info.err, "%s \"%s\" failed",
-                  file_info.failed, path.data);
-    return NGX_DECLINED;
-  }
-
-  /* So far so good. */
-  ngx_log_debug1(NGX_LOG_DEBUG_HTTP, log, 0, "http static fd: %d",
-                 file_info.fd);
-
-  /* Only files are supported. */
-  if (file_info.is_dir) {
-    ngx_log_debug0(NGX_LOG_DEBUG_HTTP, log, 0, "http dir");
-    return NGX_DECLINED;
-  }
-#if !(NGX_WIN32)
-  if (!file_info.is_file) {
-    ngx_log_error(NGX_LOG_CRIT, log, 0, "\"%s\" is not a regular file",
-                  path.data);
-    return NGX_HTTP_NOT_FOUND;
-  }
-#endif
-
-  /* Prepare request push the body. */
-  req->root_tested = !req->error_page;
-  rc = ngx_http_discard_request_body(req);
-  if (rc != NGX_OK) return rc;
-  log->action = "sending response to client";
-  req->headers_out.status = NGX_HTTP_OK;
-  req->headers_out.content_length_n = file_info.size;
-  req->headers_out.last_modified_time = file_info.mtime;
-  rc = ngx_http_set_etag(req);
-  if (rc != NGX_OK) return NGX_HTTP_INTERNAL_SERVER_ERROR;
-  rc = ngx_http_set_content_type(req);
-  if (rc != NGX_OK) return NGX_HTTP_INTERNAL_SERVER_ERROR;
-
-  /* Set "Content-Encoding" header. */
-  content_encoding_entry = ngx_list_push(&req->headers_out.headers);
-  if (content_encoding_entry == NULL) return NGX_HTTP_INTERNAL_SERVER_ERROR;
-  content_encoding_entry->hash = 1;
-#if nginx_version >= 1023000
-  content_encoding_entry->next = NULL;
-#endif
-  ngx_str_set(&content_encoding_entry->key, kContentEncoding);
-  ngx_str_set(&content_encoding_entry->value, kEncoding);
-  req->headers_out.content_encoding = content_encoding_entry;
-
-  /* Set "Use-As-Dictionary" header if applicable */
-  rc = set_use_as_dictionary_header(req, &path);
-  if (rc != NGX_OK) return NGX_HTTP_INTERNAL_SERVER_ERROR;
-
-  /* Setup response body. */
-  buf = ngx_pcalloc(req->pool, sizeof(ngx_buf_t));
-  if (buf == NULL) return NGX_HTTP_INTERNAL_SERVER_ERROR;
-  buf->file = ngx_pcalloc(req->pool, sizeof(ngx_file_t));
-  if (buf->file == NULL) return NGX_HTTP_INTERNAL_SERVER_ERROR;
-  buf->file_pos = 0;
-  buf->file_last = file_info.size;
-  buf->in_file = buf->file_last ? 1 : 0;
-  buf->last_buf = (req == req->main) ? 1 : 0;
-  buf->last_in_chain = 1;
-  buf->file->fd = file_info.fd;
-  buf->file->name = path;
-  buf->file->log = log;
-  buf->file->directio = file_info.is_directio;
-  out.buf = buf;
-  out.next = NULL;
-
-  /* Push the response header. */
-  rc = ngx_http_send_header(req);
-  if (rc == NGX_ERROR || rc > NGX_OK || req->header_only) {
-    return rc;
-  }
-
-  /* Push the response body. */
-  return ngx_http_output_filter(req, &out);
+  /* Use the common function to serve the file */
+  return serve_static_file(req, &path, kEncoding, kEncodingLen);
 }
 
 static void* create_conf(ngx_conf_t* root_cfg) {
