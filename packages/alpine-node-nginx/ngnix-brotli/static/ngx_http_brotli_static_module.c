@@ -133,6 +133,69 @@ static ngx_int_t set_use_as_dictionary_header(ngx_http_request_t* req, ngx_str_t
   u_char* last_slash;
   u_char* header_value;
   size_t header_len;
+  ngx_str_t forwarded_prefix;
+  ngx_str_t prefix_to_use;
+  u_char* comma_pos;
+  u_char* prefix_start;
+  u_char* prefix_end;
+
+  // Initialize forwarded_prefix
+  forwarded_prefix.data = NULL;
+  forwarded_prefix.len = 0;
+
+  // Check for x-forwarded-prefix header
+  ngx_table_elt_t* h;
+  ngx_list_part_t* part = &req->headers_in.headers.part;
+  ngx_str_t prefix_header_name = ngx_string("x-forwarded-prefix");
+
+  while (part) {
+    h = part->elts;
+    for (ngx_uint_t i = 0; i < part->nelts; i++) {
+      if (h[i].key.len == prefix_header_name.len &&
+          ngx_strncasecmp(h[i].key.data, prefix_header_name.data, prefix_header_name.len) == 0) {
+        forwarded_prefix = h[i].value;
+        break;
+      }
+    }
+
+    if (forwarded_prefix.data) {
+      break;
+    }
+
+    part = part->next;
+  }
+
+  // Process forwarded_prefix if present
+  if (forwarded_prefix.data) {
+    // Find the last comma if present
+    comma_pos = find_last_char(forwarded_prefix.data, forwarded_prefix.len, ',');
+    if (comma_pos) {
+      // Use the last part after the comma
+      prefix_start = comma_pos + 1;
+      // Skip leading whitespace
+      while (prefix_start < forwarded_prefix.data + forwarded_prefix.len &&
+             (*prefix_start == ' ' || *prefix_start == '\t')) {
+        prefix_start++;
+      }
+      prefix_to_use.data = prefix_start;
+      prefix_to_use.len = forwarded_prefix.data + forwarded_prefix.len - prefix_start;
+    } else {
+      // No comma, use the entire value
+      prefix_to_use = forwarded_prefix;
+    }
+
+    // Skip trailing whitespace
+    prefix_end = prefix_to_use.data + prefix_to_use.len - 1;
+    while (prefix_end >= prefix_to_use.data &&
+           (*prefix_end == ' ' || *prefix_end == '\t')) {
+      prefix_end--;
+      prefix_to_use.len--;
+    }
+  } else {
+    // No x-forwarded-prefix header
+    prefix_to_use.data = NULL;
+    prefix_to_use.len = 0;
+  }
 
   // Skip the leading slash
   if (uri.data[0] == '/') {
@@ -172,7 +235,9 @@ static ngx_int_t set_use_as_dictionary_header(ngx_http_request_t* req, ngx_str_t
   fileId.len = second_dot - fileId.data;
 
   // Calculate header value length
-  header_len = 8; // "match=\"/"
+  header_len = 7; // "match=\""
+  header_len += prefix_to_use.len; // Add length of forwarded prefix
+  header_len += 1; // "/"
   header_len += pathname.len;
   header_len += 1; // "/"
   header_len += basename.len;
@@ -190,7 +255,14 @@ static ngx_int_t set_use_as_dictionary_header(ngx_http_request_t* req, ngx_str_t
 
   // Format header value
   p = header_value;
-  p = ngx_cpymem(p, "match=\"/", 8);
+  p = ngx_cpymem(p, "match=\"", 7);
+
+  // Add forwarded prefix if present
+  if (prefix_to_use.len > 0) {
+    p = ngx_cpymem(p, prefix_to_use.data, prefix_to_use.len);
+  }
+
+  p = ngx_cpymem(p, "/", 1);
 
   if (pathname.len > 0) {
     p = ngx_cpymem(p, pathname.data, pathname.len);
