@@ -26,6 +26,8 @@ __metadata:
     ts-jest: "npm:28.0.8"
     ts-node: "npm:10.9.2"
     typescript: "npm:4.9.5"
+  bin:
+    brotli-dcb-builder: ./build/bin.js
   languageName: unknown
   linkType: soft
 
