@@ -35,9 +35,10 @@ static ngx_int_t init(ngx_conf_t* root_cfg);
 static ngx_int_t check_dcb_accept_encoding(ngx_http_request_t* req);
 static ngx_int_t parse_dictionary_id(ngx_http_request_t* req, ngx_str_t* file_prefix, ngx_str_t* cache_id);
 static ngx_int_t check_available_dictionary(ngx_http_request_t* req, ngx_str_t* expected_hash);
-static ngx_int_t validate_dcb_file_hash(ngx_http_request_t* req, ngx_str_t* path, ngx_str_t* expected_hash);
+static ngx_int_t validate_dcb_file_sign(ngx_http_request_t* req, ngx_str_t* path, ngx_str_t* expected_hash);
 static ngx_int_t serve_dcb_file(ngx_http_request_t* req, ngx_str_t* original_path, ngx_str_t* file_prefix, ngx_str_t* cache_id);
 static ngx_int_t serve_static_file(ngx_http_request_t* req, ngx_str_t* path, const char* encoding, size_t encoding_len);
+static ngx_table_elt_t* find_header(ngx_http_request_t* req, const char* header_name);
 
 /* << Forward declarations*/
 
@@ -91,7 +92,6 @@ static const size_t kDcbSuffixLen = 4;
 static /* const */ char kDcbEncoding[] = "dcb";
 static const size_t kDcbEncodingLen = 3;
 static const u_char kUseAsDictionary[] = "Use-As-Dictionary";
-static const u_char kDictionaryId[] = "dictionary-id";
 
 // Helper function to find the last occurrence of a character in a string
 static u_char* find_last_char(u_char* str, size_t len, u_char c) {
@@ -116,6 +116,40 @@ static u_char* find_first_char(u_char* str, size_t len, u_char c) {
     p++;
   }
   return NULL;
+}
+
+/* Helper function to find a header in the request headers */
+static ngx_table_elt_t* find_header(ngx_http_request_t* req, const char* header_name) {
+  ngx_list_part_t* part;
+  ngx_table_elt_t* h;
+  ngx_str_t header_name_str;
+  ngx_table_elt_t* header_entry = NULL;
+
+  /* Create a non-const string for comparison */
+  header_name_str.data = (u_char*)header_name;
+  header_name_str.len = ngx_strlen(header_name);
+
+  /* Find the header in the headers list */
+  part = &req->headers_in.headers.part;
+
+  while (part) {
+    h = part->elts;
+    for (ngx_uint_t i = 0; i < part->nelts; i++) {
+      if (h[i].key.len == header_name_str.len &&
+          ngx_strncasecmp(h[i].key.data, header_name_str.data, header_name_str.len) == 0) {
+        header_entry = &h[i];
+        break;
+      }
+    }
+
+    if (header_entry) {
+      break;
+    }
+
+    part = part->next;
+  }
+
+  return header_entry;
 }
 
 // Function to set the Use-As-Dictionary header
@@ -144,25 +178,9 @@ static ngx_int_t set_use_as_dictionary_header(ngx_http_request_t* req, ngx_str_t
   forwarded_prefix.len = 0;
 
   // Check for x-forwarded-prefix header
-  ngx_table_elt_t* h;
-  ngx_list_part_t* part = &req->headers_in.headers.part;
-  ngx_str_t prefix_header_name = ngx_string("x-forwarded-prefix");
-
-  while (part) {
-    h = part->elts;
-    for (ngx_uint_t i = 0; i < part->nelts; i++) {
-      if (h[i].key.len == prefix_header_name.len &&
-          ngx_strncasecmp(h[i].key.data, prefix_header_name.data, prefix_header_name.len) == 0) {
-        forwarded_prefix = h[i].value;
-        break;
-      }
-    }
-
-    if (forwarded_prefix.data) {
-      break;
-    }
-
-    part = part->next;
+  ngx_table_elt_t* prefix_header = find_header(req, "x-forwarded-prefix");
+  if (prefix_header) {
+    forwarded_prefix = prefix_header->value;
   }
 
   // Process forwarded_prefix if present
@@ -341,7 +359,7 @@ static ngx_int_t check_accept_encoding(ngx_http_request_t* req) {
 }
 
 /* Test if this request is allowed to have the brotli response. */
-static ngx_int_t check_eligility(ngx_http_request_t* req) {
+static ngx_int_t check_eligibility(ngx_http_request_t* req) {
   if (req != req->main) return NGX_DECLINED;
   if (check_accept_encoding(req) != NGX_OK) return NGX_DECLINED;
   req->gzip_tested = 1;
@@ -369,41 +387,16 @@ static ngx_int_t check_dcb_accept_encoding(ngx_http_request_t* req) {
 }
 
 /* Parse the dictionary-id header and extract file_prefix and cache_id */
-static ngx_int_t parse_dictionary_id(ngx_http_request_t* req, ngx_str_t* file_prefix, ngx_str_t* cache_id) {
+static ngx_int_t parse_dictionary_id(ngx_http_request_t* req, ngx_str_t* file_prefix,
+                                     ngx_str_t* cache_id) {
   ngx_table_elt_t* dictionary_id_entry;
   ngx_str_t* dictionary_id;
   u_char* dot;
-  ngx_list_part_t* part;
-  ngx_table_elt_t* h;
-  ngx_str_t dictionary_id_str;
   u_char* start;
   u_char* end;
 
   /* Find the dictionary-id header in the headers list */
-  part = &req->headers_in.headers.part;
-  dictionary_id_entry = NULL;
-
-  /* Create a non-const string for comparison */
-  dictionary_id_str.data = (u_char*)kDictionaryId;
-  dictionary_id_str.len = sizeof(kDictionaryId) - 1;
-
-  while (part) {
-    h = part->elts;
-    for (ngx_uint_t i = 0; i < part->nelts; i++) {
-      if (h[i].key.len == dictionary_id_str.len &&
-          ngx_strncasecmp(h[i].key.data, dictionary_id_str.data, dictionary_id_str.len) == 0) {
-        dictionary_id_entry = &h[i];
-        break;
-      }
-    }
-
-    if (dictionary_id_entry) {
-      break;
-    }
-
-    part = part->next;
-  }
-
+  dictionary_id_entry = find_header(req, "dictionary-id");
   if (dictionary_id_entry == NULL) return NGX_DECLINED;
   dictionary_id = &dictionary_id_entry->value;
 
@@ -450,9 +443,6 @@ static ngx_int_t parse_dictionary_id(ngx_http_request_t* req, ngx_str_t* file_pr
 static ngx_int_t check_available_dictionary(ngx_http_request_t* req, ngx_str_t* expected_hash) {
   ngx_table_elt_t* available_dict_entry;
   ngx_str_t* available_dict;
-  ngx_list_part_t* part;
-  ngx_table_elt_t* h;
-  ngx_str_t available_dict_str;
   u_char* start;
   u_char* end;
   u_char* colon_start;
@@ -460,32 +450,10 @@ static ngx_int_t check_available_dictionary(ngx_http_request_t* req, ngx_str_t* 
   ngx_str_t hash_str;
 
   /* Find the available-dictionary header in the headers list */
-  part = &req->headers_in.headers.part;
-  available_dict_entry = NULL;
-
-  /* Create a non-const string for comparison */
-  available_dict_str.data = (u_char*)"available-dictionary";
-  available_dict_str.len = sizeof("available-dictionary") - 1;
-
-  while (part) {
-    h = part->elts;
-    for (ngx_uint_t i = 0; i < part->nelts; i++) {
-      if (h[i].key.len == available_dict_str.len &&
-          ngx_strncasecmp(h[i].key.data, available_dict_str.data, available_dict_str.len) == 0) {
-        available_dict_entry = &h[i];
-        break;
-      }
-    }
-
-    if (available_dict_entry) {
-      break;
-    }
-
-    part = part->next;
-  }
-
+  available_dict_entry = find_header(req, "available-dictionary");
   if (available_dict_entry == NULL) {
-    ngx_log_debug0(NGX_LOG_DEBUG_HTTP, req->connection->log, 0, "available-dictionary header not found");
+    ngx_log_debug0(NGX_LOG_DEBUG_HTTP, req->connection->log, 0,
+                   "available-dictionary header not found");
     return NGX_DECLINED;
   }
 
@@ -518,13 +486,15 @@ static ngx_int_t check_available_dictionary(ngx_http_request_t* req, ngx_str_t* 
   /* Find the colon-surrounded base-64 encoded SHA-256 hash */
   colon_start = find_first_char(start, end - start, ':');
   if (colon_start == NULL) {
-    ngx_log_debug0(NGX_LOG_DEBUG_HTTP, req->connection->log, 0, "available-dictionary header does not contain colon");
+    ngx_log_debug0(NGX_LOG_DEBUG_HTTP, req->connection->log, 0,
+                   "available-dictionary header does not contain colon");
     return NGX_DECLINED;
   }
 
   colon_end = find_first_char(colon_start + 1, end - (colon_start + 1), ':');
   if (colon_end == NULL) {
-    ngx_log_debug0(NGX_LOG_DEBUG_HTTP, req->connection->log, 0, "available-dictionary header does not contain second colon");
+    ngx_log_debug0(NGX_LOG_DEBUG_HTTP, req->connection->log, 0,
+                   "available-dictionary header does not contain second colon");
     return NGX_DECLINED;
   }
 
@@ -536,14 +506,16 @@ static ngx_int_t check_available_dictionary(ngx_http_request_t* req, ngx_str_t* 
   expected_hash->data = hash_str.data;
   expected_hash->len = hash_str.len;
 
-  ngx_log_debug1(NGX_LOG_DEBUG_HTTP, req->connection->log, 0, "available-dictionary hash: %V", expected_hash);
+  ngx_log_debug1(NGX_LOG_DEBUG_HTTP, req->connection->log, 0,
+                 "available-dictionary hash: %V", expected_hash);
 
   return NGX_OK;
 }
 
 
-/* Validate the SHA-256 hash in the DCB file */
-static ngx_int_t validate_dcb_file_hash(ngx_http_request_t* req, ngx_str_t* path, ngx_str_t* expected_hash) {
+/* Validate signature in the DCB file */
+static ngx_int_t validate_dcb_file_sign(ngx_http_request_t* req, ngx_str_t* path,
+                                        ngx_str_t* expected_hash) {
   ngx_file_t file;
   ngx_int_t rc;
   u_char hash_buffer[32]; /* SHA-256 hash is 32 bytes */
@@ -607,7 +579,8 @@ static ngx_int_t validate_dcb_file_hash(ngx_http_request_t* req, ngx_str_t* path
 }
 
 /* Serve a static file with the specified encoding */
-static ngx_int_t serve_static_file(ngx_http_request_t* req, ngx_str_t* path, const char* encoding, size_t encoding_len) {
+static ngx_int_t serve_static_file(ngx_http_request_t* req, ngx_str_t* path,
+                                   const char* encoding, size_t encoding_len) {
   ngx_int_t rc;
   ngx_log_t* log;
   ngx_http_core_loc_conf_t* location_cfg;
@@ -742,7 +715,8 @@ static ngx_int_t serve_static_file(ngx_http_request_t* req, ngx_str_t* path, con
 }
 
 /* Serve a DCB file if it exists */
-static ngx_int_t serve_dcb_file(ngx_http_request_t* req, ngx_str_t* original_path, ngx_str_t* file_prefix, ngx_str_t* cache_id) {
+static ngx_int_t serve_dcb_file(ngx_http_request_t* req, ngx_str_t* original_path,
+                                ngx_str_t* file_prefix, ngx_str_t* cache_id) {
   u_char* last;
   ngx_str_t path;
   size_t root;
@@ -792,7 +766,7 @@ static ngx_int_t serve_dcb_file(ngx_http_request_t* req, ngx_str_t* original_pat
   path.len += cache_id->len + kDcbSuffixLen;
 
    /* Validate the SHA-256 hash in the DCB file */
-   rc = validate_dcb_file_hash(req, &path, &expected_hash);
+   rc = validate_dcb_file_sign(req, &path, &expected_hash);
    if (rc != NGX_OK) {
      ngx_log_debug0(NGX_LOG_DEBUG_HTTP, req->connection->log, 0, "DCB file hash validation failed");
      return NGX_DECLINED;
@@ -826,7 +800,7 @@ static ngx_int_t handler(ngx_http_request_t* req) {
   } else {
     /* NGX_HTTP_BROTLI_STATIC_ON */
     req->gzip_vary = 1;
-    rc = check_eligility(req);
+    rc = check_eligibility(req);
     if (rc != NGX_OK) return NGX_DECLINED;
   }
 
@@ -848,7 +822,8 @@ static ngx_int_t handler(ngx_http_request_t* req) {
     }
     /* If we get here, either DCB is not supported/requested or the DCB file was not found */
     /* Fall back to serving the .br file as before */
-    ngx_log_debug0(NGX_LOG_DEBUG_HTTP, req->connection->log, 0, "Failed to serve dcb file to supporting browser");
+    ngx_log_debug0(NGX_LOG_DEBUG_HTTP, req->connection->log, 0,
+                   "Failed to serve dcb file to supporting browser");
   }
 
   /* Get path and append the suffix. */
