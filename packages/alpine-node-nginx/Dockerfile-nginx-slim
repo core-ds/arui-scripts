@@ -55,13 +55,11 @@ SHELL ["/bin/bash", "-x", "-c"]
 
 COPY gpg/ /tmp/gpg
 
-COPY ngnix-brotli /tmp/ngnix-brotli
+COPY ngnix-brotli /usr/src/ngx_brotli
 
 RUN \
-    mkdir -p /usr/src/ngx_brotli \
-    && cd /usr/src/ngx_brotli \
+    cd /usr/src/ngx_brotli \
     && git init \
-    && mv /tmp/ngnix-brotli/* ./ \
     && git submodule update --init --depth 1 \
     && cd .. \
     && curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz \
