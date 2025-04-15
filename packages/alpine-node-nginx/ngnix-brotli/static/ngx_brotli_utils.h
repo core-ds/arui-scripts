@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) Igor Sysoev
+ * Copyright (C) Nginx, Inc.
+ * Copyright (C) Google Inc.
+ * Copyright (C) Aleksandr Kitov
+ */
+
 #ifndef NGX_BROTLI_UTILS_H
 #define NGX_BROTLI_UTILS_H
 

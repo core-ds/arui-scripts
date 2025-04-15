@@ -1,6 +1,9 @@
-//
-// Created by heymdall on 15.04.2025.
-//
+/*
+ * Copyright (C) Igor Sysoev
+ * Copyright (C) Nginx, Inc.
+ * Copyright (C) Google Inc.
+ * Copyright (C) Aleksandr Kitov
+ */
 
 #include <ngx_core.h>
 #include <ngx_http.h>
@@ -18,11 +21,11 @@ static const size_t kDcbEncodingLen = 3;
 
 /**
  * Sets the Use-As-Dictionary header in the HTTP response.
- * 
+ *
  * This function constructs a dictionary header value based on the request URI
  * and any forwarded prefix information. The header follows the format:
  * match="[prefix]/[pathname]/[basename].*.[ext]",id="[basename].[fileId]"
- * 
+ *
  * @param req The HTTP request object
  * @param path The path to use for dictionary matching (unused in current implementation)
  * @return NGX_OK on success, NGX_ERROR on memory allocation failure
@@ -145,7 +148,7 @@ ngx_int_t set_use_as_dictionary_header(ngx_http_request_t* req, ngx_str_t* path)
   if (!header_value) return NGX_ERROR;
 
   // Format header value using ngx_snprintf
-  ngx_snprintf(header_value, header_len, 
+  ngx_snprintf(header_value, header_len,
               "match=\"%V/%V/%V.*.%V\",id=\"%V.%V\"",
               &prefix_to_use,
               &pathname,
@@ -168,10 +171,10 @@ ngx_int_t set_use_as_dictionary_header(ngx_http_request_t* req, ngx_str_t* path)
 
 /**
  * Checks if the request accepts Brotli encoding.
- * 
+ *
  * This function examines the Accept-Encoding header to determine if the client
  * accepts Brotli compression (indicated by "br" in the header).
- * 
+ *
  * @param req The HTTP request object
  * @return NGX_OK if Brotli is accepted, NGX_DECLINED otherwise
  */
@@ -227,10 +230,10 @@ ngx_int_t check_br_accept_encoding(ngx_http_request_t* req) {
 
 /**
  * Checks if the request accepts DCB encoding.
- * 
+ *
  * This function examines the Accept-Encoding header to determine if the client
  * accepts DCB compression (indicated by "dcb" in the header).
- * 
+ *
  * @param req The HTTP request object
  * @return NGX_OK if DCB is accepted, NGX_DECLINED otherwise
  */
@@ -255,10 +258,10 @@ ngx_int_t check_dcb_accept_encoding(ngx_http_request_t* req) {
 
 /**
  * Parses the dictionary-id header and extracts file_prefix and cache_id.
- * 
+ *
  * This function extracts the file prefix and cache ID from a dictionary-id header
  * that follows the format "file_prefix.cache_id".
- * 
+ *
  * @param req The HTTP request object
  * @param file_prefix Output parameter to store the file prefix
  * @param cache_id Output parameter to store the cache ID
@@ -318,10 +321,10 @@ ngx_int_t parse_dictionary_id(ngx_http_request_t* req, ngx_str_t* file_prefix,
 
 /**
  * Checks if the request has the available-dictionary header with the expected hash.
- * 
+ *
  * This function extracts the hash value from an available-dictionary header
  * that follows the format ":hash:" where hash is a base-64 encoded SHA-256 hash.
- * 
+ *
  * @param req The HTTP request object
  * @param expected_hash Output parameter to store the extracted hash
  * @return NGX_OK on success, NGX_DECLINED if header is not found or malformed
