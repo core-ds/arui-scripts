@@ -7,6 +7,7 @@
 #include <ngx_config.h>
 #include <ngx_core.h>
 #include <ngx_http.h>
+#include "ngx_brotli_utils.h"
 
 /* >> Configuration */
 
@@ -38,7 +39,6 @@ static ngx_int_t check_available_dictionary(ngx_http_request_t* req, ngx_str_t* 
 static ngx_int_t validate_dcb_file_sign(ngx_http_request_t* req, ngx_str_t* path, ngx_str_t* expected_hash);
 static ngx_int_t serve_dcb_file(ngx_http_request_t* req, ngx_str_t* original_path, ngx_str_t* file_prefix, ngx_str_t* cache_id);
 static ngx_int_t serve_static_file(ngx_http_request_t* req, ngx_str_t* path, const char* encoding, size_t encoding_len);
-static ngx_table_elt_t* find_header(ngx_http_request_t* req, const char* header_name);
 
 /* << Forward declarations*/
 
@@ -93,65 +93,6 @@ static /* const */ char kDcbEncoding[] = "dcb";
 static const size_t kDcbEncodingLen = 3;
 static const u_char kUseAsDictionary[] = "Use-As-Dictionary";
 
-// Helper function to find the last occurrence of a character in a string
-static u_char* find_last_char(u_char* str, size_t len, u_char c) {
-  u_char* p = str + len - 1;
-  while (p >= str) {
-    if (*p == c) {
-      return p;
-    }
-    p--;
-  }
-  return NULL;
-}
-
-// Helper function to find the first occurrence of a character in a string
-static u_char* find_first_char(u_char* str, size_t len, u_char c) {
-  u_char* p = str;
-  u_char* end = str + len;
-  while (p < end) {
-    if (*p == c) {
-      return p;
-    }
-    p++;
-  }
-  return NULL;
-}
-
-/* Helper function to find a header in the request headers */
-static ngx_table_elt_t* find_header(ngx_http_request_t* req, const char* header_name) {
-  ngx_list_part_t* part;
-  ngx_table_elt_t* h;
-  ngx_str_t header_name_str;
-  ngx_table_elt_t* header_entry = NULL;
-
-  /* Create a non-const string for comparison */
-  header_name_str.data = (u_char*)header_name;
-  header_name_str.len = ngx_strlen(header_name);
-
-  /* Find the header in the headers list */
-  part = &req->headers_in.headers.part;
-
-  while (part) {
-    h = part->elts;
-    for (ngx_uint_t i = 0; i < part->nelts; i++) {
-      if (h[i].key.len == header_name_str.len &&
-          ngx_strncasecmp(h[i].key.data, header_name_str.data, header_name_str.len) == 0) {
-        header_entry = &h[i];
-        break;
-      }
-    }
-
-    if (header_entry) {
-      break;
-    }
-
-    part = part->next;
-  }
-
-  return header_entry;
-}
-
 // Function to set the Use-As-Dictionary header
 static ngx_int_t set_use_as_dictionary_header(ngx_http_request_t* req, ngx_str_t* path) {
   ngx_str_t uri = req->uri;
@@ -178,7 +119,7 @@ static ngx_int_t set_use_as_dictionary_header(ngx_http_request_t* req, ngx_str_t
   forwarded_prefix.len = 0;
 
   // Check for x-forwarded-prefix header
-  ngx_table_elt_t* prefix_header = find_header(req, "x-forwarded-prefix");
+  ngx_table_elt_t* prefix_header = ngx_brotli_find_header(req, "x-forwarded-prefix");
   if (prefix_header) {
     forwarded_prefix = prefix_header->value;
   }
@@ -186,7 +127,7 @@ static ngx_int_t set_use_as_dictionary_header(ngx_http_request_t* req, ngx_str_t
   // Process forwarded_prefix if present
   if (forwarded_prefix.data) {
     // Find the last comma if present
-    comma_pos = find_last_char(forwarded_prefix.data, forwarded_prefix.len, ',');
+    comma_pos = ngx_brotli_find_last_char(forwarded_prefix.data, forwarded_prefix.len, ',');
     if (comma_pos) {
       // Use the last part after the comma
       prefix_start = comma_pos + 1;
@@ -222,7 +163,7 @@ static ngx_int_t set_use_as_dictionary_header(ngx_http_request_t* req, ngx_str_t
   }
 
   // Find the last slash to separate pathname and filename
-  last_slash = find_last_char(uri.data, uri.len, '/');
+  last_slash = ngx_brotli_find_last_char(uri.data, uri.len, '/');
   if (last_slash) {
     pathname.data = uri.data;
     pathname.len = last_slash - uri.data;
@@ -236,10 +177,10 @@ static ngx_int_t set_use_as_dictionary_header(ngx_http_request_t* req, ngx_str_t
   }
 
   // Check if filename matches the pattern *.*.*
-  dot = find_first_char(filename.data, filename.len, '.');
+  dot = ngx_brotli_find_first_char(filename.data, filename.len, '.');
   if (!dot) return NGX_OK;
 
-  second_dot = find_first_char(dot + 1, filename.data + filename.len - (dot + 1), '.');
+  second_dot = ngx_brotli_find_first_char(dot + 1, filename.data + filename.len - (dot + 1), '.');
   if (!second_dot) return NGX_OK;
 
   // Extract basename, ext, and fileId
@@ -308,7 +249,7 @@ static ngx_int_t set_use_as_dictionary_header(ngx_http_request_t* req, ngx_str_t
   return NGX_OK;
 }
 
-static ngx_int_t check_accept_encoding(ngx_http_request_t* req) {
+static ngx_int_t check_br_accept_encoding(ngx_http_request_t* req) {
   ngx_table_elt_t* accept_encoding_entry;
   ngx_str_t* accept_encoding;
   u_char* cursor;
@@ -361,7 +302,7 @@ static ngx_int_t check_accept_encoding(ngx_http_request_t* req) {
 /* Test if this request is allowed to have the brotli response. */
 static ngx_int_t check_eligibility(ngx_http_request_t* req) {
   if (req != req->main) return NGX_DECLINED;
-  if (check_accept_encoding(req) != NGX_OK) return NGX_DECLINED;
+  if (check_br_accept_encoding(req) != NGX_OK) return NGX_DECLINED;
   req->gzip_tested = 1;
   req->gzip_ok = 0;
   return NGX_OK;
@@ -396,7 +337,7 @@ static ngx_int_t parse_dictionary_id(ngx_http_request_t* req, ngx_str_t* file_pr
   u_char* end;
 
   /* Find the dictionary-id header in the headers list */
-  dictionary_id_entry = find_header(req, "dictionary-id");
+  dictionary_id_entry = ngx_brotli_find_header(req, "dictionary-id");
   if (dictionary_id_entry == NULL) return NGX_DECLINED;
   dictionary_id = &dictionary_id_entry->value;
 
@@ -425,7 +366,7 @@ static ngx_int_t parse_dictionary_id(ngx_http_request_t* req, ngx_str_t* file_pr
   }
 
   /* Find the dot separator within the trimmed value */
-  dot = find_first_char(start, end - start, '.');
+  dot = ngx_brotli_find_first_char(start, end - start, '.');
   if (dot == NULL) return NGX_DECLINED;
 
   /* Set file_prefix to the part before the dot */
@@ -450,7 +391,7 @@ static ngx_int_t check_available_dictionary(ngx_http_request_t* req, ngx_str_t* 
   ngx_str_t hash_str;
 
   /* Find the available-dictionary header in the headers list */
-  available_dict_entry = find_header(req, "available-dictionary");
+  available_dict_entry = ngx_brotli_find_header(req, "available-dictionary");
   if (available_dict_entry == NULL) {
     ngx_log_debug0(NGX_LOG_DEBUG_HTTP, req->connection->log, 0,
                    "available-dictionary header not found");
@@ -484,14 +425,14 @@ static ngx_int_t check_available_dictionary(ngx_http_request_t* req, ngx_str_t* 
   }
 
   /* Find the colon-surrounded base-64 encoded SHA-256 hash */
-  colon_start = find_first_char(start, end - start, ':');
+  colon_start = ngx_brotli_find_first_char(start, end - start, ':');
   if (colon_start == NULL) {
     ngx_log_debug0(NGX_LOG_DEBUG_HTTP, req->connection->log, 0,
                    "available-dictionary header does not contain colon");
     return NGX_DECLINED;
   }
 
-  colon_end = find_first_char(colon_start + 1, end - (colon_start + 1), ':');
+  colon_end = ngx_brotli_find_first_char(colon_start + 1, end - (colon_start + 1), ':');
   if (colon_end == NULL) {
     ngx_log_debug0(NGX_LOG_DEBUG_HTTP, req->connection->log, 0,
                    "available-dictionary header does not contain second colon");
@@ -738,7 +679,7 @@ static ngx_int_t serve_dcb_file(ngx_http_request_t* req, ngx_str_t* original_pat
   path.len -= kSuffixLen;
 
   /* Find the last slash to separate pathname and filename */
-  last_slash = find_last_char(path.data, path.len, '/');
+  last_slash = ngx_brotli_find_last_char(path.data, path.len, '/');
   if (last_slash) {
     filename.data = last_slash + 1;
     filename.len = path.data + path.len - filename.data;
