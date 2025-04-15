@@ -205,7 +205,7 @@ ngx_int_t serve_static_file(ngx_http_request_t* req, ngx_str_t* path,
   req->headers_out.content_encoding = content_encoding_entry;
 
   /* Set "Use-As-Dictionary" header if applicable */
-  rc = set_use_as_dictionary_header(req, path);
+  rc = set_use_as_dictionary_header(req);
   if (rc != NGX_OK) return NGX_HTTP_INTERNAL_SERVER_ERROR;
 
   /* Setup response body. */
@@ -242,7 +242,7 @@ ngx_int_t serve_static_file(ngx_http_request_t* req, ngx_str_t* path,
  * @param original_path The original path of the requested file
  * @param file_prefix Prefix to check in the filename
  * @param cache_id Cache identifier to append to the filename
- * @return NGX_OK if file is served successfully, NGX_DECLINED if file doesn't exist or validation fails
+ * @return NGX_OK if file is served successfully, NGX_DECLINED otherwise
  */
 ngx_int_t serve_dcb_file(ngx_http_request_t* req, ngx_str_t* original_path,
                                 ngx_str_t* file_prefix, ngx_str_t* cache_id) {
@@ -258,7 +258,8 @@ ngx_int_t serve_dcb_file(ngx_http_request_t* req, ngx_str_t* original_path,
   /* Check for available-dictionary header */
   rc = check_available_dictionary(req, &expected_hash);
   if (rc != NGX_OK) {
-    ngx_log_debug0(NGX_LOG_DEBUG_HTTP, req->connection->log, 0, "available-dictionary header not found or invalid");
+    ngx_log_debug0(NGX_LOG_DEBUG_HTTP, req->connection->log, 0,
+                   "available-dictionary header not found or invalid");
     return NGX_DECLINED;
   }
 
@@ -300,6 +301,15 @@ ngx_int_t serve_dcb_file(ngx_http_request_t* req, ngx_str_t* original_path,
      ngx_log_debug0(NGX_LOG_DEBUG_HTTP, req->connection->log, 0, "DCB file hash validation failed");
      return NGX_DECLINED;
    }
+
+  /* Set Vary header with accept-encoding, available-dictionary values */
+  ngx_table_elt_t* vary_header = ngx_list_push(&req->headers_out.headers);
+  if (vary_header == NULL) {
+    return NGX_HTTP_INTERNAL_SERVER_ERROR;
+  }
+  vary_header->hash = 1;
+  ngx_str_set(&vary_header->key, "Vary");
+  ngx_str_set(&vary_header->value, "accept-encoding, available-dictionary");
 
   /* Use the common function to serve the file */
   return serve_static_file(req, &path, kDcbEncoding, kDcbEncodingLen);
