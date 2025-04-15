@@ -42,8 +42,8 @@ fi
 ngx_module_type=HTTP
 ngx_module_name=ngx_http_brotli_static_module
 ngx_module_incs=
-ngx_module_deps=
-ngx_module_srcs="$BROTLI_MODULE_SRC_DIR/ngx_http_brotli_static_module.c $BROTLI_MODULE_SRC_DIR/ngx_brotli_utils.c"
+ngx_module_deps="$BROTLI_MODULE_SRC_DIR/ngx_brotli_utils.h $BROTLI_MODULE_SRC_DIR/ngx_brotli_http_headers.h $BROTLI_MODULE_SRC_DIR/ngx_brotli_files.h"
+ngx_module_srcs="$BROTLI_MODULE_SRC_DIR/ngx_http_brotli_static_module.c $BROTLI_MODULE_SRC_DIR/ngx_brotli_utils.c $BROTLI_MODULE_SRC_DIR/ngx_brotli_http_headers.c $BROTLI_MODULE_SRC_DIR/ngx_brotli_files.c"
 ngx_module_libs=
 ngx_module_order=
 
