@@ -1,6 +1,9 @@
-//
-// Created by heymdall on 15.04.2025.
-//
+/*
+ * Copyright (C) Igor Sysoev
+ * Copyright (C) Nginx, Inc.
+ * Copyright (C) Google Inc.
+ * Copyright (C) Aleksandr Kitov
+ */
 
 #ifndef NGX_BROTLI_HTTP_HEADERS_H
 #define NGX_BROTLI_HTTP_HEADERS_H

@@ -2,6 +2,7 @@
  * Copyright (C) Igor Sysoev
  * Copyright (C) Nginx, Inc.
  * Copyright (C) Google Inc.
+ * Copyright (C) Aleksandr Kitov
  */
 
 #include <ngx_config.h>

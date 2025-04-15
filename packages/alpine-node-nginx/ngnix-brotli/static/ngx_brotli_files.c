@@ -1,6 +1,9 @@
-//
-// Created by heymdall on 15.04.2025.
-//
+/*
+ * Copyright (C) Igor Sysoev
+ * Copyright (C) Nginx, Inc.
+ * Copyright (C) Google Inc.
+ * Copyright (C) Aleksandr Kitov
+ */
 
 #include <ngx_core.h>
 #include <ngx_http.h>
@@ -18,7 +21,7 @@ static const size_t kSuffixLen = 3;
 
 /**
  * Validates the signature in a DCB file by comparing the stored hash with the expected hash
- * 
+ *
  * @param req The HTTP request object
  * @param path Path to the DCB file to validate
  * @param expected_hash The expected hash value to compare against
@@ -90,7 +93,7 @@ ngx_int_t validate_dcb_file_sign(ngx_http_request_t* req, ngx_str_t* path,
 
 /**
  * Serves a static file with the specified encoding
- * 
+ *
  * @param req The HTTP request object
  * @param path Path to the file to serve
  * @param encoding The content encoding to use (e.g., "br", "dcb")
@@ -234,7 +237,7 @@ ngx_int_t serve_static_file(ngx_http_request_t* req, ngx_str_t* path,
 
 /**
  * Serves a DCB file if it exists and validates its signature
- * 
+ *
  * @param req The HTTP request object
  * @param original_path The original path of the requested file
  * @param file_prefix Prefix to check in the filename
