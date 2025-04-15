@@ -27,10 +27,9 @@ static const size_t kDcbEncodingLen = 3;
  * match="[prefix]/[pathname]/[basename].*.[ext]",id="[basename].[fileId]"
  *
  * @param req The HTTP request object
- * @param path The path to use for dictionary matching (unused in current implementation)
  * @return NGX_OK on success, NGX_ERROR on memory allocation failure
  */
-ngx_int_t set_use_as_dictionary_header(ngx_http_request_t* req, ngx_str_t* path) {
+ngx_int_t set_use_as_dictionary_header(ngx_http_request_t* req) {
   ngx_str_t uri = req->uri;
   ngx_str_t filename;
   ngx_str_t pathname;
