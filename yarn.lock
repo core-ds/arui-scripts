@@ -12,7 +12,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@alfalab/brotli-dcb-builder@workspace:packages/brotli-dcb-builder":
+"@alfalab/brotli-dcb-builder@workspace:*, @alfalab/brotli-dcb-builder@workspace:packages/brotli-dcb-builder":
   version: 0.0.0-use.local
   resolution: "@alfalab/brotli-dcb-builder@workspace:packages/brotli-dcb-builder"
   dependencies:
@@ -1950,12 +1950,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.0.0, @babel/runtime@npm:^7.1.2, @babel/runtime@npm:^7.10.2, @babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.12.13, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.20.1, @babel/runtime@npm:^7.20.13, @babel/runtime@npm:^7.20.7, @babel/runtime@npm:^7.21.0, @babel/runtime@npm:^7.23.8, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.8.7":
+"@babel/runtime@npm:^7.0.0, @babel/runtime@npm:^7.1.2, @babel/runtime@npm:^7.10.2, @babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.12.13, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.20.1, @babel/runtime@npm:^7.20.13, @babel/runtime@npm:^7.20.7, @babel/runtime@npm:^7.21.0, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.8.7":
   version: 7.23.8
   resolution: "@babel/runtime@npm:7.23.8"
   dependencies:
     regenerator-runtime: "npm:^0.14.0"
   checksum: 10/ec8f1967a36164da6cac868533ffdff97badd76d23d7d820cc84f0818864accef972f22f9c6a710185db1e3810e353fc18c3da721e5bb3ee8bc61bdbabce03ff
+  languageName: node
+  linkType: hard
+
+"@babel/runtime@npm:^7.26.10":
+  version: 7.27.0
+  resolution: "@babel/runtime@npm:7.27.0"
+  dependencies:
+    regenerator-runtime: "npm:^0.14.0"
+  checksum: 10/e6966e03b695feb4c0ac0856a4355231c2580bf9ebd0298f47739f85c0ea658679dd84409daf26378d42c86c1cbe7e33feab709b14e784254b6c441d91606465
   languageName: node
   linkType: hard
 
@@ -7082,6 +7091,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "arui-scripts@workspace:packages/arui-scripts"
   dependencies:
+    "@alfalab/brotli-dcb-builder": "workspace:*"
     "@alfalab/postcss-custom-properties": "npm:^9.1.2"
     "@babel/core": "npm:7.22.10"
     "@babel/plugin-proposal-decorators": "npm:^7.23.7"
@@ -7103,7 +7113,7 @@ __metadata:
     "@babel/preset-env": "npm:^7.23.8"
     "@babel/preset-react": "npm:^7.23.3"
     "@babel/preset-typescript": "npm:^7.23.3"
-    "@babel/runtime": "npm:^7.23.8"
+    "@babel/runtime": "npm:^7.26.10"
     "@pmmmwh/react-refresh-webpack-plugin": "npm:0.5.11"
     "@rsdoctor/rspack-plugin": "npm:0.4.11"
     "@rspack/cli": "npm:1.1.5"
