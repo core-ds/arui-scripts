@@ -1,5 +1,4 @@
 #! /usr/bin/env node
-import packageJson from '../package.json';
 
 import { createDcbFile } from './create-dcb-file';
 import { findFilesToCompress } from './find-files-to-compress';
@@ -19,7 +18,7 @@ async function main() {
 
     await Promise.all(promises);
 
-    console.log(`${packageJson.name} created ${result.length} files`);
+    console.log(`Created ${result.length} DCB files`);
 }
 
 main().catch(console.error);
