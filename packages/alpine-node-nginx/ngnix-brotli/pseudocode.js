@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 // Этот файл по сути заведен для того, чтобы просто в более понятном виде описать тот алгоритм, который описан
-// в коде самого расширения. Просто c довольно многословен и написать на нем так же понятно у меня не получается
+// в коде самого расширения. Просто C довольно многословен и написать на нем так же понятно у меня не получается
 
 
 // этот "объект" символизирует встроенные методы nginx
@@ -29,7 +29,7 @@ export function handle(req, reply) {
         return false;
     }
 
-    if (nginx.config.brotli_static === 'on' && !req.headers['accept-encoding'].includes('br')) {
+    if (!req.headers['accept-encoding'].includes('br')) {
         return false;
     }
 
@@ -51,6 +51,8 @@ export function handle(req, reply) {
     return false;
 }
 
+const SIGNATURE_OFFSET = 4;
+const SIGNATURE_LENGTH = 32;
 function tryToServeDcb(req, reply) {
     if (!req.headers['accept-encoding'].includes('dcb')
         || !req.headers['dictionary-id']
@@ -79,7 +81,10 @@ function tryToServeDcb(req, reply) {
 
     const dcbFileContent = fs.readFileSync(dcbFilename);
     const dictionarySignature = Buffer.from(availableDictionary, 'base64');
-    const fileSignature = dcbFileContent.subarray(4, 32 + 4);
+    const fileSignature = dcbFileContent.subarray(
+        SIGNATURE_OFFSET,
+        SIGNATURE_OFFSET + SIGNATURE_LENGTH,
+    );
 
     if (dictionarySignature.compare(fileSignature) !== 0) {
         return false;
