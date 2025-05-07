@@ -31,8 +31,17 @@ export async function findFilesToCompress({
     const files = await fs.promises.readdir(baseDir);
     const dictionaries = await fs.promises.readdir(dictionaryDir);
 
-    const parsedDictionaries = dictionaries
-        .map(parseFilename);
+    const parsedDictionaries = dictionaries.reduce(
+        (map, current) => {
+            const parsed = parseFilename(current);
+
+            return ({
+                ...map,
+                [`${parsed.stableName}.${parsed.ext}`]: parsed,
+            });
+        },
+        {} as Record<string, ReturnType<typeof parseFilename>>,
+    )
 
     const result: BuildDcbParams[] = [];
 
@@ -47,9 +56,7 @@ export async function findFilesToCompress({
             return;
         }
 
-        const matchedDictionary = parsedDictionaries.find(
-            (d) => d.stableName === parsedFilename.stableName && d.ext === parsedFilename.ext,
-        );
+        const matchedDictionary = parsedDictionaries[`${parsedFilename.stableName}.${parsedFilename.ext}`];
 
         if (!matchedDictionary) {
             return;
