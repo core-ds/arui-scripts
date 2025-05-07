@@ -1,4 +1,4 @@
-import { createDcbFile,findFilesToCompress } from '@alfalab/brotli-dcb-builder';
+import { createDcbFile, findFilesToCompress } from '@alfalab/brotli-dcb-builder';
 
 import { configs } from '../../configs/app-configs';
 
@@ -20,9 +20,9 @@ export async function createDcbFiles() {
 
     const filesToCompress = (await Promise.all(filesToCompressPromise)).flat();
 
-    const promises = filesToCompress.map((fileSettings) => createDcbFile(fileSettings));
+    const dcbPromises = filesToCompress.map((fileSettings) => createDcbFile(fileSettings));
 
-    await Promise.all(promises);
+    await Promise.all(dcbPromises);
 
     console.log(`Created ${filesToCompress.length} dcb archives`);
 }

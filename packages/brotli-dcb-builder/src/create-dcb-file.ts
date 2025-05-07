@@ -11,18 +11,23 @@ export async function createDcbFile({
     dictionaryFilePath,
     outFilePath,
 }: BuildDcbParams) {
-    // формат файла: {заголовок}{sha256(dictionary)}{compressed data}
+    // Формат файла: {Magic Number}{sha256(dictionary)}{compressed data}
+    // Подробнее в документации: https://www.ietf.org/archive/id/draft-ietf-httpbis-compression-dictionary-19.html#section-4
 
-    const header = Buffer.from([0xff, 0x44, 0x43, 0x42]); // 0x44,0x43,0x42 = 'D','C','B' in ASCII
     const dictionaryData = await fs.promises.readFile(dictionaryFilePath);
-    const hash = crypto.createHash('sha256').update(dictionaryData).digest();
     const inputFile = await fs.promises.readFile(inputFilePath);
 
-    const res = compress(inputFile, {
+    const magicNumberHeader = Buffer.from([0xff, 0x44, 0x43, 0x42]);
+    const dictionaryHash = crypto.createHash('sha256').update(dictionaryData).digest();
+    const compressedData = compress(inputFile, {
         dictionary: dictionaryData,
     });
 
-    const outputData = Buffer.concat([header, hash, Buffer.from(res)]);
+    const outputData = Buffer.concat([
+        magicNumberHeader,
+        dictionaryHash,
+        Buffer.from(compressedData),
+    ]);
 
     await fs.promises.writeFile(outFilePath, outputData);
 }
