@@ -13,12 +13,10 @@ jobs:
     strategy:
       matrix:
         versions: [
-          { node: '16.20.2', alpine: '3.18', image: node, dockerfile: Dockerfile, tag: '16.20.2' },
           { node: '18.20.8', alpine: '3.21', image: node, dockerfile: Dockerfile, tag: '18.20.8' },
           { node: '20.19.2', alpine: '3.21', image: node, dockerfile: Dockerfile, tag: '20.19.2' },
           { node: '22.16.0', alpine: '3.21', image: node, dockerfile: Dockerfile, tag: '22.16.0' },
 
-          { node: '16.20.2', alpine: '3.18', image: node, dockerfile: Dockerfile-slim, tag: '16.20.2-slim' },
           { node: '18.20.8', alpine: '3.21', image: node, dockerfile: Dockerfile-slim, tag: '18.20.8-slim' },
           { node: '20.19.2', alpine: '3.21', image: node, dockerfile: Dockerfile-slim, tag: '20.19.2-slim' },
           { node: '22.16.0', alpine: '3.21', image: node, dockerfile: Dockerfile-slim, tag: '22.16.0-slim' },
