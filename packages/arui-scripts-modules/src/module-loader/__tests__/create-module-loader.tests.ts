@@ -157,6 +157,7 @@ describe('createModuleLoader', () => {
             moduleId: 'test',
             hostAppId: 'test',
             getModuleResources,
+            sharedScope: 'exampleScope',
         });
 
         getModuleResources.mockResolvedValue({
@@ -171,7 +172,7 @@ describe('createModuleLoader', () => {
 
         await loader({ getResourcesParams: undefined });
 
-        expect(getModule).toHaveBeenCalledWith('AppName', 'test');
+        expect(getModule).toHaveBeenCalledWith('AppName', 'test', 'exampleScope');
     });
 
     it('should call getCompatModule with correct params if mountMode is compat', async () => {
@@ -215,7 +216,7 @@ describe('createModuleLoader', () => {
         (getModule as jest.Mock).mockResolvedValueOnce(undefined);
 
         await expect(loader({ getResourcesParams: undefined })).rejects.toThrow(
-            'Module test is not available'
+            'Module test is not available',
         );
     });
 
@@ -273,7 +274,10 @@ describe('createModuleLoader', () => {
 
         unmount();
 
-        expect(domUtils.removeModuleResources).toHaveBeenCalledWith({ moduleId: 'unique-id', targetNodes: [] });
+        expect(domUtils.removeModuleResources).toHaveBeenCalledWith({
+            moduleId: 'unique-id',
+            targetNodes: [],
+        });
         expect(cleanGlobal.cleanGlobal).toHaveBeenCalledWith('unique-id');
     });
 
@@ -290,9 +294,9 @@ describe('createModuleLoader', () => {
 
             abortController.abort();
 
-            await expect(loader({ getResourcesParams: undefined, abortSignal: abortController.signal })).rejects.toThrow(
-                'Module test loading was aborted'
-            );
+            await expect(
+                loader({ getResourcesParams: undefined, abortSignal: abortController.signal }),
+            ).rejects.toThrow('Module test loading was aborted');
 
             expect(getModuleResources).not.toHaveBeenCalled();
         });
@@ -356,7 +360,10 @@ describe('createModuleLoader', () => {
 
             abortController.abort();
 
-            expect(domUtils.removeModuleResources).toHaveBeenCalledWith({ moduleId: 'another-id', targetNodes: [] });
+            expect(domUtils.removeModuleResources).toHaveBeenCalledWith({
+                moduleId: 'another-id',
+                targetNodes: [],
+            });
             expect(cleanGlobal.cleanGlobal).toHaveBeenCalledWith('another-id');
         });
     });
@@ -375,8 +382,10 @@ describe('createModuleLoader', () => {
                 resourcesCache: 'single-item',
             });
 
-            await expect(loader({ getResourcesParams: undefined, useShadowDom: true })).rejects.toThrow(
-                'Загрузка модулей в shadow DOM при использовании `resourceCache: single-item` не поддерживается.'
+            await expect(
+                loader({ getResourcesParams: undefined, useShadowDom: true }),
+            ).rejects.toThrow(
+                'Загрузка модулей в shadow DOM при использовании `resourceCache: single-item` не поддерживается.',
             );
         });
 

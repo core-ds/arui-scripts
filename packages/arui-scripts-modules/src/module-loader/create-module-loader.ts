@@ -13,7 +13,10 @@ export type ModuleLoaderHook<ModuleState extends BaseModuleState = BaseModuleSta
     moduleId: string,
     resources: ModuleResources<ModuleState>,
 ) => Promise<void> | void;
-export type ModuleLoaderHookWithModule<ModuleExportType, ModuleState extends BaseModuleState = BaseModuleState> = (
+export type ModuleLoaderHookWithModule<
+    ModuleExportType,
+    ModuleState extends BaseModuleState = BaseModuleState,
+> = (
     moduleId: string,
     resources: ModuleResources<ModuleState>,
     module: ModuleExportType,
@@ -47,6 +50,8 @@ export type CreateModuleLoaderParams<
     onAfterModuleUnmount?: ModuleLoaderHookWithModule<ModuleExportType, ModuleState>;
     /** политика кеширования ресурсов модуля. Если 'none' - ресурсы модуля будут удалены из кеша после его удаления со страницы. Если 'single-item' - в кеше будет храниться значения для текущего значения loaderParams. */
     resourcesCache?: 'none' | 'single-item';
+    /** sharedScope модуля, если отличается от default*/
+    sharedScope?: string;
 };
 
 const consumerCounter = getConsumerCounter();
@@ -66,6 +71,7 @@ export function createModuleLoader<
     onAfterModuleMount,
     onBeforeModuleUnmount,
     onAfterModuleUnmount,
+    sharedScope,
 }: CreateModuleLoaderParams<ModuleExportType, GetResourcesParams, ModuleState>): Loader<
     GetResourcesParams,
     ModuleExportType
@@ -77,7 +83,11 @@ export function createModuleLoader<
     async function getModuleResourcesWithCache(getResourcesParams: GetResourcesParams) {
         const paramsSerialized = JSON.stringify(getResourcesParams);
 
-        if (resourcesCache === 'single-item' && modulesCache[moduleId] && modulesCache[moduleId][paramsSerialized]) {
+        if (
+            resourcesCache === 'single-item' &&
+            modulesCache[moduleId] &&
+            modulesCache[moduleId][paramsSerialized]
+        ) {
             return modulesCache[moduleId][paramsSerialized] as ModuleResources<ModuleState>;
         }
 
@@ -104,7 +114,9 @@ export function createModuleLoader<
 
     return async ({ abortSignal, getResourcesParams, cssTargetSelector, useShadowDom } = {}) => {
         if (useShadowDom && resourcesCache === 'single-item') {
-            throw new Error('Загрузка модулей в shadow DOM при использовании `resourceCache: single-item` не поддерживается.')
+            throw new Error(
+                'Загрузка модулей в shadow DOM при использовании `resourceCache: single-item` не поддерживается.',
+            );
         }
         // Если во время загрузки модуля пришел сигнал об отмене, то отменяем загрузку
         if (abortSignal?.aborted) {
@@ -146,9 +158,10 @@ export function createModuleLoader<
             }
         }
 
-        const isModuleResourcesCached = resourcesCache === 'single-item'
-            && modulesCache[moduleId]
-            && modulesCache[moduleId][JSON.stringify(getResourcesParams)];
+        const isModuleResourcesCached =
+            resourcesCache === 'single-item' &&
+            modulesCache[moduleId] &&
+            modulesCache[moduleId][JSON.stringify(getResourcesParams)];
 
         // Загружаем описание модуля
         const moduleResources = await getModuleResourcesWithCache(
@@ -175,11 +188,11 @@ export function createModuleLoader<
         // В зависимости от типа модуля, получаем его контент необходимым способом
         const loadedModule =
             moduleResources.mountMode === 'default'
-                ? await getModule<ModuleExportType>(moduleResources.appName, moduleId)
+                ? await getModule<ModuleExportType>(moduleResources.appName, moduleId, sharedScope)
                 : getCompatModule<ModuleExportType>(moduleId);
 
         if (!loadedModule) {
-            throw new Error(`Module ${ moduleId } is not available`);
+            throw new Error(`Module ${moduleId} is not available`);
         }
 
         await onAfterModuleMount?.(moduleId, moduleResources, loadedModule);

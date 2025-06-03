@@ -52,6 +52,7 @@ export function patchMainWebpackConfigForModules(webpackConf: rspack.Configurati
             filename: configs.modules.exposes ? MODULES_ENTRY_NAME : undefined,
             shared: configs.modules.shared,
             exposes: configs.modules.exposes,
+            shareScope: configs.shareScope
         }),
         new TurnOffSplitRemoteEntry(configs.modules.name || configs.normalizedName),
     );

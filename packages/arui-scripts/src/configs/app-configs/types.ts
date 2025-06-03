@@ -94,6 +94,7 @@ export type AppConfigs = {
         exposes?: Record<string, string>;
         options?: ModuleConfigBase;
     } | null;
+    shareScope?: string;
 };
 
 export type ModuleConfigBase = {
