@@ -9,7 +9,7 @@ import { ModuleFederationContainer } from '../types';
 export async function getModule<ModuleType>(
     containerId: string,
     moduleId: string,
-    shareScope: string = 'default',
+    shareScope = 'default',
 ) {
     // module federation работает таким образом:
     // 1. Инициализация shared скоупа. Фактически загружает в него все известные приложению на данный момент модули (и из себя, и из других remote, если есть)

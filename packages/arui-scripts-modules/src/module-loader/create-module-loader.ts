@@ -50,7 +50,7 @@ export type CreateModuleLoaderParams<
     onAfterModuleUnmount?: ModuleLoaderHookWithModule<ModuleExportType, ModuleState>;
     /** политика кеширования ресурсов модуля. Если 'none' - ресурсы модуля будут удалены из кеша после его удаления со страницы. Если 'single-item' - в кеше будет храниться значения для текущего значения loaderParams. */
     resourcesCache?: 'none' | 'single-item';
-    /** sharedScope модуля, если отличается от default*/
+    /** sharedScope модуля, если отличается от default */
     sharedScope?: string;
 };
 
