@@ -1,5 +1,11 @@
 # @alfalab/scripts-modules
 
+## 1.7.1
+
+### Patch Changes
+
+-   [#330](https://github.com/core-ds/arui-scripts/pull/330) [`e3c998d`](https://github.com/core-ds/arui-scripts/commit/e3c998d4cd5cdae9b9565f7599847e0d547194aa) Thanks [@jorjif](https://github.com/jorjif)! - Добавлена поддержка свойства shareScope для использования в модулях
+
 ## 1.7.0
 
 ### Minor Changes

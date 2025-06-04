@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 19.0.7
+
+### Patch Changes
+
+-   [#330](https://github.com/core-ds/arui-scripts/pull/330) [`e3c998d`](https://github.com/core-ds/arui-scripts/commit/e3c998d4cd5cdae9b9565f7599847e0d547194aa) Thanks [@jorjif](https://github.com/jorjif)! - Добавлена поддержка свойства shareScope для использования в модулях
+
 ## 19.0.6
 
 ### Patch Changes
