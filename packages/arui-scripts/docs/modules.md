@@ -719,6 +719,7 @@ type Modules = {
         [moduleId: string]: string; // moduleId - id модуля, value - путь до точки входа модуля
     };
     shared?: (string | SharedObject)[] | SharedObject; // конфигурация shared параметра для ModuleFederationPlugin
+    shareScope?: string // скоуп который будет присваиваться модулям в shared если иное имя не будет задано в sharedConfig. Значение по умолчанию - 'default'
 };
 
 type SharedObject = {

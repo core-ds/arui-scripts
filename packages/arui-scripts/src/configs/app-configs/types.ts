@@ -93,6 +93,7 @@ export type AppConfigs = {
         shared: any; // webpack don't expose this type
         exposes?: Record<string, string>;
         options?: ModuleConfigBase;
+        shareScope?: string;
     } | null;
 };
 
