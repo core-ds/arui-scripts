@@ -157,7 +157,7 @@ describe('createModuleLoader', () => {
             moduleId: 'test',
             hostAppId: 'test',
             getModuleResources,
-            sharedScope: 'exampleScope',
+            shareScope: 'exampleScope',
         });
 
         getModuleResources.mockResolvedValue({

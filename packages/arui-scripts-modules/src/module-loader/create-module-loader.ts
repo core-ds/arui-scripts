@@ -50,8 +50,8 @@ export type CreateModuleLoaderParams<
     onAfterModuleUnmount?: ModuleLoaderHookWithModule<ModuleExportType, ModuleState>;
     /** политика кеширования ресурсов модуля. Если 'none' - ресурсы модуля будут удалены из кеша после его удаления со страницы. Если 'single-item' - в кеше будет храниться значения для текущего значения loaderParams. */
     resourcesCache?: 'none' | 'single-item';
-    /** sharedScope модуля, если отличается от default */
-    sharedScope?: string;
+    /** shareScope модуля, если отличается от default */
+    shareScope?: string;
 };
 
 const consumerCounter = getConsumerCounter();
@@ -71,7 +71,7 @@ export function createModuleLoader<
     onAfterModuleMount,
     onBeforeModuleUnmount,
     onAfterModuleUnmount,
-    sharedScope,
+    shareScope,
 }: CreateModuleLoaderParams<ModuleExportType, GetResourcesParams, ModuleState>): Loader<
     GetResourcesParams,
     ModuleExportType
@@ -188,7 +188,7 @@ export function createModuleLoader<
         // В зависимости от типа модуля, получаем его контент необходимым способом
         const loadedModule =
             moduleResources.mountMode === 'default'
-                ? await getModule<ModuleExportType>(moduleResources.appName, moduleId, sharedScope)
+                ? await getModule<ModuleExportType>(moduleResources.appName, moduleId, shareScope)
                 : getCompatModule<ModuleExportType>(moduleId);
 
         if (!loadedModule) {

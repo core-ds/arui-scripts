@@ -45,6 +45,7 @@ const loader = createModuleLoader({
     // опциональные параметры
     resourceCache: 'single-item', // политика кеширования ресурсов модуля. Если 'none' - ресурсы модуля будут удалены из кеша после его удаления со страницы. Если 'single-item' - в кеше будет храниться значения для текущего значения loaderParams.
     resourcesTargetNode: document.head, // DOM-нода, в которую будут монтироваться ресурсы модуля (css и js)
+    shareScope // параметр, который необходимо указать если shareScope модуля отличается от default
     onBeforeResourcesMount: (moduleId, resources) => {}, // коллбек, который будет вызван перед монтированием ресурсов
     onBeforeModuleMount: (moduleId, resources) => {}, // коллбек, который будет вызван перед монтированием модуля
     onAfterModuleMount: (moduleId, resources, module) => {}, // коллбек, который будет вызван после монтирования модуля
