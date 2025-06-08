@@ -6,11 +6,14 @@ import { Configuration, Stats, MultiStats } from '@rspack/core';
 import build from './build-wrapper';
 import { calculateAssetsSizes, printAssetsSizes } from '../util/client-assets-sizes';
 import config from '../../configs/webpack.client.prod';
+import { createDcbFiles } from '../util/create-dcb-files';
 
 console.log(chalk.magenta('Building client...'));
 
-build(config)
-    .then(({ stats, warnings }) => {
+async function main() {
+    try {
+        const { stats, warnings } = await build(config);
+
         if (warnings.length) {
             console.log(chalk.yellow('Client compiled with warnings.\n'));
             console.log(warnings.join('\n\n'));
@@ -38,9 +41,17 @@ build(config)
         } else {
             printOutputSizes(config as any, stats as Stats);
         }
-    })
-    .catch((err) => {
+
+        try {
+            await createDcbFiles();
+        } catch (error) {
+            console.warn('Unable to create dcb files', error);
+        }
+    } catch (err) {
         console.log(chalk.red('Failed to compile client.\n'));
-        printBuildError(err);
+        printBuildError(err as Error);
         process.exit(1);
-    });
+    }
+}
+
+main();
