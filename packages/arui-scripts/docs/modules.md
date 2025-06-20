@@ -49,7 +49,9 @@ export default aruiScriptsConfig;
 
 ```tsx
 // src/modules/some-module/index
+import ReactDOM from 'react-dom';
 import type { ModuleMountFunction, ModuleUnmountFunction } from '@alfalab/scripts-modules';
+
 export const mount: ModuleMountFunction = (targetNode, runParams, serverState) => {
     console.log( // Вы можете передать эти переменные в ваши компоненты, подробнее ниже
         runParams, // undefined
@@ -71,11 +73,11 @@ export const unmount: ModuleUnmountFunction = (targetNode) => {
 
 ```tsx
 import type { ModuleMountFunction, ModuleUnmountFunction } from '@alfalab/scripts-modules';
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom/client';
 
 let root: ReturnType<typeof ReactDOM.createRoot>
 
-export const mount: ModuleMountFunction = (targetNide, runParams, serverState) => {
+export const mount: ModuleMountFunction = (targetNode, runParams, serverState) => {
     root = ReactDOM.createRoot(targetNode);
 
     root.render(<App preparedState={serverState} runParams={runParams} />);

@@ -12,3 +12,4 @@ tsconfig.tsbuildinfo
 .turbo
 build
 .DS_Store
+.vscode/
