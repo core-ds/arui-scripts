@@ -1,0 +1,19 @@
+services:
+  brotli-test:
+    image: alfabankui/arui-scripts:test
+    volumes:
+      - ./brotli-test/default.conf:/etc/nginx/conf.d/default.conf
+      - ./brotli-test/assets:/src/assets
+    ports:
+      - "8080:8080"
+    entrypoint: nginx
+  verify:
+    container_name: verify
+    image: alfabankui/arui-scripts:22.14.0
+    profiles:
+      - tests
+    volumes:
+      - ./brotli-test/:/src/
+    entrypoint: node /src/verify.js
+    depends_on:
+      - brotli-test

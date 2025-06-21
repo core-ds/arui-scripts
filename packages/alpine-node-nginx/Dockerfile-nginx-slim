@@ -1,12 +1,11 @@
 ARG ALPINE_VERSION=3.19
 
-# Copied from https://github.com/fholzer/docker-nginx-brotli/blob/master/Dockerfile
+# Based on https://github.com/fholzer/docker-nginx-brotli/blob/master/Dockerfile
 # this is a build container, target one is in the end
 # this one does not have a lot of unused nginx modules
 
 FROM alpine:${ALPINE_VERSION}
 ENV NGINX_VERSION 1.27.1
-ENV NGX_BROTLI_COMMIT 6e975bcb015f62e1f303054897783355e2a877dc
 ENV NGINX_CONFIG "\
     --prefix=/etc/nginx \
     --sbin-path=/usr/sbin/nginx \
@@ -56,13 +55,11 @@ SHELL ["/bin/bash", "-x", "-c"]
 
 COPY gpg/ /tmp/gpg
 
+COPY ngnix-brotli /usr/src/ngx_brotli
+
 RUN \
-    mkdir -p /usr/src/ngx_brotli \
-    && cd /usr/src/ngx_brotli \
+    cd /usr/src/ngx_brotli \
     && git init \
-    && git remote add origin https://github.com/google/ngx_brotli.git \
-    && git fetch --depth 1 origin $NGX_BROTLI_COMMIT \
-    && git checkout --recurse-submodules -q FETCH_HEAD \
     && git submodule update --init --depth 1 \
     && cd .. \
     && curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz \
