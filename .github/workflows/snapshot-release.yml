@@ -25,19 +25,12 @@ jobs:
       - name: Install Dependencies
         run: yarn install --immutable
 
-      - name: Creating .npmrc
-        run: |
-          cat << EOF > "$HOME/.npmrc"
-            //registry.npmjs.org/:_authToken=$NPM_TOKEN
-          EOF
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
       - name: Publish snapshot release
         id: release
         run: |
             yarn run turbo test build
             yarn run changeset version --snapshot ${{ github.event.inputs.prefix }}
-            yarn run changeset publish --tag next --no-git-tag --snapshot
+            yarn workspaces foreach --all --no-private npm publish --tolerate-republish --access public --tag next
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

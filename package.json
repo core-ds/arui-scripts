@@ -14,7 +14,7 @@
         "husky": "^4.3.8",
         "prettier": "^2.7.1",
         "stylelint": "^14.9.1",
-        "turbo": "^1.10.12"
+        "turbo": "^2.5.3"
     },
     "husky": {
         "hooks": {
@@ -23,7 +23,8 @@
         }
     },
     "scripts": {
-        "publish-packages": "yarn test && changeset version && changeset publish",
+        "publish-packages": "yarn test && changeset version && yarn npm-publish",
+        "npm-publish": "yarn workspaces foreach --all --no-private npm publish --tolerate-republish && yarn changeset tag",
         "build": "turbo run build",
         "test": "turbo run build build:app test validate",
         "lint": "turbo run lint"

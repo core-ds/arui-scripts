@@ -25,6 +25,7 @@ export type AppConfigs = {
     serverOutput: string;
     clientPolyfillsEntry: null | string | string[];
     clientEntry: string | string[] | Record<string, string | string[]>;
+    previousVersionPath?: string | string[];
 
     // docker compilation configs
     dockerRegistry: string;
