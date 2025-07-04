@@ -29,7 +29,7 @@
 }
 ```
 
-### Конфигурационный файл
+### Конфигурационный файл - arui-scripts.config (js | ts)
 Пример конфигурационного файла:
 
 ```ts
@@ -150,7 +150,7 @@ export default settings;
 Этот ключ принимает не только строки, но и любые возможные в [webpack варианты](https://webpack.js.org/concepts/entry-points/).
 Например, вы можете создать две отдельных входных точки для мобильной и десктопной версии приложения:
 
-```js
+```ts
 const settings = {
     clientEntry: {
         mobile: './src/mobile',
@@ -178,16 +178,16 @@ const settings = {
 
 Некоторые настройки для базовой конфигурации `nginx` (`/etc/nginx/nginx.conf`).
 
-```json
-"aruiScripts": {
-    "nginx": {
-        "workerProcesses": 2,
-        "workerRlimitNoFile": 20000,
-        "workerConnections": 19000,
-        "eventsUse": "epoll",
-        "daemon": "off"
-    }
-}
+```ts
+const settings = {
+    nginx: {
+        workerProcesses: 2,
+        workerRlimitNoFile: 20000,
+        workerConnections: 19000,
+        eventsUse: 'epoll',
+        daemon: 'off'
+    },
+};
 ```
 
 #### runFromNonRootUser
