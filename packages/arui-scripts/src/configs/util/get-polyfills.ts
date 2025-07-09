@@ -9,16 +9,6 @@ export function getPolyfills(config: AppConfigs, requireResolve = require.resolv
         polyfills.push(...config.clientPolyfillsEntry);
     } else if (config.clientPolyfillsEntry) {
         polyfills.push(config.clientPolyfillsEntry);
-    } else {
-        // Для сохранения обратной совместимости нам надо добавлять полифилы из физера только тогда, когда пользователь
-        // не задал свои кастомные полифилы.
-        try {
-            const aruiPolyfills = requireResolve('arui-feather/polyfills');
-
-            polyfills.push(aruiPolyfills);
-        } catch (error) {
-            // just ignore it
-        }
     }
 
     return polyfills;
