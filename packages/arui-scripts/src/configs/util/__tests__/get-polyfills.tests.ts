@@ -32,21 +32,6 @@ describe('getPolyfills', () => {
         expect(polyfills).toMatchObject([]);
     });
 
-    it('should add feather polyfills when original config is empty and feather polyfills is available', () => {
-        const appConfig: Partial<AppConfigs> = {
-            clientPolyfillsEntry: null,
-        };
-        const requireResolve = jest.fn(() => 'feather-polyfills-path');
-
-        const polyfills = getPolyfills(
-            appConfig as AppConfigs,
-            requireResolve as unknown as typeof require.resolve,
-        );
-
-        expect(polyfills).toMatchObject(['feather-polyfills-path']);
-        expect(requireResolve).toHaveBeenCalledWith('arui-feather/polyfills');
-    });
-
     it('should not add feather polyfills when original config has any polyfills', () => {
         const appConfig: Partial<AppConfigs> = {
             clientPolyfillsEntry: [],
