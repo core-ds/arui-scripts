@@ -1,6 +1,6 @@
 {
     "name": "example-modules",
-    "version": "1.1.62",
+    "version": "1.1.63",
     "private": true,
     "scripts": {
         "build": "arui-scripts build",
