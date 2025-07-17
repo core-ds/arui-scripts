@@ -155,8 +155,6 @@ async function appendTag(
     return element;
 }
 
-const ABORT_ERROR = new DOMException('The operation was aborted.');
-
 function createElementFetcher(element: HTMLElement, abortSignal?: AbortSignal) {
     return () =>
         new Promise<HTMLElement>((resolve, reject) => {
@@ -164,7 +162,7 @@ function createElementFetcher(element: HTMLElement, abortSignal?: AbortSignal) {
                 if (abortSignal?.aborted) {
                     // Если во время загрузки ресурса пришел сигнал об отмене, то удаляем ресурс из DOM
                     element.remove();
-                    reject(ABORT_ERROR);
+                    reject(new DOMException('The operation was aborted.'));
                 } else {
                     resolve(element);
                 }
@@ -185,7 +183,7 @@ function createContentFetcher(href: string, element: HTMLElement, abortSignal?: 
         if (abortSignal?.aborted) {
             element.remove();
             // Если во время загрузки ресурса пришел сигнал об отмене, то удаляем ресурс из DOM
-            throw ABORT_ERROR;
+            throw new DOMException('The operation was aborted.');
         }
 
         // eslint-disable-next-line no-param-reassign
