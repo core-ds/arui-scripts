@@ -1,5 +1,12 @@
 # @alfalab/scripts-modules
 
+## 1.8.0
+
+### Minor Changes
+
+-   [#336](https://github.com/core-ds/arui-scripts/pull/336) [`8245ff4`](https://github.com/core-ds/arui-scripts/commit/8245ff45110494e5b2353802a2b46d3c810ee1a9) Thanks [@qrik116](https://github.com/qrik116)! - Изменена логика добавления стилей для Safari, теперь вместо встраивания через тэг `link` будет происходить встраивание через `inline` стили тэгом `style`.
+    Чтобы отключить это поведение можно передать `disableInlineStyleSafari: true` в `createModuleLoader`
+
 ## 1.7.1
 
 ### Patch Changes
