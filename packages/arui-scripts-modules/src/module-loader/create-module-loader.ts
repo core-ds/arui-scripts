@@ -52,6 +52,8 @@ export type CreateModuleLoaderParams<
     resourcesCache?: 'none' | 'single-item';
     /** shareScope модуля, если отличается от default */
     shareScope?: string;
+    /** флаг, отключающий встраивание inline стилей в Safari */
+    disableInlineStyleSafari?: boolean;
 };
 
 const consumerCounter = getConsumerCounter();
@@ -72,6 +74,7 @@ export function createModuleLoader<
     onBeforeModuleUnmount,
     onAfterModuleUnmount,
     shareScope,
+    disableInlineStyleSafari,
 }: CreateModuleLoaderParams<ModuleExportType, GetResourcesParams, ModuleState>): Loader<
     GetResourcesParams,
     ModuleExportType
@@ -180,6 +183,7 @@ export function createModuleLoader<
                 styles: moduleResources.styles,
                 baseUrl: moduleResources.moduleState.baseUrl,
                 abortSignal,
+                disableInlineStyleSafari,
             });
         }
 
