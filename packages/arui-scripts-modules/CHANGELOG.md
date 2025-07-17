@@ -1,5 +1,11 @@
 # @alfalab/scripts-modules
 
+## 1.8.1
+
+### Patch Changes
+
+-   [#338](https://github.com/core-ds/arui-scripts/pull/338) [`e30266f`](https://github.com/core-ds/arui-scripts/commit/e30266f8848c834c8b59be3f6cfb64e4a0da7db2) Thanks [@qrik116](https://github.com/qrik116)! - Исправление ошибки "ReferenceError: DOMException is not defined"
+
 ## 1.8.0
 
 ### Minor Changes
