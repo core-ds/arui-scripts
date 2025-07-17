@@ -1,3 +1,5 @@
+import { isSafari } from './is-safari';
+
 type ResourceFetcherParams = {
     /**
      * адреса подключаемых ресурсов
@@ -15,11 +17,20 @@ type ResourceFetcherParams = {
      * AbortSignal, который будет использован для отмены загрузки ресурсов
      */
     abortSignal?: AbortSignal;
+    /**
+     * Отключает встраивание inline стилей в Safari
+     */
+    disableInlineStyleSafari?: boolean;
 };
 
 type GenericResourceFetcherParams = ResourceFetcherParams & {
     createTag: (src: string) => HTMLElement;
-}
+    createFetcher: (
+        src: string,
+        element: HTMLElement,
+        abortSignal?: AbortSignal,
+    ) => () => Promise<HTMLElement>;
+};
 
 function resourceFetcher({
     urls,
@@ -27,12 +38,16 @@ function resourceFetcher({
     attributes,
     abortSignal,
     createTag,
+    createFetcher,
 }: GenericResourceFetcherParams): Promise<HTMLElement[]> {
-    return Promise.all(urls.map((src) => {
-        const tag = createTag(src);
+    return Promise.all(
+        urls.map((src) => {
+            const tag = createTag(src);
+            const fetcher = createFetcher(src, tag, abortSignal);
 
-        return appendTag(tag, targetNode, attributes, abortSignal);
-    }));
+            return appendTag(tag, targetNode, attributes, fetcher);
+        }),
+    );
 }
 
 /**
@@ -51,7 +66,8 @@ export function scriptsFetcher(params: ResourceFetcherParams): Promise<HTMLEleme
 
             return script;
         },
-    })
+        createFetcher: (_, element, abortSignal) => createElementFetcher(element, abortSignal),
+    });
 }
 
 /**
@@ -62,6 +78,10 @@ export async function stylesFetcher(params: ResourceFetcherParams): Promise<HTML
     return resourceFetcher({
         ...params,
         createTag: (url) => {
+            if (!params.disableInlineStyleSafari && isSafari()) {
+                return document.createElement('style');
+            }
+
             const link = document.createElement('link');
 
             link.rel = 'stylesheet';
@@ -69,7 +89,14 @@ export async function stylesFetcher(params: ResourceFetcherParams): Promise<HTML
             link.href = url;
 
             return link;
-        }
+        },
+        createFetcher: (src, element, abortSignal) => {
+            if (!params.disableInlineStyleSafari && isSafari()) {
+                return createContentFetcher(src, element, abortSignal);
+            }
+
+            return createElementFetcher(element, abortSignal);
+        },
     });
 }
 
@@ -88,7 +115,10 @@ type RemoveModuleResourcesParams = {
  * @param moduleId ID приложения, ресурсы которого мы удаляем
  * @param targetNodes Список HTML элементов, в которых мы ищем ресурсы для удаления
  */
-export function removeModuleResources({ moduleId, targetNodes }: RemoveModuleResourcesParams): void {
+export function removeModuleResources({
+    moduleId,
+    targetNodes,
+}: RemoveModuleResourcesParams): void {
     targetNodes.forEach((targetNode) => {
         if (!targetNode) {
             return;
@@ -108,29 +138,59 @@ function nodeListToArray<T extends Node>(nodeList: NodeListOf<T>): T[] {
     return [].slice.call(nodeList);
 }
 
-function appendTag(
+async function appendTag(
     element: HTMLElement,
     targetNode: Node,
     attributes: Record<string, string>,
-    abortSignal?: AbortSignal,
+    fetcher: ReturnType<GenericResourceFetcherParams['createFetcher']>,
 ): Promise<HTMLElement> {
     Object.keys(attributes).forEach((key) => {
         element.setAttribute(key, attributes[key]);
     });
 
-    return new Promise((resolve, reject) => {
-        element.addEventListener('load', () => {
-            if (abortSignal?.aborted) {
-                // Если во время загрузки ресурса пришел сигнал об отмене, то удаляем ресурс из DOM
+    targetNode.appendChild(element);
+
+    await fetcher();
+
+    return element;
+}
+
+const ABORT_ERROR = new DOMException('The operation was aborted.');
+
+function createElementFetcher(element: HTMLElement, abortSignal?: AbortSignal) {
+    return () =>
+        new Promise<HTMLElement>((resolve, reject) => {
+            element.addEventListener('load', () => {
+                if (abortSignal?.aborted) {
+                    // Если во время загрузки ресурса пришел сигнал об отмене, то удаляем ресурс из DOM
+                    element.remove();
+                    reject(ABORT_ERROR);
+                } else {
+                    resolve(element);
+                }
+            });
+            element.addEventListener('error', (error) => {
+                // Если во время загрузки ресурса произошла ошибка, то удаляем ресурс из DOM
                 element.remove();
-                reject(new DOMException('The operation was aborted.'));
-            } else {
-                resolve(element);
-            }
+                reject(error);
+            });
         });
-        element.addEventListener('error', (error) => {
-            reject(error);
-        });
-        targetNode.appendChild(element);
-    });
+}
+
+function createContentFetcher(href: string, element: HTMLElement, abortSignal?: AbortSignal) {
+    return async () => {
+        const response = await fetch(href);
+        const text = await response.text();
+
+        if (abortSignal?.aborted) {
+            element.remove();
+            // Если во время загрузки ресурса пришел сигнал об отмене, то удаляем ресурс из DOM
+            throw ABORT_ERROR;
+        }
+
+        // eslint-disable-next-line no-param-reassign
+        element.textContent = text;
+
+        return element;
+    };
 }
