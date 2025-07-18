@@ -84,7 +84,7 @@ function getProxyConfig(): ProxyConfigArray {
     }
 
     if (Array.isArray(userProxyConfig)) {
-        proxyConfig.push(...userProxyConfig);
+        proxyConfig.unshift(...userProxyConfig);
     }
 
     return proxyConfig;
