@@ -79,12 +79,12 @@ function getProxyConfig(): ProxyConfigArray {
     const proxyConfig: ProxyConfigArray = [];
     const userProxyConfig = configs.proxy;
 
-    if (!configs.clientOnly) {
-        proxyConfig.push(serverProxyConfig);
+    if (Array.isArray(userProxyConfig)) {
+        proxyConfig.push(...userProxyConfig);
     }
 
-    if (Array.isArray(userProxyConfig)) {
-        proxyConfig.unshift(...userProxyConfig);
+    if (!configs.clientOnly) {
+        proxyConfig.push(serverProxyConfig);
     }
 
     return proxyConfig;
