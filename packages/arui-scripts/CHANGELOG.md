@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 19.0.8
+
+### Patch Changes
+
+-   [#340](https://github.com/core-ds/arui-scripts/pull/340) [`216c658`](https://github.com/core-ds/arui-scripts/commit/216c658d24b3e1591319309985cd1e24af123a57) Thanks [@jorjif](https://github.com/jorjif)! - Изменен приоритет прокси в config - теперь прокси в конфиге имеют больший приоритет
+
 ## 19.0.7
 
 ### Patch Changes
