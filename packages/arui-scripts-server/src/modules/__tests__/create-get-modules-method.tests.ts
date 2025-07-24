@@ -23,13 +23,13 @@ describe('createGetModulesMethod', () => {
     });
 
     it('should return correct response for compat module', async () => {
-        (readAssetsManifest as any).mockImplementationOnce(() =>
+        (readAssetsManifest as jest.Mock).mockImplementationOnce(() =>
             Promise.resolve({
                 js: ['vendor.js', 'main.js'],
                 css: ['vendor.css', 'main.css'],
             }),
         );
-        (getAppManifest as any).mockImplementationOnce(() =>
+        (getAppManifest as jest.Mock).mockImplementationOnce(() =>
             Promise.resolve({
                 __metadata__: {
                     name: 'module-app-name',
@@ -60,7 +60,7 @@ describe('createGetModulesMethod', () => {
     });
 
     it('should return correct response for default module', async () => {
-        (getAppManifest as any).mockImplementationOnce(() =>
+        (getAppManifest as jest.Mock).mockImplementationOnce(() =>
             Promise.resolve({
                 __metadata__: {
                     name: 'module-app-name',

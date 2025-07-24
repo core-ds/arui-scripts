@@ -1,5 +1,6 @@
-// TODO: remove eslint-disable-next-line
 import type { Plugin, Request } from 'hapi20';
+
+import { type GetResourcesRequest } from '@alfalab/scripts-modules';
 
 import { createGetModulesMethod, ModulesConfig } from './modules';
 
@@ -19,12 +20,11 @@ export function createGetModulesHapi20Plugin(
                 options: {
                     ...routeParams,
                 },
-                // eslint-disable-next-line consistent-return
                 handler: async (request, h) => {
                     try {
-                        return await modulesMethodSettings.handler(request.payload as any, request);
-                    } catch (e: any) {
-                        h.response({
+                        return await modulesMethodSettings.handler(request.payload as GetResourcesRequest, request);
+                    } catch (e: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
+                        return h.response({
                             error: e.message,
                             status: 500,
                         }).code(500);

@@ -17,7 +17,7 @@ export function createGetModulesHapi16Plugin(
                     const response = await modulesMethodSettings.handler(request.payload, request);
 
                     reply(response);
-                } catch (e: any) {
+                } catch (e: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
                     reply({
                         error: e.message,
                         status: 500,
