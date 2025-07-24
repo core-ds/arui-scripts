@@ -1,4 +1,4 @@
-import { EventBus, createBus } from '../implementation';
+import { createBus, EventBus } from '../implementation';
 
 type EventList = {
     testEvent: { message: string };
