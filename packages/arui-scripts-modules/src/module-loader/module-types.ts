@@ -56,6 +56,8 @@ export type WindowWithMountableModule = WindowWithModule<MountableModule>;
  * @template ReturnType тип, который возвращает фабрика
  */
 export type FactoryModuleFunction<
+    // для корректного выведения типов у потребителей нужно использовать именно any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ReturnType = any,
     RunParams = void,
     ServerState extends BaseModuleState = BaseModuleState,
@@ -64,6 +66,8 @@ export type FactoryModuleFunction<
 };
 
 export type FactoryModule<
+    // для корректного выведения типов у потребителей нужно использовать именно any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ReturnType = any,
     RunParams = void,
     ServerState extends BaseModuleState = BaseModuleState,

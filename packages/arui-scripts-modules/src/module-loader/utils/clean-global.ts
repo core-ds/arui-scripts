@@ -1,5 +1,7 @@
+type WindowWithGlobals = typeof window & Record<string, unknown>;
+
 export function cleanGlobal(globalVariableName: string) {
-    if ((window as any)[globalVariableName]) {
-        delete (window as any)[globalVariableName];
+    if ((window as WindowWithGlobals)[globalVariableName]) {
+        delete (window as WindowWithGlobals)[globalVariableName];
     }
 }

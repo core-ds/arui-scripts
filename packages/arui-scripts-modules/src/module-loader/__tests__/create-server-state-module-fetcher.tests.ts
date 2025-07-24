@@ -14,11 +14,11 @@ describe('createServerStateModuleFetcher', () => {
         responseText: '{}',
         status: 200,
     };
-    let oldXMLHttpRequest: any;
+    let oldXMLHttpRequest: typeof XMLHttpRequest;
 
     beforeAll(() => {
         oldXMLHttpRequest = window.XMLHttpRequest;
-        window.XMLHttpRequest = jest.fn(() => mockXHR) as any;
+        window.XMLHttpRequest = jest.fn(() => mockXHR) as unknown as typeof XMLHttpRequest;
         (urlSegmentWithoutEndSlash as jest.Mock).mockReturnValue('https://test.com');
     });
 
@@ -58,7 +58,7 @@ describe('createServerStateModuleFetcher', () => {
             params: undefined,
         });
 
-        mockXHR.onload!();
+        mockXHR.onload?.();
 
         await expect(promise).resolves.toEqual(JSON.parse(mockXHR.responseText));
     });
@@ -74,7 +74,7 @@ describe('createServerStateModuleFetcher', () => {
             params: undefined,
         });
 
-        mockXHR.onerror!();
+        mockXHR.onerror?.();
 
         await expect(promise).rejects.toEqual(new Error(mockXHR.statusText));
     });
@@ -92,7 +92,7 @@ describe('createServerStateModuleFetcher', () => {
             params: undefined,
         });
 
-        mockXHR.onload!();
+        mockXHR.onload?.();
 
         await expect(promise).rejects.toEqual(new Error(mockXHR.statusText));
     });
