@@ -59,5 +59,5 @@ export function getImageMinLoader() {
                 },
             },
         ],
-    }
+    };
 }

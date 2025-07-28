@@ -1,5 +1,5 @@
-import applyOverrides from './util/apply-overrides';
-import configs from './app-configs';
+import { applyOverrides } from './util/apply-overrides';
+import { configs } from './app-configs';
 
 export const babelDependencies = applyOverrides('babelDependencies', {
     sourceType: 'unambiguous',

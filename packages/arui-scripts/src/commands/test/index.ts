@@ -16,8 +16,6 @@ process.on('unhandledRejection', (err) => {
 });
 
 // Skip 'node', 'arui-scripts' and 'test' arguments and take all the rest (or none if there is no more arguments).
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 const argv = process.argv.slice(3);
 
 const runJest = async () => {

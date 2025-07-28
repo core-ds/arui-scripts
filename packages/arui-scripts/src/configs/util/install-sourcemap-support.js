@@ -1,4 +1,3 @@
-// TODO: remove eslint-disable or add override to .eslintrc.js
 /* eslint-disable global-require */
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable @typescript-eslint/no-var-requires */

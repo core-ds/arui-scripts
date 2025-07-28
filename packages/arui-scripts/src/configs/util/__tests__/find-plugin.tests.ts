@@ -1,15 +1,17 @@
+import type { Plugin, Plugins } from '@rspack/core';
+
 import { createSingleClientWebpackConfig } from '../../webpack.client';
 import { createServerConfig } from '../../webpack.server';
 import { findPlugin } from '../find-plugin';
 
 const getPlugins = (
-    plugins: any,
+    plugins: Plugins | undefined = [],
     name: string,
-    property: (...props: any[]) => Record<string, unknown>,
+    property: (props: { options: Record<string, unknown> }) => Record<string, unknown>,
 ) =>
-    plugins.map((plugin: unknown) => {
+    plugins.map((plugin: Plugin) => {
         if (plugin?.constructor.name === name) {
-            const typedPlugin = plugin as any;
+            const typedPlugin = plugin as unknown as { options: Record<string, unknown> };
 
             return {
                 ...typedPlugin,
@@ -18,7 +20,7 @@ const getPlugins = (
         }
 
         return plugin;
-    });
+    }) as Plugin[];
 
 describe('override plugins with findPlugin', () => {
     describe("client's findPlugin", () => {
@@ -34,13 +36,17 @@ describe('override plugins with findPlugin', () => {
 
             expect(devConfig).toMatchObject<typeof devConfig>({
                 ...devConfig,
-                plugins: getPlugins(devConfig.plugins, 'CssExtractRspackPlugin', (pluginOptions) => ({
-                    ...pluginOptions,
-                    options: {
-                        ...pluginOptions.options,
-                        ignoreOrder: false,
-                    },
-                })),
+                plugins: getPlugins(
+                    devConfig.plugins,
+                    'CssExtractRspackPlugin',
+                    (pluginOptions) => ({
+                        ...pluginOptions,
+                        options: {
+                            ...pluginOptions.options,
+                            ignoreOrder: false,
+                        },
+                    }),
+                ),
             });
         });
 

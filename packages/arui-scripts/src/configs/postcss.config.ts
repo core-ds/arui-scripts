@@ -4,11 +4,14 @@ import type { PluginCreator } from 'postcss';
 
 import { postCssGlobalVariables } from '../plugins/postcss-global-variables/postcss-global-variables';
 
-import config from './app-configs';
-import supportingBrowsers from './supporting-browsers';
+import { configs as config } from './app-configs';
+import { supportingBrowsers } from './supporting-browsers';
 
-type PostCssPluginName = string | PluginCreator<any>;
-type PostcssPlugin = string | [string, unknown] | {name: string; plugin: PluginCreator<any>; options?: unknown};
+type PostCssPluginName = string | PluginCreator<unknown>;
+type PostcssPlugin =
+    | string
+    | [string, unknown]
+    | { name: string; plugin: PluginCreator<unknown>; options?: unknown };
 
 /**
  * Функция для создания конфигурационного файла postcss
@@ -22,16 +25,14 @@ export function createPostcssConfig(
 ): PostcssPlugin[] {
     return plugins.map((pluginName) => {
         if (typeof pluginName === 'string') {
-            return pluginName in options
-                ? [pluginName, options[pluginName]]
-                : pluginName;
+            return pluginName in options ? [pluginName, options[pluginName]] : pluginName;
         }
 
         return {
             name: pluginName.name,
             plugin: pluginName,
-            options: options[pluginName.name]
-        }
+            options: options[pluginName.name],
+        };
     });
 }
 
@@ -60,7 +61,7 @@ export const postcssPluginsOptions = {
     'postcss-import': {
         path: ['./src'],
     },
-    'postCssGlobalVariables': {
+    postCssGlobalVariables: {
         files: [path.join(__dirname, 'mq.css'), config.componentsTheme].filter(Boolean) as string[],
     },
     'postcss-url': {

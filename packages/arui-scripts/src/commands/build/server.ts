@@ -1,14 +1,12 @@
-/* eslint import/no-extraneous-dependencies: 0 */
-/* eslint no-console: 0 */
 import chalk from 'chalk';
 import printBuildError from 'react-dev-utils/printBuildError';
 import build from './build-wrapper';
 
-import config from '../../configs/webpack.server.prod';
+import { webpackServerConfig } from '../../configs/webpack.server.prod';
 
 console.log(chalk.magenta('Building server...'));
 
-build(config as any)
+build(webpackServerConfig)
     .then(({ warnings }) => {
         if (warnings.length) {
             console.log(chalk.yellow('Server compiled with warnings.\n'));

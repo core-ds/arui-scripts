@@ -5,7 +5,10 @@ import { configs } from '../app-configs';
 
 import { ENV_CONFIG_FILENAME } from './constants';
 
-export function replaceTemplateVariables(template: string, variables: Record<string, string | undefined>) {
+export function replaceTemplateVariables(
+    template: string,
+    variables: Record<string, string | undefined>,
+) {
     return template.replace(/\$\{(\w+)}/g, (match, varName) => variables[varName] || '');
 }
 
@@ -21,12 +24,12 @@ export function getEnvConfigContent() {
     if (!fs.existsSync(configTemplate)) {
         cachedEnvConfig = '{}';
 
-        return cachedEnvConfig
+        return cachedEnvConfig;
     }
 
     const templateContent = fs.readFileSync(configTemplate, 'utf8');
 
     cachedEnvConfig = replaceTemplateVariables(templateContent, process.env);
 
-    return cachedEnvConfig
+    return cachedEnvConfig;
 }

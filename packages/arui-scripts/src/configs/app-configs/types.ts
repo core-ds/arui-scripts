@@ -1,4 +1,4 @@
-import { DevTool } from '@rspack/core';
+import { DevTool, Shared } from '@rspack/core';
 import { RspackDevServer } from '@rspack/dev-server';
 
 /**
@@ -90,7 +90,7 @@ export type AppConfigs = {
     } | null;
     modules: {
         name?: string;
-        shared: any; // webpack don't expose this type
+        shared: Shared;
         exposes?: Record<string, string>;
         options?: ModuleConfigBase;
         shareScope?: string;
@@ -114,6 +114,7 @@ export type CompatModuleConfig = CompatModuleConfigBase & {
  * Внутренний контекст arui-scripts
  */
 export type AppContext = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     appPackage: any;
     name: string;
     normalizedName: string;

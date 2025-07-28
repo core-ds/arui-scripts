@@ -1,7 +1,7 @@
-import applyOverrides from './util/apply-overrides';
-import configs from './app-configs';
+import { applyOverrides } from './util/apply-overrides';
+import { configs } from './app-configs';
 
-const config = applyOverrides(['babel', 'babelServer'], {
+export const config = applyOverrides(['babel', 'babelServer'], {
     presets: [
         [
             require.resolve('@babel/preset-env'),
@@ -41,5 +41,3 @@ const config = applyOverrides(['babel', 'babelServer'], {
         },
     },
 });
-
-export default config;

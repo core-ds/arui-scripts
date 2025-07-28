@@ -1,6 +1,6 @@
 import { getInstallProductionCommand, getYarnVersion } from '../commands/util/yarn';
-import configs from '../configs/app-configs';
-import applyOverrides from '../configs/util/apply-overrides';
+import { configs } from '../configs/app-configs';
+import { applyOverrides } from '../configs/util/apply-overrides';
 
 const installProductionCommand = getInstallProductionCommand();
 const yarnVersion = getYarnVersion();
@@ -16,7 +16,7 @@ const filesRequiredToInstallDependencies = [
     yarnVersion === 'unavailable' && 'package-lock.json',
 ].filter(Boolean);
 
-const dockerfileTemplate = `
+const template = `
 FROM ${configs.baseDockerImage}
 ARG START_SH_LOCATION
 ARG NGINX_CONF_LOCATION
@@ -49,4 +49,4 @@ RUN touch /var/run/nginx.pid && \
 USER nginx
 `;
 
-export default applyOverrides('DockerfileCompiled', dockerfileTemplate);
+export const dockerfileTemplate = applyOverrides('DockerfileCompiled', template);

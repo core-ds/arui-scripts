@@ -1,4 +1,4 @@
-import { RuntimeGlobals, RuntimeModule as RsPackRuntimeModule,Template } from '@rspack/core';
+import { RuntimeGlobals, RuntimeModule as RsPackRuntimeModule, Template } from '@rspack/core';
 
 export const ARUI_RUNTIME_VARIABLE_NAME = '$ARUI';
 export const FULL_ARUI_RUNTIME_PATH = `${RuntimeGlobals.require}.${ARUI_RUNTIME_VARIABLE_NAME}`;

@@ -1,6 +1,3 @@
-// TODO: remove eslint-disable and eslint-disable-next-line
-/* eslint-disable global-require */
-/* eslint-disable @typescript-eslint/no-var-requires */
 import path from 'path';
 
 import getCSSModuleLocalIdent from 'react-dev-utils/getCSSModuleLocalIdent';
@@ -18,6 +15,7 @@ import ReactRefreshPlugin from '@rspack/plugin-react-refresh';
 import AssetsPlugin from 'assets-webpack-plugin';
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import CompressionPlugin from 'compression-webpack-plugin';
+import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import svgToMiniDataURI from 'mini-svg-data-uri';
@@ -29,18 +27,16 @@ import { AruiRuntimePlugin, getInsertCssRuntimeMethod } from '../plugins/arui-ru
 import { htmlTemplate } from '../templates/html.template';
 
 import { getImageMinLoader } from './config-extras/minimizers';
-import checkNodeVersion from './util/check-node-version';
-import getEntry, { Entry } from './util/get-entry';
+import { checkNodeVersion } from './util/check-node-version';
+import { Entry, getEntry } from './util/get-entry';
 import { configs } from './app-configs';
-import babelConf from './babel-client';
+import { babelClientConfig as babelConf } from './babel-client';
 import { babelDependencies } from './babel-dependencies';
 import { addEnvToHtmlTemplate, ClientConfigPlugin } from './client-env-config';
 import { patchMainWebpackConfigForModules, patchWebpackConfigForCompat } from './modules';
-import postcssConf from './postcss';
+import { postcssConfig as postcssConf } from './postcss';
 import { processAssetsPluginOutput } from './process-assets-plugin-output';
 import { swcClientConfig } from './swc';
-
-const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 
 const noopPath = require.resolve('./util/noop');
 
@@ -122,9 +118,11 @@ function getMinimizeConfig(mode: 'dev' | 'prod') {
             minimizer: [
                 new CssMinimizerPlugin({
                     minimizerOptions: {
-                        preset: () => ({
+                        preset: (() => ({
+                            // eslint-disable-next-line global-require
                             plugins: [require('postcss-discard-duplicates')],
-                        }),
+                            // некорректные типы у cssMinimizerPlugin
+                        })) as any, // eslint-disable-line @typescript-eslint/no-explicit-any
                     },
                 }),
             ],
@@ -172,7 +170,7 @@ export const createSingleClientWebpackConfig = (
                 ? `${configName ? `${configName}-` : ''}[name].js`
                 : `${configName ? `${configName}-` : ''}[name].[chunkhash:8].chunk.js`,
         // Point sourcemap entries to original disk location (format as URL on Windows)
-        devtoolModuleFilenameTemplate: (info: any) =>
+        devtoolModuleFilenameTemplate: (info) =>
             path.relative(configs.appSrc, info.absoluteResourcePath).replace(/\\/g, '/'),
     },
     optimization: {
@@ -191,7 +189,11 @@ export const createSingleClientWebpackConfig = (
                               test: /node_modules/,
                               chunks: 'initial',
                               // Почему то rspack предоставляет некорректные типы для этой функции.
-                              name: ((_: unknown, chunks: Array<{name: string}>, cacheGroupKey: string) => {
+                              name: ((
+                                  _: unknown,
+                                  chunks: Array<{ name: string }>,
+                                  cacheGroupKey: string,
+                              ) => {
                                   if (!configName) {
                                       return 'vendor';
                                   }
@@ -227,10 +229,8 @@ export const createSingleClientWebpackConfig = (
         extensions: ['.web.js', '.mjs', '.cjs', '.js', '.json', '.web.jsx', '.jsx', '.ts', '.tsx'],
         tsConfig: configs.tsconfig ? { configFile: configs.tsconfig } : undefined,
     },
-    resolveLoader: {
-    },
-    cache:
-        mode === 'dev',
+    resolveLoader: {},
+    cache: mode === 'dev',
     module: {
         rules: [
             {
@@ -302,7 +302,8 @@ export const createSingleClientWebpackConfig = (
                         test: /\.svg/,
                         type: 'asset',
                         generator: {
-                            dataUrl: (file: { filename: string; content: string | Buffer  }) => svgToMiniDataURI(file.content.toString()),
+                            dataUrl: (file: { filename: string; content: string | Buffer }) =>
+                                svgToMiniDataURI(file.content.toString()),
                         },
                         parser: {
                             dataUrlCondition: {
@@ -352,7 +353,7 @@ export const createSingleClientWebpackConfig = (
                         mode === 'dev'
                             ? `${prefix}[name].css`
                             : `${prefix}[name].[contenthash:8].chunk.css`,
-                    insert: getInsertCssRuntimeMethod() as any,
+                    insert: getInsertCssRuntimeMethod(),
                 };
             })(),
         ),
@@ -389,9 +390,7 @@ export const createSingleClientWebpackConfig = (
         new AruiRuntimePlugin(),
         configs.clientOnly &&
             new HtmlWebpackPlugin({
-                templateContent: mode === 'dev'
-                    ? addEnvToHtmlTemplate(htmlTemplate)
-                    : htmlTemplate, // оставляем env шаблоны как есть для прод сборки - их будет менять start.sh
+                templateContent: mode === 'dev' ? addEnvToHtmlTemplate(htmlTemplate) : htmlTemplate, // оставляем env шаблоны как есть для прод сборки - их будет менять start.sh
                 filename: '../index.html',
             }),
         mode === 'dev' && configs.clientOnly && new ClientConfigPlugin(),
@@ -494,9 +493,7 @@ function getCodeLoader(mode: 'dev' | 'prod'): RuleSetRule {
     }
 
     return {
-        test: configs.codeLoader === 'tsc'
-            ? /\.(js|jsx|mjs|cjs)$/
-            : /\.(js|jsx|mjs|ts|tsx|cjs)$/,
+        test: configs.codeLoader === 'tsc' ? /\.(js|jsx|mjs|cjs)$/ : /\.(js|jsx|mjs|ts|tsx|cjs)$/,
         include: configs.appSrc,
         loader: require.resolve('babel-loader'),
         options: {
@@ -506,10 +503,7 @@ function getCodeLoader(mode: 'dev' | 'prod'): RuleSetRule {
             plugins: [
                 ...babelConf.plugins,
                 mode === 'dev'
-                    ? [
-                        require.resolve('react-refresh/babel'),
-                        { skipEnvCheck: true },
-                    ]
+                    ? [require.resolve('react-refresh/babel'), { skipEnvCheck: true }]
                     : undefined,
             ].filter(Boolean),
         },
@@ -532,10 +526,7 @@ function getTsLoaderIfEnabled(mode: 'dev' | 'prod'): RuleSetRule | false {
                     cacheCompression: false,
                     plugins:
                         mode === 'dev'
-                            ? [
-                                require.resolve('react-refresh/babel'),
-                                { skipEnvCheck: true },
-                            ]
+                            ? [require.resolve('react-refresh/babel'), { skipEnvCheck: true }]
                             : undefined,
                 },
             },
@@ -543,8 +534,7 @@ function getTsLoaderIfEnabled(mode: 'dev' | 'prod'): RuleSetRule | false {
                 loader: require.resolve('ts-loader'),
                 options: {
                     getCustomTransformers: () => ({
-                        before:
-                            mode === 'dev' ? [ReactRefreshTypeScript()] : [],
+                        before: mode === 'dev' ? [ReactRefreshTypeScript()] : [],
                     }),
                     onlyCompileBundledFiles: true,
                     transpileOnly: true,
@@ -553,7 +543,7 @@ function getTsLoaderIfEnabled(mode: 'dev' | 'prod'): RuleSetRule | false {
                 },
             },
         ],
-    }
+    };
 }
 
 function getExternalCodeLoader(mode: 'dev' | 'prod'): RuleSetRule {

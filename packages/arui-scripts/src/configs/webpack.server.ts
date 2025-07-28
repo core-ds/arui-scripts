@@ -1,5 +1,3 @@
-// TODO: remove eslint-disable
-/* eslint-disable @typescript-eslint/no-var-requires */
 import fs from 'fs';
 import path from 'path';
 
@@ -19,11 +17,11 @@ import nodeExternals from 'webpack-node-externals';
 import { ReloadServerPlugin } from '../plugins/reload-server-plugin';
 import { WatchMissingNodeModulesPlugin } from '../plugins/watch-missing-node-modules-plugin';
 
-import getEntry from './util/get-entry';
-import configs from './app-configs';
+import { getEntry } from './util/get-entry';
+import { configs } from './app-configs';
 import { babelDependencies } from './babel-dependencies';
-import babelConf from './babel-server';
-import postcssConf from './postcss';
+import { config as babelConf } from './babel-server';
+import { postcssConfig as postcssConf } from './postcss';
 import { serverExternalsExemptions } from './server-externals-exemptions';
 import { swcServerConfig } from './swc';
 
@@ -51,7 +49,7 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
     mode: mode === 'dev' ? 'development' : 'production',
     // fail on first error in production mode
     bail: mode === 'prod',
-    devtool: mode === 'dev' ? configs.devSourceMaps : 'source-map' as any,
+    devtool: mode === 'dev' ? configs.devSourceMaps : 'source-map',
     target: 'node',
     node: {
         __filename: true,
@@ -68,7 +66,7 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
         filename: configs.serverOutput,
         chunkFilename: '[name].js',
         // Point sourcemap entries to original disk location (format as URL on Windows)
-        devtoolModuleFilenameTemplate: (info: any) =>
+        devtoolModuleFilenameTemplate: (info) =>
             path.relative(configs.appSrc, info.absoluteResourcePath).replace(/\\/g, '/'),
     },
     cache: mode === 'dev',
@@ -142,8 +140,9 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
                         test: /\.svg/,
                         type: 'asset',
                         generator: {
-                            dataUrl: (file: { filename: string; content: string | Buffer  }) => svgToMiniDataURI(file.content.toString()),
-                            publicPath: ''
+                            dataUrl: (file: { filename: string; content: string | Buffer }) =>
+                                svgToMiniDataURI(file.content.toString()),
+                            publicPath: '',
                         },
                         parser: {
                             dataUrlCondition: {
@@ -155,7 +154,7 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
                         exclude: [/\.(js|jsx|mjs|ts|tsx)$/, /\.(html|ejs)$/, /\.json$/, /\.svg$/],
                         type: 'asset/resource',
                         generator: {
-                            publicPath: ''
+                            publicPath: '',
                         },
                     },
                 ].filter(Boolean) as RuleSetRule[],
@@ -217,9 +216,7 @@ function getCodeLoader(mode: 'dev' | 'prod'): RuleSetRule {
     }
 
     return {
-        test: configs.codeLoader === 'tsc'
-            ? /\.(js|jsx|mjs|cjs)$/
-            : /\.(js|jsx|mjs|ts|tsx|cjs)$/,
+        test: configs.codeLoader === 'tsc' ? /\.(js|jsx|mjs|cjs)$/ : /\.(js|jsx|mjs|ts|tsx|cjs)$/,
         include: configs.appSrc,
         loader: require.resolve('babel-loader'),
         options: {

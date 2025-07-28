@@ -1,5 +1,5 @@
 import { configs } from '../configs/app-configs';
-import applyOverrides from '../configs/util/apply-overrides';
+import { applyOverrides } from '../configs/util/apply-overrides';
 
 const baseNginxConfig = {
     workerProcesses: 2,
@@ -59,4 +59,4 @@ http {
     include                 /etc/nginx/conf.d/*.conf;
 }`;
 
-export default applyOverrides('nginxConf', baseNginxTemplate);
+export const nginxBaseConfTemplate = applyOverrides('nginxConf', baseNginxTemplate);

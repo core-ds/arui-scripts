@@ -1,8 +1,8 @@
 import type { RspackOptionsNormalized } from '@rspack/core';
 
-import applyOverrides from './util/apply-overrides';
+import { applyOverrides } from './util/apply-overrides';
 
-const statsOptions: RspackOptionsNormalized['stats'] = applyOverrides('stats', {
+export const statsOptions: RspackOptionsNormalized['stats'] = applyOverrides('stats', {
     // Add asset Information
     assets: false,
     // Add information about cached (not built) modules
@@ -44,5 +44,3 @@ const statsOptions: RspackOptionsNormalized['stats'] = applyOverrides('stats', {
     // ignore warning from missing types
     warningsFilter: /export .* was not found in/,
 });
-
-export default statsOptions;

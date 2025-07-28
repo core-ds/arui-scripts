@@ -1,4 +1,4 @@
-import applyOverrides from '../configs/util/apply-overrides';
+import { applyOverrides } from '../configs/util/apply-overrides';
 
 const template = `<!doctype html>
 <html lang="ru">

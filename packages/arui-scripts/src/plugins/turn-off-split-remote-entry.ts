@@ -1,6 +1,6 @@
 import { types } from 'util';
 
-import { Compiler, OptimizationSplitChunksCacheGroup,RspackPluginInstance } from '@rspack/core';
+import { Compiler, OptimizationSplitChunksCacheGroup, RspackPluginInstance } from '@rspack/core';
 
 /**
  * Force remote entry not be affected by user's chunkSplit strategy,

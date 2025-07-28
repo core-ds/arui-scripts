@@ -1,16 +1,16 @@
 import fs from 'fs-extra';
 
-import configs from '../../configs/app-configs';
-import nginxBaseConfTemplate from '../../templates/base-nginx.conf.template';
-import dockerfileTemplate from '../../templates/dockerfile.template';
-import nginxConfTemplate from '../../templates/nginx.conf.template';
-import startScript from '../../templates/start.template';
+import { configs } from '../../configs/app-configs';
+import { nginxBaseConfTemplate } from '../../templates/base-nginx.conf.template';
+import { dockerfileTemplate } from '../../templates/dockerfile.template';
+import { nginxConfTemplate } from '../../templates/nginx.conf.template';
+import { startScript } from '../../templates/start.template';
 import {
     getBuildParamsFromArgs,
     getDockerBuildCommand,
     prepareFilesForDocker,
 } from '../util/docker-build';
-import exec from '../util/exec';
+import { exec } from '../util/exec';
 import { getPruningCommand } from '../util/yarn';
 
 (async () => {

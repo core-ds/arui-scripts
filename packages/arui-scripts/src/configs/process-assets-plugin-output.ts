@@ -2,7 +2,7 @@ import path from 'path';
 
 import { Assets } from 'assets-webpack-plugin';
 
-import configs from './app-configs';
+import { configs } from './app-configs';
 import { MODULES_ENTRY_NAME } from './modules';
 
 export function processAssetsPluginOutput(assets: Assets) {
@@ -11,8 +11,8 @@ export function processAssetsPluginOutput(assets: Assets) {
     Object.keys(adjustedAssets).forEach((key) => {
         // заменяем путь к файлам на корректный в случае если в нем есть 'auto/'
         adjustedAssets[key] = {
-            css: replaceAutoPath(adjustedAssets[key].css) as any,
-            js: replaceAutoPath(adjustedAssets[key].js) as any,
+            css: replaceAutoPath(adjustedAssets[key].css) as string,
+            js: replaceAutoPath(adjustedAssets[key].js) as string,
         };
     });
 

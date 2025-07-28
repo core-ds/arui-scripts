@@ -1,6 +1,4 @@
-// TODO: remove eslint-disable
-/* eslint-disable no-param-reassign */
-import * as rspack from '@rspack/core'
+import * as rspack from '@rspack/core';
 
 import { postCssPrefix } from '../plugins/postcss-prefix-selector';
 import { TurnOffSplitRemoteEntry } from '../plugins/turn-off-split-remote-entry';
@@ -16,6 +14,7 @@ export function haveExposedDefaultModules() {
 export const MODULES_ENTRY_NAME = 'remoteEntry.js';
 
 export function patchMainWebpackConfigForModules(webpackConf: rspack.Configuration) {
+    /* eslint-disable no-param-reassign */
     if (configs.disableModulesSupport) {
         // проект хочет сам разбираться с WMF и прочими вещами, полностью отключаем обработку модулей на своей стороне
         return webpackConf;
@@ -52,12 +51,13 @@ export function patchMainWebpackConfigForModules(webpackConf: rspack.Configurati
             filename: configs.modules.exposes ? MODULES_ENTRY_NAME : undefined,
             shared: configs.modules.shared,
             exposes: configs.modules.exposes,
-            shareScope: configs.modules.shareScope
+            shareScope: configs.modules.shareScope,
         }),
         new TurnOffSplitRemoteEntry(configs.modules.name || configs.normalizedName),
     );
 
     return webpackConf;
+    /* eslint-enable no-param-reassign */
 }
 
 export function getCssPrefixForModule(module: CompatModuleConfig) {
@@ -95,7 +95,7 @@ export function getExposeLoadersFormCompatModules() {
     });
 }
 
-function addCssPrefix(webpackConf: rspack.Configuration, cssPrefix: string){
+function addCssPrefix(webpackConf: rspack.Configuration, cssPrefix: string) {
     const cssRule = findLoader(webpackConf, '/\\.css$/');
     const cssModulesRule = findLoader(webpackConf, '/\\.module\\.css$/');
 
@@ -138,8 +138,9 @@ export function patchWebpackConfigForCompat(
     module: CompatModuleConfig,
     webpackConf: rspack.Configuration,
 ) {
+    /* eslint-disable no-param-reassign */
     webpackConf.externals = {
-        ...((webpackConf.externals as Record<string, any>) || {}),
+        ...((webpackConf.externals as Record<string, string>) || {}),
         ...(module.externals || {}),
     };
     // Название переменной вебпака, которую он будет использовать для загрузки чанков. Важно чтобы для разных модулей они отличались,
@@ -156,4 +157,5 @@ export function patchWebpackConfigForCompat(
     }
 
     return webpackConf;
+    /* eslint-enable no-param-reassign */
 }

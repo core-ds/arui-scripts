@@ -37,7 +37,7 @@ export function updateWithPresets(config: AppConfigs, context: AppContext) {
 }
 
 export function getPresetsConfigPath(config: AppConfigs, cwd: string) {
-    return  tryResolve(`${config.presets}/arui-scripts.config`, {
+    return tryResolve(`${config.presets}/arui-scripts.config`, {
         paths: [cwd],
     });
 }

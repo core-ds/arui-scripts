@@ -117,7 +117,7 @@ export function findPlugin<Type extends 'client' | 'server'>() {
 
         for (const plugin of config.plugins) {
             if (plugin?.constructor.name === pluginName) {
-                result.push(plugin as any);
+                result.push(plugin as SelectedPluginsList<Type>[PluginName]);
             }
         }
 

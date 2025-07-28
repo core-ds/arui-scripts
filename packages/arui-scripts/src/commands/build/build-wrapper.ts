@@ -1,9 +1,6 @@
-/* eslint import/no-extraneous-dependencies: 0 */
-/* eslint no-console: 0 */
-
 import chalk from 'chalk';
 import { rspack, Stats, MultiStats, Configuration } from '@rspack/core';
-import formatWebpackMessages from '../util/format-webpack-messages';
+import { formatWebpackMessages } from '../util/format-webpack-messages';
 
 type BuildResult = {
     stats: Stats | MultiStats;
@@ -11,13 +8,10 @@ type BuildResult = {
     previousFileSizes: unknown;
 };
 
-function build(
-    config: Configuration | Configuration[],
-    previousFileSizes?: unknown,
-) {
+function build(config: Configuration | Configuration[], previousFileSizes?: unknown) {
     let compiler = rspack(config);
     return new Promise<BuildResult>((resolve, reject) => {
-        compiler.run((err: any, stats: any) => {
+        compiler.run((err, stats) => {
             if (err) {
                 return reject(err);
             }
@@ -45,7 +39,7 @@ function build(
                 return reject(new Error(messages.warnings.join('\n\n')));
             }
             return resolve({
-                stats,
+                stats: stats as Stats | MultiStats,
                 warnings: messages.warnings,
                 previousFileSizes,
             });

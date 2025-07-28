@@ -1,8 +1,8 @@
-import applyOverrides from './util/apply-overrides';
+import { applyOverrides } from './util/apply-overrides';
 import { configs } from './app-configs';
-import browsers from './supporting-browsers';
+import { supportingBrowsers as browsers } from './supporting-browsers';
 
-const babelClientConfig = applyOverrides(['babel', 'babelClient'], {
+export const babelClientConfig = applyOverrides(['babel', 'babelClient'], {
     presets: [
         [
             require.resolve('@babel/preset-env'),
@@ -65,5 +65,3 @@ const babelClientConfig = applyOverrides(['babel', 'babelClient'], {
         },
     },
 });
-
-export default babelClientConfig;

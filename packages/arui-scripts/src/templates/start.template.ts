@@ -1,6 +1,6 @@
 import { configs } from '../configs/app-configs';
 import { ENV_CONFIG_FILENAME } from '../configs/client-env-config';
-import applyOverrides from '../configs/util/apply-overrides';
+import { applyOverrides } from '../configs/util/apply-overrides';
 
 const startTemplate = `#!/bin/sh
 
@@ -32,7 +32,7 @@ nginx &
 node --max-old-space-size="$node_memory_limit" ./${configs.buildPath}/${configs.serverOutput}
 `;
 
-const envConfigTargetPath = `/src/${configs.buildPath}/${ENV_CONFIG_FILENAME}`
+const envConfigTargetPath = `/src/${configs.buildPath}/${ENV_CONFIG_FILENAME}`;
 const envConfigPath = `/src/${ENV_CONFIG_FILENAME}`;
 const htmlPath = `/src/${configs.buildPath}/index.html`;
 
@@ -67,4 +67,7 @@ fi
 
 nginx`;
 
-export default applyOverrides('start.sh', configs.clientOnly ? clientOnlyStartTemplate : startTemplate);
+export const startScript = applyOverrides(
+    'start.sh',
+    configs.clientOnly ? clientOnlyStartTemplate : startTemplate,
+);

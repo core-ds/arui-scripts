@@ -1,12 +1,7 @@
-// TODO: remove eslint-disable and eslint-disable-next-line
-/* eslint-disable no-restricted-syntax */
 import type { Configuration, RuleSetRule } from '@rspack/core';
 
-export function findLoader(
-    config: Configuration,
-    testRule: string,
-): RuleSetRule | undefined {
-    for (const rule of config.module!.rules!) {
+export function findLoader(config: Configuration, testRule: string): RuleSetRule | undefined {
+    for (const rule of config.module?.rules ?? []) {
         if (rule === '...' || !rule) {
             // Webpack имеет странный тип для rules, который позволяет в него положить строку '...'. Успокаиваем TS
             // eslint-disable-next-line no-continue

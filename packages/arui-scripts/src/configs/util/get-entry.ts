@@ -6,7 +6,7 @@ export type Entry = string | string[] | Record<string, string | string[]>;
  * @param args Дополнительные аргументы, которые будут переданы в getSingleEntry функцию
  * @returns {*}
  */
-function getEntry<AdditionalArgs extends unknown[]>(
+export function getEntry<AdditionalArgs extends unknown[]>(
     entryPoint: Entry,
     getSingleEntry: (entry: string[], ...args: AdditionalArgs) => string[],
     ...args: AdditionalArgs
@@ -28,5 +28,3 @@ function getEntry<AdditionalArgs extends unknown[]>(
         };
     }, {});
 }
-
-export default getEntry;

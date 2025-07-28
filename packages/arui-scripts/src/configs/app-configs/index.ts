@@ -28,5 +28,3 @@ export const configs: AppContextWithConfigs = {
 };
 
 warnAboutDeprecations(configs);
-
-export default configs;

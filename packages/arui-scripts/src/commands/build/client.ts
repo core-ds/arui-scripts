@@ -1,15 +1,13 @@
-/* eslint import/no-extraneous-dependencies: 0 */
-/* eslint no-console: 0 */
 import chalk from 'chalk';
 import printBuildError from 'react-dev-utils/printBuildError';
 import { Configuration, Stats, MultiStats } from '@rspack/core';
 import build from './build-wrapper';
 import { calculateAssetsSizes, printAssetsSizes } from '../util/client-assets-sizes';
-import config from '../../configs/webpack.client.prod';
+import { webpackClientConfig } from '../../configs/webpack.client.prod';
 
 console.log(chalk.magenta('Building client...'));
 
-build(config)
+build(webpackClientConfig)
     .then(({ stats, warnings }) => {
         if (warnings.length) {
             console.log(chalk.yellow('Client compiled with warnings.\n'));
@@ -31,12 +29,12 @@ build(config)
             printAssetsSizes(sizes);
         }
 
-        if (Array.isArray(config)) {
-            config.forEach((conf, index) =>
+        if (Array.isArray(webpackClientConfig)) {
+            webpackClientConfig.forEach((conf, index) =>
                 printOutputSizes(conf as any, (stats as MultiStats).stats[index]),
             );
         } else {
-            printOutputSizes(config as any, stats as Stats);
+            printOutputSizes(webpackClientConfig as any, stats as Stats);
         }
     })
     .catch((err) => {
