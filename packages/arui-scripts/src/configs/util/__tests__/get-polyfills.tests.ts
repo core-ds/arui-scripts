@@ -38,7 +38,10 @@ describe('getPolyfills', () => {
         };
         const requireResolve = jest.fn(() => 'feather-polyfills-path');
 
-        const polyfills = getPolyfills(appConfig as AppConfigs, requireResolve as any);
+        const polyfills = getPolyfills(
+            appConfig as AppConfigs,
+            requireResolve as unknown as typeof require.resolve,
+        );
 
         expect(polyfills).toMatchObject(['feather-polyfills-path']);
         expect(requireResolve).toHaveBeenCalledWith('arui-feather/polyfills');
@@ -50,7 +53,10 @@ describe('getPolyfills', () => {
         };
         const requireResolve = jest.fn(() => 'feather-polyfills-path');
 
-        const polyfills = getPolyfills(appConfig as AppConfigs, requireResolve as any);
+        const polyfills = getPolyfills(
+            appConfig as AppConfigs,
+            requireResolve as unknown as typeof require.resolve,
+        );
 
         expect(polyfills).toMatchObject([]);
         expect(requireResolve).not.toHaveBeenCalled();

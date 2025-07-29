@@ -1,5 +1,3 @@
-// TODO: remove eslint-disable
-/* eslint-disable no-underscore-dangle */
 import { fetchAppManifest } from './utils/fetch-app-manifest';
 import { urlSegmentWithoutEndSlash } from './utils/normalize-url-segment';
 import { ModuleResourcesGetter } from './create-module-loader';
@@ -46,8 +44,10 @@ export function createModuleFetcher({
 
         return {
             ...moduleFiles,
+            /* eslint-disable no-underscore-dangle */
             moduleVersion: manifest.__metadata__.version || 'unknown',
             appName: manifest.__metadata__.name,
+            /* eslint-enable no-underscore-dangle */
             mountMode: mode,
             moduleState: {
                 baseUrl,

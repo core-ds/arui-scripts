@@ -1,5 +1,5 @@
 import { configs } from '../configs/app-configs';
-import applyOverrides from '../configs/util/apply-overrides';
+import { applyOverrides } from '../configs/util/apply-overrides';
 
 const nginxTemplate = `client_max_body_size 20m;
 
@@ -7,15 +7,17 @@ server {
     listen ${configs.clientServerPort};
     server_tokens off;
 
-    ${configs.clientOnly
-        ? `location / {
+    ${
+        configs.clientOnly
+            ? `location / {
         root ${configs.nginxRootPath}/${configs.buildPath};
         index index.html;
         }`
-        : ` location / {
+            : ` location / {
         proxy_set_header Host $host;
         proxy_pass http://127.0.0.1:${configs.serverPort};
-    }`}
+    }`
+    }
 
     location /${configs.publicPath} {
         expires max;
@@ -33,4 +35,4 @@ server {
     }
 }`;
 
-export default applyOverrides('nginx', nginxTemplate);
+export const nginxConfTemplate = applyOverrides('nginx', nginxTemplate);

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { MountableModule } from '../module-types';
 import { BaseModuleState, Loader } from '../types';
@@ -59,6 +59,16 @@ export function useModuleMounter<LoaderParams, RunParams, ServerState extends Ba
         cssTargetSelector,
     } = useModuleMountTarget({ useShadowDom, createTargetNode });
 
+    // Мы не хотим чтобы изменение этих параметров тригерило ререндер и перемонтирование модуля,
+    // но не хотим ломать правила хуков
+    const loaderParamsRef = useRef(loaderParams);
+    const runParamsRef = useRef(runParams);
+    const loadingStateRef = useRef(loadingState);
+
+    loaderParamsRef.current = loaderParams;
+    runParamsRef.current = runParams;
+    loadingStateRef.current = loadingState;
+
     useEffect(() => {
         let unmountFn: () => void | undefined;
         const abortController = new AbortController();
@@ -70,7 +80,7 @@ export function useModuleMounter<LoaderParams, RunParams, ServerState extends Ba
             setLoadingState('pending');
             try {
                 const result = await loader({
-                    getResourcesParams: loaderParams as LoaderParams,
+                    getResourcesParams: loaderParamsRef.current,
                     abortSignal: abortController.signal,
                     cssTargetSelector,
                     useShadowDom,
@@ -84,7 +94,7 @@ export function useModuleMounter<LoaderParams, RunParams, ServerState extends Ba
 
                 module.mount(
                     mountTargetNode,
-                    runParams as RunParams,
+                    runParamsRef.current as RunParams,
                     result.moduleResources.moduleState as ServerState,
                 );
 
@@ -109,13 +119,11 @@ export function useModuleMounter<LoaderParams, RunParams, ServerState extends Ba
 
         return function moduleCleanUp() {
             unmountFn?.();
-            if (loadingState === 'pending') {
+            if (loadingStateRef.current === 'pending') {
                 abortController.abort();
             }
         };
-        // Мы не хотим чтобы loader обновлялся при изменении run-params и loader-params, это осознанное решение
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [mountTargetNode, loader, cssTargetSelector]);
+    }, [mountTargetNode, loader, cssTargetSelector, useShadowDom]);
 
     return {
         loadingState,

@@ -1,4 +1,3 @@
-// TODO: remove eslint-disable-next-line
 import fs from 'fs';
 import path from 'path';
 

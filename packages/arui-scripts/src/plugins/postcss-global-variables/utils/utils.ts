@@ -13,7 +13,9 @@ export function parseImport(root: Root, postcssHelpers: Helpers, filePath: strin
     try {
         resolvedPath = path.resolve(filePath);
     } catch (err) {
-        throw new Error(`Failed to read ${filePath} with error ${(err instanceof Error) ? err.message : err}`);
+        throw new Error(
+            `Failed to read ${filePath} with error ${err instanceof Error ? err.message : err}`,
+        );
     }
 
     postcssHelpers.result.messages.push({
@@ -44,7 +46,11 @@ export const parseMediaQuery = (importedFile: Root, parsedCustomMedia: Record<st
     });
 };
 
-export function addGlobalVariable(cssValue: string, rootSelector: Rule, parsedVariables: Record<string, string>) {
+export function addGlobalVariable(
+    cssValue: string,
+    rootSelector: Rule,
+    parsedVariables: Record<string, string>,
+) {
     const variableMatches = cssValue.match(/var\(\s*--([^)]+)\s*\)/g);
 
     if (variableMatches) {
@@ -53,7 +59,9 @@ export function addGlobalVariable(cssValue: string, rootSelector: Rule, parsedVa
             const variableName = match.slice(4, -1).trim();
 
             if (parsedVariables[variableName]) {
-                rootSelector.append(new Declaration({ prop: variableName, value: parsedVariables[variableName] }));
+                rootSelector.append(
+                    new Declaration({ prop: variableName, value: parsedVariables[variableName] }),
+                );
 
                 // Рекурсивно проходимся по значениям css, там тоже могут использоваться переменные
                 addGlobalVariable(parsedVariables[variableName], rootSelector, parsedVariables);
@@ -62,7 +70,11 @@ export function addGlobalVariable(cssValue: string, rootSelector: Rule, parsedVa
     }
 }
 
-export const insertParsedCss = (root: Root, parsedVariables: Record<string, string>, parsedCustomMedia: Record<string, AtRule>): Rule => {
+export const insertParsedCss = (
+    root: Root,
+    parsedVariables: Record<string, string>,
+    parsedCustomMedia: Record<string, AtRule>,
+): Rule => {
     const rootRule = new Rule({ selector: ':root' });
 
     root.walkDecls((decl) => {
@@ -82,10 +94,10 @@ export const insertParsedCss = (root: Root, parsedVariables: Record<string, stri
                 const mediaName = value.match(parseRule);
 
                 // итерируемся по [--desktop, --mobile]
-                mediaName?.forEach((rule) => {
+                mediaName?.forEach((name) => {
                     // подставляем значения если у нас есть под это custom-media
-                    if (parsedCustomMedia[rule]) {
-                        root.append(parsedCustomMedia[rule]);
+                    if (parsedCustomMedia[name]) {
+                        root.append(parsedCustomMedia[name]);
                     }
                 });
             }

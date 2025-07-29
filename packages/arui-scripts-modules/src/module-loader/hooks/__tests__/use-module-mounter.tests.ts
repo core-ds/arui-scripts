@@ -46,6 +46,7 @@ describe('useModuleMounter', () => {
             moduleResources: {
                 moduleState: moduleServerState,
             },
+            unmount: jest.fn(),
         }))
 
         const { result, waitForNextUpdate, rerender } = renderHook(() =>
@@ -60,7 +61,7 @@ describe('useModuleMounter', () => {
 
         expect(result.current.loadingState).toBe('unknown');
 
-        (useModuleMountTarget as jest.Mock).mockReturnValueOnce({
+        (useModuleMountTarget as jest.Mock).mockReturnValue({
             mountTargetNode,
             cssTargetSelector: 'head',
             afterTargetMountCallback: jest.fn(),
@@ -162,6 +163,7 @@ describe('useModuleMounter', () => {
     });
 
     it('should return rejected state when loader rejects', async () => {
+        jest.spyOn(console, 'error').mockImplementationOnce(() => {});
         const error = new Error('Failed to load module');
 
         loader.mockRejectedValueOnce(error);

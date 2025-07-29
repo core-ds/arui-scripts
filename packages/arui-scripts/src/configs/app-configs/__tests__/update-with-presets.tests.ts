@@ -4,7 +4,7 @@ import { AppConfigs, AppContext } from '../types';
 import { updateWithPresets } from '../update-with-presets';
 
 jest.mock('../../util/resolve');
-const mockedTryResolve = tryResolve as unknown as jest.Mock<typeof tryResolve>;
+const mockedTryResolve = tryResolve as unknown as jest.Mock;
 
 describe('update-with-presets', () => {
     it('should return config as is if "appPackage.aruiScripts.presets" field is not set', () => {
@@ -23,7 +23,7 @@ describe('update-with-presets', () => {
                 return undefined;
             }
 
-            return path as any;
+            return path;
         });
         const baseConfig = {
             presets: 'presets',
@@ -53,7 +53,7 @@ describe('update-with-presets', () => {
         );
         mockedTryResolve.mockImplementation((path: string) => {
             if (path.includes('/arui-scripts.config')) {
-                return 'virtual-presets' as any;
+                return 'virtual-presets';
             }
 
             return undefined;

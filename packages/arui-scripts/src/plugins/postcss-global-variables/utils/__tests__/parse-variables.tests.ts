@@ -1,4 +1,4 @@
-import type { Declaration,Root } from 'postcss';
+import type { Declaration, Root } from 'postcss';
 
 import { parseVariables } from '../utils';
 
@@ -16,7 +16,7 @@ describe('parseVariables', () => {
                 mockDeclarations.forEach(callback);
 
                 return false;
-            }
+            },
         };
 
         parseVariables(mockImportedFile as Root, parsedVariables);

@@ -3,10 +3,10 @@ import path from 'path';
 import fs from 'fs-extra';
 import tar from 'tar';
 
-import configs from '../../configs/app-configs';
-import nginxConfTemplate from '../../templates/nginx.conf.template';
-import startScript from '../../templates/start.template';
-import exec from '../util/exec';
+import { configs } from '../../configs/app-configs';
+import { nginxConfTemplate } from '../../templates/nginx.conf.template';
+import { startScript } from '../../templates/start.template';
+import { exec } from '../util/exec';
 import { getPruningCommand } from '../util/yarn';
 
 const tempDirName = '.archive-build';

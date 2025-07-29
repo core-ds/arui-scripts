@@ -1,6 +1,4 @@
-// TODO: remove eslint-disable
-/* eslint-disable no-param-reassign */
-import { PluginCreator, Root } from 'postcss';
+import { Container, PluginCreator, Root } from 'postcss';
 
 type PostCssPrefixOptions = {
     prefix: string;
@@ -26,6 +24,7 @@ const postCssPrefix: PluginCreator<PostCssPrefixOptions> = (options) => {
 
     return {
         postcssPlugin: '@alfalab/postcss-prefix-selector',
+        /* eslint-disable no-param-reassign */
         RootExit(root: RootWithVisitedRule) {
             if (root[VisitedRule]) {
                 return;
@@ -37,7 +36,8 @@ const postCssPrefix: PluginCreator<PostCssPrefixOptions> = (options) => {
                 const hasParent = !!rule.parent;
                 const parentIsAtRule = rule.parent && rule.parent.type === 'atrule';
                 const parentIsKeyframe =
-                    parentIsAtRule && KEYFRAME_RULES.includes((rule.parent as any).name);
+                    parentIsAtRule &&
+                    KEYFRAME_RULES.includes((rule.parent as Container & { name: string }).name);
 
                 if (hasParent && parentIsKeyframe) {
                     // Нам не нужно добавлять префиксы для keyframes и элементов внутри них
@@ -56,7 +56,7 @@ const postCssPrefix: PluginCreator<PostCssPrefixOptions> = (options) => {
                      * Оборачивам только самим префиксом без :root.
                      * Позволяет инкапсулировать css переменные под классом.
                      * В таком случае они будут доступны в модулях приложений после использования флага keepCssVars.
-                    */
+                     */
                     if (selector === ROOT_SELECTOR) {
                         return prefix;
                     }
@@ -65,6 +65,7 @@ const postCssPrefix: PluginCreator<PostCssPrefixOptions> = (options) => {
                 });
             });
         },
+        /* eslint-enable no-param-reassign */
     };
 };
 

@@ -8,14 +8,14 @@ jest.mock('fs', () => ({
 
 describe('readAssetsManifest', () => {
     it('should throw error if manifest file not found', async () => {
-        (readFile as any).mockImplementationOnce(() => {
+        (readFile as unknown as jest.Mock).mockImplementationOnce(() => {
             throw new Error('File not found');
         });
         await expect(readAssetsManifest(['vendor', 'main'])).rejects.toThrowError();
     });
 
     it('should return js and css assets', async () => {
-        (readFile as any).mockImplementationOnce((path: any, options: any, done: any) =>
+        (readFile as unknown as jest.Mock).mockImplementationOnce((path, options, done) =>
             done(
                 null,
                 JSON.stringify({

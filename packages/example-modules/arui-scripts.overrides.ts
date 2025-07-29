@@ -15,8 +15,8 @@ const overrides: OverrideFile = {
 
         // Делаем стабильные имена классов css модулей для тестирования
         // eslint-disable-next-line no-restricted-syntax
-        for (const config of allConfigs) {
-            const cssModulesLoader = findLoader(config, '/\\.module\\.css$/');
+        for (const singleConfig of allConfigs) {
+            const cssModulesLoader = findLoader(singleConfig, '/\\.module\\.css$/');
 
             if (cssModulesLoader?.use && Array.isArray(cssModulesLoader.use)) {
                 const cssLoader = cssModulesLoader.use.find((loader) => {
@@ -41,10 +41,10 @@ const overrides: OverrideFile = {
     webpackClientProd: (config) => {
         const allConfigs = Array.isArray(config) ? config : [config];
 
-        return allConfigs.map((config) => {
-            config.optimization.minimize = false;
+        return allConfigs.map((singleConfig) => {
+            singleConfig.optimization.minimize = false;
 
-            return config;
+            return singleConfig;
         });
     },
     postcss: (config) => {

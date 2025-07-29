@@ -13,7 +13,7 @@ describe('fetchAppManifest', () => {
     };
 
     beforeEach(() => {
-        window.XMLHttpRequest = jest.fn(() => xhrMock) as any;
+        window.XMLHttpRequest = jest.fn(() => xhrMock) as unknown as typeof XMLHttpRequest;
         xhrMock = {
             open: jest.fn(),
             send: jest.fn(),
@@ -30,7 +30,7 @@ describe('fetchAppManifest', () => {
         xhrMock.responseText = JSON.stringify('Hello World!');
         const manifestPromise = fetchAppManifest('http://test/manifest.json');
 
-        xhrMock.onload?.({} as any);
+        xhrMock.onload?.({});
 
         await expect(manifestPromise).resolves.toEqual('Hello World!');
     });

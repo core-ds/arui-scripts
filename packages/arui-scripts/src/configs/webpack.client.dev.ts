@@ -1,9 +1,9 @@
-import applyOverrides from './util/apply-overrides';
+import { applyOverrides } from './util/apply-overrides';
 import { findLoader } from './util/find-loader';
 import { findPlugin } from './util/find-plugin';
 import { createClientWebpackConfig, createSingleClientWebpackConfig } from './webpack.client';
 
-const config = applyOverrides(
+export const config = applyOverrides(
     ['webpack', 'webpackClient', 'webpackDev', 'webpackClientDev'],
     createClientWebpackConfig('dev'),
     {
@@ -12,5 +12,3 @@ const config = applyOverrides(
         findPlugin: findPlugin<'client'>(),
     },
 );
-
-export default config;

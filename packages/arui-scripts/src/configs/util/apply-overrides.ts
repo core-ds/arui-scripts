@@ -1,9 +1,8 @@
-// TODO: remove eslint-disable-next-line
 import type * as rspack from '@rspack/core';
-import type { Options as SwcOptions } from '@swc/core'
+import type { Options as SwcOptions } from '@swc/core';
 import type { Configuration as WebpackDevServerConfiguration } from 'webpack-dev-server';
 
-import appConfigs from '../app-configs';
+import { configs } from '../app-configs';
 import { AppContextWithConfigs } from '../app-configs/types';
 import { createSingleClientWebpackConfig } from '../webpack.client';
 
@@ -23,16 +22,19 @@ type Overrides = {
     devServer: WebpackDevServerConfiguration;
     stats: rspack.RspackOptionsNormalized['stats'];
 
+    /* eslint-disable @typescript-eslint/no-explicit-any */
     babel: any; // TODO: где взять typedef-ы для бабеля?
     babelClient: any;
     babelServer: any;
     babelDependencies: any;
+    /* eslint-enable @typescript-eslint/no-explicit-any */
 
     swc: SwcOptions;
     swcServer: SwcOptions;
     swcClient: SwcOptions;
     swcJest: SwcOptions;
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     postcss: any[]; // TODO: где взять typedef-ы для postcss
     browsers: string[];
     supportingBrowsers: string[];
@@ -47,13 +49,14 @@ type Overrides = {
     html: string;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type OmitFirstArg<F> = F extends (x: any, ...args: infer P) => infer R ? (...args: P) => R : never;
 type BoundCreateSingleClientWebpackConfig = OmitFirstArg<typeof createSingleClientWebpackConfig>;
 
 type ClientWebpackAdditionalArgs = {
     createSingleClientWebpackConfig: BoundCreateSingleClientWebpackConfig;
     findLoader: typeof findLoader;
-    findPlugin: ReturnType<typeof findPlugin<'client'>>
+    findPlugin: ReturnType<typeof findPlugin<'client'>>;
 };
 
 type ServerWebpackAdditionalArgs = {
@@ -93,7 +96,7 @@ export type OverrideFile = {
 
 let overrides: OverrideFile[] = [];
 
-overrides = appConfigs.overridesPath.map((path) => {
+overrides = configs.overridesPath.map((path) => {
     try {
         // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
         const requireResult = require(path);
@@ -120,11 +123,12 @@ overrides = appConfigs.overridesPath.map((path) => {
  * @param args Дополнительные аргументы, которые будут переданы в функцию оверрайда
  * @returns {*}
  */
-function applyOverrides<
+export function applyOverrides<
     T extends Overrides[Key],
     Key extends keyof Overrides,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     Args = Key extends keyof OverridesAdditionalArgs ? OverridesAdditionalArgs[Key] : undefined,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
 >(overridesKey: Key | Key[], config: T, args?: any): T {
     if (typeof overridesKey === 'string') {
         // eslint-disable-next-line no-param-reassign
@@ -132,20 +136,17 @@ function applyOverrides<
     }
     overridesKey.forEach((key) => {
         overrides.forEach((override) => {
-            // eslint-disable-next-line no-prototype-builtins
-            if (override.hasOwnProperty(key)) {
+            if (Object.prototype.hasOwnProperty.call(override, key)) {
                 const overrideFn = override[key];
 
                 if (typeof overrideFn !== 'function') {
                     throw new TypeError(`Override ${key} must be a function`);
                 }
                 // eslint-disable-next-line no-param-reassign
-                config = overrideFn(config, appConfigs, args);
+                config = overrideFn(config, configs, args);
             }
         });
     });
 
     return config;
 }
-
-export default applyOverrides;

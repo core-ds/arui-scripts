@@ -12,7 +12,7 @@ describe('addGlobalVariable', () => {
         addGlobalVariable('var(--color-primary)', mockRootSelector, parsedVariables);
 
         expect(mockRootSelector.nodes).toMatchObject([
-            { prop: '--color-primary', value: '#ff0000' }
+            { prop: '--color-primary', value: '#ff0000' },
         ]);
     });
 
@@ -37,8 +37,16 @@ describe('addGlobalVariable', () => {
         };
 
         addGlobalVariable('var(--color-primary)', mockRootSelector, parsedVariables);
-        addGlobalVariable('var(--color-primary)', mockRootSelectorWithSpace, parsedVariablesWithSpace);
-        addGlobalVariable('var(--color-primary)', mockRootSelectorWithNewLine, parsedVariablesWithNewLine);
+        addGlobalVariable(
+            'var(--color-primary)',
+            mockRootSelectorWithSpace,
+            parsedVariablesWithSpace,
+        );
+        addGlobalVariable(
+            'var(--color-primary)',
+            mockRootSelectorWithNewLine,
+            parsedVariablesWithNewLine,
+        );
 
         expect(mockRootSelector.nodes).toMatchObject([
             { prop: '--color-primary', value: 'var(--color-secondary)' },

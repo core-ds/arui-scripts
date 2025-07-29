@@ -33,5 +33,6 @@ ${assets.js.map((c) => `<script type='text/javascript' src='/${c}'></script>`).j
 });
 
 app.listen(3000, () => {
+    // eslint-disable-next-line no-console
     console.log('Test server is listening on :3000');
 });

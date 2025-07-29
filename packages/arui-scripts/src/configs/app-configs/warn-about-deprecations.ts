@@ -9,7 +9,7 @@ export function warnAboutDeprecations(config: AppContextWithConfigs) {
         console.warn(
             'Передача config.proxy как объекта больше не поддерживается. ',
             'arui-scripts попробует привести конфигурацию к корректному виду, но это не всегда может работать корректно',
-            'Правильный формат конфигурации можно посмотреть в документации rspack: https://rspack.dev/guide/features/dev-server#proxy'
+            'Правильный формат конфигурации можно посмотреть в документации rspack: https://rspack.dev/guide/features/dev-server#proxy',
         );
 
         // eslint-disable-next-line no-param-reassign
@@ -17,7 +17,9 @@ export function warnAboutDeprecations(config: AppContextWithConfigs) {
     }
 }
 
-function convertObjectProxyConfigurationToArray(proxyConfiguration: Record<string, ProxyConfigArrayItem>) {
+function convertObjectProxyConfigurationToArray(
+    proxyConfiguration: Record<string, ProxyConfigArrayItem>,
+) {
     const arrayProxy: ProxyConfigArrayItem[] = [];
 
     Object.keys(proxyConfiguration).forEach((context) => {
@@ -25,9 +27,11 @@ function convertObjectProxyConfigurationToArray(proxyConfiguration: Record<strin
 
         arrayProxy.push({
             context,
-            ...(typeof itemConfig === 'string' ? {
-                target: itemConfig,
-            }: itemConfig),
+            ...(typeof itemConfig === 'string'
+                ? {
+                      target: itemConfig,
+                  }
+                : itemConfig),
         });
     });
 

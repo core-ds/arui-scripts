@@ -1,6 +1,6 @@
 import type { Options } from '@swc/core';
 
-import applyOverrides from './util/apply-overrides';
+import { applyOverrides } from './util/apply-overrides';
 import { configs } from './app-configs';
 
 const swcConfig: Options = {
@@ -20,10 +20,8 @@ const swcConfig: Options = {
         },
         experimental: configs.collectCoverage
             ? {
-                plugins: [
-                    ['swc-plugin-coverage-instrument', {}],
-                ],
-            }
+                  plugins: [['swc-plugin-coverage-instrument', {}]],
+              }
             : {},
     },
 };

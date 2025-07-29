@@ -13,7 +13,7 @@ describe('update-with-env', () => {
 
     afterEach(() => {
         jest.resetAllMocks();
-    })
+    });
 
     afterAll(() => {
         process.env = OLD_ENV;

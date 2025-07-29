@@ -55,7 +55,7 @@ describe('getModule', () => {
     it('should throw an error if the module is not found in the container', async () => {
         const moduleId = 'my-module';
 
-        (window as any)[windowVarName] = {
+        (window as typeof window & Record<string, unknown>)[windowVarName] = {
             init: jest.fn(),
             get: jest.fn(() => Promise.resolve(undefined)),
         };

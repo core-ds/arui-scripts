@@ -52,13 +52,13 @@ const overrides: OverrideFile = {
     webpackClientProd: (config) => {
         const allConfigs = Array.isArray(config) ? config : [config];
 
-        return allConfigs.map((config) => {
+        return allConfigs.map((singleConfig) => {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             // eslint-disable-next-line no-param-reassign
-            config.optimization.minimize = false;
+            singleConfig.optimization.minimize = false;
 
-            return config;
+            return singleConfig;
         });
     },
     postcss: (config) => {

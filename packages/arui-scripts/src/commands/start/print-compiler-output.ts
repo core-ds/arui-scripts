@@ -1,8 +1,9 @@
+import { type Stats } from '@rspack/core';
 import chalk from 'chalk';
 
-import statsOptions from '../../configs/stats-options';
+import { statsOptions } from '../../configs/stats-options';
 
-export default function printCompilerOutput(compilerName: string, stats: any) {
+export function printCompilerOutput(compilerName: string, stats: Stats) {
     const output = stats
         .toString(statsOptions)
         .split('\n')

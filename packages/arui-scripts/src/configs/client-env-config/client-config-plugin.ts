@@ -24,9 +24,9 @@ export class ClientConfigPlugin {
 
                     compilation.emitAsset(
                         `../${ENV_CONFIG_FILENAME}`,
-                        new webpack.sources.RawSource(content)
+                        new webpack.sources.RawSource(content),
                     );
-                }
+                },
             );
         });
     }

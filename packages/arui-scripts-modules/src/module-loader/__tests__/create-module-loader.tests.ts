@@ -33,7 +33,7 @@ describe('createModuleLoader', () => {
 
     it('should call getModuleResources with correct params', async () => {
         const getModuleResources = jest.fn();
-        const loader = createModuleLoader<any, any>({
+        const loader = createModuleLoader<unknown, unknown>({
             moduleId: 'test',
             hostAppId: 'test',
             getModuleResources,

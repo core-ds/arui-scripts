@@ -1,16 +1,17 @@
-// TODO: remove eslint-disable
-/* eslint-disable no-param-reassign */
 import { RsdoctorRspackPlugin } from '@rsdoctor/rspack-plugin';
 import { rspack, WebpackPluginInstance } from '@rspack/core';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 
 import { configs } from '../../configs/app-configs';
-import clientConfig from '../../configs/webpack.client.prod';
-import makeTmpDir from '../util/make-tmp-dir';
+import { webpackClientConfig } from '../../configs/webpack.client.prod';
+import { makeTmpDir } from '../util/make-tmp-dir';
 
 (async () => {
-    const clientWebpackConfigs = Array.isArray(clientConfig) ? clientConfig : [clientConfig];
+    const clientWebpackConfigs = Array.isArray(webpackClientConfig)
+        ? webpackClientConfig
+        : [webpackClientConfig];
 
+    /* eslint-disable no-param-reassign */
     const promises = clientWebpackConfigs.map(async (webpackConfig, i) => {
         const tmpDir = await makeTmpDir(i.toString());
 

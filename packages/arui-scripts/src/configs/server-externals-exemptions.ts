@@ -1,4 +1,4 @@
-import applyOverrides from './util/apply-overrides';
+import { applyOverrides } from './util/apply-overrides';
 
 export const serverExternalsExemptions = applyOverrides('serverExternalsExemptions', [
     /^arui-feather/,

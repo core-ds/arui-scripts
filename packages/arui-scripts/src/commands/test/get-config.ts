@@ -14,7 +14,7 @@ const PRESET_EXTENSIONS = ['.json', '.js', '.cjs', '.mjs'];
 const PRESET_NAME = 'jest-preset';
 
 export const getJestConfig = async () => {
-    const {preset, ...appJestConfig} = await getAppJestConfig();
+    const { preset, ...appJestConfig } = await getAppJestConfig();
 
     let presetConfig = {};
 

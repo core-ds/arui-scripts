@@ -1,4 +1,3 @@
-// TODO: remove eslint-disable-next-line
 /**
  * Формирует описание версии в `CHANGELOG.md` на основе данных введенных в Jenkins при старте пайплайна.
  * `standard-version` запускает этот скрипт как `postchangelog` хук.
@@ -6,9 +5,9 @@
 
 import { execSync } from 'child_process';
 import { createReadStream, createWriteStream, promises } from 'fs';
-import readline from 'readline';
+import * as readline from 'readline';
 
-import configs from '../../configs/app-configs';
+import { configs } from '../../configs/app-configs';
 
 const { readFile, rename, unlink } = promises;
 
@@ -55,7 +54,6 @@ const changelogHeaderRegExp = /^###? \[\d+\.\d+\.\d+]\([^)]+\) \(\d{4}-\d{2}-\d{
         ws.write(getVersionDescription({ features, bugFixes, breakingChanges }));
     };
 
-    // eslint-disable-next-line no-restricted-syntax
     for await (const line of rl) {
         switch (modifyingStatus) {
             // Копируем всё как есть до первого заголовка.

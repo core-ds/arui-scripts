@@ -1,9 +1,11 @@
 import { configs } from '../configs/app-configs';
-import applyOverrides from '../configs/util/apply-overrides';
+import { applyOverrides } from '../configs/util/apply-overrides';
 
 const appPathToAdd = configs.clientOnly ? configs.buildPath : '.';
 const appTargetPath = configs.clientOnly ? `/src/${configs.buildPath}` : '/src';
-const nginxConfTargetLocation = configs.clientOnly ? '/etc/nginx/conf.d/default.conf' : '/src/nginx.conf';
+const nginxConfTargetLocation = configs.clientOnly
+    ? '/etc/nginx/conf.d/default.conf'
+    : '/src/nginx.conf';
 const { nginx } = configs;
 
 const nginxNonRootPart = configs.runFromNonRootUser
@@ -19,7 +21,7 @@ const nginxNonRootPart = configs.runFromNonRootUser
    USER nginx`
     : '';
 
-const dockerfileTemplate = `
+const template = `
 FROM ${configs.baseDockerImage}
 ARG START_SH_LOCATION
 ARG NGINX_CONF_LOCATION
@@ -32,9 +34,13 @@ ${nginx ? 'ADD $NGINX_BASE_CONF_LOCATION /etc/nginx/nginx.conf' : ''}
 
 ${nginxNonRootPart}
 
-${configs.runFromNonRootUser ? `ADD --chown=nginx:nginx ${appPathToAdd} ${appTargetPath}` : `ADD ${appPathToAdd} ${appTargetPath}`}
+${
+    configs.runFromNonRootUser
+        ? `ADD --chown=nginx:nginx ${appPathToAdd} ${appTargetPath}`
+        : `ADD ${appPathToAdd} ${appTargetPath}`
+}
 ${configs.clientOnly ? 'COPY env-config.jso[n] /src/' : ''}
 ${configs.clientOnly ? 'CMD ["nginx"]' : ''}
 `;
 
-export default applyOverrides('Dockerfile', dockerfileTemplate);
+export const dockerfileTemplate = applyOverrides('Dockerfile', template);

@@ -1,8 +1,9 @@
-// TODO: remove eslint-disable
 /* eslint-disable global-require */
 /* eslint-disable @typescript-eslint/no-var-requires */
 jest.mock('../../app-configs', () => ({
-    overridesPath: ['overrides'],
+    configs: {
+        overridesPath: ['overrides'],
+    },
 }));
 
 beforeEach(() => {
@@ -12,7 +13,7 @@ beforeEach(() => {
 it('should return config as is if there is no matched overrides keys', () => {
     jest.doMock('overrides', () => ({}), { virtual: true });
 
-    const applyOverrides = require('../apply-overrides').default;
+    const { applyOverrides } = require('../apply-overrides');
 
     const baseConfig = {
         something: true,
@@ -31,7 +32,7 @@ it('should throw an error when overrides is not a function', () => {
         { virtual: true },
     );
 
-    const applyOverrides = require('../apply-overrides').default;
+    const { applyOverrides } = require('../apply-overrides');
 
     expect(() => applyOverrides('foo', {})).toThrowError(TypeError);
 });
@@ -47,7 +48,7 @@ it('should call override function and update config', () => {
         { virtual: true },
     );
 
-    const applyOverrides = require('../apply-overrides').default;
+    const { applyOverrides } = require('../apply-overrides');
 
     expect(applyOverrides('foo', {})).toBe('new value');
     expect(override).toHaveBeenCalledWith({}, { overridesPath: ['overrides'] }, undefined);
@@ -66,7 +67,7 @@ it('should call multiple override functions and update config with latest value'
         { virtual: true },
     );
 
-    const applyOverrides = require('../apply-overrides').default;
+    const { applyOverrides } = require('../apply-overrides');
 
     expect(applyOverrides(['foo', 'bar'], {})).toBe('new value2');
     expect(override1).toHaveBeenCalledWith({}, { overridesPath: ['overrides'] }, undefined);

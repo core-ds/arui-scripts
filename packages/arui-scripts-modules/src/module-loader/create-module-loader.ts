@@ -216,9 +216,10 @@ export function createModuleLoader<
 function validateUsedWebpackVersion() {
     if (
         typeof window !== 'undefined' &&
-        typeof (window as any).webpackJsonp !== 'undefined' &&
+        typeof (window as typeof window & Record<string, unknown>).webpackJsonp !== 'undefined' &&
         process.env.NODE_ENV !== 'production'
     ) {
+        // eslint-disable-next-line no-console
         console.warn(
             'Если вы хотите использовать модули - вам надо обновиться до webpack 5/arui-scripts 12.' +
                 'в противном случае вы можете получить совершенно неожиданные ошибки',

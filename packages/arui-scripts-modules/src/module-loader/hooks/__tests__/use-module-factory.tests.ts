@@ -42,6 +42,7 @@ describe('useModuleFactory', () => {
     });
 
     it('should return an error when the loader rejects', async () => {
+        jest.spyOn(console, 'error').mockImplementationOnce(() => {});
         const error = new Error('Failed to load module');
         const loader = jest.fn(() => Promise.reject(error));
         const loaderParams = { id: 'my-module' };

@@ -8,7 +8,7 @@ const { pathsToModuleNameMapper } = require('ts-jest');
 const { parseConfigFileTextToJson } = require('typescript');
 const { swcJestConfig } = require('../swc');
 
-const configs = require('../app-configs').default;
+const { configs } = require('../app-configs');
 
 module.exports = {
     testRegex: 'src/.*(((/__test__/|/__tests__/).*)|(test|spec|tests)).(jsx?|tsx?)$',
@@ -56,7 +56,7 @@ function getTsTransformer() {
         return [require.resolve('@swc/jest'), swcJestConfig];
     }
 
-    return require.resolve('./babel-transform')
+    return require.resolve('./babel-transform');
 }
 
 function getJsTransformer() {

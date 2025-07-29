@@ -1,4 +1,3 @@
-// TODO: remove eslint-disable-next-line
 import type { GetResourcesRequest, ModuleResources } from '@alfalab/scripts-modules';
 
 import { getAppManifest, readAssetsManifest } from '../read-assets-manifest';

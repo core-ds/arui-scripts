@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { Loader, ModuleResources } from '../types';
 
@@ -36,6 +36,14 @@ export function useModuleLoader<ModuleExportType, GetResourcesParams>({
         { module: ModuleExportType; resources: ModuleResources } | undefined
     >();
 
+    // Мы не хотим чтобы изменение этих параметров тригерило ререндер и перемонтирование модуля,
+    // но не хотим ломать правила хуков
+    const loaderParamsRef = useRef(loaderParams);
+    const loadingStateRef = useRef(loadingState);
+
+    loaderParamsRef.current = loaderParams;
+    loadingStateRef.current = loadingState;
+
     useEffect(() => {
         let unmountFn: () => void | undefined;
         const abortController = new AbortController();
@@ -44,7 +52,7 @@ export function useModuleLoader<ModuleExportType, GetResourcesParams>({
             setLoadingState('pending');
             try {
                 const result = await loader({
-                    getResourcesParams: loaderParams as GetResourcesParams,
+                    getResourcesParams: loaderParamsRef.current,
                     abortSignal: abortController.signal,
                 });
 
@@ -74,12 +82,10 @@ export function useModuleLoader<ModuleExportType, GetResourcesParams>({
 
         return function moduleCleanUp() {
             unmountFn?.();
-            if (loadingState === 'pending') {
+            if (loadingStateRef.current === 'pending') {
                 abortController.abort();
             }
         };
-        // Мы не хотим чтобы loader обновлялся при изменении run-params и loader-params, это осознанное решение
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [loader]);
 
     return {
