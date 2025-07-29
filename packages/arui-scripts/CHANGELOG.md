@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 19.1.0
+
+### Minor Changes
+
+-   [#344](https://github.com/core-ds/arui-scripts/pull/344) [`1ed4a51`](https://github.com/core-ds/arui-scripts/commit/1ed4a511a6bdb7bd654a31c236600ec2c369ff6a) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Многие внутренние экспорты были исправлены с дефолтных на именованные. Если вы использовали внутренние файлы arui-scripts - вам может потребоваться обновить свой код
+
 ## 19.0.8
 
 ### Patch Changes
