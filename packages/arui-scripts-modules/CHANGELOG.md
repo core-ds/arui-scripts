@@ -1,5 +1,11 @@
 # @alfalab/scripts-modules
 
+## 1.8.2
+
+### Patch Changes
+
+-   [#344](https://github.com/core-ds/arui-scripts/pull/344) [`6960d70`](https://github.com/core-ds/arui-scripts/commit/6960d70b49ee49ec8ff399156976bf7595fca044) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Хуки для использования модулей больше не нарушают правила хуков
+
 ## 1.8.1
 
 ### Patch Changes
