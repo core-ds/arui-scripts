@@ -47,7 +47,7 @@ async function main() {
         }
     } catch (err) {
         console.log(chalk.red('Failed to compile client.\n'));
-        printBuildError(err);
+        printBuildError(err as Error);
         process.exit(1);
     }
 }
