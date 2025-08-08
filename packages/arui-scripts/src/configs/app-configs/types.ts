@@ -25,6 +25,13 @@ export type AppConfigs = {
     serverOutput: string;
     clientPolyfillsEntry: null | string | string[];
     clientEntry: string | string[] | Record<string, string | string[]>;
+    dictionaryCompression: {
+        previousVersionPath: string | string[];
+        singleDictionaryMode: 'disabled' | 'default' | 'predefined';
+        predefinedDictionaryPath: string;
+        versionDictionaryName: string;
+        dictionarySize: number;
+    };
 
     // docker compilation configs
     dockerRegistry: string;

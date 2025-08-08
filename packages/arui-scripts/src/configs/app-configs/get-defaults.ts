@@ -37,6 +37,13 @@ export function getDefaultAppConfig(): AppConfigs {
         serverOutput: 'server.js',
         clientPolyfillsEntry: null,
         clientEntry: path.resolve(absoluteSrcPath, 'index'),
+        dictionaryCompression: {
+            previousVersionPath: [],
+            singleDictionaryMode: 'default',
+            predefinedDictionaryPath: '',
+            versionDictionaryName: appPackage?.version || '',
+            dictionarySize: 100_000,
+        },
 
         // docker compilation configs
         dockerRegistry: '',
