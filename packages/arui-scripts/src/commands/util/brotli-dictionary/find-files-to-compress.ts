@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-import { BuildDcbParams } from './types';
+import { BuildDcbParams } from './create-dcb-file';
 
 function parseFilename(filename: string) {
     const [stableName, hash] = filename.split('.');

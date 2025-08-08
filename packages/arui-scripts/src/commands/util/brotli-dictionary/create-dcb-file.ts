@@ -2,9 +2,13 @@ import { Buffer } from 'buffer';
 import crypto from 'crypto';
 import fs from 'fs';
 
-import { compress } from 'brotli-dictionary'
+import { compress } from 'brotli-dict';
 
-import { BuildDcbParams } from './types';
+export type BuildDcbParams = {
+    inputFilePath: string;
+    dictionaryFilePath: string;
+    outFilePath: string;
+}
 
 export async function createDcbFile({
     inputFilePath,
@@ -19,7 +23,7 @@ export async function createDcbFile({
 
     const magicNumberHeader = Buffer.from([0xff, 0x44, 0x43, 0x42]);
     const dictionaryHash = crypto.createHash('sha256').update(dictionaryData).digest();
-    const compressedData = compress(inputFile, {
+    const compressedData = await compress(inputFile, {
         dictionary: dictionaryData,
     });
 

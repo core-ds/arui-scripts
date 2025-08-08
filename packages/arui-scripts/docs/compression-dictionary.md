@@ -1,9 +1,21 @@
 # Compression dictionary transport
 
+## Настройки
+
+- `dictionaryCompression.previousVersionPath` - строка или массив строк с путями до предыдущих версий бандла.
+- `dictionaryCompression.singleDictionaryMode` - выбор режима для работы с общим на весь бандл словарем. Возможные значения: `'disabled'`, `'default'` или `'predefined'`.
+- `dictionaryCompression.predefinedDictionaryPath` - путь для внешнего общего словаря. Используется только совместно с `singleDictionaryMode = 'predefined'`.
+- `dictionaryCompression.versionDictionaryName` - имя для общего словаря, который попадет в бандл. По умолчанию равен версии из package.json вашего приложения.
+- `dictionaryCompression.dictionarySize` - лимит на размер общего словаря. По умолчанию 100 000 байт.
+
 ## Общее описание механизма
 
 Механизм [compression dictionary transport](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Compression_dictionary_transport)
-позволяет использовать загружаемые пользователем ресурсы как словари для сжатия последующих версий этих ресурсов.
+позволяет использовать кастомные словари для сжатия ресурсов приложения.
+
+Есть два основных сценария работы со словарями
+
+загружаемые пользователем ресурсы как словари для сжатия последующих версий этих ресурсов.
 
 Например, первая версия приложения после сборки имеет следующие файлы в `/assets`:
 

@@ -1,4 +1,4 @@
-import { Cluster } from 'cluster';
+import { Worker } from 'cluster';
 
 import { ReactRefreshPluginOptions } from '@pmmmwh/react-refresh-webpack-plugin/types/lib/types';
 import {
@@ -83,7 +83,7 @@ type PluginsListServer = {
     };
     ReloadServerPlugin: {
         done: (...props: unknown[]) => unknown | null;
-        workers: Array<Cluster['Worker']>;
+        workers: Worker[];
     };
     CaseSensitivePathsPlugin: {
         options: CaseSensitivePathsPlugin.Options;

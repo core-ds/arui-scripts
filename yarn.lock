@@ -12,25 +12,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@alfalab/brotli-dcb-builder@workspace:*, @alfalab/brotli-dcb-builder@workspace:packages/brotli-dcb-builder":
-  version: 0.0.0-use.local
-  resolution: "@alfalab/brotli-dcb-builder@workspace:packages/brotli-dcb-builder"
-  dependencies:
-    "@types/command-line-args": "npm:^5.2.3"
-    brotli-dictionary: "npm:^1.4.0"
-    command-line-args: "npm:^6.0.1"
-    eslint: "npm:^8.20.0"
-    eslint-config-custom: "workspace:*"
-    jest: "npm:28.1.3"
-    prettier: "npm:^2.7.1"
-    ts-jest: "npm:28.0.8"
-    ts-node: "npm:10.9.2"
-    typescript: "npm:4.9.5"
-  bin:
-    brotli-dcb-builder: ./build/bin.js
-  languageName: unknown
-  linkType: soft
-
 "@alfalab/client-event-bus@workspace:packages/client-event-bus":
   version: 0.0.0-use.local
   resolution: "@alfalab/client-event-bus@workspace:packages/client-event-bus"
@@ -5128,13 +5109,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/command-line-args@npm:^5.2.3":
-  version: 5.2.3
-  resolution: "@types/command-line-args@npm:5.2.3"
-  checksum: 10/3d90db5b4bbaabd049654a0d12fa378989ab0d76a0f98d4c606761b5a08ce76458df0f9bb175219e187b4cd57e285e6f836d23e86b2c3d997820854cc3ed9121
-  languageName: node
-  linkType: hard
-
 "@types/compression-webpack-plugin@npm:4.0.1":
   version: 4.0.1
   resolution: "@types/compression-webpack-plugin@npm:4.0.1"
@@ -5704,10 +5678,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:12.20.55, @types/node@npm:^12.7.1":
-  version: 12.20.55
-  resolution: "@types/node@npm:12.20.55"
-  checksum: 10/1f916a06fff02faadb09a16ed6e31820ce170798b202ef0b14fc244bfbd721938c54a3a99836e185e4414ca461fe96c5bb5c67c3d248f153555b7e6347f061dd
+"@types/node@npm:18.19.121":
+  version: 18.19.121
+  resolution: "@types/node@npm:18.19.121"
+  dependencies:
+    undici-types: "npm:~5.26.4"
+  checksum: 10/1de136a9db2fe373744a7c40e3dcccaf7904ffdd76d115bd3ef639814aab54c4ea42a61476b54254cd606e7b5fbdc0958ca13b21e589d784c0eecad97c6f2bb1
   languageName: node
   linkType: hard
 
@@ -5717,6 +5693,13 @@ __metadata:
   dependencies:
     undici-types: "npm:~6.20.0"
   checksum: 10/c802a526da2f3fa3ccefd00a71244e7cb825329951719e79e8fec62b1dbc2855388c830489770611584665ce10be23c05ed585982038b24924e1ba2c2cce03fd
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^12.7.1":
+  version: 12.20.55
+  resolution: "@types/node@npm:12.20.55"
+  checksum: 10/1f916a06fff02faadb09a16ed6e31820ce170798b202ef0b14fc244bfbd721938c54a3a99836e185e4414ca461fe96c5bb5c67c3d248f153555b7e6347f061dd
   languageName: node
   linkType: hard
 
@@ -7091,7 +7074,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "arui-scripts@workspace:packages/arui-scripts"
   dependencies:
-    "@alfalab/brotli-dcb-builder": "workspace:*"
     "@alfalab/postcss-custom-properties": "npm:^9.1.2"
     "@babel/core": "npm:7.22.10"
     "@babel/plugin-proposal-decorators": "npm:^7.23.7"
@@ -7128,7 +7110,7 @@ __metadata:
     "@types/fs-extra": "npm:^9.0.13"
     "@types/jest": "npm:^29.5.14"
     "@types/lodash.merge": "npm:^4.6.7"
-    "@types/node": "npm:12.20.55"
+    "@types/node": "npm:18.19.121"
     "@types/postcss-media-query-parser": "npm:0.2.4"
     "@types/react-dev-utils": "npm:9.0.11"
     "@types/semver": "npm:^7.5.0"
@@ -7147,6 +7129,7 @@ __metadata:
     babel-loader: "npm:9.2.1"
     babel-plugin-istanbul: "npm:^7.0.0"
     babel-plugin-transform-react-remove-prop-types: "npm:0.4.24"
+    brotli-dict: "npm:^1.1.4"
     brotli-size: "npm:^4.0.0"
     case-sensitive-paths-webpack-plugin: "npm:2.4.0"
     chalk: "npm:^2.4.2"
@@ -7718,10 +7701,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"brotli-dictionary@npm:^1.4.0":
-  version: 1.4.0
-  resolution: "brotli-dictionary@npm:1.4.0"
-  checksum: 10/4f60bde7ff13fbe5a0ad00e54bd5153a53880b732d039b64811d26718fe90d8a937fa08d8e7f2368f0dd8cd3e63785ae00870c1b4b509d54a837365f2a32af8d
+"brotli-dict@npm:^1.1.4":
+  version: 1.1.4
+  resolution: "brotli-dict@npm:1.1.4"
+  dependencies:
+    command-line-args: "npm:^6.0.1"
+  bin:
+    brotli-dict: lib/bin.js
+  checksum: 10/e853ad502f8dd589a48e098014dd3ba359401807859d134ca76ee0f091a4ee1da886a49d1d43430b2d263862129d3fb418e59d715e39f3a0b0533ecc6261c2e8
   languageName: node
   linkType: hard
 
@@ -21087,44 +21074,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-node@npm:10.9.2":
-  version: 10.9.2
-  resolution: "ts-node@npm:10.9.2"
-  dependencies:
-    "@cspotcode/source-map-support": "npm:^0.8.0"
-    "@tsconfig/node10": "npm:^1.0.7"
-    "@tsconfig/node12": "npm:^1.0.7"
-    "@tsconfig/node14": "npm:^1.0.0"
-    "@tsconfig/node16": "npm:^1.0.2"
-    acorn: "npm:^8.4.1"
-    acorn-walk: "npm:^8.1.1"
-    arg: "npm:^4.1.0"
-    create-require: "npm:^1.1.0"
-    diff: "npm:^4.0.1"
-    make-error: "npm:^1.1.1"
-    v8-compile-cache-lib: "npm:^3.0.1"
-    yn: "npm:3.1.1"
-  peerDependencies:
-    "@swc/core": ">=1.2.50"
-    "@swc/wasm": ">=1.2.50"
-    "@types/node": "*"
-    typescript: ">=2.7"
-  peerDependenciesMeta:
-    "@swc/core":
-      optional: true
-    "@swc/wasm":
-      optional: true
-  bin:
-    ts-node: dist/bin.js
-    ts-node-cwd: dist/bin-cwd.js
-    ts-node-esm: dist/bin-esm.js
-    ts-node-script: dist/bin-script.js
-    ts-node-transpile-only: dist/bin-transpile.js
-    ts-script: dist/bin-script-deprecated.js
-  checksum: 10/a91a15b3c9f76ac462f006fa88b6bfa528130dcfb849dd7ef7f9d640832ab681e235b8a2bc58ecde42f72851cc1d5d4e22c901b0c11aa51001ea1d395074b794
-  languageName: node
-  linkType: hard
-
 "ts-node@npm:9.1.1":
   version: 9.1.1
   resolution: "ts-node@npm:9.1.1"
@@ -21527,6 +21476,13 @@ __metadata:
     has-symbols: "npm:^1.0.3"
     which-boxed-primitive: "npm:^1.0.2"
   checksum: 10/06e1ee41c1095e37281cb71a975cb3350f7cb470a0665d2576f02cc9564f623bd90cfc0183693b8a7fdf2d242963dcc3010b509fa3ac683f540c765c0f3e7e43
+  languageName: node
+  linkType: hard
+
+"undici-types@npm:~5.26.4":
+  version: 5.26.5
+  resolution: "undici-types@npm:5.26.5"
+  checksum: 10/0097779d94bc0fd26f0418b3a05472410408877279141ded2bd449167be1aed7ea5b76f756562cb3586a07f251b90799bab22d9019ceba49c037c76445f7cddd
   languageName: node
   linkType: hard
 

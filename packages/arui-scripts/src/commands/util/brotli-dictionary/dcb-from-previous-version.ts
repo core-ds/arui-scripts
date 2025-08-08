@@ -1,15 +1,16 @@
-import { createDcbFile, findFilesToCompress } from '@alfalab/brotli-dcb-builder';
+import { configs } from '../../../configs/app-configs';
 
-import { configs } from '../../configs/app-configs';
+import { createDcbFile } from './create-dcb-file';
+import { findFilesToCompress } from './find-files-to-compress';
 
-export async function createDcbFiles() {
-    if (!configs.previousVersionPath) {
+export async function dcbFromPreviousVersion() {
+    if (!configs.dictionaryCompression.previousVersionPath) {
         return;
     }
 
-    const previousVersions = Array.isArray(configs.previousVersionPath)
-        ? configs.previousVersionPath
-        : [configs.previousVersionPath];
+    const previousVersions = Array.isArray(configs.dictionaryCompression.previousVersionPath)
+        ? configs.dictionaryCompression.previousVersionPath
+        : [configs.dictionaryCompression.previousVersionPath];
 
     const filesToCompressPromise = previousVersions.map((dictionaryDir) => findFilesToCompress({
         baseDir: configs.clientOutputPath,

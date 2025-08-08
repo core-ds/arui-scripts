@@ -162,13 +162,21 @@ const settings = {
 Ко всем клиентским entryPoint так же будут добавлены `clientPolyfillsEntry` (если задан)
 и, в dev режиме, необходимые для hot-module-reload файлы
 
-#### previousVersionPath
+#### dictionaryCompression
+
+Настройки сжатия со словарём. Используется для сжатия ассетов с поддержкой [compression dictionary transport](./compression-dictionary).
+
+- `dictionaryCompression.previousVersionPath` - строка или массив строк с путями до предыдущих версий бандла.
+- `dictionaryCompression.singleDictionaryMode` - выбор режима для работы с общим на весь бандл словарем. Возможные значения: `'disabled'`, `'default'` или `'predefined'`.
+- `dictionaryCompression.predefinedDictionaryPath` - путь для внешнего общего словаря. Используется только совместно с `singleDictionaryMode = 'predefined'`.
+- `dictionaryCompression.versionDictionaryName` - имя для общего словаря, который попадет в бандл. По умолчанию равен версии из package.json вашего приложения.
+- `dictionaryCompression.dictionarySize` - лимит на размер общего словаря. По умолчанию 100 000 байт.
 Путь до папки/папок с ассетами предыдущей версии приложения. По умолчанию `undefined`.
 
-Используется для сжатия ассетов с поддержкой [compression dictionary transport](./compression-dictionary).
-
-Если передан, при сборке, кроме `.gz` и `.br` версий статических файлов, будут также формироваться `.dcb` файлы.
+Если задан `previousVersionPath`, при сборке, кроме `.gz` и `.br` версий статических файлов, будут также формироваться `.dcb` файлы.
 Если передан массив, будет создавать несколько версий архивов.
+
+`singleDictionaryMode` регулирует работу с единым для всей сборки словарём
 
 
 ### Настройки сборки артефактов

@@ -2,7 +2,7 @@ import { Buffer } from 'buffer';
 import crypto from 'crypto';
 import fs from 'fs';
 
-import { compress } from 'brotli-dictionary';
+import { compress } from 'brotli-dict';
 
 import { createDcbFile } from '../create-dcb-file';
 
@@ -20,8 +20,8 @@ jest.mock('crypto', () => ({
     })),
 }));
 
-jest.mock('brotli-dictionary', () => ({
-    compress: jest.fn().mockReturnValue(new Uint8Array([1, 2, 3])),
+jest.mock('brotli-dict', () => ({
+    compress: jest.fn().mockResolvedValue(new Uint8Array([1, 2, 3])),
 }));
 
 describe('createDcbFile', () => {

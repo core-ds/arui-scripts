@@ -6,6 +6,7 @@ ARG ALPINE_VERSION=3.19
 
 FROM alpine:${ALPINE_VERSION}
 ENV NGINX_VERSION 1.27.1
+ENV NGX_BROTLI_COMMIT 15458ec2d89b01c30057a2a34ca6b5dc583bca58
 ENV NGINX_CONFIG "\
     --prefix=/etc/nginx \
     --sbin-path=/usr/sbin/nginx \
@@ -55,11 +56,13 @@ SHELL ["/bin/bash", "-x", "-c"]
 
 COPY gpg/ /tmp/gpg
 
-COPY ngnix-brotli /usr/src/ngx_brotli
-
 RUN \
-    cd /usr/src/ngx_brotli \
+    mkdir -p /usr/src/ngx_brotli \
+    && cd /usr/src/ngx_brotli \
     && git init \
+    && git remote add origin https://github.com/heymdall-legal/ngx-brotli-cdt.git \
+    && git fetch --depth 1 origin $NGX_BROTLI_COMMIT \
+    && git checkout --recurse-submodules -q FETCH_HEAD \
     && git submodule update --init --depth 1 \
     && cd .. \
     && curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz \

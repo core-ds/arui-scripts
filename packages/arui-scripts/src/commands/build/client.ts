@@ -4,7 +4,7 @@ import { Configuration, Stats, MultiStats } from '@rspack/core';
 import build from './build-wrapper';
 import { calculateAssetsSizes, printAssetsSizes } from '../util/client-assets-sizes';
 import { webpackClientConfig } from '../../configs/webpack.client.prod';
-import { createDcbFiles } from '../util/create-dcb-files';
+import { createDictionaryFiles } from '../util/create-dictionary-files';
 
 console.log(chalk.magenta('Building client...'));
 
@@ -41,7 +41,7 @@ async function main() {
         }
 
         try {
-            await createDcbFiles();
+            await createDictionaryFiles();
         } catch (error) {
             console.warn('Unable to create dcb files', error);
         }

@@ -7,6 +7,7 @@ ARG NODE_BASE_IMAGE=node
 
 FROM alpine:${ALPINE_VERSION}
 ENV NGINX_VERSION 1.27.1
+ENV NGX_BROTLI_COMMIT 15458ec2d89b01c30057a2a34ca6b5dc583bca58
 ENV NGNIX_CONFIG "\
     		--prefix=/etc/nginx \
     		--sbin-path=/usr/sbin/nginx \
@@ -70,11 +71,13 @@ SHELL ["/bin/bash", "-x", "-c"]
 
 COPY gpg/ /tmp/gpg
 
-COPY ngnix-brotli /usr/src/ngx_brotli
-
 RUN \
-	cd /usr/src/ngx_brotli \
+	mkdir -p /usr/src/ngx_brotli \
+	&& cd /usr/src/ngx_brotli \
 	&& git init \
+	&& git remote add origin https://github.com/heymdall-legal/ngx-brotli-cdt.git \
+	&& git fetch --depth 1 origin f2e20e6a94a2267d0cdff8073060e3356ebf9d9c \
+	&& git checkout --recurse-submodules -q FETCH_HEAD \
 	&& git submodule update --init --depth 1 \
 	&& cd .. \
 	&& curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz \

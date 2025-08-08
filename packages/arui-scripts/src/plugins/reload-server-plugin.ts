@@ -1,4 +1,4 @@
-import cluster from 'cluster';
+import cluster, { Worker } from 'cluster';
 import path from 'path';
 
 import { type Compiler } from 'webpack';
@@ -8,7 +8,7 @@ const defaultOptions = {
 };
 
 export class ReloadServerPlugin {
-    workers: cluster.Worker[] = [];
+    workers: Worker[] = [];
 
     done: null | (() => void) = null;
 
@@ -34,7 +34,9 @@ export class ReloadServerPlugin {
             this.done = callback;
             this.workers.forEach((worker) => {
                 try {
-                    process.kill(worker.process.pid, 'SIGTERM');
+                    if (worker.process.pid) {
+                        process.kill(worker.process.pid, 'SIGTERM');
+                    }
                 } catch (e) {
                     console.warn(`Unable to kill process #${worker.process.pid}`);
                 }
