@@ -108,7 +108,7 @@
         "swc-loader": "^0.2.6",
         "swc-plugin-coverage-instrument": "^0.0.25",
         "tar": "6.2.1",
-        "terser-webpack-plugin": "5.3.9",
+        "terser-webpack-plugin": "5.3.14",
         "ts-jest": "28.0.8",
         "ts-loader": "9.4.4",
         "ts-node": "9.1.1",
