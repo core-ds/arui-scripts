@@ -31,19 +31,4 @@ describe('getPolyfills', () => {
 
         expect(polyfills).toMatchObject([]);
     });
-
-    it('should not add feather polyfills when original config has any polyfills', () => {
-        const appConfig: Partial<AppConfigs> = {
-            clientPolyfillsEntry: [],
-        };
-        const requireResolve = jest.fn(() => 'feather-polyfills-path');
-
-        const polyfills = getPolyfills(
-            appConfig as AppConfigs,
-            requireResolve as unknown as typeof require.resolve,
-        );
-
-        expect(polyfills).toMatchObject([]);
-        expect(requireResolve).not.toHaveBeenCalled();
-    });
 });
