@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 20.1.0
+
+### Minor Changes
+
+-   [#328](https://github.com/core-ds/arui-scripts/pull/328) [`4e05165`](https://github.com/core-ds/arui-scripts/commit/4e0516568276f2af67a624a4d32d422c707ed125) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Добавлена возможность сборки dcb архивов. Добавлен новый параметр `dictionaryCompression` для настройки сборки архивов.
+
 ## 20.0.0
 
 ### Major Changes
