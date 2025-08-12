@@ -1,5 +1,22 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 20.0.0
+
+### Major Changes
+
+-   [#335](https://github.com/core-ds/arui-scripts/pull/335) [`2562b34`](https://github.com/core-ds/arui-scripts/commit/2562b34f0670d174a572215df610ddfd0d64be41) Thanks [@dmitrbrvsk](https://github.com/dmitrbrvsk)! - 1. Удалено подключение полифилов из arui-feather. 2. arui-feather удален из списка `serverExternalsExemptions`.
+
+    Если вы по какой-то причине хотите вернуть это поведение:
+
+    1. Вы можете использовать настройку `clientPolyfillsEntry`, передав туда путь до файла с полифилами (`./node_modules/arui-feather/polyfills.js`)
+    2. Вы можете использовать оверрайд для `serverExternalsExemptions` и добавить туда regex для feather: `/^arui-feather/`.
+
+-   [#346](https://github.com/core-ds/arui-scripts/pull/346) [`bf3072e`](https://github.com/core-ds/arui-scripts/commit/bf3072e164d19179c05523900036a9841497cdcb) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Изменены настройки минификации js кода. Минифицированный код больше НЕ поддерживает старые версии браузеров (safari 10, ie, chrome < 49).
+
+    Для большинства проектов это изменение не принесёт никаких проблем, но позволит сократить объем минифицированного кода на 5%.
+
+    Если вам по каким либо причинам нужно изменить это поведение - вы можете воспользоваться механизмом оверрайдов.
+
 ## 19.1.0
 
 ### Minor Changes
