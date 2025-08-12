@@ -42,6 +42,11 @@ export type AppConfigs = {
     // archive compilation configs
     archiveName: string;
 
+    dictionaryCompression: {
+        dictionaryPath: string[];
+        enablePreviousVersionHeaders?: boolean;
+    };
+
     // build tuning
     keepPropTypes: boolean;
     codeLoader: 'babel' | 'tsc' | 'swc';
@@ -146,6 +151,9 @@ export type AppContext = {
     changelogFeaturesPath: string;
     changelogBugfixesPath: string;
     changelogBreakingChangesPath: string;
+
+    compressionPreviousVersionPath: string[];
+    compressionPredefinedDictionaryPath: string[];
 };
 
 export type AppContextWithConfigs = AppContext & AppConfigs;

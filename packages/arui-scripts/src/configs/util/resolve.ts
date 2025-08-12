@@ -1,6 +1,6 @@
 import path from 'path';
 
-export function tryResolve(...args: Parameters<typeof require.resolve>) {
+export function tryResolve(...args: [id: string, options?: { paths?: string[] | undefined }]) {
     try {
         return require.resolve(...args);
     } catch (e) {

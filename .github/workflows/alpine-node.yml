@@ -24,15 +24,42 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-      - name: Build and push Docker images
-        uses: docker/build-push-action@v1
+      - name: Get git short SHA
+        id: git_info
+        run: |
+          echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+          echo "is_master=${{ github.ref_name == 'master' }}" >> $GITHUB_OUTPUT
+
+      - name: Determine tag
+        id: tag_info
+        run: |
+          if [ "${{ steps.git_info.outputs.is_master }}" = "true" ]; then
+            echo "final_tag=${{ matrix.versions.tag }}" >> $GITHUB_OUTPUT
+          else
+            echo "final_tag=${{ matrix.versions.tag }}-${{ steps.git_info.outputs.short_sha }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
         with:
-          path: packages/alpine-node-nginx/
-          dockerfile: packages/alpine-node-nginx/${{ matrix.versions.dockerfile }}
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
-          repository: alfabankui/arui-scripts
-          build_args: NODE_VERSION=${{ matrix.versions.node }},ALPINE_VERSION=${{ matrix.versions.alpine }},NODE_BASE_IMAGE=${{ matrix.versions.image }}
-          tags: ${{ matrix.versions.tag }}
+
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v5
+        with:
+          context: packages/alpine-node-nginx/
+          file: packages/alpine-node-nginx/${{ matrix.versions.dockerfile }}
+          push: true
+          build-args: |
+            NODE_VERSION=${{ matrix.versions.node }}
+            ALPINE_VERSION=${{ matrix.versions.alpine }}
+            NODE_BASE_IMAGE=${{ matrix.versions.image }}
+          tags: alfabankui/arui-scripts:${{ steps.tag_info.outputs.final_tag }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

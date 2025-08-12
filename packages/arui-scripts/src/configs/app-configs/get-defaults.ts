@@ -48,6 +48,11 @@ export function getDefaultAppConfig(): AppConfigs {
         // archive compilation configs
         archiveName: 'build.tar',
 
+        dictionaryCompression: {
+            dictionaryPath: [],
+            enablePreviousVersionHeaders: false,
+        },
+
         // build tuning
         keepPropTypes: false,
         codeLoader: 'swc',
@@ -151,5 +156,8 @@ export function getDefaultAppContext(): AppContext {
         changelogFeaturesPath: path.resolve(CWD, './changelog_features.tmp'),
         changelogBugfixesPath: path.resolve(CWD, './changelog_bugfixes.tmp'),
         changelogBreakingChangesPath: path.resolve(CWD, './changelog_breaking_changes.tmp'),
+
+        compressionPredefinedDictionaryPath: [],
+        compressionPreviousVersionPath: [],
     };
 }
