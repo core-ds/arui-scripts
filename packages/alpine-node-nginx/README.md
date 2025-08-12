@@ -41,11 +41,11 @@ alpine-node-nginx
 Если вы хотите собрать локально, выполните
 
 ```sh
-docker build --build-arg NODE_VERSION=22.16.0 --build-arg ALPINE_VERSION=3.21 -t alfabankui/arui-scripts:test .
+docker build --build-arg NODE_VERSION=22.16.0 --build-arg ALPINE_VERSION=3.22 -t alfabankui/arui-scripts:test .
 ```
 Или для slim версии:
 ```sh
-docker build --build-arg NODE_VERSION=22.16.0 --build-arg ALPINE_VERSION=3.21 -t alfabankui/arui-scripts:test -f Dockerfile-slim .
+docker build --build-arg NODE_VERSION=22.16.0 --build-arg ALPINE_VERSION=3.22 -t alfabankui/arui-scripts:test -f Dockerfile-slim .
 ```
 
 ### Локальная сборка на arm-процессорах
@@ -53,5 +53,5 @@ docker build --build-arg NODE_VERSION=22.16.0 --build-arg ALPINE_VERSION=3.21 -t
 его на наших серверах будет невозможно. Поэтому собирать нужно немного иначе:
 
 ```sh
-docker buildx build --platform linux/amd64 --build-arg NODE_VERSION=22.16.0 --build-arg ALPINE_VERSION=3.21 -t alfabankui/arui-scripts:test -f Dockerfile-slim --load .
+docker buildx build --platform linux/amd64 --build-arg NODE_VERSION=22.16.0 --build-arg ALPINE_VERSION=3.22 -t alfabankui/arui-scripts:test -f Dockerfile-slim --load .
 ```
