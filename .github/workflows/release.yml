@@ -15,6 +15,9 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v4
 
+      - name: Fetch git tags
+        run: git fetch --tags origin
+
       - name: Setup Node.js 22.x
         uses: actions/setup-node@v4
         with:
