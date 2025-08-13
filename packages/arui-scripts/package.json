@@ -103,6 +103,7 @@
         "rspack-manifest-plugin": "5.0.1",
         "run-script-webpack-plugin": "0.0.11",
         "semver": "^7.5.4",
+        "serialize-javascript": "^6.0.2",
         "shelljs": "0.8.5",
         "strip-ansi": "6.0.1",
         "style-loader": "3.3.3",

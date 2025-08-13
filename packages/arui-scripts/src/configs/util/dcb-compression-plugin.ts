@@ -69,6 +69,7 @@ export class CustomCompressionPlugin {
                         }),
                         cache.getLazyHashedEtag(asset.source),
                     );
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const output = ((await cacheItem.getPromise()) || {}) as any;
 
                     let buffer;

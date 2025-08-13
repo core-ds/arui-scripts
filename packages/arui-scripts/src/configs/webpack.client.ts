@@ -30,6 +30,7 @@ import { htmlTemplate } from '../templates/html.template';
 
 import { getImageMinLoader } from './config-extras/minimizers';
 import { checkNodeVersion } from './util/check-node-version';
+import { compressionPluginsForDictionaries } from './util/compression-plugins-for-dictionaries';
 import { Entry, getEntry } from './util/get-entry';
 import { configs } from './app-configs';
 import { babelClientConfig as babelConf } from './babel-client';
@@ -39,7 +40,6 @@ import { patchMainWebpackConfigForModules, patchWebpackConfigForCompat } from '.
 import { postcssConfig as postcssConf } from './postcss';
 import { processAssetsPluginOutput } from './process-assets-plugin-output';
 import { swcClientConfig } from './swc';
-import { compressionPluginsForDictionaries } from './util/compression-plugins-for-dictionaries';
 
 const noopPath = require.resolve('./util/noop');
 
