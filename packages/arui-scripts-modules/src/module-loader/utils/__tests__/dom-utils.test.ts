@@ -105,10 +105,31 @@ describe('dom utils', () => {
         });
 
         it('should inject inline styles in Safari', async () => {
+            jest.useFakeTimers();
             jest.spyOn(navigator, 'userAgent', 'get').mockReturnValue(SAFARI_USER_AGENT);
 
-            await stylesFetcher({
-                urls: ['https://example.com/style.css'],
+            const vendorHref = '/vendor-style.css';
+            const mainHref = '/main-style.css';
+            const vendorStyle = '.container { color: red; }';
+            const mainStyle = '.slider { color: red; }';
+
+            const mockFetch = jest.fn((href: RequestInfo | URL): Promise<Response> => {
+                if (href.toString().includes(vendorHref)) {
+                    return new Promise((resolve) => {
+                        setTimeout(
+                            () => resolve({ text: () => Promise.resolve(vendorStyle) } as any),
+                            1000,
+                        );
+                    });
+                }
+
+                return Promise.resolve({ text: () => Promise.resolve(mainStyle) } as any);
+            });
+
+            const spyFetch = jest.spyOn(global, 'fetch').mockImplementation(mockFetch);
+
+            const fetcherPromise = stylesFetcher({
+                urls: [`https://example.com${vendorHref}`, `https://example.com${mainHref}`],
                 targetNode: document.head,
                 attributes: {
                     [DATA_APP_ID_ATTRIBUTE]: MODULE_TEST_ID,
@@ -116,11 +137,21 @@ describe('dom utils', () => {
                 abortSignal: undefined,
             });
 
+            jest.runAllTimers();
+
+            await fetcherPromise;
+
             const nodes = findResourcesNodes();
 
-            expect(nodes.length).toBe(1);
+            expect(nodes.length).toBe(2);
             expect(nodes[0].tagName).toBe('STYLE');
             expect(nodes[0].getAttribute(DATA_APP_ID_ATTRIBUTE)).toBe(MODULE_TEST_ID);
+
+            expect(nodes[0].textContent).toBe(vendorStyle);
+            expect(nodes[1].textContent).toBe(mainStyle);
+
+            spyFetch.mockReset();
+            jest.useRealTimers();
         });
 
         it('should create link instead of style tag if disableInlineStyleSafari = true in Safari', async () => {
