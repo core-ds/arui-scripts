@@ -39,6 +39,7 @@ import { patchMainWebpackConfigForModules, patchWebpackConfigForCompat } from '.
 import { postcssConfig as postcssConf } from './postcss';
 import { processAssetsPluginOutput } from './process-assets-plugin-output';
 import { swcClientConfig } from './swc';
+import { compressionPluginsForDictionaries } from './util/compression-plugins-for-dictionaries';
 
 const noopPath = require.resolve('./util/noop');
 
@@ -395,7 +396,9 @@ export const createSingleClientWebpackConfig = (
         mode === 'prod' &&
             !configs.keepPropTypes &&
             new NormalModuleReplacementPlugin(/^thrift-services\/proptypes/, noopPath),
-    ].filter(Boolean) as RspackPluginInstance[],
+    ].concat([
+        ...(mode === 'prod' ? compressionPluginsForDictionaries() : [])
+    ]).filter(Boolean) as RspackPluginInstance[],
     // Без этого комиляция трирегилась на изменение в node_modules и приводила к утечке памяти
     watchOptions: {
         ignored: new RegExp(configs.watchIgnorePath.join('|')),

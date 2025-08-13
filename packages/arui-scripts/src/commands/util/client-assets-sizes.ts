@@ -1,129 +1,98 @@
-import fs from 'fs';
 import path from 'path';
 
 import { Stats } from '@rspack/core';
 import chalk from 'chalk';
 import filesize from 'filesize';
-import { sync as gzipSize } from 'gzip-size';
-import stripAnsi from 'strip-ansi';
 
-let brotliSize: (content: Buffer) => number = () => NaN;
-
-try {
-    // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
-    brotliSize = require('brotli-size').sync;
-} catch (error) {
-    // empty error
-}
-
-function canReadAsset(asset: string) {
-    return (
-        /\.(js|css)$/.test(asset) &&
-        !/service-worker\.js/.test(asset) &&
-        !/precache-manifest\.[0-9a-f]+\.js/.test(asset)
-    );
-}
+import { configs } from '../../configs/app-configs';
 
 function removeFileNameHash(fileName: string) {
-    return fileName
+    const parts = fileName
         .replace(/\\/g, '/')
-        .replace(/\/?(.*)(\.[0-9a-f]+)(\.chunk)?(\.js|\.css)/, (match, p1, p2, p3, p4) => p1 + p4);
+        .split('.');
+
+    const id = parts[0];
+    const isChunk = fileName.includes('.chunk.');
+    const extension = parts.find(p => ['js', 'css'].includes(p));
+
+    return `${id}${isChunk ? '.chunk' : ''}.${extension}`;
 }
 
 type AssetSize = {
-    name: string;
-    fullName: string;
-    gzipSize: number;
-    brotliSize: number;
-    size: number;
-    sizeLabel: string;
-    gzipLabel: string;
-    brotliLabel: string;
+    size?: number;
+    gzipSize?: number;
+    brSize?: number;
+    dcbSize?: number;
 };
 
-type TotalSizes = {
-    size: number;
-    sizeLabel: string;
-    gzipSize: number;
-    gzipLabel: string;
-    brotliSize: number;
-    brotliLabel: string;
-};
-
-type ClientAssetsSizes = {
-    totalSizes: TotalSizes;
-    assets: AssetSize[];
-};
-
-export function calculateAssetsSizes(webpackStats: Stats, rootDir = ''): ClientAssetsSizes {
+export function printAssetsSizes(webpackStats: Stats) {
     const assetsStats = webpackStats.toJson({ all: false, assets: true }).assets || [];
+    const assetsMap: Record<string, AssetSize> = {};
+    const statExtensions = ['js', 'css', 'br', 'gz', 'dcb'];
 
-    const assets = assetsStats
-        .filter((asset) => canReadAsset(asset.name))
-        .map((asset) => {
-            const fileContents = fs.readFileSync(path.join(rootDir, asset.name));
-            const size = gzipSize(fileContents);
-            const brSize = brotliSize(fileContents);
-            const filename = path.basename(asset.name);
+    assetsStats.forEach((asset) => {
+        if (asset.type !== 'asset') {
+            return;
+        }
 
-            return {
-                name: removeFileNameHash(filename),
-                fullName: filename,
-                gzipSize: size,
-                brotliSize: brSize,
-                size: asset.size,
-                sizeLabel: filesize(asset.size),
-                gzipLabel: filesize(size),
-                brotliLabel: brSize ? filesize(brSize) : '-',
-            };
-        });
-    const totalSizes: Partial<TotalSizes> = (assets || []).reduce(
-        (file, total) => ({
-            size: total.size + file.size,
-            gzipSize: total.gzipSize + file.gzipSize,
-            brotliSize: total.brotliSize + file.brotliSize,
-        }),
-        { size: 0, gzipSize: 0, brotliSize: 0 },
-    );
+        const extension = path.parse(asset.name).ext.substring(1);
 
-    totalSizes.sizeLabel = filesize(totalSizes.size || 0);
-    totalSizes.gzipLabel = filesize(totalSizes.gzipSize || 0);
-    totalSizes.brotliLabel = totalSizes.brotliSize ? filesize(totalSizes.brotliSize) : '-';
+        if (!statExtensions.includes(extension) || asset.name.endsWith('.dict.br')) {
+            return;
+        }
 
-    return {
-        totalSizes: totalSizes as TotalSizes,
-        assets,
+        const assetName = removeFileNameHash(asset.name);
+
+        if (!assetsMap[assetName]) {
+            assetsMap[assetName] = {};
+        }
+
+        if (extension === 'js' || extension === 'css') {
+            assetsMap[assetName].size = asset.size;
+        }
+
+        if (extension === 'br') {
+            assetsMap[assetName].brSize = asset.size;
+        }
+
+        if (extension === 'gz') {
+            assetsMap[assetName].gzipSize = asset.size;
+        }
+
+        if (extension === 'dcb') {
+            assetsMap[assetName].dcbSize = asset.size;
+        }
+    });
+
+    const totalSizes = {
+        size: 0,
+        gzipSize: 0,
+        brSize: 0,
+        dcbSize: 0,
     };
-}
-
-export function printAssetsSizes(sizes: ClientAssetsSizes) {
-    const longestSizeLabelLength = Math.max.apply(
-        null,
-        sizes.assets.map((a) => {
-            const sizeLength = stripAnsi(a.gzipLabel).length;
-
-            return sizeLength + sizeLength + 8;
-        }),
-    );
 
     console.log(chalk.blueBright('Assets sizes:'));
 
-    sizes.assets.forEach((asset) => {
-        let sizeLabel = `${asset.sizeLabel} (${asset.gzipLabel} gzip, ${asset.brotliLabel} br)`;
-        const sizeLength = stripAnsi(sizeLabel).length;
+    Object.keys(assetsMap).forEach((assetName) => {
+        const asset = assetsMap[assetName];
+        const size = asset.size || 0;
+        const gzipSize = asset.brSize || size;
+        const brSize = asset.brSize || gzipSize;
+        const dcbSize = asset.dcbSize || brSize;
 
-        if (sizeLength < longestSizeLabelLength) {
-            const rightPadding = ' '.repeat(longestSizeLabelLength - sizeLength);
+        totalSizes.size += size;
+        totalSizes.gzipSize += gzipSize
+        totalSizes.brSize += brSize
+        totalSizes.dcbSize += dcbSize;
 
-            sizeLabel += rightPadding;
-        }
-
-        console.log(`  ${sizeLabel}  ${chalk.cyan(asset.name)}`);
+        console.log(
+            `  ${filesize(size)} (${filesize(gzipSize)} gzip, ${filesize(brSize)} br${configs.dictionaryCompression.dictionaryPath.length > 0 ? `, ${filesize(dcbSize)} dcb` : ''}) ${chalk.cyan(assetName)}`,
+        );
     });
 
     console.log(
-        `${chalk.blueBright('\nTotal size:\n')}  ${sizes.totalSizes.sizeLabel} (${
-            sizes.totalSizes.gzipLabel
-        } gzip, ${sizes.totalSizes.brotliLabel} br)\n`,
+        `${chalk.blueBright('\nTotal size:\n')}  ${filesize(totalSizes.size)} (${
+            filesize(totalSizes.gzipSize)
+        } gzip, ${filesize(totalSizes.brSize)} br${configs.dictionaryCompression.dictionaryPath.length > 0 ? `, ${filesize(totalSizes.dcbSize)} dcb` : ''})\n`,
     );
 }

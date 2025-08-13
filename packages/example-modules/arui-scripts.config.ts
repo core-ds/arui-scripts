@@ -48,6 +48,11 @@ const aruiScriptsConfig: PackageSettings = {
             'ServerStateModule': './src/modules/server-state-module/index',
             'ModuleAbstract': './src/modules/module-abstract/index',
         }
+    },
+    dictionaryCompression: {
+        dictionaryPath: [
+            './dict/example-modules.dict'
+        ]
     }
 }
 

@@ -2,9 +2,8 @@ import chalk from 'chalk';
 import printBuildError from 'react-dev-utils/printBuildError';
 import { Configuration, Stats, MultiStats } from '@rspack/core';
 import build from './build-wrapper';
-import { calculateAssetsSizes, printAssetsSizes } from '../util/client-assets-sizes';
+import { printAssetsSizes } from '../util/client-assets-sizes';
 import { webpackClientConfig } from '../../configs/webpack.client.prod';
-import { createDictionaryFiles } from '../util/create-dictionary-files';
 
 console.log(chalk.magenta('Building client...'));
 
@@ -28,8 +27,9 @@ async function main() {
         }
 
         function printOutputSizes(webpackConfig: Configuration, stats: Stats) {
-            const sizes = calculateAssetsSizes(stats, webpackConfig?.output?.path);
-            printAssetsSizes(sizes);
+            console.log(chalk.bold(`Sizes for "${webpackConfig.name || 'main'}"`));
+
+            printAssetsSizes(stats)
         }
 
         if (Array.isArray(webpackClientConfig)) {
@@ -38,12 +38,6 @@ async function main() {
             );
         } else {
             printOutputSizes(webpackClientConfig as any, stats as Stats);
-        }
-
-        try {
-            await createDictionaryFiles();
-        } catch (error) {
-            console.warn('Unable to create dcb files', error);
         }
     } catch (err) {
         console.log(chalk.red('Failed to compile client.\n'));
