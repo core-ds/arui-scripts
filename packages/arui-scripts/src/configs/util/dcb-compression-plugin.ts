@@ -2,10 +2,10 @@ import crypto from 'crypto';
 
 import { Assets,Compilation, Compiler } from '@rspack/core';
 import { PathData } from '@rspack/core/dist/Compilation';
+import type { HashableObject } from '@rspack/core/dist/lib/cache/getLazyHashedEtag';
 import { RspackError } from '@rspack/core/dist/RspackError';
 import { Rules } from 'compression-webpack-plugin';
 import serialize from 'serialize-javascript';
-import type { HashableObject } from '@rspack/core/dist/lib/cache/getLazyHashedEtag';
 
 type DcbCompressionOptions = {
     test?: Rules;
