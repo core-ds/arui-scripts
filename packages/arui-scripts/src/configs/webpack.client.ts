@@ -268,8 +268,8 @@ export const createSingleClientWebpackConfig = (
                         test: /\.svg/,
                         type: 'asset',
                         generator: {
-                            dataUrl: (file: { filename: string; content: string | Buffer }) =>
-                                svgToMiniDataURI(file.content.toString()),
+                            dataUrl: (file: { filename: string; content: string | Buffer } | Buffer) =>
+                                svgToMiniDataURI(Buffer.isBuffer(file) ? file.toString() : file.content.toString()),
                         },
                         parser: {
                             dataUrlCondition: {
@@ -448,8 +448,6 @@ function getCodeLoader(mode: 'dev' | 'prod'): RuleSetRule {
             include: configs.appSrc,
             loader: 'builtin:swc-loader',
             options: {
-                cacheDirectory: mode === 'dev',
-                cacheCompression: false,
                 ...swcClientConfig,
                 jsc: {
                     ...swcClientConfig.jsc,

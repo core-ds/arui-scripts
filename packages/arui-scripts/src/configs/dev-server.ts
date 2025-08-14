@@ -1,8 +1,7 @@
 import http from 'http';
 import path from 'path';
 
-import type { ProxyConfigArray } from 'webpack-dev-server';
-
+import { Configuration } from '@rspack/dev-server'
 import { applyOverrides } from './util/apply-overrides';
 import { configs } from './app-configs';
 import { ENV_CONFIG_FILENAME } from './client-env-config';
@@ -73,8 +72,8 @@ export const devServerConfig = applyOverrides('devServer', {
         : {},
 });
 
-function getProxyConfig(): ProxyConfigArray {
-    const proxyConfig: ProxyConfigArray = [];
+function getProxyConfig(): Configuration['proxy'] {
+    const proxyConfig: Configuration['proxy'] = [];
     const userProxyConfig = configs.proxy;
 
     if (!configs.clientOnly) {

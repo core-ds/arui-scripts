@@ -1,6 +1,6 @@
 import type * as rspack from '@rspack/core';
+import type { Configuration as RspackDevServerConfiguration } from '@rspack/dev-server'
 import type { Options as SwcOptions } from '@swc/core';
-import type { Configuration as WebpackDevServerConfiguration } from 'webpack-dev-server';
 
 import { configs } from '../app-configs';
 import { AppContextWithConfigs } from '../app-configs/types';
@@ -19,7 +19,7 @@ type Overrides = {
     webpackProd: rspack.Configuration;
     webpackClientProd: rspack.Configuration | rspack.Configuration[];
     webpackServerProd: rspack.Configuration;
-    devServer: WebpackDevServerConfiguration;
+    devServer: RspackDevServerConfiguration;
     stats: rspack.RspackOptionsNormalized['stats'];
 
     /* eslint-disable @typescript-eslint/no-explicit-any */
