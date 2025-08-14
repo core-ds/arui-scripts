@@ -1,5 +1,28 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 20.2.0
+
+### Minor Changes
+
+-   [#352](https://github.com/core-ds/arui-scripts/pull/352) [`bcc3155`](https://github.com/core-ds/arui-scripts/commit/bcc3155b3450bf682f7d8d653d282b749853d7af) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Обновление rspack до версии 1.4.11. Приносит дополнительное ускорение, исправление багов.
+    Основные фичи описаны в релиз-ноутах к версии [1.2](https://rspack.rs/blog/announcing-1-2), [1.3](https://rspack.rs/blog/announcing-1-3) и [1.4](https://rspack.rs/blog/announcing-1-4).
+
+    Кратко:
+
+    -   меньше бинарник самого rspack
+    -   более быстрый code-splitting
+    -   из дефолтных watch-таргетов убраны node_modules, что ускоряет как старт, так и работу в дев режиме
+    -   меньшее использование памяти
+    -   более быстрый парсер кода
+    -   улучшенный алгоритм tree-shaking - более компактные бандлы
+    -   инкрементальная сборка в дев режиме - на 30% более быстрый HMR
+
+    С полным списком изменений можно ознакомится на [странице релизов rspack](https://github.com/web-infra-dev/rspack/releases?page=1).
+
+### Patch Changes
+
+-   [`43a7c5c`](https://github.com/core-ds/arui-scripts/commit/43a7c5c3dff8b933a75c1eaddfc738cdbdfb9e1b) Thanks [@Heymdall](https://github.com/Heymdall)! - Сжатие с DCB теперь просто использует compression plugin. Улучшен вывод статистики по собранным файлам
+
 ## 20.1.0
 
 ### Minor Changes
