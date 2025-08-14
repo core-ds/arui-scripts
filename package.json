@@ -18,7 +18,7 @@
     },
     "husky": {
         "hooks": {
-            "pre-commit": "yarn test",
+            "pre-commit": "yarn lint && yarn test",
             "commit-msg": "yarn commitlint -E HUSKY_GIT_PARAMS"
         }
     },
@@ -26,7 +26,7 @@
         "publish-packages": "yarn test && changeset version && yarn npm-publish",
         "npm-publish": "yarn workspaces foreach --all --no-private npm publish --tolerate-republish && yarn changeset tag",
         "build": "turbo run build",
-        "test": "turbo run lint build build:app test validate",
+        "test": "turbo run build build:app test validate",
         "lint": "turbo run lint"
     },
     "prettier": "arui-presets-lint/prettier",

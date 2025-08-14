@@ -2,6 +2,7 @@ import crypto from 'crypto';
 
 import { Assets,Compilation, Compiler } from '@rspack/core';
 import { PathData } from '@rspack/core/dist/Compilation';
+import type { HashableObject } from '@rspack/core/dist/lib/cache/getLazyHashedEtag';
 import { RspackError } from '@rspack/core/dist/RspackError';
 import { Rules } from 'compression-webpack-plugin';
 import serialize from 'serialize-javascript';
@@ -67,7 +68,7 @@ export class CustomCompressionPlugin {
                             name,
                             algorithm: this.options.algorithm,
                         }),
-                        cache.getLazyHashedEtag(asset.source),
+                        cache.getLazyHashedEtag(asset.source as HashableObject),
                     );
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const output = ((await cacheItem.getPromise()) || {}) as any;
@@ -135,9 +136,9 @@ export class CustomCompressionPlugin {
                         await cacheItem.storePromise(output);
                     }
 
-                    const newFilename = compilation.getPath(this.options.filename, {
-                        filename: name,
-                    });
+                    const newFilename = compilation.getPath(
+                        this.options.filename({ filename: name }),
+                    );
 
                     const newInfo = { compressed: true };
 

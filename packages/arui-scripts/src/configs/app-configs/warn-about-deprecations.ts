@@ -2,7 +2,7 @@ import { RspackDevServer } from '@rspack/dev-server';
 
 import { AppContextWithConfigs } from './types';
 
-type ProxyConfigArrayItem = RspackDevServer['options']['proxy'][0];
+type ProxyConfigArrayItem = NonNullable<RspackDevServer['options']['proxy']>[0];
 
 export function warnAboutDeprecations(config: AppContextWithConfigs) {
     if (!Array.isArray(config.proxy) && config.proxy) {
