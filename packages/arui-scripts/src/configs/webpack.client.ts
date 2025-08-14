@@ -20,7 +20,6 @@ import CompressionPlugin from 'compression-webpack-plugin';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
-import svgToMiniDataURI from 'mini-svg-data-uri';
 import { RspackManifestPlugin } from 'rspack-manifest-plugin';
 import TerserPlugin from 'terser-webpack-plugin';
 import { WebpackDeduplicationPlugin } from 'webpack-deduplication-plugin';
@@ -267,10 +266,6 @@ export const createSingleClientWebpackConfig = (
                     {
                         test: /\.svg/,
                         type: 'asset',
-                        generator: {
-                            dataUrl: (file: { filename: string; content: string | Buffer } | Buffer) =>
-                                svgToMiniDataURI(Buffer.isBuffer(file) ? file.toString() : file.content.toString()),
-                        },
                         parser: {
                             dataUrlCondition: {
                                 maxSize: configs.dataUrlMaxSize,

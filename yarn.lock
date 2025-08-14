@@ -7296,7 +7296,6 @@ __metadata:
     babel-plugin-istanbul: "npm:^7.0.0"
     babel-plugin-transform-react-remove-prop-types: "npm:0.4.24"
     brotli-dict: "npm:^1.1.4"
-    brotli-size: "npm:^4.0.0"
     case-sensitive-paths-webpack-plugin: "npm:2.4.0"
     chalk: "npm:^2.4.2"
     compression-webpack-plugin: "npm:9.2.0"
@@ -7309,7 +7308,6 @@ __metadata:
     filesize: "npm:^6.4.0"
     fork-ts-checker-webpack-plugin: "npm:6.5.3"
     fs-extra: "npm:6.0.1"
-    gzip-size: "npm:5.1.1"
     html-webpack-plugin: "npm:^5.6.0"
     image-minimizer-webpack-plugin: "npm:^3.8.3"
     imagemin: "npm:^8.0.1"
@@ -7376,9 +7374,6 @@ __metadata:
     react: ">=16.3.0"
     react-dom: ">=16.3.0"
     typescript: ">=4.0.0"
-  dependenciesMeta:
-    brotli-size:
-      optional: true
   bin:
     arui-scripts: ./build/bin/index.js
   languageName: unknown
@@ -7876,15 +7871,6 @@ __metadata:
   bin:
     brotli-dict: lib/bin.js
   checksum: 10/e853ad502f8dd589a48e098014dd3ba359401807859d134ca76ee0f091a4ee1da886a49d1d43430b2d263862129d3fb418e59d715e39f3a0b0533ecc6261c2e8
-  languageName: node
-  linkType: hard
-
-"brotli-size@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "brotli-size@npm:4.0.0"
-  dependencies:
-    duplexer: "npm:0.1.1"
-  checksum: 10/dbeba696838654229ee995aea2272e8d1b5d09eafa805cb6a726b55f1ae44e5c7aded2ded2cbf25288959196a2ba00b134d6bbb35d5fe39b4221bac77ec0ca85
   languageName: node
   linkType: hard
 
@@ -10293,14 +10279,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"duplexer@npm:0.1.1":
-  version: 0.1.1
-  resolution: "duplexer@npm:0.1.1"
-  checksum: 10/fc7937c4a43808493cd63dfa59f4deb6cf02beea783cb17f39677b53ccacb9fba48f87731b8944048dd6dfa8f456d0725f86f3fd587ab780532d9a8e2914e8b7
-  languageName: node
-  linkType: hard
-
-"duplexer@npm:^0.1.1, duplexer@npm:^0.1.2":
+"duplexer@npm:^0.1.2":
   version: 0.1.2
   resolution: "duplexer@npm:0.1.2"
   checksum: 10/62ba61a830c56801db28ff6305c7d289b6dc9f859054e8c982abd8ee0b0a14d2e9a8e7d086ffee12e868d43e2bbe8a964be55ddbd8c8957714c87373c7a4f9b0
@@ -12559,16 +12538,6 @@ __metadata:
   version: 1.4.0
   resolution: "graphemer@npm:1.4.0"
   checksum: 10/6dd60dba97007b21e3a829fab3f771803cc1292977fe610e240ea72afd67e5690ac9eeaafc4a99710e78962e5936ab5a460787c2a1180f1cb0ccfac37d29f897
-  languageName: node
-  linkType: hard
-
-"gzip-size@npm:5.1.1":
-  version: 5.1.1
-  resolution: "gzip-size@npm:5.1.1"
-  dependencies:
-    duplexer: "npm:^0.1.1"
-    pify: "npm:^4.0.1"
-  checksum: 10/6451ba2210877368f6d9ee9b4dc0d14501671472801323bf81fbd38bdeb8525f40a78be45a59d0182895d51e6b60c6314b7d02bd6ed40e7225a01e8d038aac1b
   languageName: node
   linkType: hard
 
