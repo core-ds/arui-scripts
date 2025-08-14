@@ -1,6 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 
+import CompressionPlugin from 'compression-webpack-plugin';
+
 import { configs } from '../app-configs';
 
 import { compressWithDcb } from './compress-with-dcb';
@@ -11,10 +13,13 @@ export function compressionPluginsForDictionaries() {
         const dictionaryName = path.parse(dictionaryPath).name;
         const dictionaryContent = fs.readFileSync(dictionaryPath, null);
 
-        return new CustomCompressionPlugin({
+        return new CompressionPlugin({
             test: /\.js$|\.css$/,
-            filename: () => `[file].${dictionaryName}.dcb`,
-            algorithm: (input) => compressWithDcb(input, dictionaryContent),
+            filename: `[file].${dictionaryName}.dcb`,
+            algorithm: (input, options, callback) => {
+                compressWithDcb(input, dictionaryContent)
+                    .then((r) => callback(null, r));
+            },
             threshold: 10240,
             minRatio: 0.8,
         })

@@ -49,11 +49,12 @@ const aruiScriptsConfig: PackageSettings = {
             'ModuleAbstract': './src/modules/module-abstract/index',
         }
     },
-    dictionaryCompression: {
-        dictionaryPath: [
-            './dict/example-modules.dict'
-        ]
-    }
+    // TODO: enable it, currently it randomly hangs
+    // dictionaryCompression: {
+    //     dictionaryPath: [
+    //         './dict/example-modules.dict'
+    //     ]
+    // }
 }
 
 export default aruiScriptsConfig;
