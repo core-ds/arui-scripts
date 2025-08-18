@@ -7355,7 +7355,7 @@ __metadata:
     style-loader: "npm:3.3.3"
     stylelint: "npm:^14.9.1"
     swc-loader: "npm:^0.2.6"
-    swc-plugin-coverage-instrument: "npm:^0.0.25"
+    swc-plugin-coverage-instrument: "npm:0.0.28"
     tar: "npm:6.2.1"
     terser-webpack-plugin: "npm:5.3.14"
     ts-jest: "npm:28.0.8"
@@ -20757,10 +20757,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"swc-plugin-coverage-instrument@npm:^0.0.25":
-  version: 0.0.25
-  resolution: "swc-plugin-coverage-instrument@npm:0.0.25"
-  checksum: 10/110cf8074a2932c9cc370dbd833db4b71dca5a386ab13ca1116811fcf3be5498f98ab755cdf7395cf19cdd0da711119ac3edc9ab3c8bc26e50ca60ca07ae834d
+"swc-plugin-coverage-instrument@npm:0.0.28":
+  version: 0.0.28
+  resolution: "swc-plugin-coverage-instrument@npm:0.0.28"
+  checksum: 10/b456905c6dd2c4b430e350610bd9defcd13b6034c5181a2dad246ae3f935c2b596e12bff08435f3d212b1c7375f71f486825049f3944ca94e66f0706961042b5
   languageName: node
   linkType: hard
 
