@@ -38,6 +38,7 @@ type Overrides = {
     postcss: any[]; // TODO: где взять typedef-ы для postcss
     browsers: string[];
     supportingBrowsers: string[];
+    supportingNode: string[];
 
     Dockerfile: string;
     DockerfileCompiled: string;
