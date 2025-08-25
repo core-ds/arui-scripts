@@ -1,5 +1,16 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 20.3.0
+
+### Minor Changes
+
+-   [#356](https://github.com/core-ds/arui-scripts/pull/356) [`542ea5b`](https://github.com/core-ds/arui-scripts/commit/542ea5b5804f2fdce06d0544892a3ba5964b18d5) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Исправлена работа со списком поддерживаемых браузеров. Теперь он корректно берется из настройки supportingBrowsers.
+
+    Добавлена возможность загрузки списка поддерживаемых браузеров любым из поддерживаемых [browserslist](https://github.com/browserslist/browserslist) способом.
+
+    Добавлена отдельная конфигурация для списка поддерживаемых версий nodeJs. Теперь по умолчанию он будет равняться версии, используемой сейчас для сборки.
+    Вы можете изменить это используя оверрайд `supportingNode`.
+
 ## 20.2.1
 
 ### Patch Changes
