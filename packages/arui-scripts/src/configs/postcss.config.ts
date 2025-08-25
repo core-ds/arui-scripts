@@ -5,7 +5,6 @@ import type { PluginCreator } from 'postcss';
 import { postCssGlobalVariables } from '../plugins/postcss-global-variables/postcss-global-variables';
 
 import { configs as config } from './app-configs';
-import { supportingBrowsers } from './supporting-browsers';
 
 type PostCssPluginName = string | PluginCreator<unknown>;
 type PostcssPlugin =
@@ -72,8 +71,5 @@ export const postcssPluginsOptions = {
     },
     'postcss-custom-properties': {
         preserve: false,
-    },
-    autoprefixer: {
-        overrideBrowserslist: supportingBrowsers,
     },
 };

@@ -61,7 +61,9 @@ export default overrides;
 - `webpack.server.prod` - конфигурация для серверного webpack в prod режиме.
   Ключи: `webpack`, `webpackServer`, `webpackProd`, `webpackServerProd`.
 - `supporting-browsers` - список поддерживаемых браузеров в формате [browserslist](https://github.com/browserslist/browserslist).
+  Альтернативно вы можете использовать любые методы передачи списка браузеров, поддерживаемые пакетом browserslist.
   Ключи: `browsers`, `supportingBrowsers`
+- `supportingNode` - список поддерживаемых версий nodejs в формате [browserslist](https://github.com/browserslist/browserslist).
 - `Dockerfile` - докерфайл, который будет использоваться для сборки контейнера.
   Базовый шаблон [тут](../src/templates/dockerfile.template.ts).
   [`Dockerfile` в корне проекта](#docker) имеет приоритет над overrides.

@@ -4,6 +4,9 @@ import { Configuration, Stats, MultiStats } from '@rspack/core';
 import build from './build-wrapper';
 import { printAssetsSizes } from '../util/client-assets-sizes';
 import { webpackClientConfig } from '../../configs/webpack.client.prod';
+import { loadBrowserslist } from '../util/load-browserslist';
+
+loadBrowserslist();
 
 console.log(chalk.magenta('Building client...'));
 

@@ -3,6 +3,9 @@ import printBuildError from 'react-dev-utils/printBuildError';
 import build from './build-wrapper';
 
 import { webpackServerConfig } from '../../configs/webpack.server.prod';
+import { supportingNode } from '../../configs/supporting-node';
+
+process.env.BROWSERSLIST = supportingNode.join(',');
 
 console.log(chalk.magenta('Building server...'));
 
