@@ -3,7 +3,7 @@ import merge from 'lodash.merge';
 
 import { tryResolve } from '../util/resolve';
 
-import { AppConfigs, AppContext } from './types';
+import { type AppConfigs, type AppContext } from './types';
 import { validateSettingsKeys } from './validate-settings-keys';
 
 export function updateWithPresets(config: AppConfigs, context: AppContext) {

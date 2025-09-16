@@ -1,4 +1,4 @@
-import cluster, { Worker } from 'cluster';
+import cluster, { type Worker } from 'cluster';
 import path from 'path';
 
 import { type Compiler } from 'webpack';

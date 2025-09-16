@@ -1,4 +1,4 @@
-import type { AbstractAppEventBus, AbstractKnownEventTypes } from './abstract-types';
+import { type AbstractAppEventBus, type AbstractKnownEventTypes } from './abstract-types';
 
 declare global {
     /* eslint-disable no-var,@typescript-eslint/naming-convention,no-underscore-dangle,vars-on-top */

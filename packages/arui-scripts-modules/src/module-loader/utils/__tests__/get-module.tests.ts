@@ -1,12 +1,12 @@
 /* eslint-disable no-underscore-dangle */
-import { ModuleFederationContainer } from '../../types';
+import { type ModuleFederationContainer } from '../../types';
 import { getCompatModule, getModule } from '../get-module';
 
 const windowVarName = 'my-container';
 
 afterEach(() => {
     delete (window as unknown as Record<string, unknown>)[windowVarName];
-})
+});
 
 describe('getModule', () => {
     const globalScope = global as unknown as Record<string, unknown>;

@@ -78,7 +78,10 @@ describe('server', () => {
 describe('client', () => {
     it('should create client entry', async () => {
         const assetsManifest = JSON.parse(
-            await fs.promises.readFile(path.join(BUILD_PATH, 'assets/webpack-assets.json'), 'utf-8'),
+            await fs.promises.readFile(
+                path.join(BUILD_PATH, 'assets/webpack-assets.json'),
+                'utf-8',
+            ),
         );
 
         const mainJsPath = path.join(BUILD_PATH, assetsManifest.main.js);
@@ -100,7 +103,10 @@ describe('modules', () => {
 
     it.each(modules)('should create module %s entry point', async (moduleName) => {
         const assetsManifest = JSON.parse(
-            await fs.promises.readFile(path.join(BUILD_PATH, 'assets/webpack-assets.json'), 'utf-8'),
+            await fs.promises.readFile(
+                path.join(BUILD_PATH, 'assets/webpack-assets.json'),
+                'utf-8',
+            ),
         );
 
         const moduleJsPath = path.join(BUILD_PATH, assetsManifest[moduleName].js);
@@ -122,12 +128,15 @@ describe('modules', () => {
 
     it('should create valid css for ModuleCompat', async () => {
         const assetsManifest = JSON.parse(
-            await fs.promises.readFile(path.join(BUILD_PATH, 'assets/webpack-assets.json'), 'utf-8'),
+            await fs.promises.readFile(
+                path.join(BUILD_PATH, 'assets/webpack-assets.json'),
+                'utf-8',
+            ),
         );
 
         const moduleCssPath = path.join(BUILD_PATH, assetsManifest.ModuleCompat.css);
 
         expect(await fileExists(moduleCssPath)).toBe(true);
         expect(await fs.promises.readFile(moduleCssPath, 'utf-8')).toMatchSnapshot();
-    })
+    });
 });

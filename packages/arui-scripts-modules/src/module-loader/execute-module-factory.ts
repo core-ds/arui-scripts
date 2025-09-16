@@ -1,8 +1,12 @@
 import { unwrapDefaultExport } from './utils/unwrap-default-export';
-import type { FactoryModule } from './module-types';
-import type { BaseModuleState } from './types';
+import { type FactoryModule } from './module-types';
+import { type BaseModuleState } from './types';
 
-export async function executeModuleFactory<ModuleExportType, RunParams = undefined, ServerState extends BaseModuleState = BaseModuleState>(
+export async function executeModuleFactory<
+    ModuleExportType,
+    RunParams = undefined,
+    ServerState extends BaseModuleState = BaseModuleState,
+>(
     module: FactoryModule<ModuleExportType, RunParams, ServerState>,
     serverState: ServerState,
     runParams?: RunParams,
@@ -18,28 +22,16 @@ export async function executeModuleFactory<ModuleExportType, RunParams = undefin
         return unwrappedModule(runParams as RunParams, serverState);
     }
 
-    if (
-        unwrappedModule.factory &&
-        typeof unwrappedModule.factory === 'function'
-    ) {
-        return unwrappedModule.factory(
-            runParams as RunParams,
-            serverState,
-        );
+    if (unwrappedModule.factory && typeof unwrappedModule.factory === 'function') {
+        return unwrappedModule.factory(runParams as RunParams, serverState);
     }
 
     /**
      * При использовании в модуле createMountableFunction из '@corp-front/module-loader' (для сохранения обратной совместимости)
      * функция пишется в поле mount
      */
-    if (
-        unwrappedModule.mount &&
-        typeof unwrappedModule.mount === 'function'
-    ) {
-        return unwrappedModule.mount(
-            runParams as RunParams,
-            serverState,
-        );
+    if (unwrappedModule.mount && typeof unwrappedModule.mount === 'function') {
+        return unwrappedModule.mount(runParams as RunParams, serverState);
     }
 
     throw new Error(

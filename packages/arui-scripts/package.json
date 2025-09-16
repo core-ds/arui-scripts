@@ -138,10 +138,6 @@
         "@types/webpack-dev-server": "^4.7.1",
         "@types/webpack-manifest-plugin": "3.0.5",
         "@types/webpack-node-externals": "^3.0.0",
-        "eslint": "^8.20.0",
-        "eslint-config-custom": "workspace:*",
-        "prettier": "^2.7.1",
-        "stylelint": "^14.9.1",
         "type-fest": "2.19.0",
         "typescript": "5.6.3"
     },
@@ -151,11 +147,11 @@
     "scripts": {
         "build": "sh bin/build.sh",
         "test": "jest",
-        "lint:css": "stylelint ./src/**/*.css",
-        "lint:scripts": "eslint \"**/*.{js,jsx,ts,tsx}\" --ext .js,.jsx,.ts,.tsx",
-        "lint": "yarn lint:css && yarn lint:scripts",
-        "lint:fix": "yarn lint:css --fix && yarn lint:scripts --fix",
-        "format": "prettier --write $INIT_CWD/{config,src}/**/*.{ts,tsx,js,jsx,css}",
+        "lint:scripts": "arui-presets-lint scripts",
+        "format": "arui-presets-lint format",
+        "format:check": "arui-presets-lint format:check",
+        "lint": "yarn lint:scripts && yarn format:check",
+        "lint:fix": "yarn lint:scripts --fix && yarn format",
         "audit": "yarn npm audit --severity high --environment production"
     },
     "peerDependencies": {

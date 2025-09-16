@@ -1,7 +1,7 @@
-import type {
-    GetModuleStateResult,
-    GetResourcesRequest,
-    MountMode,
+import {
+    type GetModuleStateResult,
+    type GetResourcesRequest,
+    type MountMode,
 } from '@alfalab/scripts-modules';
 
 export type ModuleDescriptor<FrameworkParams extends unknown[] = [], GetResourcesParams = void> = {

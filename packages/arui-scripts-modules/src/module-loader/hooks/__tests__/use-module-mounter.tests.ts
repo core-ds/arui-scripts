@@ -1,23 +1,22 @@
-import { cleanup,renderHook } from '@testing-library/react-hooks';
+import { cleanup, renderHook } from '@testing-library/react-hooks';
 
 import { useModuleMountTarget } from '../use-module-mount-target';
 import { useModuleMounter } from '../use-module-mounter';
 
 jest.mock('../use-module-mount-target', () => ({
-    useModuleMountTarget: jest.fn()
-        .mockReturnValue({
-            mountTargetNode: undefined,
-            cssTargetSelector: undefined,
-            afterTargetMountCallback: jest.fn()
-        }),
+    useModuleMountTarget: jest.fn().mockReturnValue({
+        mountTargetNode: undefined,
+        cssTargetSelector: undefined,
+        afterTargetMountCallback: jest.fn(),
+    }),
 }));
 
 jest.useFakeTimers();
 
 // Мы используем эту функцию чтобы промисы внутри хука не резолвились сразу и мы могли проверить состояние хука
 function wait<T>(ms: number, value: T): Promise<T> {
-    return new Promise(resolve => {
-        setTimeout(() => resolve(value), ms)
+    return new Promise((resolve) => {
+        setTimeout(() => resolve(value), ms);
     });
 }
 
@@ -41,13 +40,15 @@ describe('useModuleMounter', () => {
     it('mount module to element provided by useModuleMountTarget hook', async () => {
         const mountTargetNode = document.createElement('div');
 
-        loader.mockReturnValue(wait(1, {
-            module: mountableModule,
-            moduleResources: {
-                moduleState: moduleServerState,
-            },
-            unmount: jest.fn(),
-        }))
+        loader.mockReturnValue(
+            wait(1, {
+                module: mountableModule,
+                moduleResources: {
+                    moduleState: moduleServerState,
+                },
+                unmount: jest.fn(),
+            }),
+        );
 
         const { result, waitForNextUpdate, rerender } = renderHook(() =>
             useModuleMounter({
@@ -56,7 +57,7 @@ describe('useModuleMounter', () => {
                 runParams,
                 createTargetNode,
                 useShadowDom,
-            })
+            }),
         );
 
         expect(result.current.loadingState).toBe('unknown');
@@ -111,7 +112,7 @@ describe('useModuleMounter', () => {
                 runParams,
                 createTargetNode,
                 useShadowDom,
-            })
+            }),
         );
 
         await waitForNextUpdate();
@@ -136,18 +137,15 @@ describe('useModuleMounter', () => {
             afterTargetMountCallback: jest.fn(),
         });
 
-        const { rerender, waitForNextUpdate } = renderHook(
-            (props) => useModuleMounter(props),
-            {
-                initialProps: {
-                    loader,
-                    loaderParams,
-                    runParams,
-                    createTargetNode,
-                    useShadowDom,
-                },
-            }
-        );
+        const { rerender, waitForNextUpdate } = renderHook((props) => useModuleMounter(props), {
+            initialProps: {
+                loader,
+                loaderParams,
+                runParams,
+                createTargetNode,
+                useShadowDom,
+            },
+        });
 
         await waitForNextUpdate();
 
@@ -180,7 +178,7 @@ describe('useModuleMounter', () => {
                 runParams,
                 createTargetNode,
                 useShadowDom,
-            })
+            }),
         );
 
         expect(result.current.loadingState).toBe('pending');

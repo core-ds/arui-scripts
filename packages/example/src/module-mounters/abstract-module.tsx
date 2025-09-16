@@ -7,7 +7,7 @@ import { createModuleFetcher, createModuleLoader, useModuleLoader } from '@alfal
 type ModuleType = {
     justSomeRandomFunctionThatWeWantToExport: () => void;
     someRandomVariableThatWeWantToExport: string;
-}
+};
 
 const loader = createModuleLoader<ModuleType>({
     hostAppId: 'example',

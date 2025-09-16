@@ -10,9 +10,5 @@ export async function compressWithDcb(inputFile: Buffer, dictionaryData: Buffer)
         dictionary: dictionaryData,
     });
 
-    return Buffer.concat([
-        magicNumberHeader,
-        dictionaryHash,
-        Buffer.from(compressedData),
-    ]);
+    return Buffer.concat([magicNumberHeader, dictionaryHash, Buffer.from(compressedData)]);
 }

@@ -1,19 +1,17 @@
 import path from 'path';
 
-import { Stats } from '@rspack/core';
+import { type Stats } from '@rspack/core';
 import chalk from 'chalk';
 import filesize from 'filesize';
 
 import { configs } from '../../configs/app-configs';
 
 function removeFileNameHash(fileName: string) {
-    const parts = fileName
-        .replace(/\\/g, '/')
-        .split('.');
+    const parts = fileName.replace(/\\/g, '/').split('.');
 
     const id = parts[0];
     const isChunk = fileName.includes('.chunk.');
-    const extension = parts.find(p => ['js', 'css'].includes(p));
+    const extension = parts.find((p) => ['js', 'css'].includes(p));
 
     return `${id}${isChunk ? '.chunk' : ''}.${extension}`;
 }
@@ -81,18 +79,26 @@ export function printAssetsSizes(webpackStats: Stats) {
         const dcbSize = asset.dcbSize || brSize;
 
         totalSizes.size += size;
-        totalSizes.gzipSize += gzipSize
-        totalSizes.brSize += brSize
+        totalSizes.gzipSize += gzipSize;
+        totalSizes.brSize += brSize;
         totalSizes.dcbSize += dcbSize;
 
         console.log(
-            `  ${filesize(size)} (${filesize(gzipSize)} gzip, ${filesize(brSize)} br${configs.dictionaryCompression.dictionaryPath.length > 0 ? `, ${filesize(dcbSize)} dcb` : ''}) ${chalk.cyan(assetName)}`,
+            `  ${filesize(size)} (${filesize(gzipSize)} gzip, ${filesize(brSize)} br${
+                configs.dictionaryCompression.dictionaryPath.length > 0
+                    ? `, ${filesize(dcbSize)} dcb`
+                    : ''
+            }) ${chalk.cyan(assetName)}`,
         );
     });
 
     console.log(
-        `${chalk.blueBright('\nTotal size:\n')}  ${filesize(totalSizes.size)} (${
-            filesize(totalSizes.gzipSize)
-        } gzip, ${filesize(totalSizes.brSize)} br${configs.dictionaryCompression.dictionaryPath.length > 0 ? `, ${filesize(totalSizes.dcbSize)} dcb` : ''})\n`,
+        `${chalk.blueBright('\nTotal size:\n')}  ${filesize(totalSizes.size)} (${filesize(
+            totalSizes.gzipSize,
+        )} gzip, ${filesize(totalSizes.brSize)} br${
+            configs.dictionaryCompression.dictionaryPath.length > 0
+                ? `, ${filesize(totalSizes.dcbSize)} dcb`
+                : ''
+        })\n`,
     );
 }

@@ -1,6 +1,6 @@
 // TODO: remove eslint-disable-next-line
 import { tryResolve } from '../../util/resolve';
-import { AppConfigs, AppContext } from '../types';
+import { type AppConfigs, type AppContext } from '../types';
 import { updateWithPresets } from '../update-with-presets';
 
 jest.mock('../../util/resolve');

@@ -1,6 +1,6 @@
 import merge from 'lodash.merge';
 
-import { AppConfigs, AppContext } from './types';
+import { type AppConfigs, type AppContext } from './types';
 import { validateSettingsKeys } from './validate-settings-keys';
 
 export function updateWithPackage(config: AppConfigs, context: AppContext) {

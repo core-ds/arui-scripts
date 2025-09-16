@@ -29,5 +29,5 @@
 .inlineSvgIcon {
     width: 22px;
     height: 22px;
-    background: url("./clock.svg") no-repeat;
+    background: url('./clock.svg') no-repeat;
 }

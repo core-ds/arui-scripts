@@ -5,8 +5,10 @@ import { useModuleFactory } from '../use-module-factory';
 describe('useModuleFactory', () => {
     it('should return factory execution result when the loader resolves', async () => {
         const moduleExport = jest.fn();
-        const loader = jest.fn()
-            .mockResolvedValue({ module: moduleExport, moduleResources: { moduleState: 'serverState' } });
+        const loader = jest.fn().mockResolvedValue({
+            module: moduleExport,
+            moduleResources: { moduleState: 'serverState' },
+        });
         const loaderParams = { id: 'my-module' };
         const runParams = { foo: 'bar' };
 
@@ -28,8 +30,10 @@ describe('useModuleFactory', () => {
     });
 
     it('should run getFactoryParams with the server state when provided', async () => {
-        const loader = jest.fn()
-            .mockResolvedValue({ module: jest.fn(), moduleResources: { moduleState: 'serverState' } });
+        const loader = jest.fn().mockResolvedValue({
+            module: jest.fn(),
+            moduleResources: { moduleState: 'serverState' },
+        });
         const getFactoryParams = jest.fn((serverState) => serverState);
 
         const { waitForNextUpdate } = renderHook(() =>
@@ -66,8 +70,11 @@ describe('useModuleFactory', () => {
 
     it('should call unmount function of a loader when the component unmounts', async () => {
         const unmount = jest.fn();
-        const loader = jest.fn()
-            .mockResolvedValue({ module: jest.fn(), moduleResources: { moduleState: 'serverState' }, unmount });
+        const loader = jest.fn().mockResolvedValue({
+            module: jest.fn(),
+            moduleResources: { moduleState: 'serverState' },
+            unmount,
+        });
         const loaderParams = { id: 'my-module' };
 
         const { unmount: unmountHook, waitForNextUpdate } = renderHook(() =>

@@ -5,13 +5,13 @@ import { Underlay } from '@alfalab/core-components/underlay';
 import {
     createModuleLoader,
     createServerStateModuleFetcher,
-    MountableModule,
+    type MountableModule,
     useModuleMounter,
 } from '@alfalab/scripts-modules';
 
 type ModuleRunParams = {
     test: string;
-}
+};
 
 const loader = createModuleLoader<MountableModule<ModuleRunParams>, { something: string }>({
     hostAppId: 'example',

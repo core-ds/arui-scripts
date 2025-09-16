@@ -1,4 +1,4 @@
-import type { AtRule, Plugin, PluginCreator, Rule } from 'postcss';
+import { type AtRule, type Plugin, type PluginCreator, type Rule } from 'postcss';
 
 import { insertParsedCss, parseImport, parseMediaQuery, parseVariables } from './utils/utils';
 

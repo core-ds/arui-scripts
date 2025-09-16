@@ -1,6 +1,6 @@
-import { Request, Router } from 'express';
+import { type Request, Router } from 'express';
 
-import { createGetModulesMethod, ModulesConfig } from './modules';
+import { createGetModulesMethod, type ModulesConfig } from './modules';
 
 export function createGetModulesExpress(modules: ModulesConfig<[Request]>): Router {
     const router = Router();
@@ -14,7 +14,8 @@ export function createGetModulesExpress(modules: ModulesConfig<[Request]>): Rout
             const response = await modulesMethodSettings.handler(req.body, req);
 
             res.send(response);
-        } catch (e: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (e: any) {
             res.status(500).send({
                 error: e.message,
                 status: 500,

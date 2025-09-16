@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 
-import { MountableModule } from '../module-types';
-import { BaseModuleState, Loader } from '../types';
+import { type MountableModule } from '../module-types';
+import { type BaseModuleState, type Loader } from '../types';
 import { unwrapDefaultExport } from '../utils/unwrap-default-export';
 
-import { LoadingState } from './types';
+import { type LoadingState } from './types';
 import { useModuleMountTarget } from './use-module-mount-target';
 
 export type UseModuleLoaderParams<LoaderParams, RunParams, ServerState extends BaseModuleState> = {
@@ -53,11 +53,10 @@ export function useModuleMounter<LoaderParams, RunParams, ServerState extends Ba
     useShadowDom,
 }: UseModuleLoaderParams<LoaderParams, RunParams, ServerState>): UseModuleLoaderResult {
     const [loadingState, setLoadingState] = useState<LoadingState>('unknown');
-    const {
-        mountTargetNode,
-        afterTargetMountCallback,
-        cssTargetSelector,
-    } = useModuleMountTarget({ useShadowDom, createTargetNode });
+    const { mountTargetNode, afterTargetMountCallback, cssTargetSelector } = useModuleMountTarget({
+        useShadowDom,
+        createTargetNode,
+    });
 
     // Мы не хотим чтобы изменение этих параметров тригерило ререндер и перемонтирование модуля,
     // но не хотим ломать правила хуков

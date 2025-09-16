@@ -1,7 +1,7 @@
 import { types } from 'util';
 
 import { choosePort } from 'react-dev-utils/WebpackDevServerUtils';
-import { Configuration, rspack, Stats } from '@rspack/core';
+import { type Configuration, rspack, type Stats } from '@rspack/core';
 import { RspackDevServer } from '@rspack/dev-server';
 
 import { devServerConfig } from '../../configs/dev-server';

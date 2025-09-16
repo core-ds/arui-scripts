@@ -1,4 +1,4 @@
-import { Configuration, rspack } from '@rspack/core';
+import { type Configuration, rspack } from '@rspack/core';
 
 import { configs } from '../../configs/app-configs';
 import { printCompilerOutput } from '../start/print-compiler-output';

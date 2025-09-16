@@ -4,7 +4,12 @@ import { removeModuleResources } from './utils/dom-utils';
 import { fetchResources, getResourcesTargetNodes } from './utils/fetch-resources';
 import { getCompatModule, getModule } from './utils/get-module';
 import { addCleanupMethod, cleanupModule, getModulesCache } from './utils/modules-cache';
-import { BaseModuleState, GetResourcesRequest, Loader, ModuleResources } from './types';
+import {
+    type BaseModuleState,
+    type GetResourcesRequest,
+    type Loader,
+    type ModuleResources,
+} from './types';
 
 export type ModuleResourcesGetter<GetResourcesParams, ModuleState extends BaseModuleState> = (
     params: GetResourcesRequest<GetResourcesParams>,
@@ -86,11 +91,7 @@ export function createModuleLoader<
     async function getModuleResourcesWithCache(getResourcesParams: GetResourcesParams) {
         const paramsSerialized = JSON.stringify(getResourcesParams);
 
-        if (
-            resourcesCache === 'single-item' &&
-            modulesCache[moduleId] &&
-            modulesCache[moduleId][paramsSerialized]
-        ) {
+        if (resourcesCache === 'single-item' && modulesCache[moduleId]?.[paramsSerialized]) {
             return modulesCache[moduleId][paramsSerialized] as ModuleResources<ModuleState>;
         }
 
@@ -163,8 +164,7 @@ export function createModuleLoader<
 
         const isModuleResourcesCached =
             resourcesCache === 'single-item' &&
-            modulesCache[moduleId] &&
-            modulesCache[moduleId][JSON.stringify(getResourcesParams)];
+            modulesCache[moduleId]?.[JSON.stringify(getResourcesParams)];
 
         // Загружаем описание модуля
         const moduleResources = await getModuleResourcesWithCache(

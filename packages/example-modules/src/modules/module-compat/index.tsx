@@ -1,8 +1,8 @@
 import React from 'react';
 import { render, unmountComponentAtNode } from 'react-dom';
 
-import type { WindowWithModule } from '@alfalab/scripts-modules';
-import { MountableModule } from '@alfalab/scripts-modules/src/module-loader/module-types';
+import { type WindowWithModule } from '@alfalab/scripts-modules';
+import { type MountableModule } from '@alfalab/scripts-modules/src/module-loader/module-types';
 
 import { CompatModule } from '#/modules/module-compat/compat-module';
 

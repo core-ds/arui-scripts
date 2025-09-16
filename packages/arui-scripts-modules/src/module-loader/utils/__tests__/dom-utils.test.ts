@@ -117,13 +117,13 @@ describe('dom utils', () => {
                 if (href.toString().includes(vendorHref)) {
                     return new Promise((resolve) => {
                         setTimeout(
-                            () => resolve({ text: () => Promise.resolve(vendorStyle) } as any),
+                            () => resolve({ text: () => Promise.resolve(vendorStyle) } as Response),
                             1000,
                         );
                     });
                 }
 
-                return Promise.resolve({ text: () => Promise.resolve(mainStyle) } as any);
+                return Promise.resolve({ text: () => Promise.resolve(mainStyle) } as Response);
             });
 
             const spyFetch = jest.spyOn(global, 'fetch').mockImplementation(mockFetch);

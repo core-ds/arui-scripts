@@ -1,4 +1,4 @@
-import type { FactoryModule, WindowWithModule } from '@alfalab/scripts-modules';
+import { type FactoryModule, type WindowWithModule } from '@alfalab/scripts-modules';
 
 const factory: FactoryModule = (runParams, moduleState) => ({
     someData: 'Some data here',

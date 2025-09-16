@@ -3,10 +3,10 @@ import React from 'react';
 import { Spinner } from '@alfalab/core-components/spinner';
 import { Underlay } from '@alfalab/core-components/underlay';
 import {
-    BaseModuleState,
+    type BaseModuleState,
     createModuleLoader,
     createServerStateModuleFetcher,
-    MountableModule,
+    type MountableModule,
     useModuleMounter,
 } from '@alfalab/scripts-modules';
 

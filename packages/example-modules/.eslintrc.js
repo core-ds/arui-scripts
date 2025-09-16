@@ -1,9 +1,14 @@
 module.exports = {
     root: true,
-    extends: ['custom/common'],
+    extends: [require.resolve('arui-presets-lint/eslint')],
     parserOptions: {
         tsconfigRootDir: __dirname,
         project: ['./tsconfig.eslint.json'],
+    },
+    settings: {
+        react: {
+            version: '17.0.0',
+        },
     },
     rules: {
         // это тестовый проект и ему позволительно писать в консоль

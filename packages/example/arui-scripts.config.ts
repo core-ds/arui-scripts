@@ -1,4 +1,4 @@
-import { PackageSettings } from 'arui-scripts';
+import { type PackageSettings } from 'arui-scripts';
 
 const aruiScriptsConfig: PackageSettings = {
     presets: './presets',
@@ -12,22 +12,22 @@ const aruiScriptsConfig: PackageSettings = {
     jestCodeTransformer: 'swc',
     compatModules: {
         shared: {
-            'react': 'react',
+            react: 'react',
             'react-dom': 'reactDOM',
-        }
+        },
     },
     modules: {
         shared: {
-            'react': {
+            react: {
                 eager: true,
                 requiredVersion: '^17.0.0',
             },
             'react-dom': {
                 eager: true,
                 requiredVersion: '^17.0.0',
-            }
-        }
-    }
-}
+            },
+        },
+    },
+};
 
 export default aruiScriptsConfig;

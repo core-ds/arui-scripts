@@ -1,4 +1,4 @@
-import { StatsCompilation } from '@rspack/core';
+import { type StatsCompilation } from '@rspack/core';
 
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
@@ -88,7 +88,7 @@ function formatMessage(message: string | { message: string }) {
     }
 
     // Add helpful message for users trying to use Sass for the first time
-    if (lines[1] && lines[1].match(/Cannot find module.+node-sass/)) {
+    if (lines[1]?.match(/Cannot find module.+node-sass/)) {
         lines[1] = 'To import Sass files, you first need to install node-sass.\n';
         lines[1] += 'Run `npm install node-sass` or `yarn add node-sass` inside your workspace.';
     }

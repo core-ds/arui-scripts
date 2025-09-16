@@ -44,7 +44,9 @@ describe('createModuleFetcher', () => {
 
         const moduleResources = await moduleFetcher({ moduleId, hostAppId, params: undefined });
 
-        expect(fetchAppManifest).toHaveBeenCalledWith('http://example.com/assets/webpack-assets.json');
+        expect(fetchAppManifest).toHaveBeenCalledWith(
+            'http://example.com/assets/webpack-assets.json',
+        );
         expect(moduleResources).toEqual(expectedModuleResources);
     });
 
@@ -66,9 +68,11 @@ describe('createModuleFetcher', () => {
         const hostAppId = 'app1';
 
         await expect(moduleFetcher({ moduleId, hostAppId, params: undefined })).rejects.toThrow(
-            'Module module1 not found in manifest from http://example.com/assets/webpack-assets.json'
+            'Module module1 not found in manifest from http://example.com/assets/webpack-assets.json',
         );
 
-        expect(fetchAppManifest).toHaveBeenCalledWith('http://example.com/assets/webpack-assets.json');
+        expect(fetchAppManifest).toHaveBeenCalledWith(
+            'http://example.com/assets/webpack-assets.json',
+        );
     });
 });

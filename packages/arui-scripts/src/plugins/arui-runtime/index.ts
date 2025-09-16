@@ -1,4 +1,4 @@
-import { Compiler, RuntimeGlobals } from '@rspack/core';
+import { type Compiler, RuntimeGlobals } from '@rspack/core';
 
 import { RuntimeModule } from './arui-runtime-module';
 
@@ -25,7 +25,7 @@ export class AruiRuntimePlugin {
 export function getInsertCssRuntimeMethod(): (linkTag: HTMLLinkElement) => void {
     /* eslint-disable no-var,vars-on-top,prefer-destructuring */
     return function insertCssRuntime(linkTag) {
-        if (__webpack_require__ && __webpack_require__.$ARUI.scriptSource) {
+        if (__webpack_require__?.$ARUI.scriptSource) {
             var scriptSource = __webpack_require__.$ARUI.scriptSource;
             var targetElementSelector = scriptSource.getAttribute('data-resources-target-selector');
 

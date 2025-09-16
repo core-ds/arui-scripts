@@ -1,6 +1,6 @@
 import merge from 'lodash.merge';
 
-import { AppConfigs } from './types';
+import { type AppConfigs } from './types';
 import { validateSettingsKeys } from './validate-settings-keys';
 
 export function updateWithEnv(config: AppConfigs) {

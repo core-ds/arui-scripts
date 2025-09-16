@@ -1,7 +1,7 @@
 import { urlSegmentWithoutEndSlash } from './utils/normalize-url-segment';
-import { ModuleResourcesGetter } from './create-module-loader';
+import { type ModuleResourcesGetter } from './create-module-loader';
 import { getServerStateModuleFetcherParams } from './get-server-state-module-fetcher-params';
-import { BaseModuleState } from './types';
+import { type BaseModuleState } from './types';
 
 type CreateServerResourcesFetcherParams = {
     baseUrl: string;

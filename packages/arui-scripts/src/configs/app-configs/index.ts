@@ -1,6 +1,6 @@
 import { calculateDependentConfig, calculateDependentContext } from './calculate-dependent-config';
 import { getDefaultAppConfig, getDefaultAppContext } from './get-defaults';
-import { AppConfigs, AppContext, AppContextWithConfigs } from './types';
+import { type AppConfigs, type AppContext, type AppContextWithConfigs } from './types';
 import { updateWithConfigFile } from './update-with-config-file';
 import { updateWithEnv } from './update-with-env';
 import { updateWithPackage } from './update-with-package';

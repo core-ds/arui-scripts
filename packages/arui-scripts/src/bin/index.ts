@@ -15,7 +15,7 @@ const commands: Record<string, () => void> = {
     changelog: () => require('../commands/changelog'),
 };
 
-const command = process.argv[2] as string;
+const command = process.argv[2];
 
 if (!command || !commands[command]) {
     console.error(

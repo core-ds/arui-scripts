@@ -1,4 +1,4 @@
-import { AbstractAppEventBus, AbstractKnownEventTypes } from './types/abstract-types';
+import { type AbstractAppEventBus, type AbstractKnownEventTypes } from './types/abstract-types';
 import { CustomEvent } from './custom-event';
 
 export class EventBus<KnownEventTypes extends AbstractKnownEventTypes>

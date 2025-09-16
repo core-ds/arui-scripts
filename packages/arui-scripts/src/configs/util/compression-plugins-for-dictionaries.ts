@@ -17,23 +17,20 @@ export function compressionPluginsForDictionaries() {
             algorithm: (input) => compressWithDcb(input, dictionaryContent),
             threshold: 10240,
             minRatio: 0.8,
-        })
+        });
     });
 
     const prevVersionPlugins = configs.compressionPreviousVersionPath.map((dictionaryPath) => {
         const dictionaries = fs.readdirSync(dictionaryPath);
 
-        const parsedDictionaries = dictionaries.reduce(
-            (map, current) => {
-                const parsed = parseFilename(current);
+        const parsedDictionaries = dictionaries.reduce((map, current) => {
+            const parsed = parseFilename(current);
 
-                return ({
-                    ...map,
-                    [`${parsed.stableName}.${parsed.ext}`]: parsed,
-                });
-            },
-            {} as Record<string, ReturnType<typeof parseFilename>>,
-        );
+            return {
+                ...map,
+                [`${parsed.stableName}.${parsed.ext}`]: parsed,
+            };
+        }, {} as Record<string, ReturnType<typeof parseFilename>>);
 
         return new CustomCompressionPlugin({
             test: /\.js$|\.css$/,
@@ -41,37 +38,39 @@ export function compressionPluginsForDictionaries() {
             minRatio: 0.8,
             filename: (pathData) => {
                 const parsedFilename = parseFilename(pathData.filename || '');
-                const matchedDictionary = parsedDictionaries[`${parsedFilename.stableName}.${parsedFilename.ext}`];
+                const matchedDictionary =
+                    parsedDictionaries[`${parsedFilename.stableName}.${parsedFilename.ext}`];
 
                 if (!matchedDictionary) {
-                    return ''
+                    return '';
                 }
 
-                return `${parsedFilename.filename}.${matchedDictionary.hash}.dcb`
+                return `${parsedFilename.filename}.${matchedDictionary.hash}.dcb`;
             },
             algorithm: async (input, { filename }) => {
                 const parsedFilename = parseFilename(filename);
-                const matchedDictionary = parsedDictionaries[`${parsedFilename.stableName}.${parsedFilename.ext}`];
+                const matchedDictionary =
+                    parsedDictionaries[`${parsedFilename.stableName}.${parsedFilename.ext}`];
 
                 if (!matchedDictionary) {
                     return input;
                 }
 
                 try {
-                    const dictionaryContent = fs.readFileSync(path.join(dictionaryPath, matchedDictionary.filename), null);
+                    const dictionaryContent = fs.readFileSync(
+                        path.join(dictionaryPath, matchedDictionary.filename),
+                        null,
+                    );
 
                     return await compressWithDcb(input, dictionaryContent);
                 } catch (e) {
                     return input;
                 }
-            }
+            },
         });
     });
 
-    return [
-        ...predefinedPlugins,
-        ...prevVersionPlugins,
-    ];
+    return [...predefinedPlugins, ...prevVersionPlugins];
 }
 
 function parseFilename(filename: string) {

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-import { AtRule, Declaration, Helpers, Root, Rule } from 'postcss';
+import { type AtRule, Declaration, type Helpers, type Root, Rule } from 'postcss';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import mediaParser from 'postcss-media-query-parser';
 

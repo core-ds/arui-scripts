@@ -1,6 +1,6 @@
-import { useEffect,useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import type { AbstractAppEventBus, AbstractKnownEventTypes } from './types/abstract-types';
+import { type AbstractAppEventBus, type AbstractKnownEventTypes } from './types/abstract-types';
 
 export function useEventBusValue<
     EventTypes extends AbstractKnownEventTypes,

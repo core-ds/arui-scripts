@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import type { ModuleMountFunction, ModuleUnmountFunction } from '@alfalab/scripts-modules';
+import { type ModuleMountFunction, type ModuleUnmountFunction } from '@alfalab/scripts-modules';
 
 import { Module } from './example-module';
 

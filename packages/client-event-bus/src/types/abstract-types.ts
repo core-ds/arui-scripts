@@ -19,8 +19,10 @@ export interface AbstractAppEventBus<KnownEventTypes extends AbstractKnownEventT
      * @param options дополнительные настройки листенера
      * @see https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener
      */
-    addEventListener<EventName extends keyof KnownEventTypes,
-        PayloadType extends KnownEventTypes[EventName]>(
+    addEventListener<
+        EventName extends keyof KnownEventTypes,
+        PayloadType extends KnownEventTypes[EventName],
+    >(
         eventName: EventName,
         eventHandler: (event: CustomEvent<PayloadType>) => void,
         options?: boolean | AddEventListenerOptions,
@@ -30,8 +32,10 @@ export interface AbstractAppEventBus<KnownEventTypes extends AbstractKnownEventT
      * Возвращает последние данные события. Если событие еще не происходило - возвращает undefined.
      * @param eventName название события
      */
-    getLastEventDetail<EventName extends keyof KnownEventTypes,
-        PayloadType extends KnownEventTypes[EventName]>(
+    getLastEventDetail<
+        EventName extends keyof KnownEventTypes,
+        PayloadType extends KnownEventTypes[EventName],
+    >(
         eventName: EventName,
     ): PayloadType | undefined;
 
@@ -43,7 +47,10 @@ export interface AbstractAppEventBus<KnownEventTypes extends AbstractKnownEventT
      * @param options дополнительные настройки листенера
      * @see https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener
      */
-    addEventListenerAndGetLast<EventName extends keyof KnownEventTypes, PayloadType extends KnownEventTypes[EventName]>(
+    addEventListenerAndGetLast<
+        EventName extends keyof KnownEventTypes,
+        PayloadType extends KnownEventTypes[EventName],
+    >(
         eventName: EventName,
         eventHandler: (event: CustomEvent<PayloadType>) => void,
         options?: boolean | AddEventListenerOptions,
@@ -56,7 +63,8 @@ export interface AbstractAppEventBus<KnownEventTypes extends AbstractKnownEventT
      * @param options дополнительные настройки листенера
      * @see https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/removeEventListener
      */
-    removeEventListener<EventName extends keyof KnownEventTypes,
+    removeEventListener<
+        EventName extends keyof KnownEventTypes,
         PayloadType extends KnownEventTypes[EventName],
     >(
         eventName: EventName,
@@ -69,8 +77,10 @@ export interface AbstractAppEventBus<KnownEventTypes extends AbstractKnownEventT
      * @param eventName название события
      * @param event payload события
      */
-    dispatchEvent<EventName extends keyof KnownEventTypes,
-        PayloadType extends KnownEventTypes[EventName]>(
+    dispatchEvent<
+        EventName extends keyof KnownEventTypes,
+        PayloadType extends KnownEventTypes[EventName],
+    >(
         eventName: EventName,
         event?: PayloadType,
     ): void;

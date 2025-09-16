@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 
 import { executeModuleFactory } from '../execute-module-factory';
-import { FactoryModule } from '../module-types';
-import { BaseModuleState, Loader } from '../types';
+import { type FactoryModule } from '../module-types';
+import { type BaseModuleState, type Loader } from '../types';
 
-import { LoadingState } from './types';
+import { type LoadingState } from './types';
 
 export type UseModuleFactoryParams<
     LoaderParams,
@@ -95,7 +95,9 @@ export function useModuleFactory<
 
                 const serverState = (
                     getFactoryParamsRef.current
-                        ? await getFactoryParamsRef.current(result.moduleResources.moduleState as ServerState)
+                        ? await getFactoryParamsRef.current(
+                              result.moduleResources.moduleState as ServerState,
+                          )
                         : result.moduleResources.moduleState
                 ) as ServerState;
 

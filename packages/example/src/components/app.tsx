@@ -42,11 +42,11 @@ export class App extends React.Component<object, AppState> {
                     А тут - картинка загруженная как полноценное изображение
                 </Typography.Text>
                 <div>
-                    <img src={clientIcon} alt="Картинка с клиента" width={128}/>
+                    <img src={clientIcon} alt='Картинка с клиента' width={128} />
                 </div>
 
                 <Typography.Text>
-                Check hot-loader: <br />
+                    Check hot-loader: <br />
                     Button is clicked {this.state.clickCount} times Clicked more than 10 times?{' '}
                     <br />
                     {isSmaller(this.state.clickCount, 10)}

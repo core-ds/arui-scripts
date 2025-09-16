@@ -7,7 +7,7 @@ import { Underlay } from '@alfalab/core-components/underlay';
 import {
     createModuleFetcher,
     createModuleLoader,
-    FactoryModule,
+    type FactoryModule,
     useModuleFactory,
 } from '@alfalab/scripts-modules';
 

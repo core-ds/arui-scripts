@@ -1,21 +1,21 @@
-import { Worker } from 'cluster';
+import { type Worker } from 'cluster';
 
-import { ReactRefreshPluginOptions } from '@pmmmwh/react-refresh-webpack-plugin/types/lib/types';
+import { type ReactRefreshPluginOptions } from '@pmmmwh/react-refresh-webpack-plugin/types/lib/types';
 import {
+    type Configuration,
     type CssExtractRspackPluginOptions,
-    Configuration,
-    DefinePlugin,
-    NormalModuleReplacementPlugin,
+    type DefinePlugin,
+    type NormalModuleReplacementPlugin,
 } from '@rspack/core';
-import { BannerPluginOptions } from '@rspack/core/dist/builtin-plugin/BannerPlugin';
-import AssetsPlugin from 'assets-webpack-plugin';
-import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
-import CompressionPlugin from 'compression-webpack-plugin';
-import { ForkTsCheckerWebpackPluginOptions } from 'fork-ts-checker-webpack-plugin/lib/ForkTsCheckerWebpackPluginOptions';
-import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import { RunScriptWebpackPlugin } from 'run-script-webpack-plugin';
-import { WebpackDeduplicationPlugin } from 'webpack-deduplication-plugin';
-import { WebpackManifestPlugin } from 'webpack-manifest-plugin';
+import { type BannerPluginOptions } from '@rspack/core/dist/builtin-plugin/BannerPlugin';
+import type AssetsPlugin from 'assets-webpack-plugin';
+import type CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
+import type CompressionPlugin from 'compression-webpack-plugin';
+import { type ForkTsCheckerWebpackPluginOptions } from 'fork-ts-checker-webpack-plugin/lib/ForkTsCheckerWebpackPluginOptions';
+import type MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import { type RunScriptWebpackPlugin } from 'run-script-webpack-plugin';
+import { type WebpackDeduplicationPlugin } from 'webpack-deduplication-plugin';
+import { type WebpackManifestPlugin } from 'webpack-manifest-plugin';
 
 /*
     вариации плагинов клиента

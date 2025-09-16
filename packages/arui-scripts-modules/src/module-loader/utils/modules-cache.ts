@@ -1,4 +1,4 @@
-import { ModuleResources } from '../types';
+import { type ModuleResources } from '../types';
 
 const modulesCache: Record<string, Record<string, ModuleResources>> = {};
 

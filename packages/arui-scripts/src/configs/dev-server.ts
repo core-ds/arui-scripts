@@ -1,7 +1,7 @@
-import http from 'http';
 import path from 'path';
 
-import { Configuration } from '@rspack/dev-server'
+import { type Configuration } from '@rspack/dev-server';
+import type http from 'http';
 
 import { applyOverrides } from './util/apply-overrides';
 import { configs } from './app-configs';

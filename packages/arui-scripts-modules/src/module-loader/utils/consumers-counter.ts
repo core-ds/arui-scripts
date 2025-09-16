@@ -22,7 +22,7 @@ export function getConsumerCounter() {
             ensureCounter(moduleId);
 
             return counters[moduleId];
-        }
+        },
     };
 }
 

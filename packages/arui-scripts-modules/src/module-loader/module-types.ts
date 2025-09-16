@@ -1,4 +1,4 @@
-import { BaseModuleState } from './types';
+import { type BaseModuleState } from './types';
 
 // Типы для модулей "особого типа", то есть тех, чья форма определена заранее
 
@@ -73,7 +73,7 @@ export type FactoryModule<
     ServerState extends BaseModuleState = BaseModuleState,
 > =
     | FactoryModuleFunction<ReturnType, RunParams, ServerState>
-    | { factory: FactoryModuleFunction<ReturnType, RunParams, ServerState>, mount: never }
-    | { mount: FactoryModuleFunction<ReturnType, RunParams, ServerState>, factory: never }
+    | { factory: FactoryModuleFunction<ReturnType, RunParams, ServerState>; mount: never }
+    | { mount: FactoryModuleFunction<ReturnType, RunParams, ServerState>; factory: never };
 
 export type WindowWithFactoryModule = WindowWithModule<FactoryModule>;

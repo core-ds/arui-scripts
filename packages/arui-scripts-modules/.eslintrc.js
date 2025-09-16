@@ -1,11 +1,9 @@
 module.exports = {
     root: true,
-    extends: ['custom/common'],
+    extends: [require.resolve('arui-presets-lint/eslint')],
     parserOptions: {
         tsconfigRootDir: __dirname,
-        project: [
-            './tsconfig.eslint.json',
-        ],
+        project: ['./tsconfig.eslint.json'],
     },
     overrides: [
         {
@@ -13,6 +11,6 @@ module.exports = {
             rules: {
                 'import/no-extraneous-dependencies': 'off',
             },
-        }
+        },
     ],
 };

@@ -6,7 +6,11 @@ const nginxTemplate = `client_max_body_size 20m;
 server {
     listen ${configs.clientServerPort};
     server_tokens off;
-    ${configs.dictionaryCompression.enablePreviousVersionHeaders ? 'brotli_auto_dictionary on;' : ''}
+    ${
+        configs.dictionaryCompression.enablePreviousVersionHeaders
+            ? 'brotli_auto_dictionary on;'
+            : ''
+    }
 
     ${
         configs.clientOnly

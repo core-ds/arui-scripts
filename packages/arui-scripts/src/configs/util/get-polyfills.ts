@@ -1,4 +1,4 @@
-import { AppConfigs } from '../app-configs/types';
+import { type AppConfigs } from '../app-configs/types';
 
 export function getPolyfills(config: AppConfigs) {
     const polyfills: string[] = [];
