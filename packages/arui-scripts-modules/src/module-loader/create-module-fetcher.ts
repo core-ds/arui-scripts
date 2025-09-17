@@ -1,7 +1,7 @@
 import { fetchAppManifest } from './utils/fetch-app-manifest';
 import { urlSegmentWithoutEndSlash } from './utils/normalize-url-segment';
-import { ModuleResourcesGetter } from './create-module-loader';
-import { AruiAppManifest, BaseModuleState, ModuleResources } from './types';
+import { type ModuleResourcesGetter } from './create-module-loader';
+import { type AruiAppManifest, type BaseModuleState, type ModuleResources } from './types';
 
 type CreateClientResourcesFetcherParams = {
     baseUrl: string;

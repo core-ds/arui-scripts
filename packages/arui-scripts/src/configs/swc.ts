@@ -1,4 +1,4 @@
-import type { Options } from '@swc/core';
+import { type Options } from '@swc/core';
 
 import { applyOverrides } from './util/apply-overrides';
 import { configs } from './app-configs';

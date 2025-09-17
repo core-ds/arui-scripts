@@ -1,4 +1,4 @@
-import { Container, PluginCreator, Root } from 'postcss';
+import { type Container, type PluginCreator, type Root } from 'postcss';
 
 type PostCssPrefixOptions = {
     prefix: string;

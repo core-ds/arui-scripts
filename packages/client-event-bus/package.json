@@ -18,10 +18,11 @@
         "build:esm": "tsc --project tsconfig.esm.json",
         "build": "yarn build:commonjs && yarn build:esm",
         "test": "jest",
-        "lint:scripts": "eslint \"**/*.{js,jsx,ts,tsx}\" --ext .js,.jsx,.ts,.tsx",
-        "lint": "yarn lint:scripts",
-        "lint:fix": "yarn lint:scripts --fix",
-        "format": "prettier --write $INIT_CWD/{config,src}/**/*.{ts,tsx,js,jsx,css}",
+        "lint:scripts": "arui-presets-lint scripts",
+        "format": "arui-presets-lint format",
+        "format:check": "arui-presets-lint format:check",
+        "lint": "yarn lint:scripts && yarn format:check",
+        "lint:fix": "yarn lint:scripts --fix && yarn format",
         "audit": "yarn npm audit --severity high --environment production"
     },
     "peerDependencies": {
@@ -29,10 +30,7 @@
     },
     "devDependencies": {
         "@types/jest": "^23.3.14",
-        "eslint": "^8.20.0",
-        "eslint-config-custom": "workspace:*",
         "jest": "28.1.3",
-        "prettier": "^2.7.1",
         "react": "18.2.0",
         "ts-jest": "28.0.8",
         "typescript": "4.9.5"

@@ -4,7 +4,7 @@ import path from 'path';
 import { tryResolve } from '../util/resolve';
 
 import { readConfigFile } from './read-config-file';
-import { AppConfigs, AppContext } from './types';
+import { type AppConfigs, type AppContext } from './types';
 
 const CWD = process.cwd();
 const absoluteSrcPath = path.resolve(CWD, 'src');

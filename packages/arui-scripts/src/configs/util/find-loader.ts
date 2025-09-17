@@ -1,4 +1,4 @@
-import type { Configuration, RuleSetRule } from '@rspack/core';
+import { type Configuration, type RuleSetRule } from '@rspack/core';
 
 export function findLoader(config: Configuration, testRule: string): RuleSetRule | undefined {
     for (const rule of config.module?.rules ?? []) {

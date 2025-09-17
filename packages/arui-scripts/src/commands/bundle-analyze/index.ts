@@ -1,5 +1,5 @@
 import { RsdoctorRspackPlugin } from '@rsdoctor/rspack-plugin';
-import { rspack, WebpackPluginInstance } from '@rspack/core';
+import { rspack, type WebpackPluginInstance } from '@rspack/core';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 
 import { configs } from '../../configs/app-configs';

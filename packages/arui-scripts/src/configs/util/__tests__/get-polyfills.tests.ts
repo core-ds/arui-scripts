@@ -1,4 +1,4 @@
-import { AppConfigs } from '../../app-configs/types';
+import { type AppConfigs } from '../../app-configs/types';
 import { getPolyfills } from '../get-polyfills';
 
 describe('getPolyfills', () => {

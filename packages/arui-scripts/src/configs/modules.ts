@@ -3,7 +3,7 @@ import * as rspack from '@rspack/core';
 import { postCssPrefix } from '../plugins/postcss-prefix-selector';
 import { TurnOffSplitRemoteEntry } from '../plugins/turn-off-split-remote-entry';
 
-import { CompatModuleConfig } from './app-configs/types';
+import { type CompatModuleConfig } from './app-configs/types';
 import { findLoader } from './util/find-loader';
 import { configs } from './app-configs';
 
@@ -104,7 +104,7 @@ function addCssPrefix(webpackConf: rspack.Configuration, cssPrefix: string) {
 }
 
 function addPrefixCssRule(rule: rspack.RuleSetRule | undefined, prefix: string) {
-    if (!rule || !rule.use || !Array.isArray(rule.use)) {
+    if (!rule?.use || !Array.isArray(rule.use)) {
         return;
     }
     const postCssLoader = rule.use.find((loaderConfig) => {

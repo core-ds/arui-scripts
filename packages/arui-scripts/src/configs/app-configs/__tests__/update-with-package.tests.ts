@@ -1,4 +1,4 @@
-import { AppConfigs, AppContext } from '../types';
+import { type AppConfigs, type AppContext } from '../types';
 import { updateWithPackage } from '../update-with-package';
 
 describe('update-with-package', () => {

@@ -1,4 +1,4 @@
-import { act, cleanup,renderHook } from '@testing-library/react-hooks';
+import { act, cleanup, renderHook } from '@testing-library/react-hooks';
 
 import { useModuleMountTarget } from '../use-module-mount-target';
 
@@ -14,9 +14,7 @@ describe('useModuleMountTarget', () => {
 
     it('should return the mount target node when ref triggered', () => {
         const targetNode = document.createElement('div');
-        const { result } = renderHook(
-            () => useModuleMountTarget({})
-        );
+        const { result } = renderHook(() => useModuleMountTarget({}));
 
         expect(result.current.mountTargetNode).toBeUndefined();
 
@@ -32,9 +30,7 @@ describe('useModuleMountTarget', () => {
     it('should use the provided createTargetNode function to create the mount target node', () => {
         const targetNode = document.createElement('div');
         const createTargetNode = jest.fn(() => targetNode);
-        const { result } = renderHook(
-            () => useModuleMountTarget({ createTargetNode })
-        );
+        const { result } = renderHook(() => useModuleMountTarget({ createTargetNode }));
 
         expect(result.current.mountTargetNode).toBeUndefined();
 
@@ -49,8 +45,8 @@ describe('useModuleMountTarget', () => {
     it('should create a shadow root when useShadowDom is true', () => {
         const targetNode = document.createElement('div');
         const realTarget = document.createElement('div');
-        const { result } = renderHook(
-            () => useModuleMountTarget({ useShadowDom: true, createTargetNode: () => realTarget })
+        const { result } = renderHook(() =>
+            useModuleMountTarget({ useShadowDom: true, createTargetNode: () => realTarget }),
         );
 
         expect(result.current.mountTargetNode).toBeUndefined();

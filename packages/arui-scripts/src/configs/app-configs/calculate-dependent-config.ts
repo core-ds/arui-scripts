@@ -5,7 +5,7 @@ import path from 'path';
 import { getPolyfills } from '../util/get-polyfills';
 import { resolveNodeModuleRelativeTo } from '../util/resolve';
 
-import { AppConfigs, AppContext } from './types';
+import { type AppConfigs, type AppContext } from './types';
 
 /**
  * Обновление ключей конфига, зависящих от других. Это нужно делать в самый последний момент
@@ -42,14 +42,13 @@ export function calculateDependentContext(config: AppConfigs, context: AppContex
         babelRuntimeVersion = require('@babel/runtime/package.json').version;
     }
 
-    const allDictionaryPath = config.dictionaryCompression.dictionaryPath
-        .map((p) => {
-            if (!path.isAbsolute(p)) {
-                return path.join(process.cwd(), p);
-            }
+    const allDictionaryPath = config.dictionaryCompression.dictionaryPath.map((p) => {
+        if (!path.isAbsolute(p)) {
+            return path.join(process.cwd(), p);
+        }
 
-            return p;
-        });
+        return p;
+    });
 
     const singleFilesDictionaries = [] as string[];
     const previousVersionPath = [] as string[];
@@ -62,7 +61,7 @@ export function calculateDependentContext(config: AppConfigs, context: AppContex
         } else {
             previousVersionPath.push(p);
         }
-    })
+    });
 
     return {
         ...context,

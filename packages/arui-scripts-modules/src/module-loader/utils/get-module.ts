@@ -1,4 +1,4 @@
-import { ModuleFederationContainer } from '../types';
+import { type ModuleFederationContainer } from '../types';
 
 /**
  * Метод для получения контента уже загруженного модуля
@@ -20,7 +20,7 @@ export async function getModule<ModuleType>(
     await __webpack_init_sharing__(shareScope);
     const container = (window as unknown as Record<string, ModuleFederationContainer>)[containerId];
 
-    if (!container || !container.init) {
+    if (!container?.init) {
         throw new Error(
             `Cannot load external remote: ${containerId}, unable to locate module federation init function`,
         );

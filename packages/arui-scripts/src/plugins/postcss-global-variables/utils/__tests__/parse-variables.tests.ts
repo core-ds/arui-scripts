@@ -1,4 +1,4 @@
-import type { Declaration, Root } from 'postcss';
+import { type Declaration, type Root } from 'postcss';
 
 import { parseVariables } from '../utils';
 

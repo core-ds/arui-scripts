@@ -1,0 +1,12 @@
+extends:
+  - ./node_modules/arui-presets-lint/lefthook/index.yml
+
+pre-commit:
+  commands:
+    run-test:
+      run: yarn turbo run lint build
+
+pre-push:
+  commands:
+    run-test:
+      run: yarn turbo run lint build build:app test validate

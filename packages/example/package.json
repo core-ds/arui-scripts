@@ -8,11 +8,12 @@
         "bundle-analyze": "arui-scripts bundle-analyze",
         "start": "NODE_ENV=localhost arui-scripts start",
         "test": "arui-scripts test",
-        "lint:css": "stylelint ./src/**/*.css",
-        "lint:scripts": "eslint \"**/*.{js,jsx,ts,tsx}\" --ext .js,.jsx,.ts,.tsx",
-        "lint": "yarn lint:css && yarn lint:scripts",
-        "lint:fix": "yarn lint:css --fix && yarn lint:scripts --fix",
-        "format": "prettier --write $INIT_CWD/{config,src}/**/*.{ts,tsx,js,jsx,css}",
+        "lint:styles": "arui-presets-lint styles",
+        "lint:scripts": "arui-presets-lint scripts",
+        "format": "arui-presets-lint format",
+        "format:check": "arui-presets-lint format:check",
+        "lint": "yarn lint:styles && yarn lint:scripts && yarn format:check",
+        "lint:fix": "yarn lint:styles --fix && yarn lint:scripts --fix && yarn format",
         "validate": "jest \"validate-build/*\" --config jest.config.validate-build.js"
     },
     "jest": {
@@ -43,12 +44,8 @@
         "@types/react": "17.0.64",
         "@types/react-dom": "17.0.20",
         "@types/webpack-env": "^1.18.1",
-        "eslint": "^8.20.0",
-        "eslint-config-custom": "workspace:*",
         "jest": "28.1.3",
         "postcss-preset-env": "^8.4.1",
-        "prettier": "^2.7.1",
-        "stylelint": "^14.9.1",
         "ts-jest": "28.0.8",
         "typescript": "^4.9.5"
     }

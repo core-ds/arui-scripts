@@ -1,4 +1,4 @@
-import { AruiAppManifest } from '../types';
+import { type AruiAppManifest } from '../types';
 
 export function fetchAppManifest(url: string) {
     return new Promise<AruiAppManifest>((resolve, reject) => {

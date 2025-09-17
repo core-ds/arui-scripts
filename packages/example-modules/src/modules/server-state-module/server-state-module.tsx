@@ -2,7 +2,10 @@ import React from 'react';
 
 import styles from './server-state-module.module.css';
 
-export const ServerStateModule = (props: { runParams: Record<string, unknown>; serverState: Record<string, unknown> }) => (
+export const ServerStateModule = (props: {
+    runParams: Record<string, unknown>;
+    serverState: Record<string, unknown>;
+}) => (
     <div>
         <h1>ServerStateModule</h1>
 

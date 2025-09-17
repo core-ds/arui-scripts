@@ -1,10 +1,10 @@
 import crypto from 'crypto';
 
-import { Assets,Compilation, Compiler } from '@rspack/core';
-import { PathData } from '@rspack/core/dist/Compilation';
-import type { HashableObject } from '@rspack/core/dist/lib/cache/getLazyHashedEtag';
-import { RspackError } from '@rspack/core/dist/RspackError';
-import { Rules } from 'compression-webpack-plugin';
+import { type Assets, type Compilation, type Compiler } from '@rspack/core';
+import { type PathData } from '@rspack/core/dist/Compilation';
+import { type HashableObject } from '@rspack/core/dist/lib/cache/getLazyHashedEtag';
+import { type RspackError } from '@rspack/core/dist/RspackError';
+import { type Rules } from 'compression-webpack-plugin';
 import serialize from 'serialize-javascript';
 
 type DcbCompressionOptions = {
@@ -24,10 +24,7 @@ Based on compression-webpack-plugin, https://github.com/webpack-contrib/compress
 */
 
 export class CustomCompressionPlugin {
-    constructor(
-        protected options: DcbCompressionOptions
-    ) {
-    }
+    constructor(protected options: DcbCompressionOptions) {}
 
     runCompressionAlgorithm(input: Buffer, filename: string) {
         return this.options.algorithm(input, { filename });
@@ -59,7 +56,10 @@ export class CustomCompressionPlugin {
                         .update(serialize(this.options.filename))
                         .digest('hex')}`;
 
-                    if (asset.info.related && (asset.info.related as Record<string, boolean>)[relatedName]) {
+                    if (
+                        asset.info.related &&
+                        (asset.info.related as Record<string, boolean>)[relatedName]
+                    ) {
                         return false;
                     }
 
@@ -80,7 +80,7 @@ export class CustomCompressionPlugin {
                         if (typeof asset.source.buffer === 'function') {
                             buffer = asset.source.buffer();
                         }
-                            // Compatibility with webpack plugins which don't use `webpack-sources`
+                        // Compatibility with webpack plugins which don't use `webpack-sources`
                         // See https://github.com/webpack-contrib/compression-webpack-plugin/issues/236
                         else {
                             buffer = asset.source.source();
@@ -95,7 +95,15 @@ export class CustomCompressionPlugin {
                         }
                     }
 
-                    return { name, source: asset.source, info: asset.info, buffer, output, cacheItem, relatedName };
+                    return {
+                        name,
+                        source: asset.source,
+                        info: asset.info,
+                        buffer,
+                        output,
+                        cacheItem,
+                        relatedName,
+                    };
                 }),
             )
         ).filter(Boolean);
@@ -114,7 +122,10 @@ export class CustomCompressionPlugin {
                     if (!output.source) {
                         if (!output.compressed) {
                             try {
-                                output.compressed = await this.runCompressionAlgorithm(buffer, name);
+                                output.compressed = await this.runCompressionAlgorithm(
+                                    buffer,
+                                    name,
+                                );
                             } catch (error) {
                                 compilation.errors.push(error as RspackError);
 
@@ -122,10 +133,7 @@ export class CustomCompressionPlugin {
                             }
                         }
 
-                        if (
-                            output.compressed.length / buffer.length >
-                            this.options.minRatio
-                        ) {
+                        if (output.compressed.length / buffer.length > this.options.minRatio) {
                             await cacheItem.storePromise({ compressed: output.compressed });
 
                             return;
@@ -161,8 +169,7 @@ export class CustomCompressionPlugin {
             compilation.hooks.processAssets.tapPromise(
                 {
                     name: pluginName,
-                    stage:
-                    compiler.webpack.Compilation.PROCESS_ASSETS_STAGE_OPTIMIZE_TRANSFER,
+                    stage: compiler.webpack.Compilation.PROCESS_ASSETS_STAGE_OPTIMIZE_TRANSFER,
                     // additionalAssets: true,
                 },
                 (assets) => this.compress(compiler, compilation, assets),

@@ -1,6 +1,6 @@
-import { RspackDevServer } from '@rspack/dev-server';
+import { type RspackDevServer } from '@rspack/dev-server';
 
-import { AppContextWithConfigs } from './types';
+import { type AppContextWithConfigs } from './types';
 
 type ProxyConfigArrayItem = NonNullable<RspackDevServer['options']['proxy']>[0];
 

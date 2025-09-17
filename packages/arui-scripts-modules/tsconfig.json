@@ -7,9 +7,6 @@
         "outDir": "./build",
         "declaration": true
     },
-    "include": [
-        "src/**/*.ts",
-        "global-definitions.d.ts"
-    ],
+    "include": ["src/**/*.ts", "global-definitions.d.ts"],
     "exclude": ["build"]
 }

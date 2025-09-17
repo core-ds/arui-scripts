@@ -4,14 +4,15 @@ import * as zlib from 'zlib';
 import getCSSModuleLocalIdent from 'react-dev-utils/getCSSModuleLocalIdent';
 import ReactRefreshTypeScript from 'react-refresh-typescript';
 import {
-    Configuration,
+    type Configuration,
     CopyRspackPlugin,
     CssExtractRspackPlugin,
     DefinePlugin,
     IgnorePlugin,
     NormalModuleReplacementPlugin,
-    RspackPluginInstance,
-    RuleSetRule,
+    type RspackPluginInstance,
+    type RuleSetRule,
+    SwcJsMinimizerRspackPlugin,
 } from '@rspack/core';
 import ReactRefreshPlugin from '@rspack/plugin-react-refresh';
 import AssetsPlugin from 'assets-webpack-plugin';
@@ -21,7 +22,6 @@ import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import { RspackManifestPlugin } from 'rspack-manifest-plugin';
-import TerserPlugin from 'terser-webpack-plugin';
 import { WebpackDeduplicationPlugin } from 'webpack-deduplication-plugin';
 
 import { AruiRuntimePlugin, getInsertCssRuntimeMethod } from '../plugins/arui-runtime';
@@ -30,7 +30,7 @@ import { htmlTemplate } from '../templates/html.template';
 import { getImageMinLoader } from './config-extras/minimizers';
 import { checkNodeVersion } from './util/check-node-version';
 import { compressionPluginsForDictionaries } from './util/compression-plugins-for-dictionaries';
-import { Entry, getEntry } from './util/get-entry';
+import { type Entry, getEntry } from './util/get-entry';
 import { configs } from './app-configs';
 import { babelClientConfig as babelConf } from './babel-client';
 import { babelDependencies } from './babel-dependencies';
@@ -68,10 +68,7 @@ function getMinimizeConfig(mode: 'dev' | 'prod') {
     if (mode === 'prod') {
         return {
             minimize: true,
-            minimizer: [
-                new TerserPlugin(),
-                new CssMinimizerPlugin(),
-            ].filter(Boolean),
+            minimizer: [new SwcJsMinimizerRspackPlugin(), new CssMinimizerPlugin()].filter(Boolean),
         };
     }
 
@@ -355,9 +352,10 @@ export const createSingleClientWebpackConfig = (
                 filename: '../index.html',
             }),
         mode === 'dev' && configs.clientOnly && new ClientConfigPlugin(),
-        configs.compressionPredefinedDictionaryPath && new CopyRspackPlugin({
-            patterns: configs.compressionPredefinedDictionaryPath
-        }),
+        configs.compressionPredefinedDictionaryPath &&
+            new CopyRspackPlugin({
+                patterns: configs.compressionPredefinedDictionaryPath,
+            }),
 
         // production plugins:
         mode === 'prod' && new RspackManifestPlugin({}),
@@ -377,7 +375,7 @@ export const createSingleClientWebpackConfig = (
                 test: /\.(js|css|html|svg|dict)$/,
                 compressionOptions: {
                     params: {
-                        [zlib.constants.BROTLI_PARAM_QUALITY]: 11
+                        [zlib.constants.BROTLI_PARAM_QUALITY]: 11,
                     },
                 },
                 threshold: 10240,
@@ -391,9 +389,9 @@ export const createSingleClientWebpackConfig = (
         mode === 'prod' &&
             !configs.keepPropTypes &&
             new NormalModuleReplacementPlugin(/^thrift-services\/proptypes/, noopPath),
-    ].concat([
-        ...(mode === 'prod' ? compressionPluginsForDictionaries() : [])
-    ]).filter(Boolean) as RspackPluginInstance[],
+    ]
+        .concat([...(mode === 'prod' ? compressionPluginsForDictionaries() : [])])
+        .filter(Boolean) as RspackPluginInstance[],
     // Без этого комиляция трирегилась на изменение в node_modules и приводила к утечке памяти
     watchOptions: {
         ignored: new RegExp(configs.watchIgnorePath.join('|')),

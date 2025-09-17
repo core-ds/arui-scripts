@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 
-import { Loader, ModuleResources } from '../types';
+import { type Loader, type ModuleResources } from '../types';
 
-import { LoadingState } from './types';
+import { type LoadingState } from './types';
 
 export type UseModuleLoaderParams<ModuleExportType, GetResourcesParams> = {
     loader: Loader<GetResourcesParams, ModuleExportType>;

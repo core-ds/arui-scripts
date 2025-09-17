@@ -1,13 +1,13 @@
 import type * as rspack from '@rspack/core';
-import type { Configuration as RspackDevServerConfiguration } from '@rspack/dev-server'
-import type { Options as SwcOptions } from '@swc/core';
+import { type Configuration as RspackDevServerConfiguration } from '@rspack/dev-server';
+import { type Options as SwcOptions } from '@swc/core';
 
 import { configs } from '../app-configs';
-import { AppContextWithConfigs } from '../app-configs/types';
-import { createSingleClientWebpackConfig } from '../webpack.client';
+import { type AppContextWithConfigs } from '../app-configs/types';
+import { type createSingleClientWebpackConfig } from '../webpack.client';
 
-import { findLoader } from './find-loader';
-import { findPlugin } from './find-plugin';
+import { type findLoader } from './find-loader';
+import { type findPlugin } from './find-plugin';
 
 type Overrides = {
     webpack: rspack.Configuration | rspack.Configuration[];

@@ -4,10 +4,10 @@ import path from 'path';
 import getCSSModuleLocalIdent from 'react-dev-utils/getCSSModuleLocalIdent';
 import {
     BannerPlugin,
-    Configuration,
+    type Configuration,
     HotModuleReplacementPlugin,
-    RspackPluginInstance,
-    RuleSetRule,
+    type RspackPluginInstance,
+    type RuleSetRule,
 } from '@rspack/core';
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import { RunScriptWebpackPlugin } from 'run-script-webpack-plugin';

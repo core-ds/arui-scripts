@@ -1,11 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import type { ModuleMountFunction, ModuleUnmountFunction, WindowWithModule } from '@alfalab/scripts-modules';
+import {
+    type ModuleMountFunction,
+    type ModuleUnmountFunction,
+    type WindowWithModule,
+} from '@alfalab/scripts-modules';
 
 import { ServerStateModuleCompat } from '#/modules/server-state-module-compat/server-state-module-compat';
 
-const mountModule: ModuleMountFunction<Record<string, unknown>> = (targetNode, runParams, serverState) => {
+const mountModule: ModuleMountFunction<Record<string, unknown>> = (
+    targetNode,
+    runParams,
+    serverState,
+) => {
     console.log('ServerStateModuleCompat: mount', { runParams, serverState });
 
     ReactDOM.render(

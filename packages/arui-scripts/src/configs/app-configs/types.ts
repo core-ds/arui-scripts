@@ -1,5 +1,5 @@
-import { DevTool, Shared } from '@rspack/core';
-import { RspackDevServer } from '@rspack/dev-server';
+import { type DevTool, type Shared } from '@rspack/core';
+import { type RspackDevServer } from '@rspack/dev-server';
 
 /**
  * Конфигурация arui-scripts, которая может быть переопределена приложением

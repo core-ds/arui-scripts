@@ -1,6 +1,6 @@
-import type { HTTP_METHODS_PARTIAL, PluginFunction, Request } from 'hapi16';
+import { type HTTP_METHODS_PARTIAL, type PluginFunction, type Request } from 'hapi16';
 
-import { createGetModulesMethod, ModulesConfig } from './modules';
+import { createGetModulesMethod, type ModulesConfig } from './modules';
 
 export function createGetModulesHapi16Plugin(
     modules: ModulesConfig<[Request]>,
@@ -17,7 +17,8 @@ export function createGetModulesHapi16Plugin(
                     const response = await modulesMethodSettings.handler(request.payload, request);
 
                     reply(response);
-                } catch (e: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                } catch (e: any) {
                     reply({
                         error: e.message,
                         status: 500,

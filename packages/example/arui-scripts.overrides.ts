@@ -1,10 +1,10 @@
 // TODO: remove eslint-disable-next-line
-import { OverrideFile } from 'arui-scripts';
+import { type OverrideFile } from 'arui-scripts';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import path from 'node:path';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import {RuleSetRule} from 'webpack';
+import { type RuleSetRule } from 'webpack';
 
 const overrides: OverrideFile = {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -29,25 +29,30 @@ const overrides: OverrideFile = {
             if (cssModulesLoader?.use && Array.isArray(cssModulesLoader.use)) {
                 const cssLoader = cssModulesLoader.use.find((loader) => {
                     // без длинной проверки ts ругается
-                    if (loader && typeof loader === 'object' && ('loader' in loader) && typeof loader.loader === 'string') {
-                        return loader.loader.includes('css-loader') && !loader.loader.includes('postcss-loader')
+                    if (
+                        loader &&
+                        typeof loader === 'object' &&
+                        'loader' in loader &&
+                        typeof loader.loader === 'string'
+                    ) {
+                        return (
+                            loader.loader.includes('css-loader') &&
+                            !loader.loader.includes('postcss-loader')
+                        );
                     }
 
-                    return false
+                    return false;
                 }) as RuleSetRule;
 
                 if (typeof cssLoader?.options === 'object') {
                     cssLoader.options.modules = {
-                        localIdentName: '[name]-[local]-[hash:base64:5]'
-                    }
+                        localIdentName: '[name]-[local]-[hash:base64:5]',
+                    };
                 }
             }
         }
 
-        return [
-            ...rootConfigList,
-            workerConfig,
-        ];
+        return [...rootConfigList, workerConfig];
     },
     webpackClientProd: (config) => {
         const allConfigs = Array.isArray(config) ? config : [config];
@@ -62,21 +67,25 @@ const overrides: OverrideFile = {
         });
     },
     postcss: (config) => {
-        const overridesConfig = config
-        .map(name => {
+        const overridesConfig = config.map((name) => {
             if (name !== 'postcss-mixins') return name;
 
             return [
                 name,
                 {
-                    mixinsFiles: [path.join(process.cwd(), '../../node_modules/@alfalab/core-components/vars/typography.css')]
-                }
-            ]
-        })
+                    mixinsFiles: [
+                        path.join(
+                            process.cwd(),
+                            '../../node_modules/@alfalab/core-components/vars/typography.css',
+                        ),
+                    ],
+                },
+            ];
+        });
 
         return overridesConfig;
     },
-    html: template => template.replace('<head>', '<head><base href="/" />'),
+    html: (template) => template.replace('<head>', '<head><base href="/" />'),
 };
 
 export default overrides;

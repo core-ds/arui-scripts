@@ -1,4 +1,4 @@
-import type { RspackOptionsNormalized } from '@rspack/core';
+import { type RspackOptionsNormalized } from '@rspack/core';
 
 import { applyOverrides } from './util/apply-overrides';
 

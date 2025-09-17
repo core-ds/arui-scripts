@@ -41,7 +41,11 @@ describe('createServerStateModuleFetcher', () => {
 
         fetchServerResources(fetchParams);
 
-        expect(mockXHR.open).toHaveBeenCalledWith('POST', 'https://test.com/api/getModuleResources', true);
+        expect(mockXHR.open).toHaveBeenCalledWith(
+            'POST',
+            'https://test.com/api/getModuleResources',
+            true,
+        );
         expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Content-Type', 'application/json');
         expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('x-test', 'test');
         expect(mockXHR.send).toHaveBeenCalledWith(JSON.stringify(fetchParams));

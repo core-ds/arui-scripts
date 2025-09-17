@@ -6,7 +6,8 @@ describe('useModuleLoader', () => {
     it('should return the module and resources when the loader resolves', async () => {
         const moduleExport = { foo: 'bar' };
         const resources = { css: ['styles.css'], js: ['script.js'] };
-        const loader = jest.fn()
+        const loader = jest
+            .fn()
             .mockResolvedValue({ module: moduleExport, moduleResources: resources });
         const loaderParams = { id: 'my-module' };
 
@@ -54,7 +55,8 @@ describe('useModuleLoader', () => {
     it('should not call the loader again when the loader params change', async () => {
         const moduleExport = { foo: 'bar' };
         const resources = { css: ['styles.css'], js: ['script.js'] };
-        const loader = jest.fn()
+        const loader = jest
+            .fn()
             .mockResolvedValue({ module: moduleExport, moduleResources: resources });
         const loaderParams = { id: 'my-module' };
 

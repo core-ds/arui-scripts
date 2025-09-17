@@ -3,5 +3,5 @@ module.exports = {
     testRegex: '.*\\.spec\\.ts$',
     transform: {
         '^.+\\.tsx?$': require.resolve('ts-jest'),
-    }
+    },
 };

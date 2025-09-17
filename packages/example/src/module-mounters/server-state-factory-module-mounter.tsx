@@ -7,7 +7,7 @@ import { Underlay } from '@alfalab/core-components/underlay';
 import {
     createModuleLoader,
     createServerStateModuleFetcher,
-    FactoryModule,
+    type FactoryModule,
     useModuleFactory,
 } from '@alfalab/scripts-modules';
 
@@ -18,7 +18,7 @@ type FactoryModuleRunParams = {
 
 type FactoryModuleType = {
     reloadPage: () => void;
-}
+};
 
 type ModuleType = FactoryModule<FactoryModuleType, FactoryModuleRunParams>;
 

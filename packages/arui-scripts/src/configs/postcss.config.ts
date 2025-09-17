@@ -1,6 +1,6 @@
 import path from 'path';
 
-import type { PluginCreator } from 'postcss';
+import { type PluginCreator } from 'postcss';
 
 import { postCssGlobalVariables } from '../plugins/postcss-global-variables/postcss-global-variables';
 

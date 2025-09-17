@@ -23,6 +23,6 @@ function CustomEventPolyfill<T>(type: string, params: CustomEventInit<T>) {
     return e;
 }
 
-export const CustomEvent = (
-    isNativeCustomEventAvailable() ? global.CustomEvent : CustomEventPolyfill
-) as unknown as typeof global.CustomEvent;
+export const CustomEvent = (isNativeCustomEventAvailable()
+    ? global.CustomEvent
+    : CustomEventPolyfill) as unknown as typeof global.CustomEvent;

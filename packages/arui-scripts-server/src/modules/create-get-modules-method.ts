@@ -1,12 +1,13 @@
-import type { GetResourcesRequest, ModuleResources } from '@alfalab/scripts-modules';
+import { type GetResourcesRequest, type ModuleResources } from '@alfalab/scripts-modules';
 
 import { getAppManifest, readAssetsManifest } from '../read-assets-manifest';
 
-import { ModulesConfig } from './types';
+import { type ModulesConfig } from './types';
 
-export function createGetModulesMethod<FrameworkParams extends unknown[] = [], GetResourcesParams = void>(
-    modules: ModulesConfig<FrameworkParams, GetResourcesParams>,
-) {
+export function createGetModulesMethod<
+    FrameworkParams extends unknown[] = [],
+    GetResourcesParams = void,
+>(modules: ModulesConfig<FrameworkParams, GetResourcesParams>) {
     const assets: Record<string, Awaited<ReturnType<typeof readAssetsManifest>>> = {};
 
     return {

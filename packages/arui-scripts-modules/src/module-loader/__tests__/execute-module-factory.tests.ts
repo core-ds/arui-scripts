@@ -1,5 +1,5 @@
 import { executeModuleFactory } from '../execute-module-factory';
-import type { FactoryModule } from '../module-types';
+import { type FactoryModule } from '../module-types';
 
 describe('executeModuleFactory', () => {
     it('should work when module have default export', async () => {
@@ -13,7 +13,10 @@ describe('executeModuleFactory', () => {
             'runParams',
         );
 
-        expect(mockModule.default).toHaveBeenCalledWith('runParams', { baseUrl: 'example.com', hostAppId: 'app' });
+        expect(mockModule.default).toHaveBeenCalledWith('runParams', {
+            baseUrl: 'example.com',
+            hostAppId: 'app',
+        });
         expect(result).toBe('result');
     });
 
@@ -26,7 +29,10 @@ describe('executeModuleFactory', () => {
             'runParams',
         );
 
-        expect(mockModule).toHaveBeenCalledWith('runParams', { baseUrl: 'example.com', hostAppId: 'app' });
+        expect(mockModule).toHaveBeenCalledWith('runParams', {
+            baseUrl: 'example.com',
+            hostAppId: 'app',
+        });
         expect(result).toBe('result');
     });
 
@@ -41,7 +47,10 @@ describe('executeModuleFactory', () => {
             'runParams',
         );
 
-        expect(mockModule.factory).toHaveBeenCalledWith('runParams', { baseUrl: 'example.com', hostAppId: 'app' });
+        expect(mockModule.factory).toHaveBeenCalledWith('runParams', {
+            baseUrl: 'example.com',
+            hostAppId: 'app',
+        });
         expect(result).toBe('result');
     });
 
@@ -56,7 +65,10 @@ describe('executeModuleFactory', () => {
             'runParams',
         );
 
-        expect(mockModule.factory).toHaveBeenCalledWith('runParams', { baseUrl: 'example.com', hostAppId: 'app' });
+        expect(mockModule.factory).toHaveBeenCalledWith('runParams', {
+            baseUrl: 'example.com',
+            hostAppId: 'app',
+        });
         expect(result).toBe('result');
     });
 

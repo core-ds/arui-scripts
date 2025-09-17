@@ -1,4 +1,4 @@
-import type { Plugin, Plugins } from '@rspack/core';
+import { type Plugin, type Plugins } from '@rspack/core';
 
 import { createSingleClientWebpackConfig } from '../../webpack.client';
 import { createServerConfig } from '../../webpack.server';

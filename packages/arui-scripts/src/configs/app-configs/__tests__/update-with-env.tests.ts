@@ -1,4 +1,4 @@
-import { AppConfigs } from '../types';
+import { type AppConfigs } from '../types';
 import { updateWithEnv } from '../update-with-env';
 
 describe('update-with-env', () => {

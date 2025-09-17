@@ -1,8 +1,8 @@
-import type { Plugin, Request } from 'hapi20';
+import { type Plugin, type Request } from 'hapi20';
 
 import { type GetResourcesRequest } from '@alfalab/scripts-modules';
 
-import { createGetModulesMethod, ModulesConfig } from './modules';
+import { createGetModulesMethod, type ModulesConfig } from './modules';
 
 export function createGetModulesHapi20Plugin(
     modules: ModulesConfig<[Request]>,
@@ -22,12 +22,18 @@ export function createGetModulesHapi20Plugin(
                 },
                 handler: async (request, h) => {
                     try {
-                        return await modulesMethodSettings.handler(request.payload as GetResourcesRequest, request);
-                    } catch (e: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
-                        return h.response({
-                            error: e.message,
-                            status: 500,
-                        }).code(500);
+                        return await modulesMethodSettings.handler(
+                            request.payload as GetResourcesRequest,
+                            request,
+                        );
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    } catch (e: any) {
+                        return h
+                            .response({
+                                error: e.message,
+                                status: 500,
+                            })
+                            .code(500);
                     }
                 },
             });

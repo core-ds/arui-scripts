@@ -1,4 +1,4 @@
-import type { AtRule } from 'postcss';
+import { type AtRule } from 'postcss';
 
 import { getMediaQueryName } from '../utils';
 
