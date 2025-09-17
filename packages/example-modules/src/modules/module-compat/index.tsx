@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, unmountComponentAtNode } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
 import { type WindowWithModule } from '@alfalab/scripts-modules';
 import { type MountableModule } from '@alfalab/scripts-modules/src/module-loader/module-types';
@@ -10,16 +10,19 @@ import './styles.css';
 
 type ModuleType = MountableModule<Record<string, unknown>>;
 
+let root: ReturnType<typeof createRoot>;
+
 const ModuleCompat: ModuleType = {
     mount: (targetNode, runParams) => {
         console.log('ModuleCompat: mount', { runParams }, targetNode);
 
-        render(<CompatModule />, targetNode);
+        root = createRoot(targetNode);
+        root.render(<CompatModule />);
     },
-    unmount: (targetNode) => {
+    unmount: () => {
         console.log('ModuleCompat: cleanup');
 
-        unmountComponentAtNode(targetNode);
+        root?.unmount();
     },
 };
 

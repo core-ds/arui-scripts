@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
 import {
     type ModuleMountFunction,
@@ -9,6 +9,8 @@ import {
 
 import { ServerStateModuleCompat } from '#/modules/server-state-module-compat/server-state-module-compat';
 
+let root: ReturnType<typeof createRoot>;
+
 const mountModule: ModuleMountFunction<Record<string, unknown>> = (
     targetNode,
     runParams,
@@ -16,18 +18,14 @@ const mountModule: ModuleMountFunction<Record<string, unknown>> = (
 ) => {
     console.log('ServerStateModuleCompat: mount', { runParams, serverState });
 
-    ReactDOM.render(
-        <ServerStateModuleCompat serverState={serverState} runParams={runParams} />,
-        targetNode,
-    );
+    root = createRoot(targetNode);
+    root.render(<ServerStateModuleCompat serverState={serverState} runParams={runParams} />);
 };
 
-const unmountModule: ModuleUnmountFunction = (targetNode) => {
+const unmountModule: ModuleUnmountFunction = () => {
     console.log('ServerStateModuleCompat: cleanup');
 
-    if (targetNode) {
-        ReactDOM.unmountComponentAtNode(targetNode);
-    }
+    root?.unmount();
 };
 
 (window as WindowWithModule).ServerStateModuleCompat = {

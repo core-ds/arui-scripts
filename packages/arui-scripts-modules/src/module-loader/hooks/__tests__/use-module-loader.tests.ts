@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook, waitFor } from '@testing-library/react';
 
 import { useModuleLoader } from '../use-module-loader';
 
@@ -11,17 +11,16 @@ describe('useModuleLoader', () => {
             .mockResolvedValue({ module: moduleExport, moduleResources: resources });
         const loaderParams = { id: 'my-module' };
 
-        const { result, waitForNextUpdate } = renderHook(() =>
-            useModuleLoader({ loader, loaderParams }),
-        );
+        const { result } = renderHook(() => useModuleLoader({ loader, loaderParams }));
 
         expect(result.current.loadingState).toBe('pending');
         expect(result.current.module).toBeUndefined();
         expect(result.current.resources).toBeUndefined();
 
-        await waitForNextUpdate();
+        await waitFor(() => {
+            expect(result.current.loadingState).toBe('fulfilled');
+        });
 
-        expect(result.current.loadingState).toBe('fulfilled');
         expect(result.current.module).toBe(moduleExport);
         expect(result.current.resources).toBe(resources);
 
@@ -37,17 +36,16 @@ describe('useModuleLoader', () => {
         const loader = jest.fn().mockRejectedValue(error);
         const loaderParams = { id: 'my-module' };
 
-        const { result, waitForNextUpdate } = renderHook(() =>
-            useModuleLoader({ loader, loaderParams }),
-        );
+        const { result } = renderHook(() => useModuleLoader({ loader, loaderParams }));
 
         expect(result.current.loadingState).toBe('pending');
         expect(result.current.module).toBeUndefined();
         expect(result.current.resources).toBeUndefined();
 
-        await waitForNextUpdate();
+        await waitFor(() => {
+            expect(result.current.loadingState).toBe('rejected');
+        });
 
-        expect(result.current.loadingState).toBe('rejected');
         expect(result.current.module).toBeUndefined();
         expect(result.current.resources).toBeUndefined();
     });
@@ -60,14 +58,13 @@ describe('useModuleLoader', () => {
             .mockResolvedValue({ module: moduleExport, moduleResources: resources });
         const loaderParams = { id: 'my-module' };
 
-        const { result, waitForNextUpdate, rerender } = renderHook(
-            (props) => useModuleLoader(props),
-            { initialProps: { loader, loaderParams } },
-        );
+        const { result, rerender } = renderHook((props) => useModuleLoader(props), {
+            initialProps: { loader, loaderParams },
+        });
 
-        await waitForNextUpdate();
-
-        expect(result.current.loadingState).toBe('fulfilled');
+        await waitFor(() => {
+            expect(result.current.loadingState).toBe('fulfilled');
+        });
         expect(loader).toHaveBeenCalledWith({
             getResourcesParams: loaderParams,
             abortSignal: expect.any(AbortSignal),
@@ -83,11 +80,13 @@ describe('useModuleLoader', () => {
         const loader = jest.fn().mockResolvedValue({ unmount });
         const loaderParams = { id: 'my-module' };
 
-        const { unmount: unmountHook, waitForNextUpdate } = renderHook(() =>
+        const { unmount: unmountHook, result } = renderHook(() =>
             useModuleLoader({ loader, loaderParams }),
         );
 
-        await waitForNextUpdate();
+        await waitFor(() => {
+            expect(result.current.loadingState).toBe('fulfilled');
+        });
 
         unmountHook();
 
