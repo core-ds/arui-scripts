@@ -1,4 +1,4 @@
-import { act, cleanup, renderHook } from '@testing-library/react-hooks';
+import { act, cleanup, renderHook } from '@testing-library/react';
 
 import { useModuleMountTarget } from '../use-module-mount-target';
 

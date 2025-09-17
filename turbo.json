@@ -12,10 +12,13 @@
         "test": {
             "dependsOn": ["^build"]
         },
-        "lint": {},
+        "lint": {
+            "dependsOn": ["format"]
+        },
         "validate": {
             "dependsOn": ["build:app"]
         },
-        "audit": {}
+        "audit": {},
+        "format": {}
     }
 }

@@ -1,9 +1,11 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
 import { type ModuleMountFunction, type ModuleUnmountFunction } from '@alfalab/scripts-modules';
 
 import { Module } from './example-module';
+
+let root: ReturnType<typeof createRoot>;
 
 export const mount: ModuleMountFunction = (targetNode, runParams, serverState) => {
     console.log('Module: mount', { runParams, serverState });
@@ -11,13 +13,12 @@ export const mount: ModuleMountFunction = (targetNode, runParams, serverState) =
         throw new Error('Target node is not defined for module');
     }
 
-    ReactDOM.render(<Module />, targetNode);
-};
-export const unmount: ModuleUnmountFunction = (targetNode) => {
-    console.log('Module: unmount');
-    if (!targetNode) {
-        return;
-    }
+    root = createRoot(targetNode);
 
-    ReactDOM.unmountComponentAtNode(targetNode);
+    root.render(<Module />);
+};
+export const unmount: ModuleUnmountFunction = () => {
+    console.log('Module: unmount');
+
+    root?.unmount();
 };

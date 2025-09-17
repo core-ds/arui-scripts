@@ -1,20 +1,21 @@
-// TODO: remove eslint-disable-next-line
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
 import { App } from './components/app';
 
 const targetElement = document.getElementById('app');
 
+const root = createRoot(targetElement!);
+
 if (process.env.NODE_ENV !== 'production' && module.hot) {
-    ReactDOM.render(<App />, targetElement);
+    root.render(<App />);
 
     module.hot.accept('./components/app', () => {
         // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
         const NextAppAssignments = require('./components/app').App;
 
-        ReactDOM.render(<NextAppAssignments />, targetElement);
+        root.render(<NextAppAssignments />);
     });
 } else {
-    ReactDOM.render(<App />, targetElement);
+    root.render(<App />);
 }
