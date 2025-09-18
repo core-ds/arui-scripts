@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 20.4.0
+
+### Minor Changes
+
+-   [#362](https://github.com/core-ds/arui-scripts/pull/362) [`96b1f59`](https://github.com/core-ds/arui-scripts/commit/96b1f59e152187f93d60d2c6a1fbf0ff3e5c5af3) Thanks [@TheDiamondDoge](https://github.com/TheDiamondDoge)! - Добавление пакета @alfa-bank/app-html в serverExternalsExemptions
+
 ## 20.3.0
 
 ### Minor Changes
