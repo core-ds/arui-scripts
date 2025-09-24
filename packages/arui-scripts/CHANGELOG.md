@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 20.4.1
+
+### Patch Changes
+
+-   [#364](https://github.com/core-ds/arui-scripts/pull/364) [`5df79df`](https://github.com/core-ds/arui-scripts/commit/5df79dff798ab4d3f9726a944ec35c09411b03ba) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Включен devserver.historyApiFallback для clientOnly режима. Теперь в дев режиме в clientOnly запросы на неизвестные адреса будут открывать index.html
+
 ## 20.4.0
 
 ### Minor Changes
