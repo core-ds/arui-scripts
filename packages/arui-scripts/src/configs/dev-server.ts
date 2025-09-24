@@ -49,6 +49,7 @@ const serverProxyConfig = {
 export const devServerConfig = applyOverrides('devServer', {
     port: configs.clientServerPort,
     liveReload: false,
+    historyApiFallback: configs.clientOnly,
     client: {
         overlay: {
             errors: true,
