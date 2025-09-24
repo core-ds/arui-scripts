@@ -1,5 +1,12 @@
 # example
 
+## 1.1.72
+
+### Patch Changes
+
+-   Updated dependencies [[`5df79df`](https://github.com/core-ds/arui-scripts/commit/5df79dff798ab4d3f9726a944ec35c09411b03ba)]:
+    -   arui-scripts@20.4.1
+
 ## 1.1.71
 
 ### Patch Changes
