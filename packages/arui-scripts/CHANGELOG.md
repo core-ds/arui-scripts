@@ -1,5 +1,15 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 20.4.2
+
+### Patch Changes
+
+-   [#367](https://github.com/core-ds/arui-scripts/pull/367) [`8480517`](https://github.com/core-ds/arui-scripts/commit/84805174e744b5fc635025eba0019a298d054e96) Thanks [@Rinta01](https://github.com/Rinta01)! - Изменена команда для очистки кэша yarn при сборке docker-образа через `docker-build:compiled`
+
+    Теперь команда выглядит так: `yarn cache clean --all`
+
+    Благодаря этому изменению, размер образов, собираемых через `docker-build:compiled`, станет меньше
+
 ## 20.4.1
 
 ### Patch Changes
