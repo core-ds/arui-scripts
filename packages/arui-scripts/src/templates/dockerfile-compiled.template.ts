@@ -35,7 +35,7 @@ ${filesRequiredToInstallDependencies
     .join('\n')}
 
 RUN ${installProductionCommand}  && \\
-    ${yarnVersion === 'unavailable' ? 'npm cache clean --force' : 'yarn cache clean'}
+    ${yarnVersion === 'unavailable' ? 'npm cache clean --force' : 'yarn cache clean --all'}
 
 ADD --chown=nginx:nginx . /src
 
