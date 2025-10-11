@@ -30,6 +30,16 @@ server {
         root ${configs.nginxRootPath}/${configs.buildPath};
     }
 
+    location = /${configs.publicPath}remoteEntry.js {
+        add_header Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0";
+        add_header Pragma "no-cache";
+        add_header Expires "0";
+        root ${configs.nginxRootPath}/${configs.buildPath};
+        types {
+            text/javascript  js;
+        }
+    }
+
     location ~ /${configs.publicPath}.*\\.js$ {
         expires max;
         add_header Cache-Control public;
