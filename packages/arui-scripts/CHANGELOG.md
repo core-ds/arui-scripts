@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 20.5.0
+
+### Minor Changes
+
+-   [#369](https://github.com/core-ds/arui-scripts/pull/369) [`de2081f`](https://github.com/core-ds/arui-scripts/commit/de2081f4c73ba99e068ef1991400dbca2d68bb0c) Thanks [@dmitrbrvsk](https://github.com/dmitrbrvsk)! - добавлена настройка отключения кеширования remoteEntry.js в шаблон ngnix.conf
+
 ## 20.4.2
 
 ### Patch Changes
