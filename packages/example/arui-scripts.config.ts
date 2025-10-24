@@ -20,13 +20,16 @@ const aruiScriptsConfig: PackageSettings = {
         shared: {
             react: {
                 eager: true,
-                requiredVersion: '^17.0.0',
+                requiredVersion: '^18.0.0',
             },
             'react-dom': {
                 eager: true,
-                requiredVersion: '^17.0.0',
+                requiredVersion: '^18.0.0',
             },
         },
+    },
+    experimentalReactCompiler: {
+        target: '18',
     },
 };
 

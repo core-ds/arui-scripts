@@ -102,7 +102,7 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
             {
                 oneOf: [
                     // Обработка основного кода приложения
-                    getCodeLoader(mode),
+                    ...getCodeLoader(mode),
                     // обработка ts кода если codeLoader = tsc
                     getTsLoaderIfEnabled(mode),
                     // Обработка внешнего для приложения кода (node_modules)
@@ -199,28 +199,67 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
     },
 });
 
-function getCodeLoader(mode: 'dev' | 'prod'): RuleSetRule {
+function getCodeLoader(mode: 'dev' | 'prod'): RuleSetRule[] {
     if (configs.codeLoader === 'swc') {
-        return {
-            test: /\.(js|jsx|mjs|ts|tsx|cjs)$/,
-            include: configs.appSrc,
-            loader: 'builtin:swc-loader',
-            options: swcServerConfig,
-        };
+        if (configs.experimentalReactCompiler !== 'disabled') {
+            return [
+                {
+                    test: /\.(js|mjs|ts|cjs)$/,
+                    include: configs.appSrc,
+                    loader: 'builtin:swc-loader',
+                    options: swcServerConfig,
+                },
+                {
+                    test: /\.(jsx|tsx)$/,
+                    include: configs.appSrc,
+                    use: [
+                        {
+                            loader: 'builtin:swc-loader',
+                            options: swcServerConfig,
+                        },
+                        {
+                            loader: 'babel-loader',
+                            options: {
+                                plugins: [
+                                    [
+                                        'babel-plugin-react-compiler',
+                                        { target: configs.experimentalReactCompiler.target },
+                                    ],
+                                    '@babel/plugin-syntax-jsx',
+                                    ['@babel/plugin-syntax-typescript', { isTSX: true }],
+                                ],
+                            },
+                        },
+                    ],
+                },
+            ];
+        }
+
+        return [
+            {
+                test: /\.(js|jsx|mjs|ts|tsx|cjs)$/,
+                include: configs.appSrc,
+                loader: 'builtin:swc-loader',
+                options: swcServerConfig,
+            },
+        ];
     }
 
-    return {
-        test: configs.codeLoader === 'tsc' ? /\.(js|jsx|mjs|cjs)$/ : /\.(js|jsx|mjs|ts|tsx|cjs)$/,
-        include: configs.appSrc,
-        loader: require.resolve('babel-loader'),
-        options: {
-            ...babelConf,
-            // This is a feature of `babel-loader` for webpack (not Babel itself).
-            // It enables caching results in ./node_modules/.cache/babel-loader/
-            // directory for faster rebuilds.
-            cacheDirectory: mode === 'dev',
+    return [
+        {
+            test:
+                configs.codeLoader === 'tsc' ? /\.(js|jsx|mjs|cjs)$/ : /\.(js|jsx|mjs|ts|tsx|cjs)$/,
+            include: configs.appSrc,
+            loader: require.resolve('babel-loader'),
+            options: {
+                ...babelConf,
+                // This is a feature of `babel-loader` for webpack (not Babel itself).
+                // It enables caching results in ./node_modules/.cache/babel-loader/
+                // directory for faster rebuilds.
+                cacheDirectory: mode === 'dev',
+            },
         },
-    };
+    ];
 }
 
 function getTsLoaderIfEnabled(mode: 'dev' | 'prod'): RuleSetRule | false {
