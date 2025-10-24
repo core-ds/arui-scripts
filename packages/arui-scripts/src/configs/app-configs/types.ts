@@ -1,5 +1,6 @@
 import { type DevTool, type Shared } from '@rspack/core';
 import { type RspackDevServer } from '@rspack/dev-server';
+import { type PluginOptions as ReactCompilerOptions } from 'babel-plugin-react-compiler';
 
 /**
  * Конфигурация arui-scripts, которая может быть переопределена приложением
@@ -50,6 +51,7 @@ export type AppConfigs = {
     // build tuning
     keepPropTypes: boolean;
     codeLoader: 'babel' | 'tsc' | 'swc';
+    experimentalReactCompiler: 'disabled' | ReactCompilerOptions;
     installServerSourceMaps: boolean;
     disableDevWebpackTypecheck: boolean;
     jestCodeTransformer: 'babel' | 'tsc' | 'swc';

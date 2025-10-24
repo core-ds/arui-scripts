@@ -5,6 +5,7 @@ import { updateWithConfigFile } from './update-with-config-file';
 import { updateWithEnv } from './update-with-env';
 import { updateWithPackage } from './update-with-package';
 import { updateWithPresets } from './update-with-presets';
+import { validateConfig } from './validate-config';
 import { warnAboutDeprecations } from './warn-about-deprecations';
 
 import '../util/register-ts-node';
@@ -27,4 +28,5 @@ export const configs: AppContextWithConfigs = {
     ...appContext,
 };
 
+validateConfig(configs);
 warnAboutDeprecations(configs);
