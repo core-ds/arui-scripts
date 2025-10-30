@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 20.5.1
+
+### Patch Changes
+
+-   [#372](https://github.com/core-ds/arui-scripts/pull/372) [`d9ecb07`](https://github.com/core-ds/arui-scripts/commit/d9ecb071c09ed44938491f59c690d7e75ecf3510) Thanks [@dmitrbrvsk](https://github.com/dmitrbrvsk)! - Исправлен запуск команды arui-scripts bundle-analyze
+
 ## 20.5.0
 
 ### Minor Changes
