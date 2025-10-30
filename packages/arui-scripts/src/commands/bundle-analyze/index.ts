@@ -1,5 +1,5 @@
 import { RsdoctorRspackPlugin } from '@rsdoctor/rspack-plugin';
-import { rspack, type WebpackPluginInstance } from '@rspack/core';
+import { type WebpackPluginInstance, rspack } from '@rspack/core';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 
 import { configs } from '../../configs/app-configs';
@@ -7,6 +7,8 @@ import { webpackClientConfig } from '../../configs/webpack.client.prod';
 import { makeTmpDir } from '../util/make-tmp-dir';
 
 (async () => {
+    console.log('Starting bundle analysis...');
+
     const clientWebpackConfigs = Array.isArray(webpackClientConfig)
         ? webpackClientConfig
         : [webpackClientConfig];
@@ -21,6 +23,9 @@ import { makeTmpDir } from '../util/make-tmp-dir';
                 generateStatsFile: true,
                 statsFilename: configs.statsOutputPath,
                 analyzerPort: 'auto',
+                analyzerMode: 'server',
+                openAnalyzer: true,
+                logLevel: 'info',
             }) as unknown as WebpackPluginInstance, // webpack-bundle-analyzer has incorrect types
             new RsdoctorRspackPlugin({}),
         ];
@@ -32,5 +37,28 @@ import { makeTmpDir } from '../util/make-tmp-dir';
 
     await Promise.all(promises);
 
-    rspack(clientWebpackConfigs).run(() => {});
+    rspack(clientWebpackConfigs).run((err, stats) => {
+        if (err) {
+            console.error('Bundle analysis failed with error: ', err);
+            process.exit(1);
+        }
+
+        if (stats) {
+            const hasErrors = stats.hasErrors?.();
+            const hasWarnings = stats.hasWarnings?.();
+
+            if (hasErrors || hasWarnings) {
+                console.log(
+                    stats.toString({
+                        colors: true,
+                        chunks: false,
+                        modules: false,
+                        children: false,
+                        warnings: true,
+                        errors: true,
+                    }) as unknown as string,
+                );
+            }
+        }
+    });
 })();
