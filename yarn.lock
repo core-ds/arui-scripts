@@ -631,6 +631,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/helper-string-parser@npm:^7.27.1":
+  version: 7.27.1
+  resolution: "@babel/helper-string-parser@npm:7.27.1"
+  checksum: 10/0ae29cc2005084abdae2966afdb86ed14d41c9c37db02c3693d5022fba9f5d59b011d039380b8e537c34daf117c549f52b452398f576e908fb9db3c7abbb3a00
+  languageName: node
+  linkType: hard
+
 "@babel/helper-validator-identifier@npm:^7.22.20":
   version: 7.22.20
   resolution: "@babel/helper-validator-identifier@npm:7.22.20"
@@ -656,6 +663,13 @@ __metadata:
   version: 7.27.1
   resolution: "@babel/helper-validator-identifier@npm:7.27.1"
   checksum: 10/75041904d21bdc0cd3b07a8ac90b11d64cd3c881e89cb936fa80edd734bf23c35e6bd1312611e8574c4eab1f3af0f63e8a5894f4699e9cfdf70c06fcf4252320
+  languageName: node
+  linkType: hard
+
+"@babel/helper-validator-identifier@npm:^7.28.5":
+  version: 7.28.5
+  resolution: "@babel/helper-validator-identifier@npm:7.28.5"
+  checksum: 10/8e5d9b0133702cfacc7f368bf792f0f8ac0483794877c6dca5fcb73810ee138e27527701826fb58a40a004f3a5ec0a2f3c3dd5e326d262530b119918f3132ba7
   languageName: node
   linkType: hard
 
@@ -2022,6 +2036,16 @@ __metadata:
     "@babel/helper-validator-identifier": "npm:^7.24.7"
     to-fast-properties: "npm:^2.0.0"
   checksum: 10/7b54665e1b51f525fe0f451efdd9fe7a4a6dfba3fd4956c3530bc77336b66ffe3d78c093796ed044119b5d213176af7cf326f317a2057c538d575c6cefcb3562
+  languageName: node
+  linkType: hard
+
+"@babel/types@npm:^7.26.0":
+  version: 7.28.5
+  resolution: "@babel/types@npm:7.28.5"
+  dependencies:
+    "@babel/helper-string-parser": "npm:^7.27.1"
+    "@babel/helper-validator-identifier": "npm:^7.28.5"
+  checksum: 10/4256bb9fb2298c4f9b320bde56e625b7091ea8d2433d98dcf524d4086150da0b6555aabd7d0725162670614a9ac5bf036d1134ca13dedc9707f988670f1362d7
   languageName: node
   linkType: hard
 
@@ -7372,6 +7396,7 @@ __metadata:
     babel-jest: "npm:28.1.3"
     babel-loader: "npm:9.2.1"
     babel-plugin-istanbul: "npm:^7.0.0"
+    babel-plugin-react-compiler: "npm:^1.0.0"
     babel-plugin-transform-react-remove-prop-types: "npm:0.4.24"
     brotli-dict: "npm:^1.1.4"
     case-sensitive-paths-webpack-plugin: "npm:2.4.0"
@@ -7692,6 +7717,15 @@ __metadata:
   peerDependencies:
     "@babel/core": ^7.4.0 || ^8.0.0-0 <8.0.0
   checksum: 10/461b735c6c0eca3c7b4434d14bfa98c2ab80f00e2bdc1c69eb46d1d300092a9786d76bbd3ee55e26d2d1a2380c14592d8d638e271dfd2a2b78a9eacffa3645d1
+  languageName: node
+  linkType: hard
+
+"babel-plugin-react-compiler@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "babel-plugin-react-compiler@npm:1.0.0"
+  dependencies:
+    "@babel/types": "npm:^7.26.0"
+  checksum: 10/51358f4da7dd338afd93ca647af3b5b95fdedd2ffde78719fbba5c542e3d66d338f020bc61234caf4ddf25cddbf517ae101ff76e362e3244d1047c1e64d90a60
   languageName: node
   linkType: hard
 
@@ -11272,6 +11306,7 @@ __metadata:
     lodash: "npm:^4.17.21"
     postcss-preset-env: "npm:^8.4.1"
     react: "npm:18.3.1"
+    react-compiler-runtime: "npm:^1.0.0"
     react-dom: "npm:18.3.1"
     ts-jest: "npm:28.0.8"
     typescript: "npm:^4.9.5"
@@ -18937,6 +18972,15 @@ __metadata:
   peerDependencies:
     react: ^15.3.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
   checksum: 10/45411b2e1d5e77ce8586ef0fa6cef2d394da4660af90a2c0f044a2170a0b601ac023ac2bc62d6109201969329a8dbd13bd1a4bd4027be3980e4fde7c6a48bee3
+  languageName: node
+  linkType: hard
+
+"react-compiler-runtime@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "react-compiler-runtime@npm:1.0.0"
+  peerDependencies:
+    react: ^17.0.0 || ^18.0.0 || ^19.0.0 || ^0.0.0-experimental
+  checksum: 10/7d85297de255c39f1aca3dd4942fbf59253e127db8abef1ad7fe3eb329e39aab4c30656ff77751165e2b21263d96836f44699777ca40c9a717ffe42c6c355543
   languageName: node
   linkType: hard
 

@@ -56,6 +56,7 @@ export function getDefaultAppConfig(): AppConfigs {
         // build tuning
         keepPropTypes: false,
         codeLoader: 'swc',
+        experimentalReactCompiler: 'disabled',
         installServerSourceMaps: false,
         disableDevWebpackTypecheck: true,
         jestCodeTransformer: 'swc',

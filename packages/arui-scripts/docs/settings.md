@@ -238,6 +238,25 @@ const settings = {
 Использование swc позволяет значительно ускорить сборку (до 2 раз на больших проектах), но не будет создавать полностью идентичный с babel код.
 Итоговый бандл может получиться немного больше, чем при использовании babel, но разница полностью компенсируется при использовании сжатия.
 
+#### experimentalReactCompiler
+Позволяет включить [react-compiler](https://react.dev/learn/react-compiler/introduction) в вашем проекте. **Внимание!** Этот режим находится в статусе эксперимента и использовать его в продакшене на данный момент не рекомендуется!
+
+Включение этой опции на данный момент поддерживается только вместе с `codeLoader=swc`.
+
+Возможные значения:
+- `disabled` - дефолт, react-compiler выключен
+- `ReactCompilerOptions` - [конфигурация](https://react.dev/reference/react-compiler/configuration) компилятора.
+
+При использовании с react < 19 вам необходимо добавить в зависимости вашего проекта `react-compiler-runtime` и использовать настройку `target`, например:
+```ts
+const packageSettings = {
+    // ...
+    experimentalReactCompiler: {
+        target: '18', // или '17'
+    },
+};
+```
+
 #### installServerSourceMaps
 Добавлять ли в серверную сборку пакет source-map-support. По умолчанию `false`.
 
