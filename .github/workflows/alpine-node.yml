@@ -15,11 +15,11 @@ jobs:
         versions: [
           { node: '20.19.5', alpine: '3.22', image: node, dockerfile: Dockerfile, tag: '20.19.5' },
           { node: '22.20.0', alpine: '3.22', image: node, dockerfile: Dockerfile, tag: '22.20.0' },
-          { node: '24.10.0', alpine: '3.22', image: node, dockerfile: Dockerfile, tag: '24.10.0' },
+          { node: '22.16.0', alpine: '3.22', image: node, dockerfile: Dockerfile, tag: '22.16.0' },
 
           { node: '20.19.5', alpine: '3.22', image: node, dockerfile: Dockerfile-slim, tag: '20.19.5-slim' },
           { node: '22.20.0', alpine: '3.22', image: node, dockerfile: Dockerfile-slim, tag: '22.20.0-slim' },
-          { node: '24.10.0', alpine: '3.22', image: node, dockerfile: Dockerfile-slim, tag: '24.10.0-slim' },
+          { node: '22.16.0', alpine: '3.22', image: node, dockerfile: Dockerfile-slim, tag: '22.16.0-slim' },
         ]
     runs-on: ubuntu-latest
     steps:
