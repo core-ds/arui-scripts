@@ -1,5 +1,13 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 20.6.0
+
+### Minor Changes
+
+-   [#374](https://github.com/core-ds/arui-scripts/pull/374) [`e1de841`](https://github.com/core-ds/arui-scripts/commit/e1de841b5c19242801416ba8fb3acf9c7721f481) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Добавлена экспериментальная поддержка [react-compiler](https://react.dev/learn/react-compiler/introduction).
+
+    На данный момент **не рекомендуется** использовать её в production проектах.
+
 ## 20.5.1
 
 ### Patch Changes
