@@ -201,7 +201,7 @@ export const createSingleClientWebpackConfig = (
                 // back to the "file" loader at the end of the loader list.
                 oneOf: [
                     // Обработка основного кода приложения
-                    getCodeLoader(mode),
+                    ...getCodeLoader(mode),
                     // обработка ts кода если codeLoader = tsc
                     getTsLoaderIfEnabled(mode),
                     // Обработка внешнего для приложения кода (node_modules)
@@ -434,44 +434,85 @@ export const createClientWebpackConfig = (mode: 'dev' | 'prod') => {
     return [appWebpackConfig, ...modulesWebpackConfigs];
 };
 
-function getCodeLoader(mode: 'dev' | 'prod'): RuleSetRule {
+function getCodeLoader(mode: 'dev' | 'prod'): RuleSetRule[] {
     if (configs.codeLoader === 'swc') {
-        return {
-            test: /\.(js|jsx|mjs|ts|tsx|cjs)$/,
-            include: configs.appSrc,
-            loader: 'builtin:swc-loader',
-            options: {
-                ...swcClientConfig,
-                jsc: {
-                    ...swcClientConfig.jsc,
-                    transform: {
-                        ...swcClientConfig.jsc?.transform,
-                        react: {
-                            ...swcClientConfig.jsc?.transform?.react,
-                            refresh: mode === 'dev',
-                        },
+        const swcOptions = {
+            ...swcClientConfig,
+            jsc: {
+                ...swcClientConfig.jsc,
+                transform: {
+                    ...swcClientConfig.jsc?.transform,
+                    react: {
+                        ...swcClientConfig.jsc?.transform?.react,
+                        refresh: mode === 'dev',
                     },
                 },
             },
         };
+
+        if (configs.experimentalReactCompiler !== 'disabled') {
+            return [
+                {
+                    test: /\.(js|mjs|ts|cjs)$/,
+                    include: configs.appSrc,
+                    loader: 'builtin:swc-loader',
+                    options: swcOptions,
+                },
+                {
+                    test: /\.(jsx|tsx)$/,
+                    include: configs.appSrc,
+                    use: [
+                        {
+                            loader: 'builtin:swc-loader',
+                            options: swcOptions,
+                        },
+                        {
+                            loader: 'babel-loader',
+                            options: {
+                                plugins: [
+                                    [
+                                        'babel-plugin-react-compiler',
+                                        { target: configs.experimentalReactCompiler.target },
+                                    ],
+                                    '@babel/plugin-syntax-jsx',
+                                    ['@babel/plugin-syntax-typescript', { isTSX: true }],
+                                ],
+                            },
+                        },
+                    ],
+                },
+            ];
+        }
+
+        return [
+            {
+                test: /\.(js|jsx|mjs|ts|tsx|cjs)$/,
+                include: configs.appSrc,
+                loader: 'builtin:swc-loader',
+                options: swcOptions,
+            },
+        ];
     }
 
-    return {
-        test: configs.codeLoader === 'tsc' ? /\.(js|jsx|mjs|cjs)$/ : /\.(js|jsx|mjs|ts|tsx|cjs)$/,
-        include: configs.appSrc,
-        loader: require.resolve('babel-loader'),
-        options: {
-            ...babelConf,
-            cacheDirectory: mode === 'dev',
-            cacheCompression: false,
-            plugins: [
-                ...babelConf.plugins,
-                mode === 'dev'
-                    ? [require.resolve('react-refresh/babel'), { skipEnvCheck: true }]
-                    : undefined,
-            ].filter(Boolean),
+    return [
+        {
+            test:
+                configs.codeLoader === 'tsc' ? /\.(js|jsx|mjs|cjs)$/ : /\.(js|jsx|mjs|ts|tsx|cjs)$/,
+            include: configs.appSrc,
+            loader: require.resolve('babel-loader'),
+            options: {
+                ...babelConf,
+                cacheDirectory: mode === 'dev',
+                cacheCompression: false,
+                plugins: [
+                    ...babelConf.plugins,
+                    mode === 'dev'
+                        ? [require.resolve('react-refresh/babel'), { skipEnvCheck: true }]
+                        : undefined,
+                ].filter(Boolean),
+            },
         },
-    };
+    ];
 }
 
 function getTsLoaderIfEnabled(mode: 'dev' | 'prod'): RuleSetRule | false {
