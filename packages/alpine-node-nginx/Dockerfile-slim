@@ -124,7 +124,9 @@ RUN \
 	&& ln -sf /dev/stderr /var/log/nginx/error.log \
     # update all packages to latest
     && apk update \
-    && apk upgrade --no-cache
+    && apk upgrade --no-cache \
+    # update npm to latest version
+    && npm install -g npm
 
 COPY nginx.conf /etc/nginx/nginx.conf
 
