@@ -13,13 +13,13 @@ jobs:
     strategy:
       matrix:
         versions: [
-          { node: '20.19.5', alpine: '3.22', image: node, dockerfile: Dockerfile, tag: '20.19.5' },
-          { node: '22.20.0', alpine: '3.22', image: node, dockerfile: Dockerfile, tag: '22.20.0' },
-          { node: '24.10.0', alpine: '3.22', image: node, dockerfile: Dockerfile, tag: '24.10.0' },
+          { node: '20.19.6', alpine: '3.22', image: node, dockerfile: Dockerfile, tag: '20.19.6' },
+          { node: '22.21.1', alpine: '3.22', image: node, dockerfile: Dockerfile, tag: '22.21.1' },
+          { node: '24.11.1', alpine: '3.22', image: node, dockerfile: Dockerfile, tag: '24.11.1' },
 
-          { node: '20.19.5', alpine: '3.22', image: node, dockerfile: Dockerfile-slim, tag: '20.19.5-slim' },
-          { node: '22.20.0', alpine: '3.22', image: node, dockerfile: Dockerfile-slim, tag: '22.20.0-slim' },
-          { node: '24.10.0', alpine: '3.22', image: node, dockerfile: Dockerfile-slim, tag: '24.10.0-slim' },
+          { node: '20.19.6', alpine: '3.22', image: node, dockerfile: Dockerfile-slim, tag: '20.19.6-slim' },
+          { node: '22.21.1', alpine: '3.22', image: node, dockerfile: Dockerfile-slim, tag: '22.21.1-slim' },
+          { node: '24.11.1', alpine: '3.22', image: node, dockerfile: Dockerfile-slim, tag: '24.11.1-slim' },
         ]
     runs-on: ubuntu-latest
     steps:
