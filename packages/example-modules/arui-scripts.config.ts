@@ -14,10 +14,6 @@ const aruiScriptsConfig: PackageSettings = {
     jestCodeTransformer: 'swc',
     debug: true,
     compatModules: {
-        shared: {
-            react: 'react',
-            'react-dom': 'reactDOM',
-        },
         exposes: {
             ModuleCompat: {
                 entry: './src/modules/module-compat/index',
@@ -47,6 +43,10 @@ const aruiScriptsConfig: PackageSettings = {
             ServerStateFactoryModule: './src/modules/server-state-factory-module/index',
             ServerStateModule: './src/modules/server-state-module/index',
             ModuleAbstract: './src/modules/module-abstract/index',
+        },
+        options: {
+            cssPrefix: '.my-prefix',
+            useSeparateBuild: true,
         },
     },
     dictionaryCompression: {

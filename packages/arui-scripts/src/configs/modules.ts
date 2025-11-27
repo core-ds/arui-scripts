@@ -13,8 +13,14 @@ export function haveExposedDefaultModules() {
 
 export const MODULES_ENTRY_NAME = 'remoteEntry.js';
 
-export function patchMainWebpackConfigForModules(webpackConf: rspack.Configuration) {
+export function patchMainWebpackConfigForModules(
+    webpackConf: rspack.Configuration,
+    mode: 'consumer' | 'provider' | 'both',
+) {
     /* eslint-disable no-param-reassign */
+    const isConsumer = mode === 'consumer' || mode === 'both';
+    const isProvider = mode === 'provider' || mode === 'both';
+
     if (configs.disableModulesSupport) {
         // проект хочет сам разбираться с WMF и прочими вещами, полностью отключаем обработку модулей на своей стороне
         return webpackConf;
@@ -24,20 +30,24 @@ export function patchMainWebpackConfigForModules(webpackConf: rspack.Configurati
         return webpackConf;
     }
 
-    // Добавляем expose loader для библиотек, которые мы хотим вынести в глобальную область видимости
-    webpackConf.module.rules.unshift(...getExposeLoadersFormCompatModules());
+    if (isConsumer) {
+        // Добавляем expose loader для библиотек, которые мы хотим вынести в глобальную область видимости
+        webpackConf.module.rules.unshift(...getExposeLoadersFormCompatModules());
+    }
 
     if (!configs.modules || !webpackConf.output || !webpackConf.plugins) {
-        // webpack по умолчанию всегда добавлял runtime для шаринга, даже когда модули не включены.
-        // Rspack этого больше не делает, поэтому добавляем плагин для рантайма самостоятельно
-        webpackConf.plugins.push(new rspack.sharing.ProvideSharedPlugin({ provides: {} }));
+        if (isConsumer) {
+            // webpack по умолчанию всегда добавлял runtime для шаринга, даже когда модули не включены.
+            // Rspack этого больше не делает, поэтому добавляем плагин для рантайма самостоятельно
+            webpackConf.plugins.push(new rspack.sharing.ProvideSharedPlugin({ provides: {} }));
+        }
 
         return webpackConf;
     }
 
     const { cssPrefix } = configs.modules.options || {};
 
-    if (cssPrefix) {
+    if (cssPrefix && isProvider) {
         addCssPrefix(webpackConf, cssPrefix);
     }
 
@@ -48,9 +58,9 @@ export function patchMainWebpackConfigForModules(webpackConf: rspack.Configurati
     webpackConf.plugins.push(
         new rspack.container.ModuleFederationPlugin({
             name: configs.modules.name || configs.normalizedName,
-            filename: configs.modules.exposes ? MODULES_ENTRY_NAME : undefined,
+            filename: isProvider && configs.modules.exposes ? MODULES_ENTRY_NAME : undefined,
             shared: configs.modules.shared,
-            exposes: configs.modules.exposes,
+            exposes: isProvider ? configs.modules.exposes : {},
             shareScope: configs.modules.shareScope,
         }),
         new TurnOffSplitRemoteEntry(configs.modules.name || configs.normalizedName),
