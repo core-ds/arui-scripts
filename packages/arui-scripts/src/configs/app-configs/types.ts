@@ -107,6 +107,7 @@ export type AppConfigs = {
 export type ModuleConfigBase = {
     cssPrefix?: false | string;
     useSeparateBuild?: boolean;
+    separateBuildShared?: Shared;
 };
 
 type CompatModuleConfigBase = {

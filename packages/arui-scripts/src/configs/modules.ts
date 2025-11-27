@@ -59,7 +59,9 @@ export function patchMainWebpackConfigForModules(
         new rspack.container.ModuleFederationPlugin({
             name: configs.modules.name || configs.normalizedName,
             filename: isProvider && configs.modules.exposes ? MODULES_ENTRY_NAME : undefined,
-            shared: configs.modules.shared,
+            shared:
+                (mode === 'provider' && configs.modules.options?.separateBuildShared) ||
+                configs.modules.shared,
             exposes: isProvider ? configs.modules.exposes : {},
             shareScope: configs.modules.shareScope,
         }),
