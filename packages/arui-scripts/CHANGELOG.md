@@ -1,5 +1,19 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 20.6.0
+
+### Minor Changes
+
+-   [#374](https://github.com/core-ds/arui-scripts/pull/374) [`e1de841`](https://github.com/core-ds/arui-scripts/commit/e1de841b5c19242801416ba8fb3acf9c7721f481) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Добавлена экспериментальная поддержка [react-compiler](https://react.dev/learn/react-compiler/introduction).
+
+    На данный момент **не рекомендуется** использовать её в production проектах.
+
+-   [#384](https://github.com/core-ds/arui-scripts/pull/384) [`64d8412`](https://github.com/core-ds/arui-scripts/commit/64d8412c262a15299cb901501a39100ca78902a9) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Добавлена возможность создавать отдельную сборку для wmf модулей для применения css префиксов только к коду модулей
+
+-   [#382](https://github.com/core-ds/arui-scripts/pull/382) [`fb0a02e`](https://github.com/core-ds/arui-scripts/commit/fb0a02ea68d60b1c67ecda72dc4a200c5c91ad23) Thanks [@qrik116](https://github.com/qrik116)! - Добавлена команда `exec` для запуска `node` приложения, чтобы приложение могло получать `signals` от операционной системы
+
+    В частности сигнал завершении работы `SIGTERM`, чтобы была возможность корректно завершить работу приложения и выполнить отключение от баз данных и других ресурсов
+
 ## 20.5.1
 
 ### Patch Changes
