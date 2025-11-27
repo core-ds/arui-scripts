@@ -29,7 +29,7 @@ node_memory_limit="$(($max_total_memory / 1024 / 1024 - 100))"
 nginx &
 
 # Start nodejs process
-node --max-old-space-size="$node_memory_limit" ./${configs.buildPath}/${configs.serverOutput}
+exec node --max-old-space-size="$node_memory_limit" ./${configs.buildPath}/${configs.serverOutput}
 `;
 
 const envConfigTargetPath = `/src/${configs.buildPath}/${ENV_CONFIG_FILENAME}`;
