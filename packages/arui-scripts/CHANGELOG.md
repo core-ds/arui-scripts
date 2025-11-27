@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 20.6.1
+
+### Patch Changes
+
+-   [#385](https://github.com/core-ds/arui-scripts/pull/385) [`f2cc71b`](https://github.com/core-ds/arui-scripts/commit/f2cc71b89520e6a18295543de2bde655f7004f06) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Добавлена возможность указывать отдельную конфигурацию shared для wmf при использовании отдельной wmf сборки
+
 ## 20.6.0
 
 ### Minor Changes
