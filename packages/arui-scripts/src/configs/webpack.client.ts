@@ -404,14 +404,24 @@ export const createSingleClientWebpackConfig = (
 });
 
 export const createClientWebpackConfig = (mode: 'dev' | 'prod') => {
-    const appWebpackConfig = patchMainWebpackConfigForModules(
-        createSingleClientWebpackConfig(mode, configs.clientEntry),
-    );
+    const baseWebpackConfig = [createSingleClientWebpackConfig(mode, configs.clientEntry)];
+
+    if (configs.modules?.options?.useSeparateBuild) {
+        baseWebpackConfig[0] = patchMainWebpackConfigForModules(baseWebpackConfig[0], 'consumer');
+        baseWebpackConfig.push(
+            patchMainWebpackConfigForModules(
+                createSingleClientWebpackConfig(mode, {}, 'wmf'),
+                'provider',
+            ),
+        );
+    } else {
+        baseWebpackConfig[0] = patchMainWebpackConfigForModules(baseWebpackConfig[0], 'both');
+    }
 
     const exposedCompatModules = configs.compatModules?.exposes;
 
     if (!exposedCompatModules || Object.keys(exposedCompatModules).length === 0) {
-        return appWebpackConfig;
+        return baseWebpackConfig.length === 1 ? baseWebpackConfig[0] : baseWebpackConfig;
     }
 
     // Добавляем отдельные конфигурации для compat модулей
@@ -431,7 +441,7 @@ export const createClientWebpackConfig = (mode: 'dev' | 'prod') => {
         return patchWebpackConfigForCompat(module, config);
     });
 
-    return [appWebpackConfig, ...modulesWebpackConfigs];
+    return [...baseWebpackConfig, ...modulesWebpackConfigs];
 };
 
 function getCodeLoader(mode: 'dev' | 'prod'): RuleSetRule[] {

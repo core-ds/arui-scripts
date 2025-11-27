@@ -106,9 +106,11 @@ export type AppConfigs = {
 
 export type ModuleConfigBase = {
     cssPrefix?: false | string;
+    useSeparateBuild?: boolean;
 };
 
-type CompatModuleConfigBase = ModuleConfigBase & {
+type CompatModuleConfigBase = {
+    cssPrefix?: false | string;
     entry: string;
     externals?: Record<string, string>;
 };

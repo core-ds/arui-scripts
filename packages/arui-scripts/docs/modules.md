@@ -351,34 +351,27 @@ arui-scripts предоставляет два решения для этой п
 :warning: **Внимание!** - изоляция стилей работает только в одном направлении - стили модуля не будут применены к элементам
 хост-приложения. Но стили хост-приложения могут быть применены к элементам модуля.
 
-Для того чтобы использовать этот метод, вам нужно:
+Для того чтобы использовать этот метод, вы можете:
 
-1. Изменить конфигурацию модуля в `arui-scripts.config.ts`:
+1. Использовать compat модули. В этом случае css-префикс будет добавляться автоматически. По умолчанию префикс будет иметь вид `.module-${moduleId}`. Вы можете его изменить через настройки:
 
 ```ts
-// ./arui-scripts.config.ts compatModules
-import type { PackageSettings } from 'arui-scripts';
-
+// ./arui-scripts.config.ts
 const aruiScriptsConfig: PackageSettings = {
     compatModules: {
-        // Тут ключ - название библиотеки, значение - имя переменной в window, которая будет использоваться для получения библиотеки
-        // Это те библиотеки, которые этот проект будет предоставлять модулям, подключаемым в него
-        shared: {
-            'react': 'react',
-            'react-dom': 'reactDOM',
-        },
         exposes: {
             'SomeModule': {
                 entry: './src/modules/some-module/index',
-                // Это те библиотеки, которые модуль будет пытаться получить из window
-                externals: {
-                    react: 'react',
-                    'react-dom': 'reactDOM',
-                },
+                // префикс по умолчанию будет `.module-SomeModule`
             },
-            'AnotherModule': {
-                entry: './src/modules/another-module/index',
+            'OtherModule': {
+                entry: './src/modules/other-module/index',
+                cssPrefix: '#my-prefix' // любой валидный css селектор
             },
+            'WithoutPrefix': {
+                entry: './src/modules/other-module/index',
+                cssPrefix: false, // префикс использоваться не будет
+            }
         }
     }
 }
@@ -386,16 +379,14 @@ const aruiScriptsConfig: PackageSettings = {
 export default aruiScriptsConfig;
 ```
 
+2. Использовать настройку cssPrefix для обычных модулей. **Внимание!** При использовании этой настройки по умолчанию css префикс добавится ко всем стилям приложения!
+
 ```ts
 // ./arui-scripts.config.ts module federation
 import type { PackageSettings } from 'arui-scripts';
 
 const aruiScriptsConfig: PackageSettings = {
     modules: {
-        shared: {
-            'react': '^17.0.0',
-            'react-dom': '^17.0.0',
-        },
         exposes: {
             'Module': './src/modules/module/index',
         },
@@ -408,7 +399,29 @@ const aruiScriptsConfig: PackageSettings = {
 export default aruiScriptsConfig;
 ```
 
-2. Изменить входную точку модуля:
+Если вы хотите, чтобы префикс применился только к модулям и не менял стили всей остальной сборки - вы можете использовать настройку `modules.options.useSeparateBuild`:
+
+```ts
+// ./arui-scripts.config.ts module federation
+import type { PackageSettings } from 'arui-scripts';
+
+const aruiScriptsConfig: PackageSettings = {
+    modules: {
+        exposes: {
+            'Module': './src/modules/module/index',
+        },
+        options: {
+            cssPrefix: '.my-module',
+            useSeparateBuild: true, // для WMF будет создана отдельная сборка и css префиксы применятся только для нее. Основное приложение затронуто не будет
+        }
+    }
+}
+
+export default aruiScriptsConfig;
+```
+
+Вам так же потребуется изменить входную точку модуля и добавить ваш css префикс в root элемент вашего модуля:
+
 
 ```tsx
 // ./src/modules/some-module/index
@@ -432,6 +445,7 @@ export const unmount: ModuleUnmountFunction = (targetNode) => {
     ReactDOM.unmountComponentAtNode(targetNode);
 };
 
+// Если вы используете compat модули:
 (window as WindowWithMountableModule).SomeModule = { // имя переменной в window должно соответствовать имени модуля в exposes
     mount: mountModule,
     unmount: unmountModule,
@@ -455,7 +469,6 @@ Webpack module federation делает абсолютно то же самое, 
 `default` модули:
 - **+++** Простой способ для переиспользования библиотек между модулем и приложением-хостом.
 - **+++** Возможность использовать разные версии общих библиотек в разных модулях/хостах (речь про те библиотеки, которые будут шарится).
-- **---** Нет встроенной изоляции стилей. Стили модуля будут применены к хост-приложению.
 - **---** Нет возможности использовать модуль в приложении, которое не использует webpack.
 
 Проблема изоляции стилей может быть решена с помощью [shadow dom](#shadow-dom),
@@ -466,13 +479,11 @@ Webpack module federation делает абсолютно то же самое, 
 - **---** Нет возможности использовать разные версии общих библиотек в разных модулях/хостах, если вы хотите их шарить.
 
 *Как понять какой режим использовать?*
-В целом, если ваше приложение и модули используют только css-modules, то можно использовать `default` режим. Конфликты в стилях
-вам в таком случае не грозят. Если же вы используете обычный css, или ваши библиотеки используют обычный css, то лучше
-использовать `compat` режим.
+Рекомендуется всегда выбирать `default` режим. `compat` режим оставлен для совместимости. На данный момент все фичи `compat` режима реализованы в `default` модулях.
 
 ## Shadow dom
 [Shadow DOM](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_shadow_DOM) - это спецификация, которая позволяет
-создавать изолированные DOM-деревья, которые не будут влиять на DOM-дерево родительского элемента.
+создавать изолированные DOM-деревья, не влияющие на DOM-дерево родительского элемента.
 
 arui-scripts предоставляет возможность использовать shadow dom для модулей. Для этого вам нужно:
 
@@ -513,6 +524,31 @@ export const MyAwesomeComponent = () => {
 
 Этот режим работает как для _default_, так и для _compat_ модулей.
 Внутри targetElementRef будет создаваться shadowRoot, и модуль и его стили будут монтироваться в него.
+
+## Работа с порталами
+
+В обоих вариантах нужно вспомнить про порталы. Оба метода меняют то, к какой части дом-дерева будут применяться стили. Поскольку порталы по умолчанию зачастую рендрятся в body - стили из модуля не смогут корректно примениться.
+Стандартный компонент [portal](https://core-ds.github.io/core-components/master/?path=/docs/portal--docs) из core-components
+умеет получать targetNode из провайдера:
+
+```tsx
+import { PortalContext } from '@alfalab/core-components/shared';
+
+const CSS_PREFIX = 'module-SomeModule';
+
+export const mount: ModuleMountFunction = (targetNode, runParams, serverState) => {
+    ReactDOM.render(
+        <div className={ CSS_PREFIX }>
+            <PortalContext.Provider value={() => document.querySelector(CSS_PREFIX)}>
+                Hello from module!
+            </PortalContext.Provider>
+        </div>,
+        targetNode,
+    );
+}
+```
+
+Если в коде приложения так же используются какие-либо еще варианты обращения к глобальным dom-элементам (head, body, ...) вам так же нужно модифицировать код для корректной работы с css-префиксами или shadowDOM.
 
 # Кеширование модулей
 
@@ -721,6 +757,10 @@ type Modules = {
     };
     shared?: (string | SharedObject)[] | SharedObject; // конфигурация shared параметра для ModuleFederationPlugin
     shareScope?: string // скоуп который будет присваиваться модулям в shared если иное имя не будет задано в sharedConfig. Значение по умолчанию - 'default'
+    options?: { // дополнительные настройки модулей
+        cssPrefix?: false | string; // префикс, который будет добавляться ко всем css стилям
+        useSeparateBuild?: boolean; // использовать ли отдельную сборку для wmf. Влияет на то, к чему будет применяться cssPrefix. Если false - cssPrefix применится ко всей сборке приложения
+    }
 };
 
 type SharedObject = {
