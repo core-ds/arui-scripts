@@ -410,12 +410,23 @@ const aruiScriptsConfig: PackageSettings = {
         exposes: {
             'Module': './src/modules/module/index',
         },
+        shared: {
+            react: {
+                version: '^18.0.0',
+                eager: true,
+            },
+        },
         options: {
             cssPrefix: '.my-module',
             useSeparateBuild: true, // для WMF будет создана отдельная сборка и css префиксы применятся только для нее. Основное приложение затронуто не будет
-        }
-    }
-}
+            separateBuildShared: {  // опционально вы можете создать отдельную конфигурацию shared модулей, например если основное приложение должно подключать библиотеку в eager режиме, а модуль должен подключать ее без eager
+                react: {
+                    version: '^18.0.0',
+                },
+            },
+        },
+    },
+};
 
 export default aruiScriptsConfig;
 ```
@@ -760,6 +771,7 @@ type Modules = {
     options?: { // дополнительные настройки модулей
         cssPrefix?: false | string; // префикс, который будет добавляться ко всем css стилям
         useSeparateBuild?: boolean; // использовать ли отдельную сборку для wmf. Влияет на то, к чему будет применяться cssPrefix. Если false - cssPrefix применится ко всей сборке приложения
+        separateBuildShared?: (string | SharedObject)[] | SharedObject; // опциональная конфигурация shared параметра для wmf сборки. Используется только вместе с useSeparateBuild. По умолчанию wmf билд будет использовать общую конфигурацию shared.
     }
 };
 
