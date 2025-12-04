@@ -86,6 +86,31 @@ describe('dom utils', () => {
             expect(nodes[0].getAttribute(DATA_APP_ID_ATTRIBUTE)).toBe(MODULE_TEST_ID);
         });
 
+        it('should not duplicate script tags for the same URL', async () => {
+            await scriptsFetcher({
+                urls: ['https://example.com/duplicate-script.js'],
+                targetNode: document.head,
+                attributes: {
+                    [DATA_APP_ID_ATTRIBUTE]: MODULE_TEST_ID,
+                },
+                abortSignal: undefined,
+            });
+            await scriptsFetcher({
+                urls: ['https://example.com/duplicate-script.js'],
+                targetNode: document.head,
+                attributes: {
+                    [DATA_APP_ID_ATTRIBUTE]: MODULE_TEST_ID,
+                },
+                abortSignal: undefined,
+            });
+
+            const scripts = Array.from(
+                document.head.querySelectorAll<HTMLScriptElement>('script[src]'),
+            ).filter((s) => s.src === 'https://example.com/duplicate-script.js');
+
+            expect(scripts.length).toBe(1);
+        });
+
         it('should fetch styles', async () => {
             await stylesFetcher({
                 urls: ['https://example.com/style.css'],
@@ -102,6 +127,31 @@ describe('dom utils', () => {
             expect(nodes[0].tagName).toBe('LINK');
             expect((nodes[0] as HTMLLinkElement).href).toBe('https://example.com/style.css');
             expect(nodes[0].getAttribute(DATA_APP_ID_ATTRIBUTE)).toBe(MODULE_TEST_ID);
+        });
+
+        it('should not duplicate link styles for the same URL', async () => {
+            await stylesFetcher({
+                urls: ['https://example.com/duplicate-style.css'],
+                targetNode: document.head,
+                attributes: {
+                    [DATA_APP_ID_ATTRIBUTE]: MODULE_TEST_ID,
+                },
+                abortSignal: undefined,
+            });
+            await stylesFetcher({
+                urls: ['https://example.com/duplicate-style.css'],
+                targetNode: document.head,
+                attributes: {
+                    [DATA_APP_ID_ATTRIBUTE]: MODULE_TEST_ID,
+                },
+                abortSignal: undefined,
+            });
+
+            const links = Array.from(
+                document.head.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]'),
+            ).filter((l) => l.href === 'https://example.com/duplicate-style.css');
+
+            expect(links.length).toBe(1);
         });
 
         it('should inject inline styles in Safari', async () => {
@@ -152,6 +202,38 @@ describe('dom utils', () => {
 
             spyFetch.mockReset();
             jest.useRealTimers();
+        });
+
+        it('should not duplicate inline style tags in Safari for the same URL', async () => {
+            jest.spyOn(navigator, 'userAgent', 'get').mockReturnValue(SAFARI_USER_AGENT);
+            const href = 'https://example.com/inline.css';
+
+            (global.fetch as unknown as jest.Mock) = jest
+                .fn()
+                .mockResolvedValue({ text: async () => '.a{color:red;}' });
+
+            await stylesFetcher({
+                urls: [href],
+                targetNode: document.head,
+                attributes: {
+                    [DATA_APP_ID_ATTRIBUTE]: MODULE_TEST_ID,
+                },
+                abortSignal: undefined,
+            });
+            await stylesFetcher({
+                urls: [href],
+                targetNode: document.head,
+                attributes: {
+                    [DATA_APP_ID_ATTRIBUTE]: MODULE_TEST_ID,
+                },
+                abortSignal: undefined,
+            });
+
+            const styles = Array.from(
+                document.head.querySelectorAll<HTMLStyleElement>('style[data-resource-url]'),
+            ).filter((s) => s.getAttribute('data-resource-url') === href);
+
+            expect(styles.length).toBe(1);
         });
 
         it('should create link instead of style tag if disableInlineStyleSafari = true in Safari', async () => {
