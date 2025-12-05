@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 20.6.2
+
+### Patch Changes
+
+-   [#388](https://github.com/core-ds/arui-scripts/pull/388) [`92c0100`](https://github.com/core-ds/arui-scripts/commit/92c01002e08e110eb642b244c3956c67e913c527) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Исправлена работа с watchIgnorePattern - он мог срабатывать для файлов, которые в названии содержат имена билд-директорий
+
 ## 20.6.1
 
 ### Patch Changes
