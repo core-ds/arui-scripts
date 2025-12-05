@@ -16,6 +16,7 @@ import nodeExternals from 'webpack-node-externals';
 import { ReloadServerPlugin } from '../plugins/reload-server-plugin';
 import { WatchMissingNodeModulesPlugin } from '../plugins/watch-missing-node-modules-plugin';
 
+import { createWatchIgnoreRegex } from './util/create-watch-ignore-regex';
 import { getEntry } from './util/get-entry';
 import { configs } from './app-configs';
 import { babelDependencies } from './babel-dependencies';
@@ -190,7 +191,7 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
     ].filter(Boolean) as RspackPluginInstance[],
     // Без этого комиляция трирегилась на изменение в node_modules и приводила к утечке памяти
     watchOptions: {
-        ignored: new RegExp(configs.watchIgnorePath.join('|')),
+        ignored: createWatchIgnoreRegex(configs.watchIgnorePath),
         aggregateTimeout: 100,
     },
     performance: {

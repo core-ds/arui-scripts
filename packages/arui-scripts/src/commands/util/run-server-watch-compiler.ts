@@ -1,6 +1,7 @@
 import { type Configuration, rspack } from '@rspack/core';
 
 import { configs } from '../../configs/app-configs';
+import { createWatchIgnoreRegex } from '../../configs/util/create-watch-ignore-regex';
 import { printCompilerOutput } from '../start/print-compiler-output';
 
 export function runServerWatchCompiler(config: Configuration) {
@@ -13,7 +14,7 @@ export function runServerWatchCompiler(config: Configuration) {
     serverCompiler.watch(
         {
             aggregateTimeout: 50, // Делаем это значение меньше чем у клиента, чтобы сервер пересобирался быстрее
-            ignored: new RegExp(configs.watchIgnorePath.join('|')),
+            ignored: createWatchIgnoreRegex(configs.watchIgnorePath),
         },
         () => {},
     );

@@ -30,6 +30,7 @@ import { htmlTemplate } from '../templates/html.template';
 import { getImageMinLoader } from './config-extras/minimizers';
 import { checkNodeVersion } from './util/check-node-version';
 import { compressionPluginsForDictionaries } from './util/compression-plugins-for-dictionaries';
+import { createWatchIgnoreRegex } from './util/create-watch-ignore-regex';
 import { type Entry, getEntry } from './util/get-entry';
 import { configs } from './app-configs';
 import { babelClientConfig as babelConf } from './babel-client';
@@ -394,7 +395,7 @@ export const createSingleClientWebpackConfig = (
         .filter(Boolean) as RspackPluginInstance[],
     // Без этого комиляция трирегилась на изменение в node_modules и приводила к утечке памяти
     watchOptions: {
-        ignored: new RegExp(configs.watchIgnorePath.join('|')),
+        ignored: createWatchIgnoreRegex(configs.watchIgnorePath),
         aggregateTimeout: 100,
     },
     // Выключаем performance hints, т.к. размеры бандлов контролируются не в рамках arui-scripts
