@@ -1,5 +1,4 @@
 import { scriptsFetcher, stylesFetcher } from './dom-utils';
-import { isSafari } from './is-safari';
 import { urlSegmentWithoutEndSlash } from './normalize-url-segment';
 
 type MountModuleResourcesParams = {
@@ -44,20 +43,6 @@ export async function fetchResources({
 
     const scriptsUrls = scripts.map((src) => `${urlSegmentWithoutEndSlash(baseUrl)}/${src}`);
     const stylesUrls = styles.map((src) => `${urlSegmentWithoutEndSlash(baseUrl)}/${src}`);
-
-    const scriptTag = 'script';
-    const styleTag = !disableInlineStyleSafari && isSafari() ? 'link' : 'style';
-
-    // находим и удяляем ресурсы того же самого модуля, которые были добавлены ранее
-    const previouslyAddedScripts = Array.from(
-        jsTargetNode.querySelectorAll(`${scriptTag}[${DATA_APP_ID_ATTRIBUTE}="${moduleId}"]`),
-    );
-    const previouslyAddedStyles = Array.from(
-        cssTargetNode.querySelectorAll(`${styleTag}[${DATA_APP_ID_ATTRIBUTE}="${moduleId}"]`),
-    );
-
-    previouslyAddedScripts.forEach((script) => script.remove());
-    previouslyAddedStyles.forEach((style) => style.remove());
 
     await Promise.all([
         scriptsFetcher({

@@ -30,6 +30,10 @@ type GenericResourceFetcherParams = ResourceFetcherParams & {
         element: HTMLElement,
         abortSignal?: AbortSignal,
     ) => () => Promise<HTMLElement>;
+    /**
+     * Возвращает существующий элемент ресурса (если он уже присутствует в дереве) или null
+     */
+    findExisting: (src: string, targetNode: Node) => HTMLElement | null;
 };
 
 function resourceFetcher({
@@ -39,9 +43,24 @@ function resourceFetcher({
     abortSignal,
     createTag,
     createFetcher,
+    findExisting,
 }: GenericResourceFetcherParams): Promise<HTMLElement[]> {
     return Promise.all(
         urls.map((src) => {
+            // Если ресурс уже присутствует в дереве, тогда не дублируем тег
+            const existing = findExisting(src, targetNode);
+
+            if (existing) {
+                // убеждаемся, что на существующем элементе есть необходимые атрибуты
+                Object.keys(attributes).forEach((key) => {
+                    if (!existing.getAttribute(key)) {
+                        existing.setAttribute(key, attributes[key]);
+                    }
+                });
+
+                return Promise.resolve(existing);
+            }
+
             const tag = createTag(src);
             const fetcher = createFetcher(src, tag, abortSignal);
 
@@ -67,6 +86,16 @@ export function scriptsFetcher(params: ResourceFetcherParams): Promise<HTMLEleme
             return script;
         },
         createFetcher: (_, element, abortSignal) => createElementFetcher(element, abortSignal),
+        findExisting: (src, targetNode) => {
+            if (!('querySelector' in (targetNode as ParentNode))) {
+                return null;
+            }
+            const node = (targetNode as ParentNode).querySelector<HTMLElement>(
+                `script[src="${src}"]`,
+            );
+
+            return node ?? null;
+        },
     });
 }
 
@@ -79,7 +108,12 @@ export async function stylesFetcher(params: ResourceFetcherParams): Promise<HTML
         ...params,
         createTag: (url) => {
             if (!params.disableInlineStyleSafari && isSafari()) {
-                return document.createElement('style');
+                const style = document.createElement('style');
+
+                // Помогаем дедупликации в Safari: указываем источник стилей
+                style.setAttribute('data-resource-url', url);
+
+                return style;
             }
 
             const link = document.createElement('link');
@@ -96,6 +130,25 @@ export async function stylesFetcher(params: ResourceFetcherParams): Promise<HTML
             }
 
             return createElementFetcher(element, abortSignal);
+        },
+        findExisting: (src, targetNode) => {
+            if (!('querySelector' in (targetNode as ParentNode))) {
+                return null;
+            }
+            // Safari (inline <style>)
+            if (!params.disableInlineStyleSafari && isSafari()) {
+                const style = (targetNode as ParentNode).querySelector<HTMLElement>(
+                    `style[data-resource-url="${src}"]`,
+                );
+
+                return style ?? null;
+            }
+            // Обычный <link rel="stylesheet">
+            const link = (targetNode as ParentNode).querySelector<HTMLElement>(
+                `link[rel="stylesheet"][href="${src}"]`,
+            );
+
+            return link ?? null;
         },
     });
 }
