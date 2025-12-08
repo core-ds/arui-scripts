@@ -5,6 +5,7 @@ import express from 'express';
 import { readAssetsManifest } from '@alfalab/scripts-server';
 
 import icon from './server.png';
+import svgIcon from '../clock.svg';
 
 const app = express();
 
@@ -24,6 +25,7 @@ ${assets.css.map((c) => `<link rel='stylesheet' href='/${c}' />`).join('')}
 
 <p>Картинка с сервера:</p>
 <img src="${icon}" alt="Картика с сервера" width="200" />
+<img src="${svgIcon}" alt="svg с сервера" />
 ${assets.js.map((c) => `<script type='text/javascript' src='/${c}'></script>`).join('')}
 </body>
 </html>
