@@ -144,6 +144,9 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
                                 maxSize: configs.dataUrlMaxSize,
                             },
                         },
+                        generator: {
+                            publicPath: '',
+                        },
                     },
                     {
                         exclude: [/\.(js|jsx|mjs|ts|tsx)$/, /\.(html|ejs)$/, /\.json$/, /\.svg$/],
