@@ -130,8 +130,8 @@ COPY --from=0 /usr/share/nginx/html/* /usr/share/nginx/html/
 COPY --from=0 /usr/bin/envsubst /usr/local/bin/envsubst
 
 RUN \
-	addgroup -g 1001 -S nginx \
-	&& adduser --uid 1000 -D -S -h /var/cache/nginx -s /sbin/nologin -G nginx nginx \
+	addgroup -g 101 -S nginx \
+	&& adduser --uid 100 -D -S -h /var/cache/nginx -s /sbin/nologin -G nginx nginx \
 	&& apk add --no-cache --virtual .nginx-rundeps tzdata $(cat /tmp/runDeps.txt) \
 	&& rm /tmp/runDeps.txt \
 	&& ln -s /usr/lib/nginx/modules /etc/nginx/modules \
