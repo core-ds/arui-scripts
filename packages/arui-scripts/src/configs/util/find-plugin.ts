@@ -65,7 +65,7 @@ type PluginsListClient = {
     CompressionPlugin: {
         options: ConstructorParameters<typeof CompressionPlugin>[number];
     };
-    NormalModuleReplacementPlugin: NormalModuleReplacementPlugin;
+    NormalModuleReplacementPlugin: typeof NormalModuleReplacementPlugin;
 };
 
 /*
