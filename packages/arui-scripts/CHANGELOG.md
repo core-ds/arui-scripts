@@ -1,5 +1,15 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 20.7.0
+
+### Minor Changes
+
+-   [#401](https://github.com/core-ds/arui-scripts/pull/401) [`cc921b9`](https://github.com/core-ds/arui-scripts/commit/cc921b9fc5ae2690035c9794dd6e787339f01370) Thanks [@jkikksa](https://github.com/jkikksa)! - обновлена версия rspack с 1.4.11 до 1.7.3
+
+### Patch Changes
+
+-   [#391](https://github.com/core-ds/arui-scripts/pull/391) [`65e3f40`](https://github.com/core-ds/arui-scripts/commit/65e3f40bfff2c1fa2a92f7d2de023928f75a8f8a) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Исправлена проблема с подключением svg файлов на сервере
+
 ## 20.6.2
 
 ### Patch Changes

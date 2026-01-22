@@ -1,5 +1,13 @@
 # arui-scripts-docker
 
+## 15.2.0
+
+### Minor Changes
+
+-   [#394](https://github.com/core-ds/arui-scripts/pull/394) [`8d1b63a`](https://github.com/core-ds/arui-scripts/commit/8d1b63a22561742294389a98b10ce7daa76ec1d9) Thanks [@mrAnomalyy](https://github.com/mrAnomalyy)! - Обновляем зафиксированный uid пользователя nginx при его создании на 100, группа 101 (для дальнейшего использования в кубере, требования ДКБ).
+
+-   [#393](https://github.com/core-ds/arui-scripts/pull/393) [`cb239f4`](https://github.com/core-ds/arui-scripts/commit/cb239f4959cdd37a2a189bcef99c46456ed699a6) Thanks [@mrAnomalyy](https://github.com/mrAnomalyy)! - Фиксируем uid пользователя nginx при его создании (для дальнейшего использования в кубере, требования ДКБ)
+
 ## 15.1.0
 
 ### Minor Changes
