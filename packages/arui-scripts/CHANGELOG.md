@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 20.8.0
+
+### Minor Changes
+
+-   [#405](https://github.com/core-ds/arui-scripts/pull/405) [`f9878af`](https://github.com/core-ds/arui-scripts/commit/f9878afa93e1aacd911b2bfbb384b763224b7e90) Thanks [@ElfistIO](https://github.com/ElfistIO)! - Обновлена версия @swc/core с 1.13.3 до 1.15.1
+
 ## 20.7.0
 
 ### Minor Changes
