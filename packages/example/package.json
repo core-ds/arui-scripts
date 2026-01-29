@@ -1,6 +1,6 @@
 {
     "name": "example",
-    "version": "1.1.80",
+    "version": "1.1.81",
     "private": true,
     "scripts": {
         "build:app": "arui-scripts build",
