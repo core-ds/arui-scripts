@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 20.10.0
+
+### Minor Changes
+
+-   [#413](https://github.com/core-ds/arui-scripts/pull/413) [`c39555c`](https://github.com/core-ds/arui-scripts/commit/c39555c2ed591852b61ec1b3a857395af918db23) Thanks [@ElfistIO](https://github.com/ElfistIO)! - Обновлена версия ts-jest c 28.0.8 до 29.1.0
+
 ## 20.9.0
 
 ### Minor Changes
