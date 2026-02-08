@@ -18,8 +18,8 @@ export function getDefaultAppConfig(): AppConfigs {
 
     return {
         /// general settings
-        clientServerPort: 8080,
-        serverPort: 3000,
+        clientServerPort: parseInt(process.env.CLIENT_PORT || '', 10) || 8080,
+        serverPort: parseInt(process.env.APP_PORT || '', 10) || 3000,
         debug: false,
         devSourceMaps: 'inline-cheap-source-map', // так получаются нормальные сорсмапы, с eval - они не работают
         devServerCors: false,
