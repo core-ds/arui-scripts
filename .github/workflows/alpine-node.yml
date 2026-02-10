@@ -61,5 +61,3 @@ jobs:
             ALPINE_VERSION=${{ matrix.versions.alpine }}
             NODE_BASE_IMAGE=${{ matrix.versions.image }}
           tags: alfabankui/arui-scripts:${{ steps.tag_info.outputs.final_tag }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
