@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 20.11.0
+
+### Minor Changes
+
+-   [#420](https://github.com/core-ds/arui-scripts/pull/420) [`3f26ba9`](https://github.com/core-ds/arui-scripts/commit/3f26ba95f76ca88115330234c329dc360af78536) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Изменено дефолтное значение для devSourceMap. Теперь они будут по умолчанию более качественные
+
 ## 20.10.0
 
 ### Minor Changes
