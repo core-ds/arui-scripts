@@ -35,6 +35,7 @@ npm install arui-scripts --save-dev
 
 Документация
 ===
+- [Список актуальных версий docker-образов](../alpine-node-nginx/README.md)
 - [Настройки](docs/settings.md)
 - [Команды](docs/commands.md)
 - [Примеры входных точек](docs/examples.md)
