@@ -109,7 +109,7 @@
         "style-loader": "3.3.3",
         "swc-loader": "^0.2.6",
         "swc-plugin-coverage-instrument": "0.0.32",
-        "tar": "7.5.7",
+        "tar": "7.5.8",
         "terser-webpack-plugin": "5.3.14",
         "ts-jest": "29.1.0",
         "ts-loader": "9.4.4",
