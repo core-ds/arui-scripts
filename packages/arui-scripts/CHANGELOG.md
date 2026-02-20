@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 20.11.1
+
+### Patch Changes
+
+-   [#424](https://github.com/core-ds/arui-scripts/pull/424) [`2df564c`](https://github.com/core-ds/arui-scripts/commit/2df564c57272cd03fb72f9f610887371ae0b2126) Thanks [@ngg-dev](https://github.com/ngg-dev)! - Обновил пакеты для устранения уязвимости CVE-2025-15284
+
 ## 20.11.0
 
 ### Minor Changes
