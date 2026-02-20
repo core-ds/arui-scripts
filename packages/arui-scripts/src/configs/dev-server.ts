@@ -83,7 +83,7 @@ function getProxyConfig(): Configuration['proxy'] {
     }
 
     if (Array.isArray(userProxyConfig)) {
-        proxyConfig.unshift(...userProxyConfig);
+        proxyConfig.unshift(...(userProxyConfig as NonNullable<Configuration['proxy']>));
     }
 
     return proxyConfig;
