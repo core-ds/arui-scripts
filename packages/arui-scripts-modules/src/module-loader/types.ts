@@ -1,3 +1,5 @@
+import { type SnowPlowFn } from './track-common-alfa-metrics';
+
 /**
  * То, как подключать модуль на страницу.
  * compat - режим подключения без использования module-federation. В этом случае мы сами подключаем все скрипты и стили.
@@ -109,3 +111,12 @@ export type ModuleFederationContainer = {
     init: (...args: unknown[]) => Promise<void>;
     get<T>(id: string): Promise<() => T>;
 };
+
+declare global {
+    interface Window {
+        sp: SnowPlowFn;
+    }
+
+    /* eslint-disable no-var,@typescript-eslint/naming-convention,no-underscore-dangle,vars-on-top */
+    var sp: SnowPlowFn;
+}

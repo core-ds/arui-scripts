@@ -4,6 +4,8 @@ import { removeModuleResources } from './utils/dom-utils';
 import { fetchResources, getResourcesTargetNodes } from './utils/fetch-resources';
 import { getCompatModule, getModule } from './utils/get-module';
 import { addCleanupMethod, cleanupModule, getModulesCache } from './utils/modules-cache';
+import { MODULE_METRICS } from './metrics';
+import { trackCommonAlfaMetrics } from './track-common-alfa-metrics';
 import {
     type BaseModuleState,
     type GetResourcesRequest,
@@ -92,6 +94,12 @@ export function createModuleLoader<
         const paramsSerialized = JSON.stringify(getResourcesParams);
 
         if (resourcesCache === 'single-item' && modulesCache[moduleId]?.[paramsSerialized]) {
+            trackCommonAlfaMetrics(MODULE_METRICS.startFetch, {
+                moduleId,
+                hostAppId,
+                fromCache: 1,
+            });
+
             return modulesCache[moduleId][paramsSerialized] as ModuleResources<ModuleState>;
         }
 
@@ -99,6 +107,10 @@ export function createModuleLoader<
         // В любом случае нам надо удалить ресурсы и почистить глобальные переменные
         cleanupModule(moduleId);
 
+        trackCommonAlfaMetrics(MODULE_METRICS.startFetch, {
+            moduleId,
+            hostAppId,
+        });
         const resources = await getModuleResources({
             moduleId,
             hostAppId,
@@ -200,6 +212,11 @@ export function createModuleLoader<
         }
 
         await onAfterModuleMount?.(moduleId, moduleResources, loadedModule);
+
+        trackCommonAlfaMetrics(MODULE_METRICS.fetchSuccess, {
+            moduleId,
+            hostAppId,
+        });
 
         return {
             unmount: () => {
