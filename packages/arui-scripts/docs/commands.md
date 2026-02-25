@@ -57,6 +57,36 @@ _package.json_
 arui-scripts test
 ```
 
+### test:vitest
+Команда `arui-scripts test:vitest` запускает unit тесты через [Vitest](https://vitest.dev/).
+
+Конфигурация включает в себя:
+- Использование Jest-совместимого API (`describe`, `it`, `expect`)
+- Замену всех импортов `.css` файлов на пустые модули
+- Маппинг путей из `tsconfig.json` (paths)
+- Поддержку `setupFiles` из `package.json` → `jest.setupFiles` (например, для настройки Enzyme)
+
+По умолчанию под маску для поиска тестов попадают файлы:
+- `src/**/__tests__/**/*.{ts,tsx,js,jsx}`
+- `src/**/__test__/**/*.{ts,tsx,js,jsx}`
+- `src/**/*.{test,spec,tests}.{ts,tsx,js,jsx}`
+
+Для настройки Enzyme и других setup-файлов укажите их в `package.json`:
+
+```json
+{
+    "jest": {
+        "setupFiles": ["<rootDir>/__tests__/setup.js"]
+    }
+}
+```
+
+**Как запустить?**
+
+```bash
+arui-scripts test:vitest
+```
+
 ### docker-build
 Собирает клиентский и серверный код в production-режиме, создает docker-образ и пушит его в docker-репозиторий.
 

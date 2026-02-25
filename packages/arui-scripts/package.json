@@ -114,6 +114,7 @@
         "ts-jest": "29.1.0",
         "ts-loader": "9.4.4",
         "ts-node": "9.1.1",
+        "vitest": "^2.1.0",
         "webpack-bundle-analyzer": "4.10.2",
         "webpack-deduplication-plugin": "^0.0.8",
         "webpack-manifest-plugin": "3.2.0",
@@ -148,6 +149,7 @@
     "scripts": {
         "build": "sh bin/build.sh",
         "test": "jest",
+        "test:vitest": "vitest",
         "lint:scripts": "arui-presets-lint scripts",
         "format": "arui-presets-lint format",
         "format:check": "arui-presets-lint format:check",
