@@ -1,8 +1,8 @@
 import { types } from 'util';
-import getPort from 'get-port';
 
 import { type Configuration, rspack, type Stats } from '@rspack/core';
 import { RspackDevServer } from '@rspack/dev-server';
+import getPort from 'get-port';
 
 import { devServerConfig } from '../../configs/dev-server';
 import { printCompilerOutput } from '../start/print-compiler-output';

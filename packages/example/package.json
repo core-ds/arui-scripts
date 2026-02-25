@@ -8,6 +8,7 @@
         "bundle-analyze": "arui-scripts bundle-analyze",
         "start": "NODE_ENV=localhost arui-scripts start",
         "test": "arui-scripts test",
+        "test:vitest": "arui-scripts test:vitest",
         "lint:styles": "arui-presets-lint styles",
         "lint:scripts": "arui-presets-lint scripts",
         "format": "arui-presets-lint format",
