@@ -91,6 +91,7 @@ RUN \
 
 RUN \
 	cd /usr/src/nginx-$NGINX_VERSION \
+  	&& export CFLAGS="${CFLAGS:-} -Wno-unterminated-string-initialization" \
 	&& ./configure $NGINX_CONFIG \
 	&& make -j$(getconf _NPROCESSORS_ONLN) \
 	&& mv objs/nginx objs/nginx-debug \
