@@ -1,5 +1,11 @@
 # arui-scripts-docker
 
+## 15.2.1
+
+### Patch Changes
+
+-   [#429](https://github.com/core-ds/arui-scripts/pull/429) [`bc0ef71`](https://github.com/core-ds/arui-scripts/commit/bc0ef718c17f474d3c87e39529ec2b6b27a8dc66) Thanks [@ngg-dev](https://github.com/ngg-dev)! - отключено предупреждение из-за GCC 15 после обновления до alpine 3.23
+
 ## 15.2.0
 
 ### Minor Changes
