@@ -9,6 +9,7 @@ const commands: Record<string, () => void> = {
     'docker-build': () => require('../commands/docker-build'),
     'docker-build:compiled': () => require('../commands/docker-build-compiled'),
     test: () => require('../commands/test'),
+    'test:vitest': () => require('../commands/test-vitest'),
     'ensure-yarn': () => require('../commands/ensure-yarn'),
     'archive-build': () => require('../commands/archive-build'),
     'bundle-analyze': () => require('../commands/bundle-analyze'),
