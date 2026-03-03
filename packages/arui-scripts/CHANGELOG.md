@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 20.12.0
+
+### Minor Changes
+
+-   [#404](https://github.com/core-ds/arui-scripts/pull/404) [`ce6539b`](https://github.com/core-ds/arui-scripts/commit/ce6539b1e408591624bee7e1aacaab2681dfa25c) Thanks [@dmitrbrvsk](https://github.com/dmitrbrvsk)! - обновлен базовый докер образ arui-scripts
+
 ## 20.11.1
 
 ### Patch Changes
