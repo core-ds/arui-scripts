@@ -57,6 +57,40 @@ _package.json_
 arui-scripts test
 ```
 
+### test:vitest
+Команда `arui-scripts test:vitest` запускает unit тесты через [Vitest](https://vitest.dev/).
+
+Если в корне проекта есть `vitest.config.ts` (или `.js`, `.mjs`, `.cjs`), то используется он.
+Иначе применяется конфигурация arui-scripts.
+
+**Рекомендуемый способ настройки** - создать `vitest.config.js` с `mergeConfig`:
+
+```javascript
+import { defineConfig, mergeConfig } from 'vitest/config';
+import aruiConfig from 'arui-scripts/vitest';
+
+export default mergeConfig(aruiConfig, defineConfig({
+    test: {
+        setupFiles: ['./__tests__/setup.js'],
+        // другие настройки Vitest
+    },
+}));
+```
+
+Базовый конфиг arui-scripts включает:
+- API Vitest - используйте явные импорты: `import { describe, it, expect } from 'vitest'` (без глобальных переменных)
+- Замену импортов `.css` на пустые модули, ассетов (svg, png, шрифты и др.) - на строку с именем файла
+- Маппинг путей из `tsconfig.json` (paths) через [vite-tsconfig-paths](https://www.npmjs.com/package/vite-tsconfig-paths)
+- Маски для тестов: `src/**/__tests__/**/*`, `src/**/__test__/**/*`, `src/**/*.{test,spec,tests}.*`
+
+**Обратная совместимость**: при отсутствии `vitest.config.*` по-прежнему читается `jest.setupFiles` из `package.json`.
+
+**Как запустить?**
+
+```bash
+arui-scripts test:vitest
+```
+
 ### docker-build
 Собирает клиентский и серверный код в production-режиме, создает docker-образ и пушит его в docker-репозиторий.
 
