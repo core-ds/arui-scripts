@@ -38,6 +38,11 @@ export type UseModuleFactoryResult<ModuleExportType> = {
      */
     loadingState: LoadingState;
     /**
+     * Ошибка, возникшая при загрузке модуля.
+     * Устанавливается только в случае loadingState === 'rejected'.
+     */
+    error?: Error;
+    /**
      * Экспорт модуля
      */
     module: ModuleExportType | undefined;
@@ -62,6 +67,7 @@ export function useModuleFactory<
     RunParams
 >): UseModuleFactoryResult<ModuleExportType> {
     const [loadingState, setLoadingState] = useState<LoadingState>('unknown');
+    const [error, setError] = useState<Error | undefined>();
     const [module, setModule] = useState<ModuleExportType | undefined>();
     // Мы не хотим чтобы изменение этих параметров тригерило ререндер и перемонтирование модуля,
     // но не хотим ломать правила хуков
@@ -111,13 +117,17 @@ export function useModuleFactory<
                 setModule(() => moduleResult);
 
                 setLoadingState('fulfilled');
-            } catch (error) {
+            } catch (e) {
                 if (abortController.signal.aborted) {
                     return;
                 }
-                setLoadingState('rejected');
+
+                const err = e as Error;
+
                 // eslint-disable-next-line no-console
-                console.error(error);
+                console.error(err);
+                setError(err);
+                setLoadingState('rejected');
             }
         }
 
@@ -133,6 +143,7 @@ export function useModuleFactory<
 
     return {
         loadingState,
+        error,
         module,
     };
 }

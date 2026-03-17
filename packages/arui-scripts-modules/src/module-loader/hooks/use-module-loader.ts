@@ -15,6 +15,11 @@ export type UseModuleLoaderResult<ModuleExportType> = {
      */
     loadingState: LoadingState;
     /**
+     * Ошибка, возникшая при загрузке модуля.
+     * Устанавливается только в случае loadingState === 'rejected'.
+     */
+    error?: Error;
+    /**
      * Экспорт модуля
      */
     module: ModuleExportType | undefined;
@@ -32,6 +37,7 @@ export function useModuleLoader<ModuleExportType, GetResourcesParams>({
     GetResourcesParams
 >): UseModuleLoaderResult<ModuleExportType> {
     const [loadingState, setLoadingState] = useState<LoadingState>('unknown');
+    const [error, setError] = useState<Error | undefined>();
     const [moduleAndResources, setModuleAndResources] = useState<
         { module: ModuleExportType; resources: ModuleResources } | undefined
     >();
@@ -68,13 +74,17 @@ export function useModuleLoader<ModuleExportType, GetResourcesParams>({
                 });
 
                 setLoadingState('fulfilled');
-            } catch (error) {
+            } catch (e) {
                 if (abortController.signal.aborted) {
                     return;
                 }
-                setLoadingState('rejected');
+
+                const err = e as Error;
+
                 // eslint-disable-next-line no-console
-                console.error(error);
+                console.error(err);
+                setError(err);
+                setLoadingState('rejected');
             }
         }
 
@@ -90,6 +100,7 @@ export function useModuleLoader<ModuleExportType, GetResourcesParams>({
 
     return {
         loadingState,
+        error,
         module: moduleAndResources?.module,
         resources: moduleAndResources?.resources,
     };

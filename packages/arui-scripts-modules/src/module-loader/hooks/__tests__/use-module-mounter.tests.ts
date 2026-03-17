@@ -166,7 +166,8 @@ describe('useModuleMounter', () => {
 
     it('should return rejected state when loader rejects', async () => {
         jest.spyOn(console, 'error').mockImplementationOnce(() => {});
-        const error = new Error('Failed to load module');
+        const errorMessage = 'Failed to load module';
+        const error = new Error(errorMessage);
 
         loader.mockRejectedValueOnce(error);
         (useModuleMountTarget as jest.Mock).mockReturnValue({
@@ -186,9 +187,11 @@ describe('useModuleMounter', () => {
         );
 
         expect(result.current.loadingState).toBe('pending');
+        expect(result.current.error).toBeUndefined();
 
         await waitFor(() => {
             expect(result.current.loadingState).toBe('rejected');
+            expect(result.current.error?.message).toBe(errorMessage);
         });
     });
 });

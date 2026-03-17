@@ -32,7 +32,8 @@ describe('useModuleLoader', () => {
 
     it('should return an error when the loader rejects', async () => {
         jest.spyOn(console, 'error').mockImplementationOnce(() => {});
-        const error = new Error('Failed to load module');
+        const errorMessage = 'Failed to load module';
+        const error = new Error(errorMessage);
         const loader = jest.fn().mockRejectedValue(error);
         const loaderParams = { id: 'my-module' };
 
@@ -41,9 +42,11 @@ describe('useModuleLoader', () => {
         expect(result.current.loadingState).toBe('pending');
         expect(result.current.module).toBeUndefined();
         expect(result.current.resources).toBeUndefined();
+        expect(result.current.error).toBeUndefined();
 
         await waitFor(() => {
             expect(result.current.loadingState).toBe('rejected');
+            expect(result.current.error?.message).toBe(errorMessage);
         });
 
         expect(result.current.module).toBeUndefined();

@@ -39,6 +39,11 @@ export type UseModuleLoaderResult = {
      */
     loadingState: LoadingState;
     /**
+     * Ошибка, возникшая при загрузке или монтировании модуля.
+     * Устанавливается только в случае loadingState === 'rejected'.
+     */
+    error?: Error;
+    /**
      * Функция, которая должна быть передана в ref-проп элемента, в который будет монтироваться модуль.
      * @param node
      */
@@ -53,6 +58,7 @@ export function useModuleMounter<LoaderParams, RunParams, ServerState extends Ba
     useShadowDom,
 }: UseModuleLoaderParams<LoaderParams, RunParams, ServerState>): UseModuleLoaderResult {
     const [loadingState, setLoadingState] = useState<LoadingState>('unknown');
+    const [error, setError] = useState<Error | undefined>();
     const { mountTargetNode, afterTargetMountCallback, cssTargetSelector } = useModuleMountTarget({
         useShadowDom,
         createTargetNode,
@@ -101,13 +107,17 @@ export function useModuleMounter<LoaderParams, RunParams, ServerState extends Ba
                     result.unmount();
                     module.unmount(mountTargetNode);
                 };
-            } catch (error) {
+            } catch (e) {
                 if (abortController.signal.aborted) {
                     return;
                 }
-                setLoadingState('rejected');
+
+                const err = e as Error;
+
                 // eslint-disable-next-line no-console
-                console.error(error);
+                console.error(err);
+                setError(err);
+                setLoadingState('rejected');
 
                 return;
             }
@@ -126,6 +136,7 @@ export function useModuleMounter<LoaderParams, RunParams, ServerState extends Ba
 
     return {
         loadingState,
+        error,
         targetElementRef: afterTargetMountCallback,
     };
 }
