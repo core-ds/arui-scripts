@@ -2,12 +2,12 @@ import { type Worker } from 'cluster';
 
 import { type ReactRefreshPluginOptions } from '@pmmmwh/react-refresh-webpack-plugin/types/lib/types';
 import {
+    type BannerPluginArgument,
     type Configuration,
     type CssExtractRspackPluginOptions,
     type DefinePlugin,
     type NormalModuleReplacementPlugin,
 } from '@rspack/core';
-import { type BannerPluginOptions } from '@rspack/core/dist/builtin-plugin/BannerPlugin';
 import type AssetsPlugin from 'assets-webpack-plugin';
 import type CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import type CompressionPlugin from 'compression-webpack-plugin';
@@ -76,7 +76,7 @@ type PluginsListClient = {
  */
 type PluginsListServer = {
     BannerPlugin: {
-        options: BannerPluginOptions;
+        options: BannerPluginArgument;
     };
     RunScriptWebpackPlugin: {
         options: ConstructorParameters<typeof RunScriptWebpackPlugin>[number];

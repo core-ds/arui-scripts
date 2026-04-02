@@ -5,8 +5,10 @@
         "module": "commonjs",
         "skipLibCheck": true,
         "outDir": "./build",
-        "declaration": true
+        "declaration": true,
+        "rootDir": "./src",
+        "types": ["jest", "node", "webpack-env"]
     },
-    "include": ["src/**/*.ts", "global-definitions.d.ts"],
+    "include": ["src/**/*.ts"],
     "exclude": ["build"]
 }
