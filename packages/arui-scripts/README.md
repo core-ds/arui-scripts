@@ -31,7 +31,14 @@ npm install arui-scripts --save-dev
 
 При желании вы можете изменить эти пути с помощью настроек.
 
-3. Используйте команды из `arui-scripts`!
+3. Быстрый старт через CLI:
+```bash
+arui-scripts init
+arui-scripts doctor
+arui-scripts start
+```
+
+Или создайте файлы вручную и используйте команды из `arui-scripts`.
 
 Документация
 ===
@@ -44,5 +51,7 @@ npm install arui-scripts --save-dev
 - [Настройки сборки артефакта](docs/artifact.md)
 - [Настройки компиляторов](docs/compilers.md)
 - [Особенности поведения](docs/caveats.md)
+- [Миграции между мажорными версиями](docs/migration.md)
 - [Использование модулей](docs/modules.md)
 - [Client-only режим](./docs/client-only.md)
+- [Словарь для сжатия](docs/compression-dictionary.md)

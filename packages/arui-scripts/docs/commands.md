@@ -10,7 +10,7 @@ arui-scripts start
 ```
 
 ### start:prod
-Запускает dev-сервер для клиентского кода и серверный код в watch-режиме. При этом использует production-конфигурацию для webpack.
+Запускает dev-сервер для клиентского кода и серверный код в watch-режиме. При этом использует production-конфигурацию для rspack.
 Может быть полезна для сбора метрик производительности.
 
 **Как запустить?**
@@ -27,7 +27,19 @@ arui-scripts build
 ```
 
 ### test
-Команда `arui-scripts test` внутри запускает jest с дополнительной конфигурацией.
+Команда `arui-scripts test` запускает единый test entrypoint:
+- по умолчанию (`--runner=auto`) выбирается `vitest`, если есть `vitest.config.*`, иначе `jest`;
+- можно принудительно выбрать раннер через `--runner=jest` или `--runner=vitest`;
+- остальные флаги прозрачно пробрасываются в выбранный раннер.
+
+Примеры:
+```bash
+arui-scripts test
+arui-scripts test --runner=jest --watch
+arui-scripts test --runner=vitest --coverage
+```
+
+При использовании `jest` применяется дополнительная конфигурация.
 
 Конфигурация включает в себя:
 - Использование `jest-snapshot-serializer-class-name-to-string` для правильной работы с `cn`
@@ -55,6 +67,46 @@ _package.json_
 **Как запустить?**
 ```bash
 arui-scripts test
+```
+
+**Как запустить?**
+
+```bash
+arui-scripts test:vitest
+```
+
+### doctor
+Команда `arui-scripts doctor` проверяет базовую готовность проекта к запуску:
+- версию Node.js;
+- наличие Yarn в проектах с `yarn.lock`;
+- наличие `package.json`;
+- наличие обязательных entrypoint (`src/index.*`, `src/server/index.*`).
+
+**Как запустить?**
+```bash
+arui-scripts doctor
+```
+
+JSON-отчет:
+```bash
+arui-scripts doctor --json
+```
+
+### init
+Команда `arui-scripts init` создает минимальный каркас проекта в текущей директории:
+- `src/index.tsx`;
+- `src/server/index.ts` (кроме режима `--client-only`);
+- базовые `scripts` в `package.json`.
+
+**Как запустить?**
+```bash
+arui-scripts init
+```
+
+Полезные флаги:
+```bash
+arui-scripts init --client-only
+arui-scripts init --force
 ```
 
 ### docker-build

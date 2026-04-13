@@ -4,6 +4,16 @@ arui-scripts
 [Пользовательская документация](./packages/arui-scripts/README.md)
 
 ## Разработка
+Быстрый старт для контрибьютора:
+```bash
+yarn install --immutable
+yarn build
+yarn test
+yarn lint
+```
+
+Подробный процесс: [CONTRIBUTING.md](./CONTRIBUTING.md)
+
 Проект является монорепозиторием, в котором находятся следующие пакеты:
 
 - [arui-scripts](./packages/arui-scripts/) - Код конфигураций сборщиков
