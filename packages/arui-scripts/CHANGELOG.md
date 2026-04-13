@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 20.12.1
+
+### Patch Changes
+
+-   [#440](https://github.com/core-ds/arui-scripts/pull/440) [`a1c0cc1`](https://github.com/core-ds/arui-scripts/commit/a1c0cc1ef45a44cc97f4419dd333bab811c04cd9) Thanks [@Los-Santos1](https://github.com/Los-Santos1)! - Обновлены зависимости для устранения уязвимостей транзитивных пакетов: imagemin-svgo ^12.0.0, css-minimizer-webpack-plugin 5.0.0.
+
 ## 20.12.0
 
 ### Minor Changes
