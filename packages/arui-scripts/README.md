@@ -46,3 +46,4 @@ npm install arui-scripts --save-dev
 - [Особенности поведения](docs/caveats.md)
 - [Использование модулей](docs/modules.md)
 - [Client-only режим](./docs/client-only.md)
+- [Словарь для сжатия](./docs/compression-dictionary.md)

@@ -17,7 +17,7 @@ yarn add @alfalab/scripts-modules
 - [`getServerFetcherParams`](#getServerFetcherParams)
 - [`useModuleLoader`](#useModuleLoader)
 - [`useModuleMounter`](#useModuleMounter)
-- [`useModuleFactory](#useModuleFactory)
+- [`useModuleFactory`](#useModuleFactory)
 - [`executeModuleFactory`](#executeModuleFactory)
 
 ## Использование
