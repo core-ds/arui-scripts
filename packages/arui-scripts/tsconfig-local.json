@@ -1,12 +1,16 @@
 {
     "extends": "./tsconfig.json",
     "compilerOptions": {
+        "lib": ["dom", "esnext"],
         "target": "ES2016",
-        "module": "CommonJS",
+        "module": "NodeNext",
         "skipLibCheck": true,
         "outDir": "./build",
         "allowJs": true,
-        "declaration": true
+        "rootDir": "./src",
+        "declaration": true,
+        "moduleResolution": "nodenext",
+        "types": ["jest", "node", "webpack-env"]
     },
     "include": ["src/**/*.ts", "src/**/*.js"],
     "exclude": ["build"]

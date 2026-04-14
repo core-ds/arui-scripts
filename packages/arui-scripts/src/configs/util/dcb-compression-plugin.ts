@@ -1,9 +1,12 @@
-import crypto from 'crypto';
+import crypto, { type Hash } from 'crypto';
 
-import { type Assets, type Compilation, type Compiler } from '@rspack/core';
-import { type PathData } from '@rspack/core/dist/Compilation';
-import { type HashableObject } from '@rspack/core/dist/lib/cache/getLazyHashedEtag';
-import { type RspackError } from '@rspack/core/dist/RspackError';
+import {
+    type Assets,
+    type Compilation,
+    type Compiler,
+    type PathData,
+    type RspackError,
+} from '@rspack/core';
 import { type Rules } from 'compression-webpack-plugin';
 import serialize from 'serialize-javascript';
 
@@ -15,6 +18,10 @@ type DcbCompressionOptions = {
     filename: (pathdata: PathData) => string;
     threshold: number;
     minRatio: number;
+};
+
+type HashableObject = {
+    updateHash(hash: Hash): void;
 };
 
 /*
