@@ -11,7 +11,7 @@ import { type BannerPluginOptions } from '@rspack/core/dist/builtin-plugin/Banne
 import type AssetsPlugin from 'assets-webpack-plugin';
 import type CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import type CompressionPlugin from 'compression-webpack-plugin';
-import { type ForkTsCheckerWebpackPluginOptions } from 'fork-ts-checker-webpack-plugin/lib/ForkTsCheckerWebpackPluginOptions';
+import { type ForkTsCheckerWebpackPluginOptions } from 'fork-ts-checker-webpack-plugin/lib/plugin-options';
 import type MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import { type RunScriptWebpackPlugin } from 'run-script-webpack-plugin';
 import { type WebpackDeduplicationPlugin } from 'webpack-deduplication-plugin';
