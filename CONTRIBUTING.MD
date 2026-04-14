@@ -1,3 +1,29 @@
+# Contributing
+
+## Требования окружения
+
+- Node.js `20+` (рекомендуется `22 LTS`)
+- Yarn `4.5.3+`
+
+## Быстрый старт
+
+```bash
+yarn install --immutable
+yarn build
+yarn test
+yarn lint
+```
+
+## Полезные команды разработки
+
+- Собрать все пакеты: `yarn build`
+- Прогнать тесты: `yarn test`
+- Проверить линтинг: `yarn lint`
+- собрать локально пакет `arui-scripts`: `yarn workspace arui-scripts build`
+
+Если вы меняете поведение CLI, то необходимо обновить документацию:
+- `packages/arui-scripts/docs/commands.md`
+- `packages/arui-scripts/README.md`
 
 ## Выпуск релизной версии
 Данный проект использует [changesets](https://github.com/changesets/changesets/tree/main) для управления релизами.
