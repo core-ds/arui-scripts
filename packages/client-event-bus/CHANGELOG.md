@@ -1,5 +1,11 @@
 # @alfalab/client-event-bus
 
+## 2.0.3
+
+### Patch Changes
+
+-   [#449](https://github.com/core-ds/arui-scripts/pull/449) [`63a7336`](https://github.com/core-ds/arui-scripts/commit/63a7336cc279d6eeab3bc8ba24246a036e683d72) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Сборка переведена на typescript@6. Изменений для внешних потребителей нет
+
 ## 2.0.2
 
 ### Patch Changes
