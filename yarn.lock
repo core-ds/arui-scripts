@@ -4376,7 +4376,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pmmmwh/react-refresh-webpack-plugin@npm:^0.6.2":
+"@pmmmwh/react-refresh-webpack-plugin@npm:0.6.2":
   version: 0.6.2
   resolution: "@pmmmwh/react-refresh-webpack-plugin@npm:0.6.2"
   dependencies:
@@ -7513,7 +7513,7 @@ __metadata:
     "@babel/preset-react": "npm:^7.23.3"
     "@babel/preset-typescript": "npm:^7.23.3"
     "@babel/runtime": "npm:^7.26.10"
-    "@pmmmwh/react-refresh-webpack-plugin": "npm:^0.6.2"
+    "@pmmmwh/react-refresh-webpack-plugin": "npm:0.6.2"
     "@rsdoctor/rspack-plugin": "npm:1.5.2"
     "@rspack/cli": "npm:1.7.6"
     "@rspack/core": "npm:1.7.3"
@@ -7557,7 +7557,7 @@ __metadata:
     css-minimizer-webpack-plugin: "npm:5.0.0"
     expose-loader: "npm:3.1.0"
     filesize: "npm:^6.4.0"
-    fork-ts-checker-webpack-plugin: "npm:^9.1.0"
+    fork-ts-checker-webpack-plugin: "npm:9.1.0"
     fs-extra: "npm:6.0.1"
     html-webpack-plugin: "npm:^5.6.0"
     image-minimizer-webpack-plugin: "npm:^3.8.3"
@@ -12131,6 +12131,29 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fork-ts-checker-webpack-plugin@npm:9.1.0":
+  version: 9.1.0
+  resolution: "fork-ts-checker-webpack-plugin@npm:9.1.0"
+  dependencies:
+    "@babel/code-frame": "npm:^7.16.7"
+    chalk: "npm:^4.1.2"
+    chokidar: "npm:^4.0.1"
+    cosmiconfig: "npm:^8.2.0"
+    deepmerge: "npm:^4.2.2"
+    fs-extra: "npm:^10.0.0"
+    memfs: "npm:^3.4.1"
+    minimatch: "npm:^3.0.4"
+    node-abort-controller: "npm:^3.0.1"
+    schema-utils: "npm:^3.1.1"
+    semver: "npm:^7.3.5"
+    tapable: "npm:^2.2.1"
+  peerDependencies:
+    typescript: ">3.6.0"
+    webpack: ^5.11.0
+  checksum: 10/1d24387224f7d49a17f7e44c9150971172f34ae30c4b1f581b8af967e73e8f36a434ed56f78aa45fd8cf0833c73a1b020102cc61070d7dc630b70c21c9770a1b
+  languageName: node
+  linkType: hard
+
 "fork-ts-checker-webpack-plugin@npm:^6.5.0":
   version: 6.5.3
   resolution: "fork-ts-checker-webpack-plugin@npm:6.5.3"
@@ -12159,29 +12182,6 @@ __metadata:
     vue-template-compiler:
       optional: true
   checksum: 10/415263839afe11c291be60e3335ece3ccdc80c5e0d91eeecf0d3060cfb72c7b0cb33be326dd24b325939357d53215e10c41e8187edb5db8a08fe9aaa8aa6c510
-  languageName: node
-  linkType: hard
-
-"fork-ts-checker-webpack-plugin@npm:^9.1.0":
-  version: 9.1.0
-  resolution: "fork-ts-checker-webpack-plugin@npm:9.1.0"
-  dependencies:
-    "@babel/code-frame": "npm:^7.16.7"
-    chalk: "npm:^4.1.2"
-    chokidar: "npm:^4.0.1"
-    cosmiconfig: "npm:^8.2.0"
-    deepmerge: "npm:^4.2.2"
-    fs-extra: "npm:^10.0.0"
-    memfs: "npm:^3.4.1"
-    minimatch: "npm:^3.0.4"
-    node-abort-controller: "npm:^3.0.1"
-    schema-utils: "npm:^3.1.1"
-    semver: "npm:^7.3.5"
-    tapable: "npm:^2.2.1"
-  peerDependencies:
-    typescript: ">3.6.0"
-    webpack: ^5.11.0
-  checksum: 10/1d24387224f7d49a17f7e44c9150971172f34ae30c4b1f581b8af967e73e8f36a434ed56f78aa45fd8cf0833c73a1b020102cc61070d7dc630b70c21c9770a1b
   languageName: node
   linkType: hard
 

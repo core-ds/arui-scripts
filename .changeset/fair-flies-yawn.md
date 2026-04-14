@@ -2,4 +2,4 @@
 'arui-scripts': patch
 ---
 
-update packages versions
+обновлены версии внутренних зависимостей для фикса уязвимостей связанных с пакетом ajv
