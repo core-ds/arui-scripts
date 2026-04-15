@@ -2,7 +2,7 @@ import { type Plugin, type Plugins } from '@rspack/core';
 
 import { createSingleClientWebpackConfig } from '../../webpack.client';
 import { createServerConfig } from '../../webpack.server';
-import { findPlugin } from '../find-plugin';
+import { createFindPluginFunction } from '../find-plugin';
 
 const getPlugins = (
     plugins: Plugins | undefined = [],
@@ -27,7 +27,7 @@ describe('override plugins with findPlugin', () => {
         it('should return original client dev config with modified MiniCssExtractPlugin: options.ignoreOrder = false', () => {
             const devConfig = createSingleClientWebpackConfig('dev', './index.ts');
 
-            const [MiniCssExtractPlugin] = findPlugin<'client'>()(
+            const [MiniCssExtractPlugin] = createFindPluginFunction<'client'>()(
                 devConfig,
                 'CssExtractRspackPlugin',
             );
@@ -53,7 +53,7 @@ describe('override plugins with findPlugin', () => {
         it('should return original client prod config with modified WebpackManifestPlugin: options.fileName = super-app-manifest.json', () => {
             const prodConfig = createSingleClientWebpackConfig('prod', './index.ts');
 
-            const [WebpackManifestPlugin] = findPlugin<'client'>()(
+            const [WebpackManifestPlugin] = createFindPluginFunction<'client'>()(
                 prodConfig,
                 'WebpackManifestPlugin',
             );
@@ -84,7 +84,7 @@ describe('override plugins with findPlugin', () => {
         it('should return original server dev config with modified WatchMissingNodeModulesPlugin: nodeModulesPath = ./123', () => {
             const devConfig = createServerConfig('dev');
 
-            const [WatchMissingNodeModulesPlugin] = findPlugin<'server'>()(
+            const [WatchMissingNodeModulesPlugin] = createFindPluginFunction<'server'>()(
                 devConfig,
                 'WatchMissingNodeModulesPlugin',
             );

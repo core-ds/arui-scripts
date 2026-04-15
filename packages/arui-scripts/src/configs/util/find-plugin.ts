@@ -11,9 +11,9 @@ import {
 import type AssetsPlugin from 'assets-webpack-plugin';
 import type CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import type CompressionPlugin from 'compression-webpack-plugin';
-import { type ForkTsCheckerWebpackPluginOptions } from 'fork-ts-checker-webpack-plugin/lib/plugin-options';
 import type MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import { type RunScriptWebpackPlugin } from 'run-script-webpack-plugin';
+import { type TsCheckerRspackPluginOptions } from 'ts-checker-rspack-plugin/lib/plugin-options';
 import { type WebpackDeduplicationPlugin } from 'webpack-deduplication-plugin';
 import { type WebpackManifestPlugin } from 'webpack-manifest-plugin';
 
@@ -37,7 +37,7 @@ type PluginsListClient = {
         runtimeOptions: MiniCssExtractPlugin.RuntimeOptions;
     };
     ForkTsCheckerWebpackPlugin: {
-        options: ForkTsCheckerWebpackPluginOptions;
+        options: TsCheckerRspackPluginOptions;
     };
     IgnorePlugin: {
         options:
@@ -100,13 +100,12 @@ type SelectedPluginsList<Type extends 'client' | 'server'> = Type extends 'clien
     ? PluginsListClient
     : PluginsListServer;
 
-/**
- *
- * @param config конфигурация webpack
- * @param pluginName имя плагина
- * @returns плагин или плагины, которые подошли под условие из testRule
- */
-export function findPlugin<Type extends 'client' | 'server'>() {
+export function createFindPluginFunction<Type extends 'client' | 'server'>() {
+    /**
+     * @param config конфигурация webpack
+     * @param pluginName имя плагина
+     * @returns плагин или плагины, которые подошли под условие из testRule
+     */
     return <PluginName extends keyof SelectedPluginsList<Type>>(
         config: Configuration,
         pluginName: PluginName,
