@@ -19,7 +19,7 @@ import AssetsPlugin from 'assets-webpack-plugin';
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import CompressionPlugin from 'compression-webpack-plugin';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
-import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
+import { TsCheckerRspackPlugin } from 'ts-checker-rspack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import { RspackManifestPlugin } from 'rspack-manifest-plugin';
 import { WebpackDeduplicationPlugin } from 'webpack-deduplication-plugin';
@@ -319,7 +319,7 @@ export const createSingleClientWebpackConfig = (
         (mode === 'prod' || !configs.disableDevWebpackTypecheck) &&
             configs.tsconfig !== null &&
             configs.codeLoader !== 'tsc' &&
-            new ForkTsCheckerWebpackPlugin(),
+            new TsCheckerRspackPlugin(),
         // moment.js очень большая библиотека, которая включает в себя массу локализаций, которые мы не используем.
         // Поэтому мы их просто игнорируем, чтобы не включать в сборку.
         // https://github.com/jmblog/how-to-optimize-momentjs-with-webpack

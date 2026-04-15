@@ -1,6 +1,6 @@
 import { applyOverrides } from './util/apply-overrides';
 import { findLoader } from './util/find-loader';
-import { findPlugin } from './util/find-plugin';
+import { createFindPluginFunction } from './util/find-plugin';
 import { createClientWebpackConfig, createSingleClientWebpackConfig } from './webpack.client';
 
 export const webpackClientConfig = applyOverrides(
@@ -9,6 +9,6 @@ export const webpackClientConfig = applyOverrides(
     {
         createSingleClientWebpackConfig: createSingleClientWebpackConfig.bind(null, 'prod'),
         findLoader,
-        findPlugin: findPlugin<'client'>(),
+        findPlugin: createFindPluginFunction<'client'>(),
     },
 );

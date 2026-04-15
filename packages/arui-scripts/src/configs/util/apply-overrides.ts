@@ -7,7 +7,7 @@ import { type AppContextWithConfigs } from '../app-configs/types';
 import { type createSingleClientWebpackConfig } from '../webpack.client';
 
 import { type findLoader } from './find-loader';
-import { type findPlugin } from './find-plugin';
+import { type createFindPluginFunction } from './find-plugin';
 
 type Overrides = {
     webpack: rspack.Configuration | rspack.Configuration[];
@@ -57,12 +57,12 @@ type BoundCreateSingleClientWebpackConfig = OmitFirstArg<typeof createSingleClie
 type ClientWebpackAdditionalArgs = {
     createSingleClientWebpackConfig: BoundCreateSingleClientWebpackConfig;
     findLoader: typeof findLoader;
-    findPlugin: ReturnType<typeof findPlugin<'client'>>;
+    findPlugin: ReturnType<typeof createFindPluginFunction<'client'>>;
 };
 
 type ServerWebpackAdditionalArgs = {
     findLoader: typeof findLoader;
-    findPlugin: ReturnType<typeof findPlugin<'server'>>;
+    findPlugin: ReturnType<typeof createFindPluginFunction<'server'>>;
 };
 
 /**
