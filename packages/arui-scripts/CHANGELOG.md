@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 21.0.1
+
+### Patch Changes
+
+-   [#461](https://github.com/core-ds/arui-scripts/pull/461) [`e99e957`](https://github.com/core-ds/arui-scripts/commit/e99e95759bf072bb19eff08618c0233fa5bd742d) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Пакет fork-ts-checker-webpack-plugin заменен на ts-checker-rspack-plugin. Вам больше не требуется иметь webpack в зависимостях. Баг был представлен в версии 20.12.2
+
 ## 21.0.0
 
 ### Major Changes
