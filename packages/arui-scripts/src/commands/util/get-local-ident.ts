@@ -1,10 +1,10 @@
 import crypto from 'crypto';
 import path from 'path';
 
-interface CssLoaderContext {
+type CssLoaderContext = {
     resourcePath: string;
     rootContext: string;
-}
+};
 
 export function getLocalIdent(
     context: CssLoaderContext,
