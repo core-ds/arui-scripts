@@ -1,10 +1,10 @@
 import chalk from 'chalk';
-import printBuildError from 'react-dev-utils/printBuildError';
 import { Configuration, Stats, MultiStats } from '@rspack/core';
 import build from './build-wrapper';
 import { printAssetsSizes } from '../util/client-assets-sizes';
 import { webpackClientConfig } from '../../configs/webpack.client.prod';
 import { loadBrowserslist } from '../util/load-browserslist';
+import { printBuildError } from '../util/print-build-error';
 
 loadBrowserslist();
 
@@ -32,7 +32,7 @@ async function main() {
         function printOutputSizes(webpackConfig: Configuration, stats: Stats) {
             console.log(chalk.bold(`Sizes for "${webpackConfig.name || 'main'}"`));
 
-            printAssetsSizes(stats)
+            printAssetsSizes(stats);
         }
 
         if (Array.isArray(webpackClientConfig)) {

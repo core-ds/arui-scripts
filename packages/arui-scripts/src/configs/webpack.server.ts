@@ -1,7 +1,6 @@
 import fs from 'fs';
 import path from 'path';
 
-import getCSSModuleLocalIdent from 'react-dev-utils/getCSSModuleLocalIdent';
 import {
     BannerPlugin,
     type Configuration,
@@ -24,6 +23,7 @@ import { config as babelConf } from './babel-server';
 import { postcssConfig as postcssConf } from './postcss';
 import { serverExternalsExemptions } from './server-externals-exemptions';
 import { swcServerConfig } from './swc';
+import { getLocalIdent } from '../commands/util/get-local-ident';
 
 const assetsIgnoreBanner = fs.readFileSync(require.resolve('./util/node-assets-ignore'), 'utf8');
 const sourceMapSupportBanner = fs.readFileSync(
@@ -122,7 +122,7 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
                                 options: {
                                     modules: {
                                         exportOnlyLocals: true,
-                                        getLocalIdent: getCSSModuleLocalIdent,
+                                        getLocalIdent,
                                     },
                                 },
                             },
