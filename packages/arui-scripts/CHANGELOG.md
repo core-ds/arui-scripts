@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 21.0.2
+
+### Patch Changes
+
+-   [#464](https://github.com/core-ds/arui-scripts/pull/464) [`b17a8c3`](https://github.com/core-ds/arui-scripts/commit/b17a8c30774df8c4fbf854fdebe440d863d177b4) Thanks [@TheDiamondDoge](https://github.com/TheDiamondDoge)! - Исправляем название пакета на common-app-html в exemptions
+
 ## 21.0.1
 
 ### Patch Changes
