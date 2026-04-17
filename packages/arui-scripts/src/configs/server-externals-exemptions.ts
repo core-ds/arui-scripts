@@ -5,7 +5,7 @@ export const serverExternalsExemptions = applyOverrides('serverExternalsExemptio
     /^arui-private/,
     /^alfaform-core-ui/,
     /^@alfa-bank\/newclick-composite-components/,
-    /^@alfa-bank\/app-html/,
+    /^@alfa-bank\/common-app-html/,
     /^#/,
     /^@alfalab\/icons/,
     /^@alfalab\/core-components/,
