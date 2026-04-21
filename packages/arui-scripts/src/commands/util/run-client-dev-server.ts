@@ -1,6 +1,6 @@
 import { types } from 'util';
+import getPort from 'get-port';
 
-import { choosePort } from 'react-dev-utils/WebpackDevServerUtils';
 import { type Configuration, rspack, type Stats } from '@rspack/core';
 import { RspackDevServer } from '@rspack/dev-server';
 
@@ -20,7 +20,10 @@ export async function runClientDevServer(configuration: Configuration | Configur
     const HOST = '0.0.0.0';
 
     try {
-        const port = await choosePort(HOST, +(DEFAULT_PORT || 0));
+        const port = await getPort({
+            port: +(DEFAULT_PORT || 0),
+            host: HOST,
+        });
 
         if (!port) {
             // We have not found a port.

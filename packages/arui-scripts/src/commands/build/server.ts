@@ -1,9 +1,9 @@
 import chalk from 'chalk';
-import printBuildError from 'react-dev-utils/printBuildError';
 import build from './build-wrapper';
 
 import { webpackServerConfig } from '../../configs/webpack.server.prod';
 import { supportingNode } from '../../configs/supporting-node';
+import { printBuildError } from '../util/print-build-error';
 
 process.env.BROWSERSLIST = supportingNode.join(',');
 

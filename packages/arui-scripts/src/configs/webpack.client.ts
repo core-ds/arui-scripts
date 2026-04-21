@@ -1,7 +1,6 @@
 import path from 'path';
 import * as zlib from 'zlib';
 
-import getCSSModuleLocalIdent from 'react-dev-utils/getCSSModuleLocalIdent';
 import ReactRefreshTypeScript from 'react-refresh-typescript';
 import {
     type Configuration,
@@ -19,11 +18,12 @@ import AssetsPlugin from 'assets-webpack-plugin';
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import CompressionPlugin from 'compression-webpack-plugin';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
-import { TsCheckerRspackPlugin } from 'ts-checker-rspack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import { RspackManifestPlugin } from 'rspack-manifest-plugin';
+import { TsCheckerRspackPlugin } from 'ts-checker-rspack-plugin';
 import { WebpackDeduplicationPlugin } from 'webpack-deduplication-plugin';
 
+import { getLocalIdent } from '../commands/util/get-local-ident';
 import { AruiRuntimePlugin, getInsertCssRuntimeMethod } from '../plugins/arui-runtime';
 import { htmlTemplate } from '../templates/html.template';
 
@@ -247,7 +247,7 @@ export const createSingleClientWebpackConfig = (
                                     importLoaders: 1,
                                     sourceMap: mode === 'dev',
                                     modules: {
-                                        getLocalIdent: getCSSModuleLocalIdent,
+                                        getLocalIdent,
                                     },
                                 },
                             },
