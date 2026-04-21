@@ -1,5 +1,13 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 21.0.3
+
+### Patch Changes
+
+-   [#463](https://github.com/core-ds/arui-scripts/pull/463) [`b27ac8c`](https://github.com/core-ds/arui-scripts/commit/b27ac8c40420df53704a12d83163c31fa6943495) Thanks [@ngg-dev](https://github.com/ngg-dev)! - - удаление устаревшего пакета react-dev-utils для решение проблем с уязвимостями в пакете ajv
+    -   добавление пакета get-port
+    -   создание утилит getLocalIdent и printBuildError
+
 ## 21.0.2
 
 ### Patch Changes
