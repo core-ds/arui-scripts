@@ -1,5 +1,11 @@
 # [15.3.0](https://github.com/core-ds/arui-scripts/compare/v15.2.0...v15.3.0) (2023-06-30)
 
+## 21.0.4
+
+### Patch Changes
+
+-   [#467](https://github.com/core-ds/arui-scripts/pull/467) [`e6d6a40`](https://github.com/core-ds/arui-scripts/commit/e6d6a40c5200fcb128850f44ddf0e676b144624b) Thanks [@Los-Santos1](https://github.com/Los-Santos1)! - Исправлен запуск Jest на Windows из-за абсолютных путей в import
+
 ## 21.0.3
 
 ### Patch Changes
