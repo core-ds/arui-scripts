@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { pathToFileURL } from 'url';
 
 import { replaceRootDirInPath } from 'jest-config';
 import Resolver from 'jest-resolve';
@@ -29,7 +30,7 @@ async function getAppJestConfig() {
     const jestConfigPath = path.resolve(process.cwd(), 'jest.config.js');
 
     if (fs.existsSync(jestConfigPath)) {
-        return (await import(jestConfigPath)).default;
+        return (await import(pathToFileURL(jestConfigPath).href)).default;
     }
 
     if (configs.appPackage.jest) {
@@ -60,7 +61,8 @@ async function getPresetConfig(presetPath?: string) {
         throw new Error(`Cannot find module '${normalizedPresetPath}'`);
     }
 
-    const { preset: subPreset, ...preset } = (await import(presetModule)).default;
+    const { preset: subPreset, ...preset } = (await import(pathToFileURL(presetModule).href))
+        .default;
 
     if (subPreset) {
         console.warn(`Jest can't handle preset chaining. Preset "${subPreset}" will be ignored.`);
