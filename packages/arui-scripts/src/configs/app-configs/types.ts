@@ -1,5 +1,5 @@
 import { type DevTool, type Shared } from '@rspack/core';
-import { type RspackDevServer } from '@rspack/dev-server';
+import { type Configuration as DevServerConfiguration } from '@rspack/dev-server';
 import { type PluginOptions as ReactCompilerOptions } from 'babel-plugin-react-compiler';
 
 /**
@@ -14,7 +14,7 @@ export type AppConfigs = {
     devServerCors: boolean;
     useServerHMR: boolean;
     presets: string | null;
-    proxy: RspackDevServer['options']['proxy'];
+    proxy: DevServerConfiguration['proxy'];
     clientOnly: boolean;
 
     // paths

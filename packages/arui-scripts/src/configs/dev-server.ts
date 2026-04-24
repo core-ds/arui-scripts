@@ -7,44 +7,49 @@ import { applyOverrides } from './util/apply-overrides';
 import { configs } from './app-configs';
 import { ENV_CONFIG_FILENAME } from './client-env-config';
 
-const serverProxyConfig = {
-    context: ['/**'],
-    target: `http://127.0.0.1:${configs.serverPort}`,
-    bypass: (req: http.IncomingMessage) => {
-        const assetsRoot = path.normalize(`/${configs.publicPath}`).replace(/\\/g, '/');
+function getServerToClientProxyConfig(): NonNullable<Configuration['proxy']>[number] {
+    const assetsRoot = path.normalize(`/${configs.publicPath}`).replace(/\\/g, '/');
 
-        if (req?.url?.startsWith(assetsRoot)) {
-            return req.url;
-        }
+    return {
+        target: `http://127.0.0.1:${configs.serverPort}`,
+        /**
+         * http-proxy-middleware v3+ / @rspack/dev-server v2: вместо `bypass` используем pathFilter —
+         * проксируем на SSR только пути вне статики по publicPath (см. migrate-v1-to-v2.md).
+         */
+        pathFilter: (pathname: string) => !pathname.startsWith(assetsRoot),
+        ...((configs.devSourceMaps && configs.devSourceMaps.includes('eval')) ||
+        configs.devServerCors
+            ? {
+                  on: {
+                      proxyRes: (proxyRes: http.IncomingMessage, req: http.IncomingMessage) => {
+                          // Для дев режима, когда мы используем в качестве соурсмапов что-то, основанное на eval - нужно
+                          // разрешить браузеру исполнять наш код, даже когда content-security-policy приложения не позволяет этого делать.
+                          if (configs.devSourceMaps && configs.devSourceMaps.includes('eval')) {
+                              const cspHeader = proxyRes.headers['content-security-policy'];
 
-        return null;
-    },
-    ...((configs.devSourceMaps && configs.devSourceMaps.includes('eval')) || configs.devServerCors
-        ? {
-              onProxyRes: (proxyRes: http.IncomingMessage) => {
-                  // Для дев режима, когда мы используем в качестве соурсмапов что-то, основанное на eval - нужно
-                  // разрешить браузеру исполнять наш код, даже когда content-security-policy приложения не позволяет этого делать.
-                  if (configs.devSourceMaps && configs.devSourceMaps.includes('eval')) {
-                      const cspHeader = proxyRes.headers['content-security-policy'];
-
-                      if (typeof cspHeader === 'string' && !cspHeader.includes('unsafe-eval')) {
-                          // eslint-disable-next-line no-param-reassign
-                          proxyRes.headers['content-security-policy'] = cspHeader.replace(
-                              /script-src/,
-                              "script-src 'unsafe-eval'",
-                          );
-                      }
-                  }
-                  // если включен devServerCors, то нужно принудительно менять статус ответа на 200, чтобы
-                  // браузер не отклонял ответы с CORS
-                  if (configs.devServerCors && proxyRes.method === 'OPTIONS') {
-                      // eslint-disable-next-line no-param-reassign
-                      proxyRes.statusCode = 200;
-                  }
-              },
-          }
-        : {}),
-};
+                              if (
+                                  typeof cspHeader === 'string' &&
+                                  !cspHeader.includes('unsafe-eval')
+                              ) {
+                                  // eslint-disable-next-line no-param-reassign
+                                  proxyRes.headers['content-security-policy'] = cspHeader.replace(
+                                      /script-src/,
+                                      "script-src 'unsafe-eval'",
+                                  );
+                              }
+                          }
+                          // если включен devServerCors, то нужно принудительно менять статус ответа на 200, чтобы
+                          // браузер не отклонял ответы с CORS
+                          if (configs.devServerCors && req.method === 'OPTIONS') {
+                              // eslint-disable-next-line no-param-reassign
+                              proxyRes.statusCode = 200;
+                          }
+                      },
+                  },
+              }
+            : {}),
+    };
+}
 
 export const devServerConfig = applyOverrides('devServer', {
     port: configs.clientServerPort,
@@ -79,11 +84,11 @@ function getProxyConfig(): Configuration['proxy'] {
     const userProxyConfig = configs.proxy;
 
     if (!configs.clientOnly) {
-        proxyConfig.push(serverProxyConfig);
+        proxyConfig.push(getServerToClientProxyConfig());
     }
 
     if (Array.isArray(userProxyConfig)) {
-        proxyConfig.unshift(...(userProxyConfig as NonNullable<Configuration['proxy']>));
+        proxyConfig.unshift(...userProxyConfig);
     }
 
     return proxyConfig;
