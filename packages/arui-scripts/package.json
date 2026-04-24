@@ -37,11 +37,11 @@
         "@babel/preset-typescript": "^7.23.3",
         "@babel/runtime": "^7.26.10",
         "@pmmmwh/react-refresh-webpack-plugin": "0.6.2",
-        "@rsdoctor/rspack-plugin": "1.5.2",
-        "@rspack/cli": "1.7.6",
-        "@rspack/core": "1.7.3",
-        "@rspack/dev-server": "1.2.1",
-        "@rspack/plugin-react-refresh": "1.4.3",
+        "@rsdoctor/rspack-plugin": "1.5.9",
+        "@rspack/cli": "2.0.0",
+        "@rspack/core": "2.0.0",
+        "@rspack/dev-server": "2.0.0",
+        "@rspack/plugin-react-refresh": "2.0.0",
         "@swc/core": "1.15.1",
         "@swc/jest": "0.2.39",
         "assets-webpack-plugin": "7.1.1",
@@ -99,7 +99,7 @@
         "react-refresh": "0.10.0",
         "react-refresh-typescript": "2.0.2",
         "rimraf": "^2.7.1",
-        "rspack-manifest-plugin": "5.0.3",
+        "rspack-manifest-plugin": "5.2.1",
         "run-script-webpack-plugin": "0.0.11",
         "semver": "^7.5.4",
         "serialize-javascript": "^7.0.5",
@@ -126,7 +126,7 @@
         "@types/fs-extra": "^9.0.13",
         "@types/jest": "^29.5.14",
         "@types/lodash.merge": "^4.6.7",
-        "@types/node": "18.19.121",
+        "@types/node": "^20.19.0",
         "@types/postcss-media-query-parser": "0.2.4",
         "@types/semver": "^7.5.0",
         "@types/serialize-javascript": "^5.0.4",
@@ -138,11 +138,12 @@
         "@types/webpack-dev-server": "4.7.2",
         "@types/webpack-manifest-plugin": "3.0.5",
         "@types/webpack-node-externals": "^3.0.0",
+        "babel-plugin-transform-import-meta": "^2.3.3",
         "type-fest": "2.19.0",
         "typescript": "6.0.2"
     },
     "engines": {
-        "node": ">=20"
+        "node": "^20.19.0 || >=22.12.0"
     },
     "scripts": {
         "build": "sh bin/build.sh",
@@ -174,7 +175,29 @@
                 {
                     "tsconfig": "tsconfig-local.json"
                 }
+            ],
+            "/node_modules/@rspack/.+\\.(mjs|js)$": [
+                "babel-jest",
+                {
+                    "presets": [
+                        [
+                            "@babel/preset-env",
+                            {
+                                "targets": {
+                                    "node": "20"
+                                },
+                                "modules": "commonjs"
+                            }
+                        ]
+                    ],
+                    "plugins": [
+                        "babel-plugin-transform-import-meta"
+                    ]
+                }
             ]
-        }
+        },
+        "transformIgnorePatterns": [
+            "/node_modules/(?!@rspack/)"
+        ]
     }
 }
