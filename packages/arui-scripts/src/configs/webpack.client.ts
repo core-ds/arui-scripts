@@ -13,7 +13,7 @@ import {
     type RuleSetRule,
     SwcJsMinimizerRspackPlugin,
 } from '@rspack/core';
-import ReactRefreshPlugin from '@rspack/plugin-react-refresh';
+import { ReactRefreshRspackPlugin } from '@rspack/plugin-react-refresh';
 import AssetsPlugin from 'assets-webpack-plugin';
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import CompressionPlugin from 'compression-webpack-plugin';
@@ -174,7 +174,6 @@ export const createSingleClientWebpackConfig = (
         nodeEnv: mode === 'prod' ? 'production' : false,
 
         // Оптимизации времени билда, см https://webpack.js.org/guides/build-performance/
-        removeAvailableModules: mode !== 'dev',
         removeEmptyChunks: mode !== 'dev',
     },
     resolve: {
@@ -195,6 +194,12 @@ export const createSingleClientWebpackConfig = (
     resolveLoader: {},
     cache: mode === 'dev',
     module: {
+        // в rspack v2 по умолчанию exportsPresence=error, оставляем предупреждения вместо падения как в v1
+        parser: {
+            javascript: {
+                exportsPresence: 'auto',
+            },
+        },
         rules: [
             {
                 // "oneOf" will traverse all following loaders until one will
@@ -341,7 +346,7 @@ export const createSingleClientWebpackConfig = (
                 rootPath: configs.cwd,
             }),
         // dev plugins:
-        mode === 'dev' && new ReactRefreshPlugin(),
+        mode === 'dev' && new ReactRefreshRspackPlugin(),
         // Watcher doesn't work well if you mistype casing in a path so we use
         // a plugin that prints an error when you attempt to do this.
         // See https://github.com/facebookincubator/create-react-app/issues/240
