@@ -29,6 +29,12 @@ export type ModuleLoaderHookWithModule<
     resources: ModuleResources<ModuleState>,
     module: ModuleExportType,
 ) => Promise<void> | void;
+export type ModuleLoaderLoadingStage = 'fetch-manifest' | 'fetch-resources' | 'mount';
+export type ModuleLoaderErrorHook = (
+    moduleId: string,
+    stage: ModuleLoaderLoadingStage,
+    error: unknown,
+) => void;
 
 type LifecycleHooks<ModuleExportType, ModuleState extends BaseModuleState> = {
     /** хук, вызываемый в самом начале загрузки, до любых других событий */
@@ -47,6 +53,8 @@ type LifecycleHooks<ModuleExportType, ModuleState extends BaseModuleState> = {
     onBeforeModuleUnmount?: ModuleLoaderHookWithModule<ModuleExportType, ModuleState>;
     /** хук, вызываем после удаления ресурсов модуля со страницы */
     onAfterModuleUnmount?: ModuleLoaderHookWithModule<ModuleExportType, ModuleState>;
+    /** хук, вызываемый при ошибках во время загрузки или монтирования модуля */
+    onError?: ModuleLoaderErrorHook;
 };
 
 export type CreateModuleLoaderParams<
@@ -189,7 +197,10 @@ export function createModuleLoader<
         // Загружаем описание модуля
         const moduleResources = await getModuleResourcesWithCache(
             getResourcesParams as GetResourcesParams,
-        );
+        ).catch((error) => {
+            lifecycleHooks.onError?.(moduleId, 'fetch-manifest', error);
+            throw error;
+        });
 
         if (!isModuleResourcesCached) {
             await lifecycleHooks.onBeforeResourcesMount?.(moduleId, moduleResources);
@@ -204,6 +215,9 @@ export function createModuleLoader<
                 baseUrl: moduleResources.moduleState.baseUrl,
                 abortSignal,
                 disableInlineStyleSafari,
+            }).catch((error) => {
+                lifecycleHooks.onError?.(moduleId, 'fetch-resources', error);
+                throw error;
             });
         }
 
@@ -224,12 +238,16 @@ export function createModuleLoader<
 
             loadedModule.mount = (...args) => {
                 lifecycleHooks.onBeforeMountableModuleMount?.(moduleId);
+                try {
+                    const result = originalMount(...args);
 
-                const result = originalMount(...args);
+                    lifecycleHooks.onAfterMountableModuleMount?.(moduleId);
 
-                lifecycleHooks.onAfterMountableModuleMount?.(moduleId);
-
-                return result;
+                    return result;
+                } catch (error) {
+                    lifecycleHooks.onError?.(moduleId, 'mount', error);
+                    throw error;
+                }
             };
         }
 

@@ -29,5 +29,6 @@ const loader = createModuleLoader({
 - `onStart(moduleId: string)` - будет вызван перед тем, как запустится процесс загрузки модуля;
 - `onBeforeMountableModuleMount(moduleId: string)` - специальных хук для монтируемых модулей, будет вызван перед запуском функции `mount` модуля;
 - `onAfterMountableModuleMount(moudleId: string)` - специальный хук для монтируемых модулей, будет вызван после выполнения функции `mount` модуля.
+- `onError(moduleId: string, stage: 'fetch-manifest' | 'fetch-resources' | 'mount', error: unknown)` - будет вызван при возникновении ошибки во время загрузки модуля
 
 Благодаря этим хукам вы сможете собирать метрики загрузки с ваших модулей и отслеживать все этапы загрузки.

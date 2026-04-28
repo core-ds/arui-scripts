@@ -7,7 +7,7 @@ import { getCompatModule, getModule } from '../utils/get-module';
 import { cleanupModulesCache } from '../utils/modules-cache';
 
 jest.mock('../utils/fetch-resources', () => ({
-    fetchResources: jest.fn(() => []),
+    fetchResources: jest.fn(async () => []),
     getResourcesTargetNodes: jest.fn(() => []),
 }));
 
@@ -209,6 +209,81 @@ describe('createModuleLoader', () => {
         expect(originalModuleMount).toHaveBeenCalled();
         expect(onBeforeMountableModuleMount).toHaveBeenCalled();
         expect(onAfterMountableModuleMount).toHaveBeenCalled();
+    });
+
+    describe('onError hook', () => {
+        const onError = jest.fn();
+        const getModuleResources = jest.fn();
+
+        beforeEach(() => {
+            onError.mockReset();
+        });
+
+        const loader = createModuleLoader<MountableModule>({
+            moduleId: 'test',
+            hostAppId: 'test',
+            getModuleResources,
+            hooks: {
+                onError,
+            },
+        });
+
+        it('should call onError hook when error occurred while fetching manifest', async () => {
+            getModuleResources.mockRejectedValueOnce('unable to get manifest');
+            try {
+                await loader();
+            } catch {
+                // do nothing
+            }
+
+            expect(onError).toHaveBeenCalledWith(
+                'test',
+                'fetch-manifest',
+                'unable to get manifest',
+            );
+        });
+
+        it('should call onError hook when error occurred while fetching resources', async () => {
+            getModuleResources.mockResolvedValue({
+                scripts: [],
+                styles: [],
+                moduleState: {},
+                mountMode: 'default',
+            });
+
+            (fetchResources as jest.Mock).mockRejectedValueOnce('unable to fetch resources');
+
+            try {
+                await loader();
+            } catch {
+                // do nothing
+            }
+
+            expect(onError).toHaveBeenCalledWith(
+                'test',
+                'fetch-resources',
+                'unable to fetch resources',
+            );
+        });
+
+        it('should call onError hook when error occurred while mounting mountable module', async () => {
+            (getModule as jest.Mock).mockResolvedValueOnce({
+                mount: jest.fn(() => {
+                    throw new Error('mount error');
+                }),
+                unmount: jest.fn(),
+            });
+
+            try {
+                const { module, moduleResources } = await loader();
+
+                module.mount(document.body, undefined, moduleResources.moduleState);
+            } catch {
+                // do nothing
+            }
+
+            expect(onError).toHaveBeenCalledWith('test', 'mount', expect.any(Error));
+        });
     });
 
     it('should pass correct params to fetchResources', async () => {
