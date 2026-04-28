@@ -36,6 +36,7 @@
         "@babel/preset-react": "^7.23.3",
         "@babel/preset-typescript": "^7.23.3",
         "@babel/runtime": "^7.26.10",
+        "@module-federation/runtime-tools": "^2.0.0",
         "@pmmmwh/react-refresh-webpack-plugin": "0.6.2",
         "@rsdoctor/rspack-plugin": "1.5.9",
         "@rspack/cli": "2.0.0",

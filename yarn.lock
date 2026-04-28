@@ -4554,6 +4554,67 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@module-federation/error-codes@npm:2.4.0":
+  version: 2.4.0
+  resolution: "@module-federation/error-codes@npm:2.4.0"
+  checksum: 10/6b42f023006171ba86003e0f6c7d6811e4313f81f2de5960b135bd8dcb5dc16a79fb555ef4e00648de3cc474857ebc743247200d6d977b8fbd7486207bc94d00
+  languageName: node
+  linkType: hard
+
+"@module-federation/runtime-core@npm:2.4.0":
+  version: 2.4.0
+  resolution: "@module-federation/runtime-core@npm:2.4.0"
+  dependencies:
+    "@module-federation/error-codes": "npm:2.4.0"
+    "@module-federation/sdk": "npm:2.4.0"
+  checksum: 10/2d8fc964539cd00a21185da32852ccb5005124c894f7b1db023d087838f4dece78780ed2b82ace7fb928f6abac46bfb46f3dc9cfd07fa9fbdfdc66dd2bdb14f3
+  languageName: node
+  linkType: hard
+
+"@module-federation/runtime-tools@npm:^2.0.0":
+  version: 2.4.0
+  resolution: "@module-federation/runtime-tools@npm:2.4.0"
+  dependencies:
+    "@module-federation/runtime": "npm:2.4.0"
+    "@module-federation/webpack-bundler-runtime": "npm:2.4.0"
+  checksum: 10/e4f955b17165aa4f069460940e7b15028d1ad2ce04123cb544304b960417e7b29f92ef8ead2303bbe022120a573e9af94e23269aa78df91a39c8eed279895b62
+  languageName: node
+  linkType: hard
+
+"@module-federation/runtime@npm:2.4.0":
+  version: 2.4.0
+  resolution: "@module-federation/runtime@npm:2.4.0"
+  dependencies:
+    "@module-federation/error-codes": "npm:2.4.0"
+    "@module-federation/runtime-core": "npm:2.4.0"
+    "@module-federation/sdk": "npm:2.4.0"
+  checksum: 10/37af511fc15de48449f0880dbf2fbac92aa4ce2fc92bea9b88a05ca3a763f96a9f069ef47ce1a74c615f192e53cee871fb3b13353da2c7fd3a2dd669bf6f7956
+  languageName: node
+  linkType: hard
+
+"@module-federation/sdk@npm:2.4.0":
+  version: 2.4.0
+  resolution: "@module-federation/sdk@npm:2.4.0"
+  peerDependencies:
+    node-fetch: ^2.7.0 || ^3.3.2
+  peerDependenciesMeta:
+    node-fetch:
+      optional: true
+  checksum: 10/86d230b74b033b21cb515ddd164c8cead272f02af87fb650eae1d5b44bf43a8a027f1ae95228e6caf65df7af7015648fb342238ed53f45db14fca8a644b0689a
+  languageName: node
+  linkType: hard
+
+"@module-federation/webpack-bundler-runtime@npm:2.4.0":
+  version: 2.4.0
+  resolution: "@module-federation/webpack-bundler-runtime@npm:2.4.0"
+  dependencies:
+    "@module-federation/error-codes": "npm:2.4.0"
+    "@module-federation/runtime": "npm:2.4.0"
+    "@module-federation/sdk": "npm:2.4.0"
+  checksum: 10/20e85c452c45dcc2bb875b00b20ad322af41998a8985707a306041a2cc437324052650c9a57c00fb51bd22679ee39893e4c0719563e8da132f687195d20c0c30
+  languageName: node
+  linkType: hard
+
 "@napi-rs/wasm-runtime@npm:1.1.4, @napi-rs/wasm-runtime@npm:^1.1.1":
   version: 1.1.4
   resolution: "@napi-rs/wasm-runtime@npm:1.1.4"
@@ -7736,6 +7797,7 @@ __metadata:
     "@babel/preset-react": "npm:^7.23.3"
     "@babel/preset-typescript": "npm:^7.23.3"
     "@babel/runtime": "npm:^7.26.10"
+    "@module-federation/runtime-tools": "npm:^2.0.0"
     "@pmmmwh/react-refresh-webpack-plugin": "npm:0.6.2"
     "@rsdoctor/rspack-plugin": "npm:1.5.9"
     "@rspack/cli": "npm:2.0.0"
