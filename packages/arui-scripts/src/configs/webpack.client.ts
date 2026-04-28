@@ -194,12 +194,6 @@ export const createSingleClientWebpackConfig = (
     resolveLoader: {},
     cache: mode === 'dev',
     module: {
-        // в rspack v2 по умолчанию exportsPresence=error, оставляем предупреждения вместо падения как в v1
-        parser: {
-            javascript: {
-                exportsPresence: 'auto',
-            },
-        },
         rules: [
             {
                 // "oneOf" will traverse all following loaders until one will

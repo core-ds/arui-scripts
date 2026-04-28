@@ -99,11 +99,6 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
         tsConfig: configs.tsconfig ? { configFile: configs.tsconfig } : undefined,
     },
     module: {
-        parser: {
-            javascript: {
-                exportsPresence: 'auto',
-            },
-        },
         rules: [
             {
                 oneOf: [
