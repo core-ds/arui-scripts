@@ -27,9 +27,18 @@ npm install arui-scripts --save-dev
 2. Создайте необходимые файлы
 - `src/index.{js,jsx,ts,tsx}` - входная точка для клиентского приложения.
 - `src/server/index.{js,jsx,tsx}` - входная точка для серверного приложения.
-- `node_modules/arui-feather/polyfills` - полифилы для клиентского приложения.
+Если нужен только клиент, смотреть [Режим clientOnly](./docs/client-only.md).
 
-При желании вы можете изменить эти пути с помощью настроек.
+**Полифилы (опционально).**
+Отдельный бандл полифилов не обязателен: по умолчанию [clientPolyfillsEntry](docs/settings.md#clientpolyfillsentry) не задан. Для распространённых целей по браузерам (их можно сузить или расширить через overrides `supporting-browsers`, см. [Тонкая настройка](docs/overrides.md#тонкая-настройка)) можно не подключать отдельный файл полифилов.
+
+Если полифилы всё же нужны (старые браузеры или режим `entry` у SWC/Babel с `core-js`):
+
+- добавьте в проект зависимость `core-js` (при необходимости)
+- создайте файл, например `src/polyfills.ts`, с импортом `import 'core-js/stable';`
+- укажите в [arui-scripts.config](docs/settings.md) или в `package.json` в секции `aruiScripts`: `clientPolyfillsEntry: './src/polyfills'`
+
+Пути ко входным точкам и полифилам можно переопределить через настройки; полный список — в [документации по настройкам](docs/settings.md).
 
 3. Используйте команды из `arui-scripts`!
 
