@@ -4,8 +4,8 @@
         "packages/*"
     ],
     "devDependencies": {
-        "@changesets/changelog-github": "^0.4.8",
-        "@changesets/cli": "^2.26.2",
+        "@changesets/changelog-github": "^0.6.0",
+        "@changesets/cli": "^2.31.0",
         "arui-presets-lint": "8.8.1",
         "conventional-changelog-cli": "3.0.0",
         "turbo": "2.9.6"
