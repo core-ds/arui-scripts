@@ -132,7 +132,6 @@ export function createModuleLoader<
         });
 
         if (resourcesCache === 'single-item') {
-            // Добавляем результаты загрузки в кеш если кеширование включено
             if (!modulesCache[moduleId]) {
                 modulesCache[moduleId] = {};
             }
@@ -148,45 +147,15 @@ export function createModuleLoader<
                 'Загрузка модулей в shadow DOM при использовании `resourceCache: single-item` не поддерживается.',
             );
         }
-        // Если во время загрузки модуля пришел сигнал об отмене, то отменяем загрузку
         if (abortSignal?.aborted) {
             throw new Error(`Module ${moduleId} loading was aborted`);
         }
 
-        abortSignal?.addEventListener('abort', () => {
-            moduleUnmount();
-        });
-
         consumerCounter.increase(moduleId);
+        const resourcesNodes = getResourcesTargetNodes({ resourcesTargetNode, cssTargetSelector });
+        const unmount = createUnmountHandler(moduleId, resourcesNodes, resourcesCache);
 
-        const resourcesNodes = getResourcesTargetNodes({
-            resourcesTargetNode,
-            cssTargetSelector,
-        });
-
-        function moduleUnmount() {
-            consumerCounter.decrease(moduleId);
-
-            function cleanup() {
-                removeModuleResources({
-                    moduleId,
-                    targetNodes: [resourcesNodes.js, resourcesNodes.css],
-                });
-                cleanGlobal(moduleId);
-            }
-
-            if (resourcesCache === 'single-item') {
-                // если включено кеширование - мы не удаляем ресурсы модуля, но запоминаем как удалить этот модуль
-                addCleanupMethod(moduleId, cleanup);
-
-                return;
-            }
-
-            if (consumerCounter.getCounter(moduleId) === 0) {
-                // Если на странице больше нет потребителей модуля, то удаляем его ресурсы - скрипты, стили и глобальные переменные
-                cleanup();
-            }
-        }
+        abortSignal?.addEventListener('abort', unmount);
 
         const isModuleResourcesCached =
             resourcesCache === 'single-item' &&
@@ -194,7 +163,6 @@ export function createModuleLoader<
 
         lifecycleHooks.onStart?.(moduleId);
 
-        // Загружаем описание модуля
         const moduleResources = await getModuleResourcesWithCache(
             getResourcesParams as GetResourcesParams,
         ).catch((error) => {
@@ -223,7 +191,6 @@ export function createModuleLoader<
 
         await lifecycleHooks.onBeforeModuleMount?.(moduleId, moduleResources);
 
-        // В зависимости от типа модуля, получаем его контент необходимым способом
         const loadedModule =
             moduleResources.mountMode === 'default'
                 ? await getModule<ModuleExportType>(moduleResources.appName, moduleId, shareScope)
@@ -234,21 +201,7 @@ export function createModuleLoader<
         }
 
         if (isMountableModule(loadedModule)) {
-            const originalMount = loadedModule.mount;
-
-            loadedModule.mount = (...args) => {
-                lifecycleHooks.onBeforeMountableModuleMount?.(moduleId);
-                try {
-                    const result = originalMount(...args);
-
-                    lifecycleHooks.onAfterMountableModuleMount?.(moduleId);
-
-                    return result;
-                } catch (error) {
-                    lifecycleHooks.onError?.(moduleId, 'mount', error);
-                    throw error;
-                }
-            };
+            wrapMountWithHooks(loadedModule, moduleId, lifecycleHooks);
         }
 
         await lifecycleHooks.onAfterModuleMount?.(moduleId, moduleResources, loadedModule);
@@ -256,12 +209,68 @@ export function createModuleLoader<
         return {
             unmount: () => {
                 lifecycleHooks.onBeforeModuleUnmount?.(moduleId, moduleResources, loadedModule);
-                moduleUnmount();
+                unmount();
                 lifecycleHooks.onAfterModuleUnmount?.(moduleId, moduleResources, loadedModule);
             },
             module: loadedModule,
             moduleResources,
         };
+    };
+}
+
+function createUnmountHandler(
+    moduleId: string,
+    resourcesNodes: ReturnType<typeof getResourcesTargetNodes>,
+    resourcesCache: 'none' | 'single-item',
+): () => void {
+    return function unmount() {
+        consumerCounter.decrease(moduleId);
+
+        const cleanup = () => {
+            removeModuleResources({
+                moduleId,
+                targetNodes: [resourcesNodes.js, resourcesNodes.css],
+            });
+            cleanGlobal(moduleId);
+        };
+
+        if (resourcesCache === 'single-item') {
+            // если включено кеширование - мы не удаляем ресурсы модуля, но запоминаем как удалить этот модуль
+            addCleanupMethod(moduleId, cleanup);
+
+            return;
+        }
+
+        if (consumerCounter.getCounter(moduleId) === 0) {
+            cleanup();
+        }
+    };
+}
+
+function wrapMountWithHooks(
+    module: MountableModule,
+    moduleId: string,
+    hooks: {
+        onBeforeMountableModuleMount?: ModuleLoaderSimpleHook;
+        onAfterMountableModuleMount?: ModuleLoaderSimpleHook;
+        onError?: ModuleLoaderErrorHook;
+    },
+): void {
+    const originalMount = module.mount;
+
+    // eslint-disable-next-line no-param-reassign -- нам нужно менять сам модуль
+    module.mount = (...args) => {
+        hooks.onBeforeMountableModuleMount?.(moduleId);
+        try {
+            const result = originalMount(...args);
+
+            hooks.onAfterMountableModuleMount?.(moduleId);
+
+            return result;
+        } catch (error) {
+            hooks.onError?.(moduleId, 'mount', error);
+            throw error;
+        }
     };
 }
 
