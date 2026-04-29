@@ -1,5 +1,11 @@
 # @alfalab/scripts-modules
 
+## 1.9.1
+
+### Patch Changes
+
+-   [`36f7cc0`](https://github.com/core-ds/arui-scripts/commit/36f7cc0c3167d02c840997333c734010869ca0da) Thanks [@Heymdall](https://github.com/Heymdall)! - В хуки onBeforeMountableModuleMount и onAfterMountableModuleMount дополнительно передается параметр targetNode
+
 ## 1.9.0
 
 ### Minor Changes
