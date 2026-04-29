@@ -1,4 +1,5 @@
 import { createModuleLoader } from '../create-module-loader';
+import { type MountableModule } from '../module-types';
 import * as cleanGlobal from '../utils/clean-global';
 import * as domUtils from '../utils/dom-utils';
 import { fetchResources } from '../utils/fetch-resources';
@@ -6,7 +7,7 @@ import { getCompatModule, getModule } from '../utils/get-module';
 import { cleanupModulesCache } from '../utils/modules-cache';
 
 jest.mock('../utils/fetch-resources', () => ({
-    fetchResources: jest.fn(() => []),
+    fetchResources: jest.fn(async () => []),
     getResourcesTargetNodes: jest.fn(() => []),
 }));
 
@@ -16,6 +17,10 @@ jest.mock('../utils/get-module', () => ({
 }));
 
 describe('createModuleLoader', () => {
+    beforeEach(() => {
+        jest.spyOn(console, 'warn').mockImplementation(() => {});
+    });
+
     afterEach(() => {
         jest.clearAllMocks();
     });
@@ -57,7 +62,49 @@ describe('createModuleLoader', () => {
         });
     });
 
+    describe('deprecated hooks format', () => {
+        it('calls the appropriate hooks and warn about deprecation when loading a module', async () => {
+            const onStart = jest.fn();
+            const onBeforeResourcesMount = jest.fn();
+            const onBeforeModuleMount = jest.fn();
+            const onAfterModuleMount = jest.fn();
+            const getModuleResources = jest.fn();
+
+            const loader = createModuleLoader({
+                moduleId: 'test',
+                hostAppId: 'test',
+                getModuleResources,
+                onStart,
+                onBeforeResourcesMount,
+                onBeforeModuleMount,
+                onAfterModuleMount,
+            });
+
+            getModuleResources.mockResolvedValue({
+                scripts: [],
+                styles: [],
+                moduleState: {},
+                mountMode: 'default',
+            });
+
+            (getModule as jest.Mock).mockResolvedValueOnce({});
+
+            await loader({ getResourcesParams: undefined });
+
+            expect(onStart).toHaveBeenCalled();
+            expect(onBeforeResourcesMount).toHaveBeenCalled();
+            expect(onBeforeModuleMount).toHaveBeenCalled();
+            expect(onAfterModuleMount).toHaveBeenCalled();
+
+            // eslint-disable-next-line no-console
+            expect(console.warn).toHaveBeenCalledWith(
+                expect.stringContaining('использует устаревших формат хуков'),
+            );
+        });
+    });
+
     it('calls the appropriate hooks when loading a module', async () => {
+        const onStart = jest.fn();
         const onBeforeResourcesMount = jest.fn();
         const onBeforeModuleMount = jest.fn();
         const onAfterModuleMount = jest.fn();
@@ -67,9 +114,12 @@ describe('createModuleLoader', () => {
             moduleId: 'test',
             hostAppId: 'test',
             getModuleResources,
-            onBeforeResourcesMount,
-            onBeforeModuleMount,
-            onAfterModuleMount,
+            hooks: {
+                onStart,
+                onBeforeResourcesMount,
+                onBeforeModuleMount,
+                onAfterModuleMount,
+            },
         });
 
         getModuleResources.mockResolvedValue({
@@ -83,9 +133,13 @@ describe('createModuleLoader', () => {
 
         await loader({ getResourcesParams: undefined });
 
+        expect(onStart).toHaveBeenCalled();
         expect(onBeforeResourcesMount).toHaveBeenCalled();
         expect(onBeforeModuleMount).toHaveBeenCalled();
         expect(onAfterModuleMount).toHaveBeenCalled();
+
+        // eslint-disable-next-line no-console
+        expect(console.warn).not.toHaveBeenCalled();
     });
 
     it('should call appropriate hooks when unmounting a module', async () => {
@@ -97,8 +151,10 @@ describe('createModuleLoader', () => {
             moduleId: 'test',
             hostAppId: 'test',
             getModuleResources,
-            onBeforeModuleUnmount,
-            onAfterModuleUnmount,
+            hooks: {
+                onBeforeModuleUnmount,
+                onAfterModuleUnmount,
+            },
         });
 
         getModuleResources.mockResolvedValue({
@@ -116,6 +172,118 @@ describe('createModuleLoader', () => {
 
         expect(onBeforeModuleUnmount).toHaveBeenCalled();
         expect(onAfterModuleUnmount).toHaveBeenCalled();
+    });
+
+    it('should wrap mountable module methods with hooks', async () => {
+        const onBeforeMountableModuleMount = jest.fn();
+        const onAfterMountableModuleMount = jest.fn();
+        const getModuleResources = jest.fn();
+        const originalModuleMount = jest.fn();
+
+        const loader = createModuleLoader<MountableModule>({
+            moduleId: 'test',
+            hostAppId: 'test',
+            getModuleResources,
+            hooks: {
+                onBeforeMountableModuleMount,
+                onAfterMountableModuleMount,
+            },
+        });
+
+        getModuleResources.mockResolvedValue({
+            scripts: [],
+            styles: [],
+            moduleState: {},
+            mountMode: 'default',
+        });
+
+        (getModule as jest.Mock).mockResolvedValueOnce({
+            mount: originalModuleMount,
+            unmount: jest.fn(),
+        });
+
+        const { module, moduleResources } = await loader({ getResourcesParams: undefined });
+
+        module.mount(document.body, undefined, moduleResources.moduleState);
+
+        expect(originalModuleMount).toHaveBeenCalled();
+        expect(onBeforeMountableModuleMount).toHaveBeenCalled();
+        expect(onAfterMountableModuleMount).toHaveBeenCalled();
+    });
+
+    describe('onError hook', () => {
+        const onError = jest.fn();
+        const getModuleResources = jest.fn();
+
+        beforeEach(() => {
+            onError.mockReset();
+        });
+
+        const loader = createModuleLoader<MountableModule>({
+            moduleId: 'test',
+            hostAppId: 'test',
+            getModuleResources,
+            hooks: {
+                onError,
+            },
+        });
+
+        it('should call onError hook when error occurred while fetching manifest', async () => {
+            getModuleResources.mockRejectedValueOnce('unable to get manifest');
+            try {
+                await loader();
+            } catch {
+                // do nothing
+            }
+
+            expect(onError).toHaveBeenCalledWith(
+                'test',
+                'fetch-manifest',
+                'unable to get manifest',
+            );
+        });
+
+        it('should call onError hook when error occurred while fetching resources', async () => {
+            getModuleResources.mockResolvedValue({
+                scripts: [],
+                styles: [],
+                moduleState: {},
+                mountMode: 'default',
+            });
+
+            (fetchResources as jest.Mock).mockRejectedValueOnce('unable to fetch resources');
+
+            try {
+                await loader();
+            } catch {
+                // do nothing
+            }
+
+            expect(onError).toHaveBeenCalledWith(
+                'test',
+                'fetch-resources',
+                'unable to fetch resources',
+            );
+        });
+
+        it('should call onError hook when error occurred while mounting mountable module', async () => {
+            (getModule as jest.Mock).mockResolvedValueOnce({
+                mount: jest.fn(() => {
+                    throw new Error('mount error');
+                }),
+                unmount: jest.fn(),
+            });
+
+            try {
+                const { module, moduleResources } = await loader();
+
+                module.mount(document.body, undefined, moduleResources.moduleState);
+            } catch {
+                // do nothing
+            }
+
+            expect(onError).toHaveBeenCalledWith('test', 'mount', expect.any(Error));
+        });
     });
 
     it('should pass correct params to fetchResources', async () => {

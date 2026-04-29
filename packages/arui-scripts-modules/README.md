@@ -45,13 +45,19 @@ const loader = createModuleLoader({
     // опциональные параметры
     resourceCache: 'single-item', // политика кеширования ресурсов модуля. Если 'none' - ресурсы модуля будут удалены из кеша после его удаления со страницы. Если 'single-item' - в кеше будет храниться значения для текущего значения loaderParams.
     resourcesTargetNode: document.head, // DOM-нода, в которую будут монтироваться ресурсы модуля (css и js)
-    shareScope // параметр, который необходимо указать если shareScope модуля отличается от default
+    shareScope: 'my-scope', // параметр, который необходимо указать если shareScope модуля отличается от default
     disableInlineStyleSafari, // флаг, отключающий встраивание inline стилей в Safari
-    onBeforeResourcesMount: (moduleId, resources) => {}, // коллбек, который будет вызван перед монтированием ресурсов
-    onBeforeModuleMount: (moduleId, resources) => {}, // коллбек, который будет вызван перед монтированием модуля
-    onAfterModuleMount: (moduleId, resources, module) => {}, // коллбек, который будет вызван после монтирования модуля
-    onBeforeModuleUnmount: (moduleId, resources, module) => {}, // коллбек, который будет вызван перед размонтированием модуля
-    onAfterModuleUnmount: (moduleId, resources, module) => {}, // коллбек, который будет вызван после размонтирования модуля
+    hooks: {
+        onStart: (moduleId) => {}, // хук, который будет вызван в самом начале процесса монтирования модуля
+        onBeforeResourcesMount: (moduleId, resources) => {}, // хук, который будет вызван перед монтированием ресурсов
+        onBeforeModuleMount: (moduleId, resources) => {}, // хук, который будет вызван перед загрузкой ресурсов модуля
+        onAfterModuleMount: (moduleId, resources, module) => {}, // хук, который будет вызван после полной загрузки модуля
+        onBeforeMountableModuleMount: (moduleId) => {}, // хук, который будет вызван перед вызовом функции mount монтируемых модулей
+        onAfterMountableModuleMount: (moduleId) => {}, // хук, который будет вызван после выполнения функции mount монтируемых модулей
+        onBeforeModuleUnmount: (moduleId, resources, module) => {}, // хук, который будет вызван перед размонтированием модуля
+        onAfterModuleUnmount: (moduleId, resources, module) => {}, // хук, который будет вызван после размонтирования модуля
+        onError: (moduleId, stage, error) => {}, // хук, который будет вызван при ошибке загрузки модуля. Не дает обработать ошибку, нужен только для логирования или мониторинга
+    }
 });
 
 const result = await loader({

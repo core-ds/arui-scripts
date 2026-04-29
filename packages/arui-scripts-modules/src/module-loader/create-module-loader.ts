@@ -4,6 +4,7 @@ import { removeModuleResources } from './utils/dom-utils';
 import { fetchResources, getResourcesTargetNodes } from './utils/fetch-resources';
 import { getCompatModule, getModule } from './utils/get-module';
 import { addCleanupMethod, cleanupModule, getModulesCache } from './utils/modules-cache';
+import { type MountableModule } from './module-types';
 import {
     type BaseModuleState,
     type GetResourcesRequest,
@@ -11,9 +12,11 @@ import {
     type ModuleResources,
 } from './types';
 
-export type ModuleResourcesGetter<GetResourcesParams, ModuleState extends BaseModuleState> = (
-    params: GetResourcesRequest<GetResourcesParams>,
-) => Promise<ModuleResources<ModuleState>>;
+export type ModuleResourcesGetter<
+    GetResourcesParams,
+    ModuleState extends BaseModuleState = BaseModuleState,
+> = (params: GetResourcesRequest<GetResourcesParams>) => Promise<ModuleResources<ModuleState>>;
+export type ModuleLoaderSimpleHook = (moduleId: string) => void;
 export type ModuleLoaderHook<ModuleState extends BaseModuleState = BaseModuleState> = (
     moduleId: string,
     resources: ModuleResources<ModuleState>,
@@ -26,6 +29,33 @@ export type ModuleLoaderHookWithModule<
     resources: ModuleResources<ModuleState>,
     module: ModuleExportType,
 ) => Promise<void> | void;
+export type ModuleLoaderLoadingStage = 'fetch-manifest' | 'fetch-resources' | 'mount';
+export type ModuleLoaderErrorHook = (
+    moduleId: string,
+    stage: ModuleLoaderLoadingStage,
+    error: unknown,
+) => void;
+
+type LifecycleHooks<ModuleExportType, ModuleState extends BaseModuleState> = {
+    /** хук, вызываемый в самом начале загрузки, до любых других событий */
+    onStart?: ModuleLoaderSimpleHook;
+    /** хук, вызываемый перед подключением ресурсов модуля на страницу */
+    onBeforeResourcesMount?: ModuleLoaderHook<ModuleState>;
+    /** хук, вызываемый после подключения ресурсов, но до получения контента модуля */
+    onBeforeModuleMount?: ModuleLoaderHook<ModuleState>;
+    /** хук, вызываемый после того, как модуль был получен */
+    onAfterModuleMount?: ModuleLoaderHookWithModule<ModuleExportType, ModuleState>;
+    /** хук для монтируемых модулей, будет вызван перед запуском функции mount модуля */
+    onBeforeMountableModuleMount?: ModuleLoaderSimpleHook;
+    /** хук для монтируемых модулей, будет вызван после выполнения функции mount модуля */
+    onAfterMountableModuleMount?: ModuleLoaderSimpleHook;
+    /** хук, вызываемый перед удалением ресурсов модуля со страницы */
+    onBeforeModuleUnmount?: ModuleLoaderHookWithModule<ModuleExportType, ModuleState>;
+    /** хук, вызываем после удаления ресурсов модуля со страницы */
+    onAfterModuleUnmount?: ModuleLoaderHookWithModule<ModuleExportType, ModuleState>;
+    /** хук, вызываемый при ошибках во время загрузки или монтирования модуля */
+    onError?: ModuleLoaderErrorHook;
+};
 
 export type CreateModuleLoaderParams<
     // Тип экспорта модуля
@@ -43,23 +73,15 @@ export type CreateModuleLoaderParams<
     getModuleResources: ModuleResourcesGetter<GetResourcesParams, ModuleState>;
     /** Опциональная html-нода, в которую будут подключаться ресурсы модуля. По-умолчанию `document.head` */
     resourcesTargetNode?: HTMLElement;
-    /** хук, вызываемый перед подключением ресурсов модуля на страницу */
-    onBeforeResourcesMount?: ModuleLoaderHook<ModuleState>;
-    /** хук, вызываемый после подключения ресурсов, но до получения контента модуля */
-    onBeforeModuleMount?: ModuleLoaderHook<ModuleState>;
-    /** хук, вызываемый после того, как модуль был получен */
-    onAfterModuleMount?: ModuleLoaderHookWithModule<ModuleExportType, ModuleState>;
-    /** хук, вызываемый перед удалением ресурсов модуля со страницы */
-    onBeforeModuleUnmount?: ModuleLoaderHookWithModule<ModuleExportType, ModuleState>;
-    /** хук, вызываем после удаления ресурсов модуля со страницы */
-    onAfterModuleUnmount?: ModuleLoaderHookWithModule<ModuleExportType, ModuleState>;
     /** политика кеширования ресурсов модуля. Если 'none' - ресурсы модуля будут удалены из кеша после его удаления со страницы. Если 'single-item' - в кеше будет храниться значения для текущего значения loaderParams. */
     resourcesCache?: 'none' | 'single-item';
     /** shareScope модуля, если отличается от default */
     shareScope?: string;
     /** флаг, отключающий встраивание inline стилей в Safari */
     disableInlineStyleSafari?: boolean;
-};
+    /** lifecycle хуки загрузчика. Могут использоваться для модификации поведения или сбора метрик */
+    hooks?: LifecycleHooks<ModuleExportType, ModuleState>;
+} & LifecycleHooks<ModuleExportType, ModuleState>;
 
 const consumerCounter = getConsumerCounter();
 
@@ -73,18 +95,22 @@ export function createModuleLoader<
     getModuleResources,
     resourcesTargetNode,
     resourcesCache = 'none',
-    onBeforeResourcesMount,
-    onBeforeModuleMount,
-    onAfterModuleMount,
-    onBeforeModuleUnmount,
-    onAfterModuleUnmount,
     shareScope,
     disableInlineStyleSafari,
+    hooks,
+    ...deprecatedHooks
 }: CreateModuleLoaderParams<ModuleExportType, GetResourcesParams, ModuleState>): Loader<
     GetResourcesParams,
     ModuleExportType
 > {
-    validateUsedWebpackVersion();
+    const lifecycleHooks = hooks || deprecatedHooks;
+
+    if (Object.keys(deprecatedHooks).length > 0 && process.env.NODE_ENV !== 'production') {
+        // eslint-disable-next-line no-console -- полезный deprecation warning для команд
+        console.warn(
+            `Загрузчик для ${moduleId} использует устаревших формат хуков. Передавайте их как отдельный объект hooks в параметрах загрузчика`,
+        );
+    }
 
     const modulesCache = getModulesCache();
 
@@ -106,7 +132,6 @@ export function createModuleLoader<
         });
 
         if (resourcesCache === 'single-item') {
-            // Добавляем результаты загрузки в кеш если кеширование включено
             if (!modulesCache[moduleId]) {
                 modulesCache[moduleId] = {};
             }
@@ -122,57 +147,31 @@ export function createModuleLoader<
                 'Загрузка модулей в shadow DOM при использовании `resourceCache: single-item` не поддерживается.',
             );
         }
-        // Если во время загрузки модуля пришел сигнал об отмене, то отменяем загрузку
         if (abortSignal?.aborted) {
             throw new Error(`Module ${moduleId} loading was aborted`);
         }
 
-        abortSignal?.addEventListener('abort', () => {
-            moduleUnmount();
-        });
-
         consumerCounter.increase(moduleId);
+        const resourcesNodes = getResourcesTargetNodes({ resourcesTargetNode, cssTargetSelector });
+        const unmount = createUnmountHandler(moduleId, resourcesNodes, resourcesCache);
 
-        const resourcesNodes = getResourcesTargetNodes({
-            resourcesTargetNode,
-            cssTargetSelector,
-        });
-
-        function moduleUnmount() {
-            consumerCounter.decrease(moduleId);
-
-            function cleanup() {
-                removeModuleResources({
-                    moduleId,
-                    targetNodes: [resourcesNodes.js, resourcesNodes.css],
-                });
-                cleanGlobal(moduleId);
-            }
-
-            if (resourcesCache === 'single-item') {
-                // если включено кеширование - мы не удаляем ресурсы модуля, но запоминаем как удалить этот модуль
-                addCleanupMethod(moduleId, cleanup);
-
-                return;
-            }
-
-            if (consumerCounter.getCounter(moduleId) === 0) {
-                // Если на странице больше нет потребителей модуля, то удаляем его ресурсы - скрипты, стили и глобальные переменные
-                cleanup();
-            }
-        }
+        abortSignal?.addEventListener('abort', unmount);
 
         const isModuleResourcesCached =
             resourcesCache === 'single-item' &&
             modulesCache[moduleId]?.[JSON.stringify(getResourcesParams)];
 
-        // Загружаем описание модуля
+        lifecycleHooks.onStart?.(moduleId);
+
         const moduleResources = await getModuleResourcesWithCache(
             getResourcesParams as GetResourcesParams,
-        );
+        ).catch((error) => {
+            lifecycleHooks.onError?.(moduleId, 'fetch-manifest', error);
+            throw error;
+        });
 
         if (!isModuleResourcesCached) {
-            await onBeforeResourcesMount?.(moduleId, moduleResources);
+            await lifecycleHooks.onBeforeResourcesMount?.(moduleId, moduleResources);
 
             await fetchResources({
                 cssTargetNode: resourcesNodes.css,
@@ -184,12 +183,14 @@ export function createModuleLoader<
                 baseUrl: moduleResources.moduleState.baseUrl,
                 abortSignal,
                 disableInlineStyleSafari,
+            }).catch((error) => {
+                lifecycleHooks.onError?.(moduleId, 'fetch-resources', error);
+                throw error;
             });
         }
 
-        await onBeforeModuleMount?.(moduleId, moduleResources);
+        await lifecycleHooks.onBeforeModuleMount?.(moduleId, moduleResources);
 
-        // В зависимости от типа модуля, получаем его контент необходимым способом
         const loadedModule =
             moduleResources.mountMode === 'default'
                 ? await getModule<ModuleExportType>(moduleResources.appName, moduleId, shareScope)
@@ -199,13 +200,17 @@ export function createModuleLoader<
             throw new Error(`Module ${moduleId} is not available`);
         }
 
-        await onAfterModuleMount?.(moduleId, moduleResources, loadedModule);
+        if (isMountableModule(loadedModule)) {
+            wrapMountWithHooks(loadedModule, moduleId, lifecycleHooks);
+        }
+
+        await lifecycleHooks.onAfterModuleMount?.(moduleId, moduleResources, loadedModule);
 
         return {
             unmount: () => {
-                onBeforeModuleUnmount?.(moduleId, moduleResources, loadedModule);
-                moduleUnmount();
-                onAfterModuleUnmount?.(moduleId, moduleResources, loadedModule);
+                lifecycleHooks.onBeforeModuleUnmount?.(moduleId, moduleResources, loadedModule);
+                unmount();
+                lifecycleHooks.onAfterModuleUnmount?.(moduleId, moduleResources, loadedModule);
             },
             module: loadedModule,
             moduleResources,
@@ -213,16 +218,68 @@ export function createModuleLoader<
     };
 }
 
-function validateUsedWebpackVersion() {
-    if (
-        typeof window !== 'undefined' &&
-        typeof (window as typeof window & Record<string, unknown>).webpackJsonp !== 'undefined' &&
-        process.env.NODE_ENV !== 'production'
-    ) {
-        // eslint-disable-next-line no-console
-        console.warn(
-            'Если вы хотите использовать модули - вам надо обновиться до webpack 5/arui-scripts 12.' +
-                'в противном случае вы можете получить совершенно неожиданные ошибки',
-        );
-    }
+function createUnmountHandler(
+    moduleId: string,
+    resourcesNodes: ReturnType<typeof getResourcesTargetNodes>,
+    resourcesCache: 'none' | 'single-item',
+): () => void {
+    return function unmount() {
+        consumerCounter.decrease(moduleId);
+
+        const cleanup = () => {
+            removeModuleResources({
+                moduleId,
+                targetNodes: [resourcesNodes.js, resourcesNodes.css],
+            });
+            cleanGlobal(moduleId);
+        };
+
+        if (resourcesCache === 'single-item') {
+            // если включено кеширование - мы не удаляем ресурсы модуля, но запоминаем как удалить этот модуль
+            addCleanupMethod(moduleId, cleanup);
+
+            return;
+        }
+
+        if (consumerCounter.getCounter(moduleId) === 0) {
+            cleanup();
+        }
+    };
+}
+
+function wrapMountWithHooks(
+    module: MountableModule,
+    moduleId: string,
+    hooks: {
+        onBeforeMountableModuleMount?: ModuleLoaderSimpleHook;
+        onAfterMountableModuleMount?: ModuleLoaderSimpleHook;
+        onError?: ModuleLoaderErrorHook;
+    },
+): void {
+    const originalMount = module.mount;
+
+    // eslint-disable-next-line no-param-reassign -- нам нужно менять сам модуль
+    module.mount = (...args) => {
+        hooks.onBeforeMountableModuleMount?.(moduleId);
+        try {
+            const result = originalMount(...args);
+
+            hooks.onAfterMountableModuleMount?.(moduleId);
+
+            return result;
+        } catch (error) {
+            hooks.onError?.(moduleId, 'mount', error);
+            throw error;
+        }
+    };
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function isMountableModule(module: any): module is MountableModule {
+    return (
+        module?.mount &&
+        typeof module.mount === 'function' &&
+        module?.unmount &&
+        typeof module.unmount === 'function'
+    );
 }
