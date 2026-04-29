@@ -4,8 +4,9 @@ import express from 'express';
 
 import { readAssetsManifest } from '@alfalab/scripts-server';
 
-import icon from './server.png';
 import svgIcon from '../clock.svg';
+
+import icon from './server.png';
 
 const app = express();
 

@@ -3,6 +3,10 @@
     "version": "21.0.4",
     "main": "./build/index.js",
     "typings": "./build/index.d.ts",
+    "exports": {
+        ".": "./build/index.js",
+        "./vitest": "./build/configs/vitest/config.js"
+    },
     "license": "MPL-2.0",
     "repository": {
         "type": "git",
@@ -114,6 +118,8 @@
         "ts-jest": "29.1.0",
         "ts-loader": "9.4.4",
         "ts-node": "10.9.2",
+        "vite-tsconfig-paths": "^6.1.1",
+        "vitest": "^4.1.5",
         "webpack-bundle-analyzer": "4.10.2",
         "webpack-deduplication-plugin": "^0.0.8",
         "webpack-manifest-plugin": "3.2.0",
@@ -147,6 +153,7 @@
     "scripts": {
         "build": "sh bin/build.sh",
         "test": "jest",
+        "test:vitest": "vitest",
         "lint:scripts": "arui-presets-lint scripts",
         "format": "arui-presets-lint format",
         "format:check": "arui-presets-lint format:check",
