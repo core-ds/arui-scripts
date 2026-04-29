@@ -17,8 +17,8 @@
 от папки, содержащей package.json. Так что это может быть как папка в проекте, так и пакет из node_modules).
 
 Сам пакет с пресетами может содержать два файла:
-- `arui-scirpts.config.js` (или `arui-scripts.config.ts`)
-- `arui-scripts.overrides.js` (или `arui-scirpts.overrides.ts`)
+- `arui-scripts.config.js` (или `arui-scripts.config.ts`)
+- `arui-scripts.overrides.js` (или `arui-scripts.overrides.ts`)
 
 ### arui-scripts.config (js | ts)
 С помощью этого файла можно задать любые ключи [конфигурации](settings.md).
