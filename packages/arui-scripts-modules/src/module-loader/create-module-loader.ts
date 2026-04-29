@@ -17,6 +17,7 @@ export type ModuleResourcesGetter<
     ModuleState extends BaseModuleState = BaseModuleState,
 > = (params: GetResourcesRequest<GetResourcesParams>) => Promise<ModuleResources<ModuleState>>;
 export type ModuleLoaderSimpleHook = (moduleId: string) => void;
+export type ModuleLoaderMountHook = (moduleId: string, targetNode: HTMLElement) => void;
 export type ModuleLoaderHook<ModuleState extends BaseModuleState = BaseModuleState> = (
     moduleId: string,
     resources: ModuleResources<ModuleState>,
@@ -36,7 +37,7 @@ export type ModuleLoaderErrorHook = (
     error: unknown,
 ) => void;
 
-type LifecycleHooks<ModuleExportType, ModuleState extends BaseModuleState> = {
+export type LifecycleHooks<ModuleExportType, ModuleState extends BaseModuleState> = {
     /** хук, вызываемый в самом начале загрузки, до любых других событий */
     onStart?: ModuleLoaderSimpleHook;
     /** хук, вызываемый перед подключением ресурсов модуля на страницу */
@@ -46,9 +47,9 @@ type LifecycleHooks<ModuleExportType, ModuleState extends BaseModuleState> = {
     /** хук, вызываемый после того, как модуль был получен */
     onAfterModuleMount?: ModuleLoaderHookWithModule<ModuleExportType, ModuleState>;
     /** хук для монтируемых модулей, будет вызван перед запуском функции mount модуля */
-    onBeforeMountableModuleMount?: ModuleLoaderSimpleHook;
+    onBeforeMountableModuleMount?: ModuleLoaderMountHook;
     /** хук для монтируемых модулей, будет вызван после выполнения функции mount модуля */
-    onAfterMountableModuleMount?: ModuleLoaderSimpleHook;
+    onAfterMountableModuleMount?: ModuleLoaderMountHook;
     /** хук, вызываемый перед удалением ресурсов модуля со страницы */
     onBeforeModuleUnmount?: ModuleLoaderHookWithModule<ModuleExportType, ModuleState>;
     /** хук, вызываем после удаления ресурсов модуля со страницы */
@@ -251,8 +252,8 @@ function wrapMountWithHooks(
     module: MountableModule,
     moduleId: string,
     hooks: {
-        onBeforeMountableModuleMount?: ModuleLoaderSimpleHook;
-        onAfterMountableModuleMount?: ModuleLoaderSimpleHook;
+        onBeforeMountableModuleMount?: ModuleLoaderMountHook;
+        onAfterMountableModuleMount?: ModuleLoaderMountHook;
         onError?: ModuleLoaderErrorHook;
     },
 ): void {
@@ -260,11 +261,11 @@ function wrapMountWithHooks(
 
     // eslint-disable-next-line no-param-reassign -- нам нужно менять сам модуль
     module.mount = (...args) => {
-        hooks.onBeforeMountableModuleMount?.(moduleId);
+        hooks.onBeforeMountableModuleMount?.(moduleId, args[0]);
         try {
             const result = originalMount(...args);
 
-            hooks.onAfterMountableModuleMount?.(moduleId);
+            hooks.onAfterMountableModuleMount?.(moduleId, args[0]);
 
             return result;
         } catch (error) {
