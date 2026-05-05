@@ -21,7 +21,7 @@ import { getEntry } from './util/get-entry';
 import { configs } from './app-configs';
 import { babelDependencies } from './babel-dependencies';
 import { config as babelConf } from './babel-server';
-import { postcssConfig as postcssConf } from './postcss';
+import { serverPostcssConfig as postcssConf } from './postcss';
 import { serverExternalsExemptions } from './server-externals-exemptions';
 import { swcServerConfig } from './swc';
 
