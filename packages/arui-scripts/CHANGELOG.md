@@ -1,5 +1,11 @@
 # arui-scripts
 
+## 21.0.5
+
+### Patch Changes
+
+-   [#480](https://github.com/core-ds/arui-scripts/pull/480) [`54ee0bf`](https://github.com/core-ds/arui-scripts/commit/54ee0bf09c5fae5ff329bdf7394044d2b0aab851) Thanks [@dmitrbrvsk](https://github.com/dmitrbrvsk)! - Отключен autoprefixer в cерверной конфигурации postcss, чтобы CSS modules в server сборке не генерировали предупреждения при таргете `current node`.
+
 ## 21.0.4
 
 ### Patch Changes
