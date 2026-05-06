@@ -7,10 +7,11 @@ import { postCssGlobalVariables } from '../plugins/postcss-global-variables/post
 import { configs as config } from './app-configs';
 
 type PostCssPluginName = string | PluginCreator<unknown>;
-type PostcssPlugin =
+export type PostcssPlugin =
     | string
     | [string, unknown]
-    | { name: string; plugin: PluginCreator<unknown>; options?: unknown };
+    | { name: string; plugin: PluginCreator<unknown>; options?: unknown }
+    | { postcssPlugin: string };
 
 /**
  * Функция для создания конфигурационного файла postcss
