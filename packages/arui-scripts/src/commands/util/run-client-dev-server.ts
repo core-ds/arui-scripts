@@ -1,5 +1,4 @@
 import { types } from 'util';
-import getPort from 'get-port';
 
 import { type Configuration, rspack, type Stats } from '@rspack/core';
 import { RspackDevServer } from '@rspack/dev-server';
@@ -20,6 +19,7 @@ export async function runClientDevServer(configuration: Configuration | Configur
     const HOST = '0.0.0.0';
 
     try {
+        const { default: getPort } = await import('get-port');
         const port = await getPort({
             port: +(DEFAULT_PORT || 0),
             host: HOST,
