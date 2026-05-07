@@ -12,6 +12,7 @@ import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import { RunScriptWebpackPlugin } from 'run-script-webpack-plugin';
 import nodeExternals from 'webpack-node-externals';
 
+import { getLocalIdent } from '../commands/util/get-local-ident';
 import { ReloadServerPlugin } from '../plugins/reload-server-plugin';
 import { WatchMissingNodeModulesPlugin } from '../plugins/watch-missing-node-modules-plugin';
 
@@ -23,7 +24,6 @@ import { config as babelConf } from './babel-server';
 import { serverPostcssConfig as postcssConf } from './postcss';
 import { serverExternalsExemptions } from './server-externals-exemptions';
 import { swcServerConfig } from './swc';
-import { getLocalIdent } from '../commands/util/get-local-ident';
 
 const assetsIgnoreBanner = fs.readFileSync(require.resolve('./util/node-assets-ignore'), 'utf8');
 const sourceMapSupportBanner = fs.readFileSync(

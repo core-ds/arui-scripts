@@ -1,8 +1,8 @@
-import { type RspackDevServer } from '@rspack/dev-server';
+import { type Configuration as DevServerConfiguration } from '@rspack/dev-server';
 
 import { type AppContextWithConfigs } from './types';
 
-type ProxyConfigArrayItem = NonNullable<RspackDevServer['options']['proxy']>[0];
+type ProxyConfigArrayItem = NonNullable<DevServerConfiguration['proxy']>[number];
 
 export function warnAboutDeprecations(config: AppContextWithConfigs) {
     if (!Array.isArray(config.proxy) && config.proxy) {
