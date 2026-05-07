@@ -1,5 +1,11 @@
 # arui-scripts
 
+## 22.0.1
+
+### Patch Changes
+
+-   [#483](https://github.com/core-ds/arui-scripts/pull/483) [`b19bd97`](https://github.com/core-ds/arui-scripts/commit/b19bd97cfc607752f3211968cd83771e7ded2f3c) Thanks [@ngg-dev](https://github.com/ngg-dev)! - Обновление импорта для get-port, так как начиная с версии 6.0.0, данная библиотека полностью переведена на ESM
+
 ## 22.0.0
 
 ### Major Changes
