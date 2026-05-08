@@ -1,5 +1,11 @@
 # arui-scripts
 
+## 22.1.0
+
+### Minor Changes
+
+-   [#426](https://github.com/core-ds/arui-scripts/pull/426) [`48ff487`](https://github.com/core-ds/arui-scripts/commit/48ff487b52a98c8d5d5118c0338bcbd888c6ce55) Thanks [@dmitrbrvsk](https://github.com/dmitrbrvsk)! - добавлена возможность запускать тесты c помощью vitest
+
 ## 22.0.1
 
 ### Patch Changes
