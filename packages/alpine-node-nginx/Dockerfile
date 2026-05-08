@@ -1,5 +1,5 @@
 ARG NODE_VERSION=latest
-ARG ALPINE_VERSION=3.14
+ARG ALPINE_VERSION=3.23
 ARG NODE_BASE_IMAGE=node
 
 # Based on https://github.com/fholzer/docker-nginx-brotli/blob/master/Dockerfile
@@ -144,6 +144,7 @@ RUN \
     # update all packages to latest
     && apk update \
     && apk upgrade --no-cache \
+    && apk add --no-cache --upgrade openssl libcrypto3 libssl3 \
     # update npm to latest version
     && npm install -g npm
 

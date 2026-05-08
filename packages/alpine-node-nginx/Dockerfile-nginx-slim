@@ -1,4 +1,4 @@
-ARG ALPINE_VERSION=3.19
+ARG ALPINE_VERSION=3.23
 
 # Based on https://github.com/fholzer/docker-nginx-brotli/blob/master/Dockerfile
 # this is a build container, target one is in the end
@@ -122,7 +122,8 @@ RUN \
     && ln -sf /dev/stderr /var/log/nginx/error.log \
     # update all packages to latest
     && apk update \
-    && apk upgrade --no-cache
+    && apk upgrade --no-cache \
+    && apk add --no-cache --upgrade openssl libcrypto3 libssl3
 
 COPY nginx.conf /etc/nginx/nginx.conf
 
