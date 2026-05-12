@@ -1,5 +1,11 @@
 # arui-scripts-docker
 
+## 15.2.2
+
+### Patch Changes
+
+-   [#486](https://github.com/core-ds/arui-scripts/pull/486) [`efab87d`](https://github.com/core-ds/arui-scripts/commit/efab87d534dc12cff4fdbd1c111165c08b991417) Thanks [@dmitrbrvsk](https://github.com/dmitrbrvsk)! - обновление версии alpine, добавляем openssl libcrypto3 libssl3
+
 ## 15.2.1
 
 ### Patch Changes
