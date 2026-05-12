@@ -1,5 +1,11 @@
 # arui-scripts-docker
 
+## 15.2.3
+
+### Patch Changes
+
+-   [#492](https://github.com/core-ds/arui-scripts/pull/492) [`44e3c41`](https://github.com/core-ds/arui-scripts/commit/44e3c41095efba487321a25c2e882f9018ef5e7d) Thanks [@dmitrbrvsk](https://github.com/dmitrbrvsk)! - исправление сборки docker образа с alpine v3.23: добавлен CFLAGS для игнорирования предупреждения GCC 15 при сборке nginx
+
 ## 15.2.2
 
 ### Patch Changes
