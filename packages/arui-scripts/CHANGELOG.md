@@ -1,5 +1,11 @@
 # arui-scripts
 
+## 22.2.0
+
+### Minor Changes
+
+-   [#493](https://github.com/core-ds/arui-scripts/pull/493) [`800b5db`](https://github.com/core-ds/arui-scripts/commit/800b5db0b5e2387aed2092ef54bbf01b58f11c50) Thanks [@dmitrbrvsk](https://github.com/dmitrbrvsk)! - добавлен рееэкспорт patchMainWebpackConfigForModules для публичного api, для исправления ошибки ERR_PACKAGE_PATH_NOT_EXPORTED в проектах. если нужна функция patchMainWebpackConfigForModules, то используйте `import { patchMainWebpackConfigForModules } from 'arui-scripts'`
+
 ## 22.1.1
 
 ### Patch Changes
