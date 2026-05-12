@@ -1,5 +1,11 @@
 # arui-scripts
 
+## 22.1.1
+
+### Patch Changes
+
+-   [#495](https://github.com/core-ds/arui-scripts/pull/495) [`3a00087`](https://github.com/core-ds/arui-scripts/commit/3a00087aa6e8ade68f9e5d2781641f33caca50d7) Thanks [@dmitrbrvsk](https://github.com/dmitrbrvsk)! - удален неиспользуемый импорт get-port в файле run-client-dev-server.ts
+
 ## 22.1.0
 
 ### Minor Changes
