@@ -73,10 +73,8 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
     externalsPresets: { node: true },
     externals: [
         nodeExternals({
+            ...configs.nodeExternals,
             allowlist: serverExternalsExemptions,
-            // we cannot determine node_modules location before arui-scripts installation, so just load
-            // dependencies list from package.json
-            modulesFromFile: true,
         }),
     ] as Configuration['externals'],
     optimization: {
