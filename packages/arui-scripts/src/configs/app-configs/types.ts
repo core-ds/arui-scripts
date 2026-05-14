@@ -1,6 +1,7 @@
 import { type DevTool, type Shared } from '@rspack/core';
 import { type Configuration as DevServerConfiguration } from '@rspack/dev-server';
 import { type PluginOptions as ReactCompilerOptions } from 'babel-plugin-react-compiler';
+import type webpackNodeExternals from 'webpack-node-externals';
 
 /**
  * Конфигурация arui-scripts, которая может быть переопределена приложением
@@ -102,6 +103,7 @@ export type AppConfigs = {
         options?: ModuleConfigBase;
         shareScope?: string;
     } | null;
+    nodeExternals?: Omit<webpackNodeExternals.Options, 'allowlist'>;
 };
 
 export type ModuleConfigBase = {

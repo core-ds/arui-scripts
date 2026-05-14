@@ -94,6 +94,9 @@ export function getDefaultAppConfig(): AppConfigs {
         disableModulesSupport: false,
         compatModules: null,
         modules: null,
+        nodeExternals: {
+            modulesFromFile: true,
+        },
     };
 }
 
