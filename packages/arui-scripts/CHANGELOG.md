@@ -1,5 +1,11 @@
 # arui-scripts
 
+## 22.3.0
+
+### Minor Changes
+
+-   [#498](https://github.com/core-ds/arui-scripts/pull/498) [`807e9a8`](https://github.com/core-ds/arui-scripts/commit/807e9a85d8753611c7cfeb7c38fdede28a970901) Thanks [@qrik116](https://github.com/qrik116)! - Добавлена настройка `nodeExternals` для настройки **webpack-node-externals** в конфигурации сервера
+
 ## 22.2.0
 
 ### Minor Changes
