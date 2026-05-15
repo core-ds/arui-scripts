@@ -192,7 +192,7 @@ export function createModuleLoader<
 
         await lifecycleHooks.onBeforeModuleMount?.(moduleId, moduleResources);
 
-        const loadedModule =
+        let loadedModule =
             moduleResources.mountMode === 'default'
                 ? await getModule<ModuleExportType>(moduleResources.appName, moduleId, shareScope)
                 : getCompatModule<ModuleExportType>(moduleId);
@@ -202,7 +202,7 @@ export function createModuleLoader<
         }
 
         if (isMountableModule(loadedModule)) {
-            wrapMountWithHooks(loadedModule, moduleId, lifecycleHooks);
+            loadedModule = wrapMountWithHooks(loadedModule, moduleId, lifecycleHooks);
         }
 
         await lifecycleHooks.onAfterModuleMount?.(moduleId, moduleResources, loadedModule);
@@ -248,30 +248,30 @@ function createUnmountHandler(
     };
 }
 
-function wrapMountWithHooks(
-    module: MountableModule,
+function wrapMountWithHooks<ModuleType extends MountableModule>(
+    module: ModuleType,
     moduleId: string,
     hooks: {
         onBeforeMountableModuleMount?: ModuleLoaderMountHook;
         onAfterMountableModuleMount?: ModuleLoaderMountHook;
         onError?: ModuleLoaderErrorHook;
     },
-): void {
-    const originalMount = module.mount;
+): ModuleType {
+    return {
+        ...module,
+        mount: (...args) => {
+            hooks.onBeforeMountableModuleMount?.(moduleId, args[0]);
+            try {
+                const result = module.mount(...args);
 
-    // eslint-disable-next-line no-param-reassign -- нам нужно менять сам модуль
-    module.mount = (...args) => {
-        hooks.onBeforeMountableModuleMount?.(moduleId, args[0]);
-        try {
-            const result = originalMount(...args);
+                hooks.onAfterMountableModuleMount?.(moduleId, args[0]);
 
-            hooks.onAfterMountableModuleMount?.(moduleId, args[0]);
-
-            return result;
-        } catch (error) {
-            hooks.onError?.(moduleId, 'mount', error);
-            throw error;
-        }
+                return result;
+            } catch (error) {
+                hooks.onError?.(moduleId, 'mount', error);
+                throw error;
+            }
+        },
     };
 }
 
