@@ -1,5 +1,11 @@
 # arui-scripts
 
+## 22.4.0
+
+### Minor Changes
+
+-   [#500](https://github.com/core-ds/arui-scripts/pull/500) [`c8662df`](https://github.com/core-ds/arui-scripts/commit/c8662df4ad59ee602069679ad80b8445513263ac) Thanks [@dmitrbrvsk](https://github.com/dmitrbrvsk)! - добавлен экспорт типа CompatModuleConfig
+
 ## 22.3.0
 
 ### Minor Changes
