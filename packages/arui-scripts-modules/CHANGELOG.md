@@ -1,5 +1,11 @@
 # @alfalab/scripts-modules
 
+## 1.9.2
+
+### Patch Changes
+
+-   [#502](https://github.com/core-ds/arui-scripts/pull/502) [`60a8287`](https://github.com/core-ds/arui-scripts/commit/60a82876e74a82fce1f03a9526d4f7a4c577c2de) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Исправлен баг, который мог ломать default модули, если они не используют default экспорт
+
 ## 1.9.1
 
 ### Patch Changes
