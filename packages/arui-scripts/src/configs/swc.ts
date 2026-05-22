@@ -11,7 +11,7 @@ const swcConfig: Options = {
             tsx: true,
             decorators: true,
         },
-        loose: true,
+        loose: false,
         transform: {
             legacyDecorator: true,
             react: {
