@@ -111,7 +111,7 @@ export const createSingleClientWebpackConfig = (
     configName?: string,
 ): Configuration => ({
     ...(configName ? { name: configName } : {}), // Если добавлять имя конфигурации всегда - могут ломаться оверрайды, которые считают что у дефолтной конфигурации нет имени
-    target: 'web',
+    target: 'browserslist',
     mode: mode === 'dev' ? 'development' : 'production',
     devtool: mode === 'dev' ? configs.devSourceMaps : 'source-map',
     entry: getEntry(entry, getSingleEntry, mode),
