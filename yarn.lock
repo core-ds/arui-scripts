@@ -3539,13 +3539,13 @@ __metadata:
   linkType: hard
 
 "@hapi/wreck@npm:^18.0.1":
-  version: 18.0.1
-  resolution: "@hapi/wreck@npm:18.0.1"
+  version: 18.1.2
+  resolution: "@hapi/wreck@npm:18.1.2"
   dependencies:
     "@hapi/boom": "npm:^10.0.1"
     "@hapi/bourne": "npm:^3.0.0"
     "@hapi/hoek": "npm:^11.0.2"
-  checksum: 10/456b9d056f71bef9cb4449e1d32bbfbdf4d0f010281b1138225050c3eac3e5194b5d57ba3dd7a18d538199b5cc2284343ccd254079a8ac8cf6776b46f1a0addb
+  checksum: 10/a74452ea882acd09c0d6894fb4770f9491465d0d33a4e89917af720245c1efdc43e8f12e161898560466c026734a347191032b9eb2c9b47b63ee33a96a74682d
   languageName: node
   linkType: hard
 
