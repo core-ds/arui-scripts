@@ -12,6 +12,18 @@ export function haveExposedDefaultModules() {
 }
 
 export const MODULES_ENTRY_NAME = 'remoteEntry.js';
+export const MODULES_SEPARATE_BUILD_NAME = 'wmf';
+
+function getModuleFederationContainerName() {
+    return configs.modules?.name || configs.normalizedName;
+}
+
+function getSeparateBuildRuntimeName() {
+    return `${getModuleFederationContainerName().replace(
+        /\W/g,
+        '_',
+    )}_${MODULES_SEPARATE_BUILD_NAME}`;
+}
 
 export function patchMainWebpackConfigForModules(
     webpackConf: rspack.Configuration,
@@ -55,9 +67,19 @@ export function patchMainWebpackConfigForModules(
         ? 'auto' // Для того чтобы модули могли подключаться из разных мест, нам необходимо использовать auto. Для корректной работы в IE надо подключaть https://github.com/amiller-gh/currentScript-polyfill
         : configs.publicPath;
 
+    if (mode === 'provider') {
+        const uniqueName = getSeparateBuildRuntimeName();
+
+        webpackConf.output = {
+            ...webpackConf.output,
+            uniqueName,
+            chunkLoadingGlobal: `rspackChunk${uniqueName}`,
+        };
+    }
+
     webpackConf.plugins.push(
         new rspack.container.ModuleFederationPlugin({
-            name: configs.modules.name || configs.normalizedName,
+            name: getModuleFederationContainerName(),
             filename: isProvider && configs.modules.exposes ? MODULES_ENTRY_NAME : undefined,
             shared:
                 (mode === 'provider' && configs.modules.options?.separateBuildShared) ||
@@ -65,7 +87,7 @@ export function patchMainWebpackConfigForModules(
             exposes: isProvider ? configs.modules.exposes : {},
             shareScope: configs.modules.shareScope,
         }),
-        new TurnOffSplitRemoteEntry(configs.modules.name || configs.normalizedName),
+        new TurnOffSplitRemoteEntry(getModuleFederationContainerName()),
     );
 
     return webpackConf;
