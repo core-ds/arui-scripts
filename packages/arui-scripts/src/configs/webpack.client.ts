@@ -36,7 +36,11 @@ import { configs } from './app-configs';
 import { babelClientConfig as babelConf } from './babel-client';
 import { babelDependencies } from './babel-dependencies';
 import { addEnvToHtmlTemplate, ClientConfigPlugin } from './client-env-config';
-import { patchMainWebpackConfigForModules, patchWebpackConfigForCompat } from './modules';
+import {
+    MODULES_SEPARATE_BUILD_NAME,
+    patchMainWebpackConfigForModules,
+    patchWebpackConfigForCompat,
+} from './modules';
 import { postcssConfig as postcssConf } from './postcss';
 import { processAssetsPluginOutput } from './process-assets-plugin-output';
 import { swcClientConfig } from './swc';
@@ -410,7 +414,7 @@ export const createClientWebpackConfig = (mode: 'dev' | 'prod') => {
         baseWebpackConfig[0] = patchMainWebpackConfigForModules(baseWebpackConfig[0], 'consumer');
         baseWebpackConfig.push(
             patchMainWebpackConfigForModules(
-                createSingleClientWebpackConfig(mode, {}, 'wmf'),
+                createSingleClientWebpackConfig(mode, {}, MODULES_SEPARATE_BUILD_NAME),
                 'provider',
             ),
         );
