@@ -1,5 +1,11 @@
 # arui-scripts
 
+## 23.0.1
+
+### Patch Changes
+
+-   [#513](https://github.com/core-ds/arui-scripts/pull/513) [`fb3dcef`](https://github.com/core-ds/arui-scripts/commit/fb3dcef62e38e71da665175d2aef42fa00b95040) Thanks [@evK608](https://github.com/evK608)! - Исправление конфликта runtime-чанков между основной сборкой и отдельной WMF-сборкой при использовании modules.options.useSeparateBuild
+
 ## 23.0.0
 
 ### Major Changes
