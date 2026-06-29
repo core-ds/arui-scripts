@@ -1,5 +1,5 @@
 import { supportingNode } from '../../configs/supporting-node';
-import { webpackServerConfig as serverConfig } from '../../configs/webpack.server.prod';
+import { webpackServerConfig as serverConfig } from '../../configs/rspack.server.prod';
 import { runServerWatchCompiler } from '../util/run-server-watch-compiler';
 
 process.env.BROWSERSLIST = supportingNode.join(',');

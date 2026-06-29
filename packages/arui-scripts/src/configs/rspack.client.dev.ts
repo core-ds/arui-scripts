@@ -1,7 +1,7 @@
 import { applyOverrides } from './util/apply-overrides';
 import { findLoader } from './util/find-loader';
 import { createFindPluginFunction } from './util/find-plugin';
-import { createClientWebpackConfig, createSingleClientWebpackConfig } from './webpack.client';
+import { createClientWebpackConfig, createSingleClientWebpackConfig } from './rspack.client';
 
 export const config = applyOverrides(
     ['webpack', 'webpackClient', 'webpackDev', 'webpackClientDev'],

@@ -4,7 +4,7 @@ import { type Options as SwcOptions } from '@swc/core';
 
 import { configs } from '../app-configs';
 import { type AppContextWithConfigs } from '../app-configs/types';
-import { type createSingleClientWebpackConfig } from '../webpack.client';
+import { type createSingleClientWebpackConfig } from '../rspack.client';
 
 import { type findLoader } from './find-loader';
 import { type createFindPluginFunction } from './find-plugin';

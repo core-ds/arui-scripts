@@ -1,14 +1,22 @@
+import { type Configuration, type MultiStats, type Stats } from '@rspack/core';
 import chalk from 'chalk';
-import { Configuration, Stats, MultiStats } from '@rspack/core';
-import build from './build-wrapper';
+
+import { webpackClientConfig } from '../../configs/rspack.client.prod';
 import { printAssetsSizes } from '../util/client-assets-sizes';
-import { webpackClientConfig } from '../../configs/webpack.client.prod';
 import { loadBrowserslist } from '../util/load-browserslist';
 import { printBuildError } from '../util/print-build-error';
+
+import build from './build-wrapper';
 
 loadBrowserslist();
 
 console.log(chalk.magenta('Building client...'));
+
+function printOutputSizes(rspackConfig: Configuration, stats: Stats) {
+    console.log(chalk.bold(`Sizes for "${rspackConfig.name || 'main'}"`));
+
+    printAssetsSizes(stats);
+}
 
 async function main() {
     try {
@@ -29,18 +37,12 @@ async function main() {
             console.log(chalk.green('Client compiled successfully.\n'));
         }
 
-        function printOutputSizes(webpackConfig: Configuration, stats: Stats) {
-            console.log(chalk.bold(`Sizes for "${webpackConfig.name || 'main'}"`));
-
-            printAssetsSizes(stats);
-        }
-
         if (Array.isArray(webpackClientConfig)) {
             webpackClientConfig.forEach((conf, index) =>
-                printOutputSizes(conf as any, (stats as MultiStats).stats[index]),
+                printOutputSizes(conf, (stats as MultiStats).stats[index]),
             );
         } else {
-            printOutputSizes(webpackClientConfig as any, stats as Stats);
+            printOutputSizes(webpackClientConfig, stats as Stats);
         }
     } catch (err) {
         console.log(chalk.red('Failed to compile client.\n'));
