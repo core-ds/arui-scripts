@@ -3,7 +3,24 @@ ARUI-scripts
 
 Простой и гибкий инструмент для одновременной сборки клиентской и серверной части react-приложений.
 
+Быстрый старт
+
+===
+
+Самый быстрый способ начать — интерактивный мастер [`create-arui-scripts-app`](../create-arui-scripts-app/README.md):
+
+```bash
+npx create-arui-scripts-app my-app
+cd my-app
+yarn
+yarn start
+```
+
+CLI `arui-scripts` поддерживает глобальные флаги `--help`, `--version` и справку по командам
+`arui-scripts <команда> --help`. Подробнее — в [CLI](docs/cli.md).
+
 Использование
+
 ===
 
 0. Пакет требует использовать следующие версии:
@@ -19,12 +36,15 @@ ARUI-scripts
 ```bash
 yarn add arui-scripts --dev
 ```
+
 или
+
 ```bash
 npm install arui-scripts --save-dev
 ```
 
 2. Создайте необходимые файлы
+
 - `src/index.{js,jsx,ts,tsx}` - входная точка для клиентского приложения.
 - `src/server/index.{js,jsx,tsx}` - входная точка для серверного приложения.
 Если нужен только клиент, смотреть [Режим clientOnly](./docs/client-only.md).
@@ -44,8 +64,11 @@ npm install arui-scripts --save-dev
 3. Используйте команды из `arui-scripts`!
 
 Документация
+
 ===
 - [Список актуальных версий docker-образов](../alpine-node-nginx/README.md)
+- [Генерация проекта (`create-arui-scripts-app`)](../create-arui-scripts-app/README.md)
+- [CLI](docs/cli.md)
 - [Настройки](docs/settings.md)
 - [Команды](docs/commands.md)
 - [Примеры входных точек](docs/examples.md)
