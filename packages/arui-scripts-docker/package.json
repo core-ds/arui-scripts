@@ -1,0 +1,47 @@
+{
+    "name": "@alfalab/scripts-docker",
+    "version": "1.0.0",
+    "description": "Максимально кастомизируемые скрипты и шаблоны для сборки docker-образов приложений, основанных на arui-scripts",
+    "main": "./build/index.js",
+    "typings": "./build/index.d.ts",
+    "bin": {
+        "arui-scripts-docker": "./build/bin/index.js"
+    },
+    "license": "MPL-2.0",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/core-ds/arui-scripts.git"
+    },
+    "bugs": {
+        "url": "https://github.com/core-ds/arui-scripts/issues"
+    },
+    "homepage": "https://github.com/core-ds/arui-scripts/tree/master/packages/arui-scripts-docker#readme",
+    "scripts": {
+        "build": "tsc --project tsconfig.json",
+        "test": "jest",
+        "lint:scripts": "arui-presets-lint scripts",
+        "format": "arui-presets-lint format",
+        "format:check": "arui-presets-lint format:check",
+        "lint": "yarn lint:scripts && yarn format:check",
+        "lint:fix": "yarn lint:scripts --fix && yarn format",
+        "audit": "yarn npm audit --severity high --environment production"
+    },
+    "dependencies": {
+        "fs-extra": "6.0.1",
+        "semver": "^7.5.4",
+        "shelljs": "0.8.5"
+    },
+    "devDependencies": {
+        "@types/fs-extra": "^9.0.13",
+        "@types/jest": "^29.5.14",
+        "@types/node": "^20.19.0",
+        "@types/semver": "^7.5.0",
+        "@types/shelljs": "^0.8.12",
+        "jest": "^29.7.0",
+        "ts-jest": "29.1.0",
+        "typescript": "6.0.2"
+    },
+    "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+    }
+}

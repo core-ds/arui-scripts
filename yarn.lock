@@ -147,6 +147,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@alfalab/scripts-docker@workspace:packages/arui-scripts-docker":
+  version: 0.0.0-use.local
+  resolution: "@alfalab/scripts-docker@workspace:packages/arui-scripts-docker"
+  dependencies:
+    "@types/fs-extra": "npm:^9.0.13"
+    "@types/jest": "npm:^29.5.14"
+    "@types/node": "npm:^20.19.0"
+    "@types/semver": "npm:^7.5.0"
+    "@types/shelljs": "npm:^0.8.12"
+    fs-extra: "npm:6.0.1"
+    jest: "npm:^29.7.0"
+    semver: "npm:^7.5.4"
+    shelljs: "npm:0.8.5"
+    ts-jest: "npm:29.1.0"
+    typescript: "npm:6.0.2"
+  bin:
+    arui-scripts-docker: ./build/bin/index.js
+  languageName: unknown
+  linkType: soft
+
 "@alfalab/scripts-modules@workspace:*, @alfalab/scripts-modules@workspace:packages/arui-scripts-modules":
   version: 0.0.0-use.local
   resolution: "@alfalab/scripts-modules@workspace:packages/arui-scripts-modules"
