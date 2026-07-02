@@ -58,7 +58,7 @@ export function getDefaultAppConfig(): AppConfigs {
         codeLoader: 'swc',
         experimentalReactCompiler: 'disabled',
         installServerSourceMaps: false,
-        disableDevWebpackTypecheck: true,
+        disableDevRspackTypecheck: true,
         jestCodeTransformer: 'swc',
         collectCoverage:
             process.env.NODE_ENV === 'cypress' || process.env.USE_ISTANBUL === 'enabled',

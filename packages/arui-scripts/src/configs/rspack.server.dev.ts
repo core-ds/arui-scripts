@@ -4,7 +4,7 @@ import { createFindPluginFunction } from './util/find-plugin';
 import { createServerConfig } from './rspack.server';
 
 export const webpackServerConfig = applyOverrides(
-    ['webpack', 'webpackServer', 'webpackDev', 'webpackServerDev'],
+    ['rspack', 'rspackServer', 'rspackDev', 'rspackServerDev'],
     createServerConfig('dev'),
     { findLoader, findPlugin: createFindPluginFunction<'server'>() },
 );

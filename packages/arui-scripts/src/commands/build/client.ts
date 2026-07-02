@@ -12,12 +12,6 @@ loadBrowserslist();
 
 console.log(chalk.magenta('Building client...'));
 
-function printOutputSizes(rspackConfig: Configuration, stats: Stats) {
-    console.log(chalk.bold(`Sizes for "${rspackConfig.name || 'main'}"`));
-
-    printAssetsSizes(stats);
-}
-
 async function main() {
     try {
         const { stats, warnings } = await build(webpackClientConfig);
@@ -37,12 +31,18 @@ async function main() {
             console.log(chalk.green('Client compiled successfully.\n'));
         }
 
+        function printOutputSizes(webpackConfig: Configuration, stats: Stats) {
+            console.log(chalk.bold(`Sizes for "${webpackConfig.name || 'main'}"`));
+
+            printAssetsSizes(stats);
+        }
+
         if (Array.isArray(webpackClientConfig)) {
             webpackClientConfig.forEach((conf, index) =>
                 printOutputSizes(conf, (stats as MultiStats).stats[index]),
             );
         } else {
-            printOutputSizes(webpackClientConfig, stats as Stats);
+            printOutputSizes(webpackClientConfig as any, stats as Stats);
         }
     } catch (err) {
         console.log(chalk.red('Failed to compile client.\n'));

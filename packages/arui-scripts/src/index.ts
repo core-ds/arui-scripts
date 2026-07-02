@@ -4,4 +4,7 @@ export type { AppConfigs, CompatModuleConfig, PackageSettings } from './configs/
 export { prepareFilesForDocker } from './commands/util/docker-build';
 export { getBuildParamsFromArgs } from './commands/util/docker-build';
 export { getDockerBuildCommand } from './commands/util/docker-build';
-export { patchMainWebpackConfigForModules } from './configs/modules';
+export {
+    patchMainRspackConfigForModules,
+    patchMainWebpackConfigForModules,
+} from './configs/modules';

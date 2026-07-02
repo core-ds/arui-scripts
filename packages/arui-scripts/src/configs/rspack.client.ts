@@ -38,7 +38,7 @@ import { babelDependencies } from './babel-dependencies';
 import { addEnvToHtmlTemplate, ClientConfigPlugin } from './client-env-config';
 import {
     MODULES_SEPARATE_BUILD_NAME,
-    patchMainWebpackConfigForModules,
+    patchMainRspackConfigForModules,
     patchWebpackConfigForCompat,
 } from './modules';
 import { postcssConfig as postcssConf } from './postcss';
@@ -319,7 +319,7 @@ export const createSingleClientWebpackConfig = (
                 };
             })(),
         ),
-        (mode === 'prod' || !configs.disableDevWebpackTypecheck) &&
+        (mode === 'prod' || !configs.disableDevRspackTypecheck) &&
             configs.tsconfig !== null &&
             configs.codeLoader !== 'tsc' &&
             new TsCheckerRspackPlugin(),
@@ -411,15 +411,15 @@ export const createClientWebpackConfig = (mode: 'dev' | 'prod') => {
     const baseWebpackConfig = [createSingleClientWebpackConfig(mode, configs.clientEntry)];
 
     if (configs.modules?.options?.useSeparateBuild) {
-        baseWebpackConfig[0] = patchMainWebpackConfigForModules(baseWebpackConfig[0], 'consumer');
+        baseWebpackConfig[0] = patchMainRspackConfigForModules(baseWebpackConfig[0], 'consumer');
         baseWebpackConfig.push(
-            patchMainWebpackConfigForModules(
+            patchMainRspackConfigForModules(
                 createSingleClientWebpackConfig(mode, {}, MODULES_SEPARATE_BUILD_NAME),
                 'provider',
             ),
         );
     } else {
-        baseWebpackConfig[0] = patchMainWebpackConfigForModules(baseWebpackConfig[0], 'both');
+        baseWebpackConfig[0] = patchMainRspackConfigForModules(baseWebpackConfig[0], 'both');
     }
 
     const exposedCompatModules = configs.compatModules?.exposes;
