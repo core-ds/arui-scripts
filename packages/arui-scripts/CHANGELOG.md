@@ -1,5 +1,11 @@
 # arui-scripts
 
+## 23.0.2
+
+### Patch Changes
+
+-   [#512](https://github.com/core-ds/arui-scripts/pull/512) [`e2b0ee1`](https://github.com/core-ds/arui-scripts/commit/e2b0ee1d3376e359a7e466de7a5d3c37ed672684) Thanks [@dmitrbrvsk](https://github.com/dmitrbrvsk)! - Исправлен запуск команды `bundle-analyze`. Теперь явно включаются необходимые поля stats для `webpack-bundle-analyzer`, которые больше не попадают в `stats.toJson()` по умолчанию
+
 ## 23.0.1
 
 ### Patch Changes
