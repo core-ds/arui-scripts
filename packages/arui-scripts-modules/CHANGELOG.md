@@ -1,5 +1,11 @@
 # @alfalab/scripts-modules
 
+## 1.10.0
+
+### Minor Changes
+
+-   [#529](https://github.com/core-ds/arui-scripts/pull/529) [`b571769`](https://github.com/core-ds/arui-scripts/commit/b571769407c6fcebdd9a7d0ce505947ad6f5ffcb) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Добавлена поддержка абсолютных адресов ресурсов модулей. Если адрес ресурса содержит абсолютный URL он больше не будет префиксироваться адресом из baseUrl
+
 ## 1.9.2
 
 ### Patch Changes
