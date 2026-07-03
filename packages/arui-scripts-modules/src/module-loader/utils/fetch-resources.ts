@@ -18,6 +18,8 @@ type MountModuleResourcesParams = {
  * Название аттрибута, в который будет записываться moduleId при добавлении ресурсов в DOM
  */
 const DATA_APP_ID_ATTRIBUTE = 'data-parent-app-id';
+const ABSOLUTE_URL_REGEXP = /^(?:[a-z][a-z\d+.-]*:|\/\/)/i;
+const URL_ORIGIN_REGEXP = /^(?:[a-z][a-z\d+.-]*:)?\/\/[^/]+/i;
 
 export async function fetchResources({
     jsTargetNode,
@@ -42,11 +44,11 @@ export async function fetchResources({
         jsTagsAttributes['data-resources-target-selector'] = cssTargetSelector;
     }
 
-    const scriptsUrls = scripts.map((src) => `${urlSegmentWithoutEndSlash(baseUrl)}/${src}`);
-    const stylesUrls = styles.map((src) => `${urlSegmentWithoutEndSlash(baseUrl)}/${src}`);
+    const scriptsUrls = scripts.map((src) => resolveResourceUrl(src, baseUrl));
+    const stylesUrls = styles.map((src) => resolveResourceUrl(src, baseUrl));
 
     const scriptTag = 'script';
-    const styleTag = !disableInlineStyleSafari && isSafari() ? 'link' : 'style';
+    const styleTag = !disableInlineStyleSafari && isSafari() ? 'style' : 'link';
 
     // находим и удяляем ресурсы того же самого модуля, которые были добавлены ранее
     const previouslyAddedScripts = Array.from(
@@ -74,6 +76,26 @@ export async function fetchResources({
             disableInlineStyleSafari,
         }),
     ]);
+}
+
+function resolveResourceUrl(src: string, baseUrl: string) {
+    if (ABSOLUTE_URL_REGEXP.test(src)) {
+        return src;
+    }
+
+    if (!baseUrl) {
+        return src[0] === '/' ? src : `/${src}`;
+    }
+
+    if (ABSOLUTE_URL_REGEXP.test(baseUrl) && src[0] === '/') {
+        const origin = baseUrl.match(URL_ORIGIN_REGEXP)?.[0];
+
+        if (origin) {
+            return `${origin}${src}`;
+        }
+    }
+
+    return `${urlSegmentWithoutEndSlash(baseUrl)}/${src.replace(/^\/+/, '')}`;
 }
 
 type GetTargetNodesParams = {
