@@ -13,6 +13,7 @@ import { PostcssFeatures } from './postcss-features';
 
 import './style.css';
 import styles from './app.module.css';
+import { SuspenseMounter } from '#/module-mounters/suspense-mounter';
 
 type AppState = {
     clickCount: number;
@@ -65,7 +66,8 @@ export class App extends React.Component<object, AppState> {
                 <Typography.Title tag='h2' defaultMargins={true}>
                     Примеры разных способов подключения модулей
                 </Typography.Title>
-                <ModulesTabs />
+                <SuspenseMounter />
+                {/* <ModulesTabs /> */}
             </div>
         );
     }
