@@ -115,6 +115,69 @@ describe('createSsrMounter', () => {
         expect(html).not.toContain('"html"');
     });
 
+    it('uses inline styles by default on the server', async () => {
+        const fetchStyleContent = jest.fn().mockResolvedValue('.a{color:red}');
+        const getModuleResources = jest
+            .fn()
+            .mockResolvedValue(buildResources({ styles: ['static/main.css'] }));
+
+        const { ModuleComponent } = createSsrMounter<RunParams>({
+            moduleId: MODULE_ID,
+            hostAppId: 'host',
+            getModuleResources,
+            fetchStyleContent,
+        });
+
+        const html = await renderServerHtml(
+            <Suspense fallback={<span>loading</span>}>
+                <ModuleComponent instanceId={INSTANCE_ID} ssrRunParams={{ name: 'Vasia' }} />
+            </Suspense>,
+        );
+
+        expect(fetchStyleContent).toHaveBeenCalledWith(
+            'https://module.example.com/app/static/main.css',
+        );
+        expect(html).toContain('<style');
+        expect(html).toContain('data-parent-app-id="ServerStateModule"');
+        expect(html).toContain(
+            'data-module-ssr-href="https://module.example.com/app/static/main.css"',
+        );
+        expect(html).toContain('.a{color:red}');
+        expect(html).not.toContain('rel="stylesheet"');
+    });
+
+    it('can render server styles as stylesheet links', async () => {
+        const fetchStyleContent = jest.fn().mockResolvedValue('.a{color:red}');
+        const getModuleResources = jest
+            .fn()
+            .mockResolvedValue(buildResources({ styles: ['static/main.css'] }));
+
+        const { ModuleComponent } = createSsrMounter<RunParams>({
+            moduleId: MODULE_ID,
+            hostAppId: 'host',
+            getModuleResources,
+            fetchStyleContent,
+            stylesMode: 'link',
+        });
+
+        const html = await renderServerHtml(
+            <Suspense fallback={<span>loading</span>}>
+                <ModuleComponent instanceId={INSTANCE_ID} ssrRunParams={{ name: 'Vasia' }} />
+            </Suspense>,
+        );
+
+        expect(fetchStyleContent).not.toHaveBeenCalled();
+        expect(html).toContain('<link');
+        expect(html).toContain('rel="stylesheet"');
+        expect(html).toContain('type="text/css"');
+        expect(html).toContain('href="https://module.example.com/app/static/main.css"');
+        expect(html).toContain('data-parent-app-id="ServerStateModule"');
+        expect(html).toContain(
+            'data-module-ssr-href="https://module.example.com/app/static/main.css"',
+        );
+        expect(html).not.toContain('.a{color:red}');
+    });
+
     it('hydrates server markup on the client without a second resources request', async () => {
         const getModuleResources = jest.fn().mockResolvedValue(buildResources());
         const module = {

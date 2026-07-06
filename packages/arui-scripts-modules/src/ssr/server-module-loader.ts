@@ -3,6 +3,13 @@ import { type BaseModuleState, type ModuleResources } from '../module-loader/typ
 import { resolveResourceUrl } from '../module-loader/utils/fetch-resources';
 
 /**
+ * Как хост-сервер отдаёт стили SSR-модуля.
+ * inline — скачивает CSS и встраивает его в <style>.
+ * link — отдаёт <link rel="stylesheet"> без server-to-server скачивания CSS.
+ */
+export type StylesMode = 'inline' | 'link';
+
+/**
  * Функция, скачивающая содержимое css-файла модуля (server-to-server) для инлайна
  * в HTML. По умолчанию — глобальный `fetch` (Node 18+).
  */
@@ -17,6 +24,8 @@ export type InlineStyle = {
 
 export type ServerModulePayload<ModuleState extends BaseModuleState = BaseModuleState> = {
     resources: ModuleResources<ModuleState>;
+    /** resolved URL стилей — используются для inline и link SSR-вывода */
+    styleUrls: string[];
     inlineStyles: InlineStyle[];
 };
 
@@ -27,6 +36,7 @@ type LoadServerModuleParams<GetResourcesParams, ModuleState extends BaseModuleSt
     ssrRunParams: unknown;
     getModuleResources: ModuleResourcesGetter<GetResourcesParams, ModuleState>;
     fetchStyleContent: FetchStyleContent;
+    stylesMode: StylesMode;
     signal?: AbortSignal;
 };
 
@@ -74,6 +84,7 @@ export async function loadServerModule<
     ssrRunParams,
     getModuleResources,
     fetchStyleContent,
+    stylesMode,
     signal,
 }: LoadServerModuleParams<GetResourcesParams, ModuleState>): Promise<
     ServerModulePayload<ModuleState>
@@ -91,18 +102,22 @@ export async function loadServerModule<
     const { baseUrl } = resources.moduleState;
     const styleUrls = resources.styles.map((src) => resolveResourceUrl(src, baseUrl));
 
-    const inlineStyles = await Promise.all(
-        styleUrls.map(async (href): Promise<InlineStyle | null> => {
-            try {
-                return { href, content: await fetchStyleContent(href) };
-            } catch {
-                return null;
-            }
-        }),
-    );
+    const inlineStyles =
+        stylesMode === 'inline'
+            ? await Promise.all(
+                  styleUrls.map(async (href): Promise<InlineStyle | null> => {
+                      try {
+                          return { href, content: await fetchStyleContent(href) };
+                      } catch {
+                          return null;
+                      }
+                  }),
+              )
+            : [];
 
     return {
         resources,
+        styleUrls,
         inlineStyles: inlineStyles.filter((style): style is InlineStyle => style !== null),
     };
 }
