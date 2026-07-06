@@ -56,7 +56,7 @@ const tabs = {
         title: 'Suspense mounter',
         description: 'Монтирование модулей с помощью react.lazy',
         component: SuspenseMounter,
-    }
+    },
 } as const;
 
 type TabId = keyof typeof tabs;
