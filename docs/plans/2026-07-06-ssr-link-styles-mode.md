@@ -116,13 +116,6 @@ yarn workspace @alfalab/scripts-modules test src/ssr/__tests__/create-ssr-mounte
 
 Expected: fail with a TypeScript or runtime error around unknown `stylesMode`, and/or missing `<link rel="stylesheet">` output.
 
-- [ ] **Step 4: Commit the failing tests**
-
-```bash
-git add packages/arui-scripts-modules/src/ssr/__tests__/create-ssr-mounter.tests.tsx
-git commit -m "test: cover ssr stylesheet link mode"
-```
-
 ### Task 2: Add Styles Mode To The Server Loader
 
 **Files:**
@@ -224,12 +217,11 @@ yarn workspace @alfalab/scripts-modules test src/ssr/__tests__/create-ssr-mounte
 
 Expected: still fail because `createSsrMounter` does not expose/pass `stylesMode` and does not render link tags yet.
 
-- [ ] **Step 5: Commit the server loader change**
+- [ ] **Step 5: Keep the failing state uncommitted**
 
-```bash
-git add packages/arui-scripts-modules/src/ssr/server-module-loader.ts
-git commit -m "feat: prepare ssr server loader for link styles"
-```
+Do not commit yet. The failing tests from Task 1 are intentional TDD feedback, and this
+intermediate server-loader state still does not pass the focused SSR mounter test. Continue to
+Task 3 and commit once the mounter implementation makes the test pass.
 
 ### Task 3: Render Link Styles From createSsrMounter
 
@@ -332,11 +324,11 @@ yarn workspace @alfalab/scripts-modules test src/ssr/__tests__/create-ssr-mounte
 
 Expected: pass.
 
-- [ ] **Step 7: Commit the mounter implementation**
+- [ ] **Step 7: Commit the passing mounter implementation**
 
 ```bash
 git add packages/arui-scripts-modules/src/ssr/create-ssr-mounter.tsx packages/arui-scripts-modules/src/ssr/server-module-loader.ts packages/arui-scripts-modules/src/ssr/__tests__/create-ssr-mounter.tests.tsx
-git commit -m "feat: add ssr stylesheet link mode"
+git commit -m "feat(ssr): add stylesheet link mode"
 ```
 
 ### Task 4: Confirm Client Adoption Covers SSR Links
@@ -398,7 +390,7 @@ Expected: pass without production code changes because link adoption already exi
 
 ```bash
 git add packages/arui-scripts-modules/src/module-loader/utils/__tests__/fetch-resources.tests.ts
-git commit -m "test: cover adopted ssr stylesheet links"
+git commit -m "test(ssr): cover adopted stylesheet links"
 ```
 
 ### Task 5: Update SSR Documentation And Changeset
@@ -494,7 +486,7 @@ Expected: no matches.
 
 ```bash
 git add packages/arui-scripts-modules/docs/ssr-spec.md packages/arui-scripts-modules/README.md .changeset/ssr-link-styles-mode.md
-git commit -m "docs: document ssr stylesheet link mode"
+git commit -m "docs(ssr): document stylesheet link mode"
 ```
 
 ### Task 6: Final Verification
@@ -529,8 +521,8 @@ Expected: pass or only pre-existing unrelated failures. Any failure in touched f
 - [ ] **Step 4: Inspect final diff**
 
 ```bash
-git diff --stat HEAD~4..HEAD
-git diff HEAD~4..HEAD -- packages/arui-scripts-modules/src/ssr packages/arui-scripts-modules/src/module-loader/utils packages/arui-scripts-modules/docs/ssr-spec.md packages/arui-scripts-modules/README.md .changeset/ssr-link-styles-mode.md
+git diff --stat HEAD~3..HEAD
+git diff HEAD~3..HEAD -- packages/arui-scripts-modules/src/ssr packages/arui-scripts-modules/src/module-loader/utils packages/arui-scripts-modules/docs/ssr-spec.md packages/arui-scripts-modules/README.md .changeset/ssr-link-styles-mode.md
 ```
 
 Expected: changes are limited to SSR link mode implementation, tests, docs, and changeset.
