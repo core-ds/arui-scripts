@@ -218,7 +218,7 @@ describe('fetchResources — SSR style adoption', () => {
         expect(document.head.contains(freshSsrStyle)).toBe(true);
     });
 
-    it('should await an adopted <link> style until it loads', async () => {
+    it('should adopt an SSR <link> style, wait until it loads, and not add duplicates', async () => {
         const ssrLink = appendSsrStyle('/static/css/main.css', 'link') as HTMLLinkElement;
 
         let resolved = false;
@@ -243,6 +243,13 @@ describe('fetchResources — SSR style adoption', () => {
 
         expect(resolved).toBe(true);
         expect(document.head.contains(ssrLink)).toBe(true);
+        const ssrLinks = document.head.querySelectorAll(
+            `link[${DATA_APP_ID_ATTRIBUTE}="${MODULE_ID}"][${MODULE_SSR_HREF_ATTRIBUTE}]`,
+        );
+
+        expect(ssrLinks).toHaveLength(1);
+        expect(ssrLinks[0]).toBe(ssrLink);
+        expect(stylesFetcher).toHaveBeenCalledWith(expect.objectContaining({ urls: [] }));
     });
 
     it('should not treat scripts as adoptable', async () => {
