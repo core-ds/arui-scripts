@@ -434,3 +434,74 @@ Each phase is independently releasable (changesets, minor versions).
    example code) are auto-import mistakes, not a supported surface, and are not preserved — the
    example is fixed as part of Phase 4. The `ssr` subpath keeps Node-only code (server CSS
    fetching, payload serialization) out of client bundles without relying on tree-shaking.
+4. **`createSsrMounter` builds the client loader itself (supersedes the §5.3 signature).**
+   Instead of accepting a pre-built `loader`, the factory takes `getModuleResources` +
+   `moduleId` + `hostAppId` (+ the loader options) and constructs the client loader internally,
+   wrapping the fetcher in `createEmbeddedModuleFetcher`. Rationale: the whole point is that the
+   client skips the resources request; a caller-supplied loader built with the plain network
+   fetcher would silently re-request. Making the wiring internal makes "no duplicate request"
+   impossible to get wrong. A caller-supplied loader could be added later as a power-user escape
+   hatch. The §5.3 example (passing `loader` + `getModuleResources`) is therefore out of date.
+
+## 11. Deferred in Phase 3 — return here later
+
+These were consciously **not** implemented in the first `createSsrMounter` cut. None block the
+core goal (server render + client hydrate with no duplicate resources request); each is isolated
+enough to add without reworking what shipped.
+
+### 11.1 `fallback?: ReactNode` factory option (§5.3) — deferred
+
+**What it was meant to do:** render `fallback` when SSR is disabled or the server render failed,
+instead of surfacing an error.
+
+**Why deferred — the hydration-consistency problem.** If the server renders `fallback` (a
+different subtree than the normal outlet+payload+styles wrapper), then on the client there is no
+`data-module-ssr-root` element to snapshot and no embedded payload to read. The client component
+would render its normal wrapper → **hydration mismatch** against the server's `fallback` markup,
+and worse, no payload means the client silently falls back to a network request (defeating the
+point). Making `fallback` correct means the server and client must agree on rendering `fallback`
+*and* the client must then transition from fallback → mounted module in a hydration-safe way —
+essentially a second, parallel outlet/handoff path. That's real design work, not a small add.
+
+**What ships instead:** no `fallback` prop. Errors during the server resource read propagate to
+the host's own error boundary; the host wraps the module in its own `<Suspense fallback>` (for the
+pending state) and error boundary (for failure). This is idiomatic React 18 and covers the common
+cases. Note the module server's `ssrErrorMode: 'fallback'` (§5.1) already turns a *module-render*
+failure into a normal response with no `html` (→ client-side mount, no error), so the mounter-level
+`fallback` is only needed for hard resource-fetch failures.
+
+**When picking this up:** decide whether `fallback` is (a) purely a host concern (document
+"wrap in your own error boundary", possibly drop the prop from the spec), or (b) a real
+server↔client handoff to build. If (b): render `fallback` inside the same `data-module-ssr-root`
+wrapper on both sides, emit a payload marker that says "SSR fallback, mount fresh on client", and
+have the client clear the fallback and `mount()` (never `hydrate()`).
+
+### 11.2 Server suspense cache is process-global, not per-request
+
+`suspense-resource-cache.ts` keys entries by `moduleId + instanceId + params + ssrRunParams` in a
+module-level `Map`, and evicts each entry on a microtask right after it is read (just long enough
+to survive the throw-promise → retry cycle within one render). Consequences:
+
+- **Cross-request sharing edge case:** two requests rendering concurrently with an *identical*
+  cache key can share one in-flight fetch. That's correct only if `moduleState` is a pure function
+  of the key. If `moduleState` depends on request context **not** captured in `params`/`ssrRunParams`
+  (auth headers, cookies, locale from the request), concurrent identical-keyed requests could leak
+  one request's state into another. Documented contract (§4.3) already requires render output to
+  depend only on the serializable params + `moduleState`; this makes that a hard requirement for
+  SSR, not just a recommendation.
+- **No abort wiring (§9 "abort/timeout on the host server"):** the cache entry does not reject on
+  the host render's abort signal, so a `renderToPipeableStream({ ... }).abort()` can leave a pending
+  resources fetch running (it just resolves into a soon-to-be-evicted entry). Not a correctness bug
+  for the response, but a potential dangling request.
+
+**When picking this up:** the clean fix is a **per-request cache** rather than a module-global one —
+e.g. pass a cache object via React context that the host creates per request, or adopt React 19's
+`cache()` / `use()` once we can rely on it. That also gives a natural place to thread the render's
+`AbortSignal` into `getModuleResources` so aborts cancel in-flight fetches.
+
+### 11.3 `<link>`-mode style adoption is implemented but unused
+
+The Phase 2 adoption logic (`fetch-resources.ts`) already handles both `<style>` and `<link>`
+server-emitted tags, but `createSsrMounter` only ever emits inline `<style>` (decision 2). The
+`<link>` path is dead until `stylesMode: 'link'` ships; it's kept so that adding the mode later
+needs no client change.
