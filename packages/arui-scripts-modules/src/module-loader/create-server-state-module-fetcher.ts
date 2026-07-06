@@ -17,27 +17,24 @@ export function createServerStateModuleFetcher<GetResourcesParams = undefined>({
     baseUrl,
     headers = {},
 }: CreateServerResourcesFetcherParams): ModuleResourcesGetter<GetResourcesParams, BaseModuleState> {
-    return async function fetchServerResources(params) {
+    return async function fetchServerResources(params, options) {
         const { relativePath, method } = getServerStateModuleFetcherParams();
         const url = `${urlSegmentWithoutEndSlash(baseUrl)}${relativePath}`;
 
-        return new Promise((resolve, reject) => {
-            const xhr = new XMLHttpRequest();
-
-            xhr.open(method, url, true);
-            xhr.setRequestHeader('Content-Type', 'application/json');
-            Object.keys(headers).forEach((headerName) => {
-                xhr.setRequestHeader(headerName, headers[headerName]);
-            });
-            xhr.onload = () => {
-                if (xhr.status === 200) {
-                    resolve(JSON.parse(xhr.responseText));
-                } else {
-                    reject(new Error(xhr.statusText));
-                }
-            };
-            xhr.onerror = () => reject(new Error(xhr.statusText));
-            xhr.send(JSON.stringify(params));
+        const response = await fetch(url, {
+            method,
+            headers: {
+                'Content-Type': 'application/json',
+                ...headers,
+            },
+            body: JSON.stringify(params),
+            signal: options?.signal,
         });
+
+        if (!response.ok) {
+            throw new Error(response.statusText);
+        }
+
+        return response.json();
     };
 }

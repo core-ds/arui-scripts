@@ -55,11 +55,14 @@ describe('createModuleLoader', () => {
 
         await loader({ getResourcesParams: 'paramsToGetResources' });
 
-        expect(getModuleResources).toHaveBeenCalledWith({
-            moduleId: 'test',
-            hostAppId: 'test',
-            params: 'paramsToGetResources',
-        });
+        expect(getModuleResources).toHaveBeenCalledWith(
+            {
+                moduleId: 'test',
+                hostAppId: 'test',
+                params: 'paramsToGetResources',
+            },
+            { signal: undefined },
+        );
     });
 
     describe('deprecated hooks format', () => {
