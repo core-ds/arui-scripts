@@ -101,4 +101,49 @@ describe('createLazyMounter', () => {
             useShadowDom: false,
         });
     });
+
+    it('should call update instead of re-mount on runParams change when supported', async () => {
+        const mockUpdate = jest.fn();
+        const updatableLoader = jest.fn().mockResolvedValue({
+            module: { mount: mockMount, update: mockUpdate },
+            moduleResources: { moduleState: { testState: 'mockState' } },
+        });
+
+        const mounter = createLazyMounter({ loader: updatableLoader });
+        const { default: Component } = await mounter();
+
+        const { rerender } = render(<Component value='a' />);
+
+        await waitFor(() => {
+            expect(mockMount).toHaveBeenCalledTimes(1);
+        });
+
+        rerender(<Component value='b' />);
+
+        await waitFor(() => {
+            expect(mockUpdate).toHaveBeenCalledWith(
+                expect.any(HTMLDivElement),
+                { value: 'b' },
+                { testState: 'mockState' },
+            );
+        });
+        expect(mockMount).toHaveBeenCalledTimes(1);
+    });
+
+    it('should re-mount on runParams change when update is not supported', async () => {
+        const mounter = createLazyMounter({ loader: mockLoader });
+        const { default: Component } = await mounter();
+
+        const { rerender } = render(<Component value='a' />);
+
+        await waitFor(() => {
+            expect(mockMount).toHaveBeenCalledTimes(1);
+        });
+
+        rerender(<Component value='b' />);
+
+        await waitFor(() => {
+            expect(mockMount).toHaveBeenCalledTimes(2);
+        });
+    });
 });
