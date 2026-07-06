@@ -323,10 +323,24 @@ export const Page = () => {
 | нет, есть payload | не важно | ресурсы берутся из payload, вызывается `mount()` |
 | нет payload | не важно | обычная клиентская загрузка с сетевым `getModuleResources` |
 
-Стили SSR-модуля в текущей версии инлайнятся в HTML хоста как `<style>` рядом с разметкой
+По умолчанию стили SSR-модуля инлайнятся в HTML хоста как `<style>` рядом с разметкой
 модуля. Это устраняет FOUC при React 18 streaming: Suspense-boundary раскрывается вместе с
-готовыми стилями. Режим `<link rel="stylesheet">` запланирован как follow-up; клиентская логика
-уже умеет переиспользовать серверные `<style>` и `<link>` теги, помеченные SSR-атрибутами.
+готовыми стилями.
+
+Если хосту важнее меньший HTML и browser cache для CSS, можно включить link-режим:
+
+```tsx
+const { ModuleComponent } = createSsrMounter({
+    moduleId: 'ServerStateModule',
+    hostAppId: 'host',
+    getModuleResources,
+    stylesMode: 'link',
+});
+```
+
+В этом режиме сервер отдаёт `<link rel="stylesheet" type="text/css">` с SSR-атрибутами.
+Клиент переиспользует эти теги и не добавляет дубликаты. На React 18 Suspense-boundary может
+раскрыться до окончания загрузки CSS, поэтому `inline` остаётся значением по умолчанию.
 
 Для автора модуля миграция состоит из трёх шагов:
 

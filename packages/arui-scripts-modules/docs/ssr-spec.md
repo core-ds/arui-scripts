@@ -258,18 +258,18 @@ changing its client behavior.
 
 The whole point of SSR is first paint without flashes, so style delivery is part of the spec:
 
-- **v1 behavior: inline styles (the only mode).** The host-server part of the mounter fetches
+- **Default behavior: inline styles.** The host-server part of the mounter fetches
   the CSS files listed in `resources.styles` (server-to-server, cacheable) and emits them as
   `<style data-parent-app-id={moduleId} data-module-ssr-href={resolvedUrl}>...</style>`
   inside the same streamed chunk as the module HTML. With React 18 streaming, Suspense content
   is revealed atomically with its inline styles → no FOUC, no reliance on `<link>` load timing.
-- **Follow-up (out of scope for v1, documented in README): `stylesMode: 'link'`.** Would emit
-  `<link rel="stylesheet" href=... data-parent-app-id=... data-module-ssr-href=...>` instead
-  (smaller HTML, browser-cacheable, but the reveal may briefly precede stylesheet load on
-  React 18). On React 19 hosts these links could use `precedence`, letting React block reveal
-  until the sheet loads. The `stylesMode` option is not exposed until this ships (decision 2,
-  section 10). The adoption logic (6.2) already handles both `<style>` and `<link>` tags, so
-  adding the mode later requires no client changes.
+- **Opt-in behavior: `stylesMode: 'link'`.** The host-server part of the mounter emits
+  `<link rel="stylesheet" type="text/css" href=... data-parent-app-id=... data-module-ssr-href=...>`
+  instead of downloading CSS and embedding it into `<style>`. This keeps HTML smaller and lets
+  the browser reuse its HTTP cache, but on React 18 the Suspense boundary may be revealed before
+  the stylesheet finishes loading. Use this mode only when that tradeoff is acceptable for the
+  host. The client adoption logic (6.2) keeps these server links in place and waits for `sheet`
+  or `load` before mounting/hydrating the module.
 - Server-fetched CSS is cached in-process keyed by URL (module asset URLs are content-hashed).
 
 ### 5.5 Embedded payload format
@@ -395,7 +395,7 @@ Each phase is independently releasable (changesets, minor versions).
 - Fix the `@alfalab/scripts-modules/src/...` deep import in example code (unsupported surface,
   see section 10, decision 3).
 - README: new "Серверный рендеринг модулей" section: contracts, matrix from 6.3, serializable
-  runParams rule, inline-styles behavior (with `stylesMode: 'link'` noted as planned follow-up),
+  runParams rule, inline-styles behavior and opt-in `stylesMode: 'link'` tradeoffs,
   migration notes for module authors (3 steps: implement `renderToHtml`, export `hydrate`,
   export `update`).
 - validate-build tests in both examples covering the SSR round-trip.
@@ -424,10 +424,10 @@ Each phase is independently releasable (changesets, minor versions).
 
 1. **Naming: `createSsrMounter`.** A separate factory; `createLazyMounter` stays small and
    client-only (it only gains the Phase 0 server guard).
-2. **`stylesMode: 'link'` + React 19 `precedence` are out of scope for the first release.**
-   Inline styles are the only mode in v1 (they alone satisfy the no-FOUC goal). The `link` mode
-   is documented in the README as a planned follow-up; the `stylesMode` option is not exposed
-   until it exists, so no API is reserved-but-broken.
+2. **`stylesMode: 'link'` is opt-in; inline remains the default.** Inline styles remain the
+   default because they best satisfy the no-FOUC goal on React 18 streaming. Link mode is exposed
+   for hosts that prefer smaller HTML and browser-cacheable stylesheets and accept the stylesheet
+   load timing tradeoff.
 3. **Server-only host code ships via the `@alfalab/scripts-modules/ssr` subpath export.**
    Requires adding an `exports` map to package.json: `"."` mapping to today's `main`/`module`/
    `typings`, plus `"./ssr"`. Deep imports like `@alfalab/scripts-modules/src/...` (seen once in
@@ -499,9 +499,9 @@ e.g. pass a cache object via React context that the host creates per request, or
 `cache()` / `use()` once we can rely on it. That also gives a natural place to thread the render's
 `AbortSignal` into `getModuleResources` so aborts cancel in-flight fetches.
 
-### 11.3 `<link>`-mode style adoption is implemented but unused
+### 11.3 `<link>`-mode style adoption
 
-The Phase 2 adoption logic (`fetch-resources.ts`) already handles both `<style>` and `<link>`
-server-emitted tags, but `createSsrMounter` only ever emits inline `<style>` (decision 2). The
-`<link>` path is dead until `stylesMode: 'link'` ships; it's kept so that adding the mode later
-needs no client change.
+The Phase 2 adoption logic (`fetch-resources.ts`) handles both `<style>` and `<link>` tags with
+`data-module-ssr-href`. Inline mode emits loaded `<style>` tags. Link mode emits stylesheet links;
+the client keeps matching links in place, waits for `link.sheet`/`load` with the existing timeout,
+and avoids appending duplicate stylesheet tags.
