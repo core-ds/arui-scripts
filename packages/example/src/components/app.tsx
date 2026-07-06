@@ -5,6 +5,7 @@ import { Gap } from '@alfalab/core-components/gap';
 import { Typography } from '@alfalab/core-components/typography';
 
 import { ModulesTabs } from '#/components/modules-tabs';
+import { SuspenseMounter } from '#/module-mounters/suspense-mounter';
 
 import { isSmaller } from '../utils';
 
@@ -13,7 +14,6 @@ import { PostcssFeatures } from './postcss-features';
 
 import './style.css';
 import styles from './app.module.css';
-import { SuspenseMounter } from '#/module-mounters/suspense-mounter';
 
 type AppState = {
     clickCount: number;
@@ -67,7 +67,7 @@ export class App extends React.Component<object, AppState> {
                     Примеры разных способов подключения модулей
                 </Typography.Title>
                 <SuspenseMounter />
-                {/* <ModulesTabs /> */}
+                <ModulesTabs />
             </div>
         );
     }

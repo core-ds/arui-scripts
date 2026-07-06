@@ -8,14 +8,14 @@ import { unwrapDefaultExport } from '../utils/unwrap-default-export';
 jest.mock('../hooks/use-module-mount-target');
 jest.mock('../utils/unwrap-default-export');
 
-const mockUseModuleMountTarget = useModuleMountTarget as jest.MockedFunction<typeof useModuleMountTarget>;
-const mockUnwrapDefaultExport = unwrapDefaultExport as jest.MockedFunction<typeof unwrapDefaultExport>;
+const mockUseModuleMountTarget = useModuleMountTarget as jest.Mock;
+const mockUnwrapDefaultExport = unwrapDefaultExport as jest.Mock;
 
 describe('createLazyMounter', () => {
     const mockMount = jest.fn();
     const mockLoader = jest.fn().mockResolvedValue({
         module: { mount: mockMount },
-        moduleResources: { moduleState: { testState: 'mockState' } }
+        moduleResources: { moduleState: { testState: 'mockState' } },
     });
 
     beforeEach(() => {
@@ -25,7 +25,7 @@ describe('createLazyMounter', () => {
             afterTargetMountCallback: jest.fn(),
             cssTargetSelector: 'head',
         });
-        mockUnwrapDefaultExport.mockImplementation((mod) => mod);
+        mockUnwrapDefaultExport.mockImplementation((mod: unknown) => mod);
     });
 
     it('should load module and mount it with correct parameters', async () => {
@@ -34,7 +34,7 @@ describe('createLazyMounter', () => {
 
         const mounter = createLazyMounter({
             loader: mockLoader,
-            loaderParams
+            loaderParams,
         });
 
         const { default: Component } = await mounter();
@@ -44,13 +44,11 @@ describe('createLazyMounter', () => {
         await waitFor(() => {
             expect(mockLoader).toHaveBeenCalledWith({
                 getResourcesParams: loaderParams,
-                useShadowDom: false
+                useShadowDom: false,
             });
-            expect(mockMount).toHaveBeenCalledWith(
-                expect.any(HTMLDivElement),
-                runParams,
-                { testState: 'mockState' }
-            );
+            expect(mockMount).toHaveBeenCalledWith(expect.any(HTMLDivElement), runParams, {
+                testState: 'mockState',
+            });
         });
     });
 
@@ -58,15 +56,18 @@ describe('createLazyMounter', () => {
         const moduleWithDefault = { default: { mount: mockMount } };
         const specialLoader = jest.fn().mockResolvedValue({
             module: moduleWithDefault,
-            moduleResources: { moduleState: {} }
+            moduleResources: { moduleState: {} },
         });
 
-        mockUnwrapDefaultExport.mockImplementation((module) => (module as { default: unknown }).default);
+        mockUnwrapDefaultExport.mockImplementation(
+            (module: unknown) => (module as { default: unknown }).default,
+        );
 
         const mounter = createLazyMounter({ loader: specialLoader });
         const { default: Component } = await mounter();
 
-        render(<Component {...{}} />);
+        const emptyParams: Record<string, unknown> = {};
+        render(<Component {...emptyParams} />);
 
         await waitFor(() => {
             expect(mockUnwrapDefaultExport).toHaveBeenCalledWith(moduleWithDefault);
@@ -84,7 +85,8 @@ describe('createLazyMounter', () => {
         const mounter = createLazyMounter({ loader: mockLoader });
         const { default: Component } = await mounter();
 
-        render(<Component {...{}} />);
+        const emptyParams: Record<string, unknown> = {};
+        render(<Component {...emptyParams} />);
 
         expect(mockMount).not.toHaveBeenCalled();
     });
@@ -96,7 +98,7 @@ describe('createLazyMounter', () => {
 
         expect(mockLoader).toHaveBeenCalledWith({
             getResourcesParams: undefined,
-            useShadowDom: false
+            useShadowDom: false,
         });
     });
 });

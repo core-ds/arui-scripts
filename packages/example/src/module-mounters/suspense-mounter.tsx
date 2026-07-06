@@ -6,7 +6,7 @@ import {
     createLazyMounter,
     createModuleLoader,
     createServerStateModuleFetcher,
-    MountableModule,
+    type MountableModule,
 } from '@alfalab/scripts-modules';
 
 type ModuleRunParams = {
@@ -27,22 +27,19 @@ export const SuspenseMounter = () => {
 
     return (
         <Underlay
-            padding="m"
-            backgroundColor="info"
-            shadow="shadow-s"
-            borderSize={ 1 }
-            borderRadius="m"
+            padding='m'
+            backgroundColor='info'
+            shadow='shadow-s'
+            borderSize={1}
+            borderRadius='m'
         >
             <div>
-                <button
-                    type="button"
-                    onClick={() => setCounter((prevState) => prevState + 1)}
-                >
+                <button type='button' onClick={() => setCounter((prevState) => prevState + 1)}>
                     Change run params
                 </button>
 
-                <Suspense fallback={ <Spinner/> }>
-                    <LazyModule name="Vasia" counter={counter}/>
+                <Suspense fallback={<Spinner />}>
+                    <LazyModule name='Vasia' counter={counter} />
                 </Suspense>
             </div>
         </Underlay>
