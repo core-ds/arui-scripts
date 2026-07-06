@@ -6,7 +6,7 @@ export const ServerStateModule = (props: {
     runParams: Record<string, unknown>;
     serverState: Record<string, unknown>;
 }) => (
-    <div>
+    <div className='my-prefix'>
         <h1>ServerStateModule</h1>
 
         <p>Данные, полученные из сервера:</p>
