@@ -2,12 +2,15 @@ import { type GetResourcesRequest, type ModuleResources } from '@alfalab/scripts
 
 import { getAppManifest, readAssetsManifest } from '../read-assets-manifest';
 
-import { type ModulesConfig } from './types';
+import { type CreateGetModulesMethodOptions, type ModulesConfig } from './types';
 
 export function createGetModulesMethod<
     FrameworkParams extends unknown[] = [],
     GetResourcesParams = void,
->(modules: ModulesConfig<FrameworkParams, GetResourcesParams>) {
+>(
+    modules: ModulesConfig<FrameworkParams, GetResourcesParams>,
+    { ssrErrorMode = 'fallback' }: CreateGetModulesMethodOptions = {},
+) {
     const assets: Record<string, Awaited<ReturnType<typeof readAssetsManifest>>> = {};
 
     return {
@@ -42,17 +45,45 @@ export function createGetModulesMethod<
 
             const moduleRunParams = await module.getModuleState(getResourcesRequest, ...params);
 
+            const moduleState = {
+                ...moduleRunParams,
+                hostAppId: getResourcesRequest.hostAppId,
+            };
+
+            let html: string | undefined;
+
+            if (getResourcesRequest.ssr && module.renderToHtml) {
+                try {
+                    html = await module.renderToHtml(
+                        {
+                            moduleState,
+                            ssrRunParams: getResourcesRequest.ssr.runParams,
+                            getResourcesRequest,
+                        },
+                        ...params,
+                    );
+                } catch (error) {
+                    if (ssrErrorMode === 'reject') {
+                        throw error;
+                    }
+
+                    // eslint-disable-next-line no-console -- ошибка серверного рендера не должна ронять весь ответ
+                    console.error(
+                        `Ошибка серверного рендера модуля ${moduleName}, ответ будет отправлен без html`,
+                        error,
+                    );
+                }
+            }
+
             return {
                 mountMode: module.mountMode,
                 moduleVersion: module.version ?? 'unknown',
                 scripts: moduleAssets.js,
                 styles: moduleAssets.css,
-                moduleState: {
-                    ...moduleRunParams,
-                    hostAppId: getResourcesRequest.hostAppId,
-                },
+                moduleState,
                 // eslint-disable-next-line no-underscore-dangle
                 appName: appManifest.__metadata__.name,
+                ...(html === undefined ? {} : { html }),
             };
         },
     };

@@ -40,6 +40,30 @@ export type MountableModule<
      * @param targetNode DOM-нода, от которой нужно открепить модуль
      */
     unmount: ModuleUnmountFunction;
+    /**
+     * Опциональный метод: модуль должен "оживить" (hydrate) серверную разметку,
+     * находящуюся внутри targetNode, вместо её замены.
+     * Типичная реализация: ReactDOM.hydrateRoot(targetNode, <Component {...} />).
+     *
+     * Если метод отсутствует у серверно-отрендеренного модуля — mounter очищает outlet
+     * и вызывает `mount()` (корректно, но с визуальным миганием).
+     * @param targetNode DOM-нода с серверной разметкой модуля
+     * @param runParams параметры, которые передаются в модуль с клиента
+     * @param serverState состояние модуля, которое пришло с сервера
+     */
+    hydrate?: ModuleMountFunction<RunParams, ServerState>;
+    /**
+     * Опциональный метод: обновить уже смонтированный модуль новыми параметрами
+     * без полного перемонтирования (не теряя фокус/состояние DOM).
+     * Типичная реализация: root.render(<Component {...newParams} />).
+     *
+     * Если метод отсутствует — mounter сохраняет текущее поведение с перемонтированием
+     * при изменении runParams.
+     * @param targetNode DOM-нода, к которой прикреплён модуль
+     * @param runParams новые параметры, которые передаются в модуль с клиента
+     * @param serverState состояние модуля, которое пришло с сервера
+     */
+    update?: ModuleMountFunction<RunParams, ServerState>;
 };
 
 /**
