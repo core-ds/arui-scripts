@@ -67,6 +67,7 @@ describe('createLazyMounter', () => {
         const { default: Component } = await mounter();
 
         const emptyParams: Record<string, unknown> = {};
+
         render(<Component {...emptyParams} />);
 
         await waitFor(() => {
@@ -86,6 +87,7 @@ describe('createLazyMounter', () => {
         const { default: Component } = await mounter();
 
         const emptyParams: Record<string, unknown> = {};
+
         render(<Component {...emptyParams} />);
 
         expect(mockMount).not.toHaveBeenCalled();

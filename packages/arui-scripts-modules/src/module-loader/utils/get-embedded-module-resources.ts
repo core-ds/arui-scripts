@@ -17,6 +17,17 @@ export const MODULE_SSR_INSTANCE_ATTRIBUTE = 'data-module-instance';
  * не перезагружая и не мигая. См. `fetchResources`.
  */
 export const MODULE_SSR_HREF_ATTRIBUTE = 'data-module-ssr-href';
+/**
+ * Атрибут div-обёртки, в которую `createSsrMounter` рендерит стили, outlet и payload
+ * модуля. Значение — `instanceId`. Клиент по нему находит серверную разметку, чтобы
+ * снять с неё снапшот при гидрации.
+ */
+export const MODULE_SSR_ROOT_ATTRIBUTE = 'data-module-ssr-root';
+/**
+ * Атрибут outlet-элемента (внутри обёртки), в который смонтирован/гидрирован модуль.
+ * Значение — `instanceId`.
+ */
+export const MODULE_SSR_MOUNT_ID_ATTRIBUTE = 'data-module-mount-id';
 
 /**
  * Читает встроенный (embedded) payload с ресурсами модуля, который хост-сервер

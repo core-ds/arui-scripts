@@ -184,7 +184,7 @@ function awaitAdoptedStyleLoaded(element: Element, abortSignal?: AbortSignal): P
     });
 }
 
-function resolveResourceUrl(src: string, baseUrl: string) {
+export function resolveResourceUrl(src: string, baseUrl: string) {
     if (ABSOLUTE_URL_REGEXP.test(src)) {
         return src;
     }
