@@ -23,6 +23,7 @@ import {
     createDefaultFetchStyleContent,
     type FetchStyleContent,
     loadServerModule,
+    type StylesMode,
 } from './server-module-loader';
 import { readSuspenseResource } from './suspense-resource-cache';
 
@@ -45,6 +46,12 @@ export type CreateSsrMounterOptions<
     getModuleResources: ModuleResourcesGetter<GetResourcesParams, ModuleState>;
     /** функция скачивания css модуля для инлайна (по умолчанию — глобальный `fetch`) */
     fetchStyleContent?: FetchStyleContent;
+    /**
+     * Как отдавать стили SSR-модуля на сервере.
+     * inline — дефолт без FOUC для React 18 streaming.
+     * link — меньший HTML и browser cache, но Suspense boundary может раскрыться до загрузки CSS.
+     */
+    stylesMode?: StylesMode;
 } & Omit<
     CreateModuleLoaderParams<
         MountableModule<RunParams, ModuleState>,
@@ -92,6 +99,7 @@ export function createSsrMounter<
     hostAppId,
     getModuleResources,
     fetchStyleContent = createDefaultFetchStyleContent(),
+    stylesMode = 'inline',
     ...loaderOptions
 }: CreateSsrMounterOptions<RunParams, GetResourcesParams, ModuleState>) {
     type ModuleType = MountableModule<RunParams, ModuleState>;
@@ -126,7 +134,7 @@ export function createSsrMounter<
             safeStringify(ssrRunParams),
         ].join('::');
 
-        const { resources, inlineStyles } = readSuspenseResource(cacheKey, () =>
+        const { resources, inlineStyles, styleUrls } = readSuspenseResource(cacheKey, () =>
             loadServerModule<GetResourcesParams, ModuleState>({
                 moduleId,
                 hostAppId,
@@ -134,6 +142,7 @@ export function createSsrMounter<
                 ssrRunParams,
                 getModuleResources,
                 fetchStyleContent,
+                stylesMode,
             }),
         );
 
@@ -141,16 +150,29 @@ export function createSsrMounter<
 
         return (
             <div {...{ [MODULE_SSR_ROOT_ATTRIBUTE]: instanceId }}>
-                {inlineStyles.map((style) => (
-                    <style
-                        key={style.href}
-                        {...{
-                            [DATA_APP_ID_ATTRIBUTE]: moduleId,
-                            [MODULE_SSR_HREF_ATTRIBUTE]: style.href,
-                        }}
-                        dangerouslySetInnerHTML={{ __html: style.content }}
-                    />
-                ))}
+                {stylesMode === 'inline'
+                    ? inlineStyles.map((style) => (
+                          <style
+                              key={style.href}
+                              {...{
+                                  [DATA_APP_ID_ATTRIBUTE]: moduleId,
+                                  [MODULE_SSR_HREF_ATTRIBUTE]: style.href,
+                              }}
+                              dangerouslySetInnerHTML={{ __html: style.content }}
+                          />
+                      ))
+                    : styleUrls.map((href) => (
+                          <link
+                              key={href}
+                              rel='stylesheet'
+                              type='text/css'
+                              href={href}
+                              {...{
+                                  [DATA_APP_ID_ATTRIBUTE]: moduleId,
+                                  [MODULE_SSR_HREF_ATTRIBUTE]: href,
+                              }}
+                          />
+                      ))}
                 <div
                     {...{ [MODULE_SSR_MOUNT_ID_ATTRIBUTE]: instanceId }}
                     dangerouslySetInnerHTML={{ __html: html ?? '' }}
