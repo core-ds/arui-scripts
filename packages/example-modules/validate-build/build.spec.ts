@@ -1,6 +1,11 @@
 import fs from 'fs';
 import path from 'path';
 
+import {
+    renderServerStateModuleCompatHtml,
+    renderServerStateModuleHtml,
+} from '../src/server/render-modules';
+
 const BUILD_PATH = path.join(__dirname, '../.build');
 
 async function fileExists(filePath: string) {
@@ -138,5 +143,36 @@ describe('modules', () => {
 
         expect(await fileExists(moduleCssPath)).toBe(true);
         expect(await fs.promises.readFile(moduleCssPath, 'utf-8')).toMatchSnapshot();
+    });
+});
+
+describe('ssr modules', () => {
+    const moduleState = {
+        baseUrl: 'http://localhost:8082',
+        hostAppId: 'example',
+        paramFromServer: 'This can be any data from server',
+    };
+
+    const ssrRunParams = {
+        name: 'Vasia',
+        counter: 1,
+    };
+
+    it('should render default server-state module html with server state and ssr params', () => {
+        const html = renderServerStateModuleHtml(moduleState, ssrRunParams);
+
+        expect(html).toContain('ServerStateModule');
+        expect(html).toContain('&quot;paramFromServer&quot;');
+        expect(html).toContain('&quot;counter&quot;');
+        expect(html).toContain('Vasia');
+    });
+
+    it('should render compat server-state module html with server state and ssr params', () => {
+        const html = renderServerStateModuleCompatHtml(moduleState, ssrRunParams);
+
+        expect(html).toContain('ServerStateModuleCompat');
+        expect(html).toContain('&quot;paramFromServer&quot;');
+        expect(html).toContain('&quot;counter&quot;');
+        expect(html).toContain('Vasia');
     });
 });
