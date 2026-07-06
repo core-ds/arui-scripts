@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 import { useModuleMountTarget } from './hooks/use-module-mount-target';
 import { unwrapDefaultExport } from './utils/unwrap-default-export';
@@ -48,17 +48,26 @@ export function createLazyMounter<
 
         function LazyComponent(runParams: RunParams) {
             const { mountTargetNode, afterTargetMountCallback } = useModuleMountTarget({});
+            const isMountedRef = useRef(false);
 
             useEffect(() => {
                 if (!mountTargetNode) {
                     return;
                 }
 
-                module.mount(
-                    mountTargetNode,
-                    runParams,
-                    result.moduleResources.moduleState as ServerState,
-                );
+                const serverState = result.moduleResources.moduleState as ServerState;
+
+                // Если модуль уже смонтирован и умеет обновляться — обновляем его новыми
+                // параметрами через `update()`, не перемонтируя. Иначе — прежнее поведение
+                // (mount при каждом изменении runParams).
+                if (isMountedRef.current && module.update) {
+                    module.update(mountTargetNode, runParams, serverState);
+
+                    return;
+                }
+
+                module.mount(mountTargetNode, runParams, serverState);
+                isMountedRef.current = true;
             }, [runParams, mountTargetNode]);
 
             return <div ref={afterTargetMountCallback} />;

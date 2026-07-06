@@ -10,6 +10,13 @@ export const MODULE_SSR_PAYLOAD_ATTRIBUTE = 'data-module-ssr-payload';
  * инстансов одного модуля на странице. Значение атрибута — `instanceId`.
  */
 export const MODULE_SSR_INSTANCE_ATTRIBUTE = 'data-module-instance';
+/**
+ * Атрибут `<style>`/`<link>`-тега со стилями модуля, отрендеренными на сервере.
+ * Значение — исходный (resolved) URL ресурса, по которому клиент сопоставляет
+ * серверную разметку с запрашиваемыми ресурсами и «усыновляет» (adopts) её,
+ * не перезагружая и не мигая. См. `fetchResources`.
+ */
+export const MODULE_SSR_HREF_ATTRIBUTE = 'data-module-ssr-href';
 
 /**
  * Читает встроенный (embedded) payload с ресурсами модуля, который хост-сервер

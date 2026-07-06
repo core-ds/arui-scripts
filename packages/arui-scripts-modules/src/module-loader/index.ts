@@ -6,6 +6,7 @@ export * from './module-types';
 export { createModuleLoader } from './create-module-loader';
 export { createModuleFetcher } from './create-module-fetcher';
 export { createServerStateModuleFetcher } from './create-server-state-module-fetcher';
+export { createEmbeddedModuleFetcher } from './create-embedded-module-fetcher';
 export { getServerStateModuleFetcherParams } from './get-server-state-module-fetcher-params';
 export { executeModuleFactory } from './execute-module-factory';
 
@@ -19,4 +20,5 @@ export {
     getEmbeddedModuleResources,
     MODULE_SSR_PAYLOAD_ATTRIBUTE,
     MODULE_SSR_INSTANCE_ATTRIBUTE,
+    MODULE_SSR_HREF_ATTRIBUTE,
 } from './utils/get-embedded-module-resources';
