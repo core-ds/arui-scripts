@@ -376,6 +376,146 @@ const MyApp = () => (
 
 Использовать такой способ стоит только для "статичных" модулей, которые всегда остаются на странице и при этом не зависят от loaderParams.
 
+# Серверный рендеринг модулей
+
+Если приложение-хост само рендерится на сервере (например через React 18 streaming), оно может
+включить HTML модуля в первый ответ сервера. Для этого используется отдельный API
+`createSsrMounter` из `@alfalab/scripts-modules/ssr`.
+
+SSR модулей работает по схеме HTML-over-the-wire:
+
+1. сервер хоста вызывает серверный эндпоинт модуля с флагом `ssr`;
+2. сервер модуля возвращает обычные ресурсы, серверное состояние и готовый HTML модуля;
+3. хост вставляет HTML модуля, инлайнит стили и сериализует payload ресурсов в страницу;
+4. клиент читает встроенный payload, не делает повторный запрос за ресурсами и вызывает
+   `hydrate` модуля, если он экспортирован.
+
+SSR поддерживается только для монтируемых модулей (`MountableModule`). Абстрактные модули,
+модули-фабрики и `useShadowDom: true` остаются client-side сценариями.
+
+## Подключение SSR-модуля в приложении-потребителе
+
+```tsx
+import React from 'react';
+
+import { createServerStateModuleFetcher } from '@alfalab/scripts-modules';
+import { createSsrMounter } from '@alfalab/scripts-modules/ssr';
+
+type ModuleRunParams = {
+    name: string;
+    counter: number;
+    onClick?: () => void;
+};
+
+type ModuleSsrRunParams = {
+    name: string;
+    counter: number;
+};
+
+const { ModuleComponent } = createSsrMounter<ModuleRunParams, ModuleSsrRunParams>({
+    hostAppId: 'bar-app',
+    moduleId: 'ServerStateModule',
+    getModuleResources: createServerStateModuleFetcher({
+        baseUrl: 'https://example.com/foo-app',
+    }),
+});
+
+export const MyAwesomeComponent = () => {
+    const ssrRunParams = { name: 'Ivan', counter: 1 };
+
+    return (
+        <React.Suspense fallback={<div>pending...</div>}>
+            <ModuleComponent
+                instanceId='server-state-main'
+                ssrRunParams={ssrRunParams}
+                runParams={{
+                    ...ssrRunParams,
+                    onClick: () => console.log('client-only callback'),
+                }}
+            />
+        </React.Suspense>
+    );
+};
+```
+
+`ssrRunParams` - это сериализуемое подмножество `runParams`, с которым модуль рендерится на
+сервере. В него нельзя класть callback, ref, DOM-ноды и другие клиентские значения. Такие
+значения передаются только в `runParams` и становятся доступны при `hydrate`, `mount` или
+`update`.
+
+Если один и тот же модуль рендерится на странице несколько раз, задавайте стабильный
+`instanceId`, чтобы клиент нашел правильный встроенный payload для каждого инстанса.
+
+## Что должен сделать автор SSR-модуля
+
+На сервере модуля нужно добавить `renderToHtml` в описание модуля:
+
+```tsx
+import React from 'react';
+import { renderToString } from 'react-dom/server';
+
+import { createGetModulesExpress } from '@alfalab/scripts-server/build/express';
+
+import { ServerStateModule } from './modules/server-state-module';
+
+const modulesRouter = createGetModulesExpress({
+    ServerStateModule: {
+        mountMode: 'default',
+        version: '1.0.0',
+        getModuleState: async () => ({
+            baseUrl: 'https://example.com/foo-app',
+            someData: 'server data',
+        }),
+        renderToHtml: async ({ moduleState, ssrRunParams }) =>
+            renderToString(
+                <ServerStateModule
+                    serverState={moduleState}
+                    runParams={(ssrRunParams ?? {}) as Record<string, unknown>}
+                />,
+            ),
+    },
+});
+```
+
+В клиентском экспорте модуля нужно добавить `hydrate`, а если модуль должен обновляться при
+изменении `runParams` без полного перемонтирования - еще и `update`:
+
+```tsx
+import React from 'react';
+import { createRoot, hydrateRoot } from 'react-dom/client';
+
+import type { ModuleMountFunction, ModuleUnmountFunction } from '@alfalab/scripts-modules';
+
+let root: ReturnType<typeof createRoot>;
+
+export const mount: ModuleMountFunction = (targetNode, runParams, serverState) => {
+    root = createRoot(targetNode);
+    root.render(<App runParams={runParams} serverState={serverState} />);
+};
+
+export const hydrate: ModuleMountFunction = (targetNode, runParams, serverState) => {
+    root = hydrateRoot(targetNode, <App runParams={runParams} serverState={serverState} />);
+};
+
+export const update: ModuleMountFunction = (targetNode, runParams, serverState) => {
+    root.render(<App runParams={runParams} serverState={serverState} />);
+};
+
+export const unmount: ModuleUnmountFunction = () => {
+    root?.unmount();
+};
+```
+
+Если модуль вернул HTML, но не экспортирует `hydrate`, клиент очистит серверную разметку и
+вызовет обычный `mount`. Это корректный fallback, но пользователь может увидеть мигание.
+
+Стили SSR-модуля в текущей версии инлайнятся в HTML хоста как `<style>` рядом с разметкой
+модуля, чтобы Suspense-boundary раскрывался сразу с готовыми стилями. Режим
+`<link rel='stylesheet'>` может появиться позже; текущая клиентская логика уже умеет
+переиспользовать серверные SSR-теги стилей.
+
+Подробное описание API, матрица поведения гидрации и дополнительные ограничения описаны в
+README пакета `@alfalab/scripts-modules`.
 
 # Изоляция стилей
 Если ваши приложения активно используют глобальные стили (то есть не с css-modules или css-in-js), вы вполне
