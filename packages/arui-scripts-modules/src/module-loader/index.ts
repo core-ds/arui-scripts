@@ -13,3 +13,10 @@ export { useModuleLoader } from './hooks/use-module-loader';
 export { useModuleMounter } from './hooks/use-module-mounter';
 export { useModuleFactory } from './hooks/use-module-factory';
 export { createLazyMounter } from './create-lazy-mounter';
+
+export { serializeForHtml } from './utils/serialize-for-html';
+export {
+    getEmbeddedModuleResources,
+    MODULE_SSR_PAYLOAD_ATTRIBUTE,
+    MODULE_SSR_INSTANCE_ATTRIBUTE,
+} from './utils/get-embedded-module-resources';
