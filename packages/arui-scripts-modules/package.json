@@ -4,6 +4,26 @@
     "main": "./build/index.js",
     "module": "./build/esm/index.js",
     "typings": "./build/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./build/index.d.ts",
+            "import": "./build/esm/index.js",
+            "require": "./build/index.js"
+        },
+        "./ssr": {
+            "types": "./build/ssr/index.d.ts",
+            "import": "./build/esm/ssr/index.js",
+            "require": "./build/ssr/index.js"
+        },
+        "./package.json": "./package.json"
+    },
+    "typesVersions": {
+        "*": {
+            "ssr": [
+                "./build/ssr/index.d.ts"
+            ]
+        }
+    },
     "license": "MPL-2.0",
     "repository": {
         "type": "git",
