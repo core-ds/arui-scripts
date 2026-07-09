@@ -4,11 +4,17 @@ import { type GetResourcesRequest } from '@alfalab/scripts-modules';
 
 import { createGetModulesMethod, type ModulesConfig } from './modules';
 
+type RoutePlugins = Record<string, unknown> & {
+    crumb?: Record<string, unknown>;
+};
+
 export function createGetModulesHapi20Plugin(
     modules: ModulesConfig<[Request]>,
     routeParams?: Record<string, unknown>,
 ) {
     const modulesMethodSettings = createGetModulesMethod(modules);
+    const routePlugins = routeParams?.plugins as RoutePlugins;
+    const crumbPlugin = routePlugins?.crumb ?? {};
 
     const plugin: Plugin<Record<string, never>> = {
         name: `@alfalab/scripts-server${modulesMethodSettings.path}`,
@@ -19,6 +25,13 @@ export function createGetModulesHapi20Plugin(
                 path: modulesMethodSettings.path,
                 options: {
                     ...routeParams,
+                    plugins: {
+                        ...routePlugins,
+                        crumb: {
+                            ignore: true,
+                            ...crumbPlugin,
+                        },
+                    },
                 },
                 handler: async (request, h) => {
                     try {
