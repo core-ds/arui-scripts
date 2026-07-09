@@ -11,8 +11,13 @@
 - опциональные методы модулей `hydrate` и `update`, а также настройка доставки SSR-стилей:
   inline по умолчанию или `<link>` через `stylesMode: 'link'`.
 
+Стили module-federation модулей, отрисованные на сервере, переиспользуются на клиенте без
+повторной загрузки и мигания интерфейса.
+
+`AruiAppManifest.css` и `createModuleFetcher` теперь принимают `string | string[]`.
+
 `createServerStateModuleFetcher` теперь использует стандартный `fetch` вместо
 `XMLHttpRequest`, поэтому рантаймам без глобального `fetch` потребуется полифил.
 
 Подробнее: [документация `@alfalab/scripts-modules`](../packages/arui-scripts-modules/README.md#createssrmounter)
-и [SSR-спецификация](../packages/arui-scripts-modules/docs/ssr-spec.md).
+и [SSR-спецификация](../docs/specs/ssr-spec.md).
