@@ -118,11 +118,46 @@ describe('modules', () => {
 
         expect(await fileExists(moduleJsPath)).toBe(true);
 
-        if (assetsManifest[moduleName].css) {
-            const moduleCssPath = path.join(BUILD_PATH, assetsManifest[moduleName].css);
+        const { css } = assetsManifest[moduleName];
 
-            expect(await fileExists(moduleCssPath)).toBe(true);
+        if (css) {
+            // css может быть строкой (compat) или массивом (css default-модулей)
+            const cssFiles = Array.isArray(css) ? css : [css];
+
+            // eslint-disable-next-line no-restricted-syntax
+            for (const cssFile of cssFiles) {
+                // eslint-disable-next-line no-await-in-loop
+                expect(await fileExists(path.join(BUILD_PATH, cssFile))).toBe(true);
+            }
         }
+    });
+
+    it('attributes per-expose css to default (MF) modules that have styles', async () => {
+        const assetsManifest = JSON.parse(
+            await fs.promises.readFile(
+                path.join(BUILD_PATH, 'assets/webpack-assets.json'),
+                'utf-8',
+            ),
+        );
+
+        // ServerStateModule и Module рендерят стили → плагин сборки добавляет их css
+        // в запись модуля, чтобы хост-сервер отдал их при SSR.
+        const serverStateCss = assetsManifest.ServerStateModule.css;
+
+        expect(Array.isArray(serverStateCss)).toBe(true);
+        expect(serverStateCss.length).toBeGreaterThan(0);
+        expect(assetsManifest.ServerStateModule.mode).toBe('default');
+
+        // css привязанный к модулю должен реально существовать на диске
+        // eslint-disable-next-line no-restricted-syntax
+        for (const cssFile of serverStateCss) {
+            // eslint-disable-next-line no-await-in-loop
+            expect(await fileExists(path.join(BUILD_PATH, cssFile))).toBe(true);
+        }
+
+        // css чанки экспоуза должны присутствовать и в общей ("") записи манифеста —
+        // это те же файлы, просто теперь ещё и добавленные модулю
+        expect(assetsManifest[''].css).toEqual(expect.arrayContaining(serverStateCss));
     });
 
     it('should create entry point for MF modules', async () => {

@@ -102,6 +102,68 @@ describe('createGetModulesMethod', () => {
             );
         });
 
+        it('populates styles for default module from manifest css only on ssr request', async () => {
+            (getAppManifest as jest.Mock).mockImplementation(() =>
+                Promise.resolve({
+                    __metadata__: { name: 'module-app-name' },
+                    test: {
+                        mode: 'default',
+                        js: 'assets/remoteEntry.js',
+                        css: ['assets/expose-a.css', 'assets/expose-b.css'],
+                    },
+                }),
+            );
+            const { handler } = createGetModulesMethod({
+                test: {
+                    mountMode: 'default',
+                    getModuleState: () => Promise.resolve({ baseUrl: '' }),
+                    version: '1.0.0',
+                },
+            });
+
+            const ssrResult = await handler({
+                moduleId: 'test',
+                hostAppId: 'test',
+                params: undefined,
+                ssr: {},
+            });
+
+            expect(ssrResult.styles).toEqual(['assets/expose-a.css', 'assets/expose-b.css']);
+
+            // без ssr ответ остаётся байт-в-байт прежним (css: [])
+            const nonSsrResult = await handler({
+                moduleId: 'test',
+                hostAppId: 'test',
+                params: undefined,
+            });
+
+            expect(nonSsrResult.styles).toEqual([]);
+        });
+
+        it('normalizes a single-string manifest css to an array on ssr request', async () => {
+            (getAppManifest as jest.Mock).mockImplementation(() =>
+                Promise.resolve({
+                    __metadata__: { name: 'module-app-name' },
+                    test: { mode: 'default', js: 'assets/remoteEntry.js', css: 'assets/one.css' },
+                }),
+            );
+            const { handler } = createGetModulesMethod({
+                test: {
+                    mountMode: 'default',
+                    getModuleState: () => Promise.resolve({ baseUrl: '' }),
+                },
+            });
+
+            const result = await handler({
+                moduleId: 'test',
+                hostAppId: 'test',
+                params: undefined,
+                ssr: {},
+            });
+
+            expect(result.styles).toEqual(['assets/one.css']);
+        });
+
         it('should not call renderToHtml when request has no ssr marker', async () => {
             const renderToHtml = jest.fn(() => '<div>html</div>');
             const { handler } = createGetModulesMethod({

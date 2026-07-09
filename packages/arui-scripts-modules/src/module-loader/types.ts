@@ -33,8 +33,8 @@ export type GetResourcesRequest<GetResourcesParams = void> = {
  */
 export type AruiAppManifest = {
     [moduleId: string]: {
-        js?: string;
-        css?: string;
+        js?: string | string[];
+        css?: string | string[];
         mode?: MountMode;
     };
 } & {

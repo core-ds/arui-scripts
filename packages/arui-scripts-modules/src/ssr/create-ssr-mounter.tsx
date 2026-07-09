@@ -9,6 +9,7 @@ import {
 import { type MountableModule } from '../module-loader/module-types';
 import { type BaseModuleState, type Loader } from '../module-loader/types';
 import {
+    MODULE_DATA_HREF_ATTRIBUTE,
     MODULE_SSR_HREF_ATTRIBUTE,
     MODULE_SSR_INSTANCE_ATTRIBUTE,
     MODULE_SSR_MOUNT_ID_ATTRIBUTE,
@@ -148,16 +149,27 @@ export function createSsrMounter<
 
         const { html, ...payload } = resources;
 
+        // - default (module federation): css грузит MF-рантайм. Серверные стили он
+        //   «наследует» по `data-href`, поэтому `data-parent-app-id` НЕ ставим —
+        //   иначе клиентский `fetchResources`/`removeModuleResources` тронул бы их и
+        //   получилась бы двойная загрузка/удаление стилей, которыми владеет рантайм.
+        // - compat: стилями владеет `fetchResources`, поведение прежнее —
+        //   ставим `data-parent-app-id`, чтобы он их унаследовал и убрал при unmount.
+        const isDefaultMode = resources.mountMode === 'default';
+        const styleOwnershipAttributes = (href: string) => ({
+            ...(isDefaultMode ? {} : { [DATA_APP_ID_ATTRIBUTE]: moduleId }),
+            [MODULE_SSR_HREF_ATTRIBUTE]: href,
+            [MODULE_DATA_HREF_ATTRIBUTE]: href,
+        });
+
+        /* eslint-disable react/no-danger -- мы получаем много разметки не из реакта при работе с модулями */
         return (
             <div {...{ [MODULE_SSR_ROOT_ATTRIBUTE]: instanceId }}>
                 {stylesMode === 'inline'
                     ? inlineStyles.map((style) => (
                           <style
                               key={style.href}
-                              {...{
-                                  [DATA_APP_ID_ATTRIBUTE]: moduleId,
-                                  [MODULE_SSR_HREF_ATTRIBUTE]: style.href,
-                              }}
+                              {...styleOwnershipAttributes(style.href)}
                               dangerouslySetInnerHTML={{ __html: style.content }}
                           />
                       ))
@@ -167,10 +179,7 @@ export function createSsrMounter<
                               rel='stylesheet'
                               type='text/css'
                               href={href}
-                              {...{
-                                  [DATA_APP_ID_ATTRIBUTE]: moduleId,
-                                  [MODULE_SSR_HREF_ATTRIBUTE]: href,
-                              }}
+                              {...styleOwnershipAttributes(href)}
                           />
                       ))}
                 <div
