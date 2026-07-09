@@ -28,9 +28,16 @@ export function createModuleFetcher({
         const moduleFiles = manifest[moduleId];
         const moduleVendorFiles = manifest[`vendor-${moduleId}`] || {};
 
+        // js/css в манифесте могут быть строкой или массивом, нормализуем в плоский список.
+        const toArray = (value: string | string[] | undefined): string[] => {
+            if (!value) return [];
+
+            return Array.isArray(value) ? value : [value];
+        };
+
         return {
-            scripts: [moduleFiles.js, moduleVendorFiles.js].filter(Boolean) as string[],
-            styles: [moduleFiles.css, moduleVendorFiles.css].filter(Boolean) as string[],
+            scripts: [...toArray(moduleFiles.js), ...toArray(moduleVendorFiles.js)],
+            styles: [...toArray(moduleFiles.css), ...toArray(moduleVendorFiles.css)],
             mode: moduleFiles.mode || 'compat',
         };
     }

@@ -194,7 +194,12 @@ export function createModuleLoader<
                 cssTargetSelector,
                 moduleId,
                 scripts: moduleResources.scripts,
-                styles: moduleResources.styles,
+                // Стили default-модулей грузит рантайм module federation, а не мы.
+                // Начиная с поддержки SSR сервер может присылать
+                // css default-модуля в `styles` — но только чтобы хост-сервер отрендерил
+                // серверные стили. На клиенте их наследует MF-рантайм по `data-href`,
+                // поэтому здесь их НЕ подключаем, иначе будет двойная загрузка.
+                styles: moduleResources.mountMode === 'default' ? [] : moduleResources.styles,
                 baseUrl: moduleResources.moduleState.baseUrl,
                 abortSignal,
                 disableInlineStyleSafari,

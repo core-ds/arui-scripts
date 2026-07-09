@@ -1,8 +1,22 @@
-import { type GetResourcesRequest, type ModuleResources } from '@alfalab/scripts-modules';
+import {
+    type AruiAppManifest,
+    type GetResourcesRequest,
+    type ModuleResources,
+} from '@alfalab/scripts-modules';
 
 import { getAppManifest, readAssetsManifest } from '../read-assets-manifest';
 
 import { type CreateGetModulesMethodOptions, type ModulesConfig } from './types';
+
+function getManifestModuleCss(manifest: AruiAppManifest, moduleName: string): string[] {
+    const css = manifest[moduleName]?.css;
+
+    if (!css) {
+        return [];
+    }
+
+    return Array.isArray(css) ? css : [css];
+}
 
 export function createGetModulesMethod<
     FrameworkParams extends unknown[] = [],
@@ -33,11 +47,17 @@ export function createGetModulesMethod<
                 assets[moduleName] = await readAssetsManifest([`vendor-${moduleName}`, moduleName]);
             }
             if (module.mountMode === 'default') {
-                // для default модулей мы всегда берем просто remoteEntry, это стандартный энтрипоинт для module federation
+                // для default модулей мы всегда берем просто remoteEntry, это стандартный энтрипоинт для module federation.
                 // загрузку стилей при этом на себя берет сам module federation.
+                //
+                // Исключение — SSR-запрос: чтобы хост-сервер смог отрендерить стили модуля и
+                // избежать миганий, отдаём css из манифеста. На клиенте эти стили наследует MF-рантайм
+                // по data-href. Для НЕ-ssr запросов ответ остаётся прежним (css: []).
                 assets[moduleName] = {
                     js: ['assets/remoteEntry.js'],
-                    css: [],
+                    css: getResourcesRequest.ssr
+                        ? getManifestModuleCss(appManifest, moduleName)
+                        : [],
                 };
             }
 

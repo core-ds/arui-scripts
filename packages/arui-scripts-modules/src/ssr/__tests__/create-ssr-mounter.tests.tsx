@@ -142,8 +142,42 @@ describe('createSsrMounter', () => {
         expect(html).toContain(
             'data-module-ssr-href="https://module.example.com/app/static/main.css"',
         );
+        // data-href нужен, чтобы css-рантайм module federation усыновил серверный стиль
+        expect(html).toContain('data-href="https://module.example.com/app/static/main.css"');
         expect(html).toContain('.a{color:red}');
         expect(html).not.toContain('rel="stylesheet"');
+    });
+
+    it('omits data-parent-app-id for default (MF) modules but keeps data-href', async () => {
+        const getModuleResources = jest.fn().mockResolvedValue(
+            buildResources({
+                mountMode: 'default',
+                styles: ['static/main.css'],
+            }),
+        );
+
+        const { ModuleComponent } = createSsrMounter<RunParams>({
+            moduleId: MODULE_ID,
+            hostAppId: 'host',
+            getModuleResources,
+            fetchStyleContent: async () => '.a{color:red}',
+        });
+
+        const html = await renderServerHtml(
+            <Suspense fallback={<span>loading</span>}>
+                <ModuleComponent instanceId={INSTANCE_ID} ssrRunParams={{ name: 'Vasia' }} />
+            </Suspense>,
+        );
+
+        expect(html).toContain('<style');
+        expect(html).toContain('.a{color:red}');
+        // MF-рантайм усыновляет стиль по data-href
+        expect(html).toContain('data-href="https://module.example.com/app/static/main.css"');
+        expect(html).toContain(
+            'data-module-ssr-href="https://module.example.com/app/static/main.css"',
+        );
+        // владение стилями остаётся за MF-рантаймом — data-parent-app-id не выставляем
+        expect(html).not.toContain('data-parent-app-id');
     });
 
     it('can render server styles as stylesheet links', async () => {

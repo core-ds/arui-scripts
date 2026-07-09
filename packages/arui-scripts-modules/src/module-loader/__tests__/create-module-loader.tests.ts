@@ -36,6 +36,48 @@ describe('createModuleLoader', () => {
         expect(loader).toBeInstanceOf(Function);
     });
 
+    it('does not fetch styles for default (MF) modules — the MF runtime owns them', async () => {
+        const getModuleResources = jest.fn().mockResolvedValue({
+            scripts: ['assets/remoteEntry.js'],
+            styles: ['assets/module.css'],
+            moduleState: { baseUrl: '' },
+            mountMode: 'default',
+        });
+        const loader = createModuleLoader<unknown, unknown>({
+            moduleId: 'test',
+            hostAppId: 'test',
+            getModuleResources,
+        });
+
+        (getModule as jest.Mock).mockResolvedValueOnce({});
+
+        await loader({ getResourcesParams: undefined });
+
+        expect(fetchResources).toHaveBeenCalledWith(expect.objectContaining({ styles: [] }));
+    });
+
+    it('fetches styles for compat modules as before', async () => {
+        const getModuleResources = jest.fn().mockResolvedValue({
+            scripts: ['assets/module.js'],
+            styles: ['assets/module.css'],
+            moduleState: { baseUrl: '' },
+            mountMode: 'compat',
+        });
+        const loader = createModuleLoader<unknown, unknown>({
+            moduleId: 'test',
+            hostAppId: 'test',
+            getModuleResources,
+        });
+
+        (getCompatModule as jest.Mock).mockReturnValueOnce({});
+
+        await loader({ getResourcesParams: undefined });
+
+        expect(fetchResources).toHaveBeenCalledWith(
+            expect.objectContaining({ styles: ['assets/module.css'] }),
+        );
+    });
+
     it('should call getModuleResources with correct params', async () => {
         const getModuleResources = jest.fn();
         const loader = createModuleLoader<unknown, unknown>({

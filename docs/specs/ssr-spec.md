@@ -485,14 +485,29 @@ CSS load, not broken styles. Document this; emit the absolute resolved URL in `d
 
 ### Verification requirements
 
-- Integration test against a **real built** wmf module (not a mock): SSR emit → hydrate →
-  MF chunk load → assert exactly one copy of the CSS in the DOM and zero network requests for
-  adopted chunks. This also verifies that rspack's runtime port honors `style[data-href]`
-  (confirmed for webpack's mini-css-extract; the rspack template lives in the native binding
-  and must be verified behaviorally).
-- Fallback if `style[data-href]` is not honored by rspack: emit `<link rel="stylesheet">`
-  tags for default-mode modules (plain `href` matching is honored), accepting the loss of the
-  atomic-reveal property for MF modules only.
+- **`style[data-href]` support confirmed.** The rspack CSS runtime (`CssExtractRspackPlugin`
+  port) emits a `findStylesheet(href, fullhref)` helper that scans **both** `<link>` tags
+  (matching `data-href` or `href` with `rel="stylesheet"`) **and** `<style>` tags (matching
+  `data-href`), splitting `?`-query off before comparison. Verified against the real built
+  `remoteEntry.js` of `example-modules`. The atomic-reveal (no-FOUC) inline-styles path for MF
+  modules therefore works and the `<link>` fallback below is **not** required.
+- Coverage that ships:
+  - `arui-scripts`: unit test of the chunk-graph walk
+    (`attribute-module-css.tests.ts`) + `example-modules` validate-build assertion that a real
+    default module with styles (`ServerStateModule`) gets its per-expose css attributed to a
+    real on-disk file.
+  - `@alfalab/scripts-server`: `createGetModulesMethod` populates `styles` from manifest css
+    only on `ssr` requests, `[]` otherwise (byte-for-byte guarantee).
+  - `@alfalab/scripts-modules`: `createSsrMounter` emits `data-href` (+ `data-module-ssr-href`)
+    and omits `data-parent-app-id` for default-mode modules; `create-module-loader` skips style
+    fetching for default-mode modules so the MF runtime — not `fetchResources` — owns the css.
+- Still open (deferred, not blocking): a live jsdom round-trip that boots the full MF sharing
+  scope, loads `remoteEntry.js`, triggers a chunk load and asserts exactly one css copy + zero
+  network for the adopted chunk. Each link of that chain is already verified in isolation above.
+- Fallback (unused, kept for the record) if a future rspack drops `style[data-href]` support:
+  emit `<link rel="stylesheet">` tags for default-mode modules (plain `href` matching stays
+  honored), accepting the loss of the atomic-reveal property for MF modules only — this is
+  exactly what `stylesMode: 'link'` already produces.
 
 ### Delivery
 

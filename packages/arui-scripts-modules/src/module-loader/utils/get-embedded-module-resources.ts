@@ -18,6 +18,15 @@ export const MODULE_SSR_INSTANCE_ATTRIBUTE = 'data-module-instance';
  */
 export const MODULE_SSR_HREF_ATTRIBUTE = 'data-module-ssr-href';
 /**
+ * Атрибут `data-href` на серверных `<style>`/`<link>`-тегах стилей модуля.
+ * Его проверяет CSS-рантайм module federation (порт mini-css-extract-plugin):
+ * если для css-чанка уже присутствует тег с совпадающим `data-href`, рантайм
+ * считает чанк загруженным и не скачивает css повторно. Именно так серверные
+ * стили default-модулей «наследуются» MF-рантаймом без двойной загрузки и мигания.
+ * Значение — абсолютный (resolved) URL css-файла.
+ */
+export const MODULE_DATA_HREF_ATTRIBUTE = 'data-href';
+/**
  * Атрибут div-обёртки, в которую `createSsrMounter` рендерит стили, outlet и payload
  * модуля. Значение — `instanceId`. Клиент по нему находит серверную разметку, чтобы
  * снять с неё снапшот при гидрации.
