@@ -164,6 +164,97 @@ describe('useModuleMounter', () => {
         expect(loader).toHaveBeenCalledTimes(1);
     });
 
+    it('should call update on runParams change when the module supports it', async () => {
+        const updatableModule = {
+            mount: jest.fn(),
+            unmount: jest.fn(),
+            update: jest.fn(),
+        };
+        const mountTargetNode = document.createElement('div');
+
+        loader.mockResolvedValueOnce({
+            module: updatableModule,
+            moduleResources: { moduleState: moduleServerState },
+            unmount: jest.fn(),
+        });
+        (useModuleMountTarget as jest.Mock).mockReturnValue({
+            mountTargetNode,
+            cssTargetSelector: 'head',
+            afterTargetMountCallback: jest.fn(),
+        });
+
+        const initialRunParams = { value: 'a' };
+        const { rerender, result } = renderHook((props) => useModuleMounter(props), {
+            initialProps: {
+                loader,
+                loaderParams,
+                runParams: initialRunParams,
+                createTargetNode,
+                useShadowDom,
+            },
+        });
+
+        await waitFor(() => {
+            expect(result.current.loadingState).toBe('fulfilled');
+        });
+        expect(updatableModule.mount).toHaveBeenCalledTimes(1);
+
+        const newRunParams = { value: 'b' };
+
+        rerender({
+            loader,
+            loaderParams,
+            runParams: newRunParams,
+            createTargetNode,
+            useShadowDom,
+        });
+
+        expect(updatableModule.update).toHaveBeenCalledWith(
+            mountTargetNode,
+            newRunParams,
+            moduleServerState,
+        );
+        // модуль не перемонтируется
+        expect(updatableModule.mount).toHaveBeenCalledTimes(1);
+    });
+
+    it('should neither re-mount nor update when the module lacks update and runParams change', async () => {
+        loader.mockResolvedValueOnce({
+            module: mountableModule,
+            moduleResources: { moduleState: moduleServerState },
+            unmount: jest.fn(),
+        });
+        (useModuleMountTarget as jest.Mock).mockReturnValue({
+            mountTargetNode: document.createElement('div'),
+            cssTargetSelector: 'head',
+            afterTargetMountCallback: jest.fn(),
+        });
+
+        const { rerender, result } = renderHook((props) => useModuleMounter(props), {
+            initialProps: {
+                loader,
+                loaderParams,
+                runParams: { value: 'a' },
+                createTargetNode,
+                useShadowDom,
+            },
+        });
+
+        await waitFor(() => {
+            expect(result.current.loadingState).toBe('fulfilled');
+        });
+
+        rerender({
+            loader,
+            loaderParams,
+            runParams: { value: 'b' },
+            createTargetNode,
+            useShadowDom,
+        });
+
+        expect(mountableModule.mount).toHaveBeenCalledTimes(1);
+    });
+
     it('should return rejected state when loader rejects', async () => {
         jest.spyOn(console, 'error').mockImplementationOnce(() => {});
         const error = new Error('Failed to load module');

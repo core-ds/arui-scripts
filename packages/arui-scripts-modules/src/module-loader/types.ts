@@ -15,6 +15,17 @@ export type GetResourcesRequest<GetResourcesParams = void> = {
     hostAppId: string;
     /** параметры, которые передаются в функцию получения ресурсов модуля */
     params: GetResourcesParams;
+    /**
+     * Присутствует, если хост запрашивает серверный рендеринг модуля.
+     */
+    ssr?: {
+        /**
+         * Сериализуемое подмножество runParams, с которым нужно отрендерить HTML.
+         * Должно быть JSON-сериализуемым: клиентские значения (колбэки, ref-ы)
+         * передаются позже, на этапе `hydrate`.
+         */
+        runParams?: unknown;
+    };
 };
 
 /**
@@ -22,8 +33,8 @@ export type GetResourcesRequest<GetResourcesParams = void> = {
  */
 export type AruiAppManifest = {
     [moduleId: string]: {
-        js?: string;
-        css?: string;
+        js?: string | string[];
+        css?: string | string[];
         mode?: MountMode;
     };
 } & {
@@ -65,6 +76,11 @@ export type ModuleResources<ModuleState extends BaseModuleState = BaseModuleStat
     mountMode: MountMode;
     /** предподготовленное "состояние" модуля, которое он получит при монтировании на страницу */
     moduleState: ModuleState;
+    /**
+     * HTML модуля, отрендеренный на сервере модуля.
+     * Присутствует только в ответ на запрос с полем `ssr`.
+     */
+    html?: string;
 };
 
 export type LoaderResult<ModuleExportType> = {

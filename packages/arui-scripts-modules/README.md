@@ -19,6 +19,7 @@ yarn add @alfalab/scripts-modules
 - [`useModuleMounter`](#useModuleMounter)
 - [`useModuleFactory`](#useModuleFactory)
 - [`executeModuleFactory`](#executeModuleFactory)
+- [`createSsrMounter`](#createSsrMounter)
 
 ## Использование
 
@@ -215,4 +216,166 @@ async function mySuperMethod() {
     console.log(executionResult); // Тут будет то, что возвращает модуль-фабрика
 }
 
+```
+
+### `createLazyMounter`
+
+Возвращает функцию-загрузчик, которую можно использовать совместно с `React.lazy` и `React.Suspense`.
+Модули, примонтированные таким образом будут загружаться **только один раз**, их ресурсы не будут удаляться из DOM.
+Под серверным рендерингом `createLazyMounter` не запускает загрузчик и рендерит пустой outlet.
+Для SSR модулей используйте [`createSsrMounter`](#createSsrMounter).
+
+```tsx
+import React from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
+
+import {
+    createLazyMounter,
+    createModuleLoader,
+    MountableModule,
+} from '@alfalab/scripts-modules';
+
+type ModuleRunParams = {
+    username: string;
+};
+
+const loader = createModuleLoader<MountableModule<ModuleRunParams>>({
+    // ...
+});
+const LazyModule = React.lazy(createLazyMounter({ loader }));
+
+const MyApp = () => (
+    <ErrorBoundary fallback={ <div>Ошибка!</div> }>
+        <React.Suspense fallback={ <div>Загрузка...</div> }>
+            <LazyModule
+                username="Unknown" // props определяется по ModuleRunParams
+            />
+        </React.Suspense>
+    </ErrorBoundary>
+);
+```
+
+### `createSsrMounter`
+
+Изоморфная фабрика для серверного рендеринга монтируемых модулей. На сервере компонент
+запрашивает ресурсы модуля с флагом `ssr`, вставляет HTML модуля в ответ хоста и сериализует
+payload ресурсов в `<script type="application/json">`. На клиенте этот payload используется
+вместо повторного `getModuleResources` запроса, после загрузки скриптов вызывается `hydrate`
+модуля или обычный `mount`, если `hydrate` не экспортирован.
+
+SSR поддерживается только для `MountableModule`. Абстрактные и factory-модули, а также
+`useShadowDom: true`, остаются client-side сценариями.
+
+```tsx
+import React, { Suspense } from 'react';
+
+import { createServerStateModuleFetcher } from '@alfalab/scripts-modules';
+import { createSsrMounter } from '@alfalab/scripts-modules/ssr';
+
+type RunParams = {
+    name: string;
+    counter: number;
+    onClick?: () => void;
+};
+
+type SsrRunParams = {
+    name: string;
+    counter: number;
+};
+
+const { ModuleComponent } = createSsrMounter<RunParams, SsrRunParams>({
+    hostAppId: 'my-app',
+    moduleId: 'ServerStateModule',
+    getModuleResources: createServerStateModuleFetcher({
+        baseUrl: 'http://localhost:8082',
+    }),
+});
+
+export const Page = () => {
+    const ssrRunParams = { name: 'Vasia', counter: 1 };
+
+    return (
+        <Suspense fallback={<div>Загрузка...</div>}>
+            <ModuleComponent
+                instanceId='server-state-main'
+                ssrRunParams={ssrRunParams}
+                runParams={{
+                    ...ssrRunParams,
+                    onClick: () => console.log('client-only param'),
+                }}
+            />
+        </Suspense>
+    );
+};
+```
+
+`ssrRunParams` должны быть JSON-сериализуемыми. В них передаётся только то, от чего зависит
+серверная разметка модуля. Клиентские значения вроде callback, ref или DOM-объектов передаются
+только в `runParams` и доступны модулю на этапе `hydrate`/`mount`/`update`. Если один и тот же
+модуль рендерится на странице несколько раз, передавайте стабильный `instanceId`.
+
+Поведение при гидрации:
+
+| HTML от сервера | У модуля есть `hydrate` | Результат |
+| --- | --- | --- |
+| да | да | стили переиспользуются, скрипты загружаются, вызывается `hydrate()` |
+| да | нет | стили переиспользуются, outlet очищается, вызывается `mount()` |
+| нет, есть payload | не важно | ресурсы берутся из payload, вызывается `mount()` |
+| нет payload | не важно | обычная клиентская загрузка с сетевым `getModuleResources` |
+
+По умолчанию стили SSR-модуля инлайнятся в HTML хоста как `<style>` рядом с разметкой
+модуля. Это устраняет FOUC при React 18 streaming: Suspense-boundary раскрывается вместе с
+готовыми стилями.
+
+Если хосту важнее меньший HTML и browser cache для CSS, можно включить link-режим:
+
+```tsx
+const { ModuleComponent } = createSsrMounter({
+    moduleId: 'ServerStateModule',
+    hostAppId: 'host',
+    getModuleResources,
+    stylesMode: 'link',
+});
+```
+
+В этом режиме сервер отдаёт `<link rel="stylesheet" type="text/css">` с SSR-атрибутами.
+Клиент переиспользует эти теги и не добавляет дубликаты. На React 18 Suspense-boundary может
+раскрыться до окончания загрузки CSS, поэтому `inline` остаётся значением по умолчанию.
+
+Для автора модуля миграция состоит из трёх шагов:
+
+1. В серверном описании модуля добавить `renderToHtml`, который рендерит тот же React-компонент
+   через `renderToString` и получает готовый `moduleState` плюс `ssrRunParams`.
+2. В клиентском экспорте монтируемого модуля добавить `hydrate(targetNode, runParams, serverState)`
+   и вызвать внутри `hydrateRoot`.
+3. Добавить `update(targetNode, runParams, serverState)`, если модуль должен обновлять
+   `runParams` без полного размонтирования.
+
+Пример серверного описания:
+
+```tsx
+import React from 'react';
+import { renderToString } from 'react-dom/server';
+
+import { createGetModulesExpress } from '@alfalab/scripts-server/build/express';
+
+import { ServerStateModule } from './modules/server-state-module';
+
+const moduleRouter = createGetModulesExpress({
+    ServerStateModule: {
+        mountMode: 'default',
+        version: '1.0.0',
+        getModuleState: async () => ({
+            baseUrl: 'http://localhost:8082',
+            paramFromServer: 'server data',
+        }),
+        renderToHtml: async ({ moduleState, ssrRunParams }) =>
+            renderToString(
+                <ServerStateModule
+                    serverState={moduleState}
+                    runParams={(ssrRunParams ?? {}) as Record<string, unknown>}
+                />,
+            ),
+    },
+});
 ```

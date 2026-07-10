@@ -332,6 +332,193 @@ export const MyAwesomeComponent = () => {
 }
 ```
 
+# Подключение модулей с использованием react.lazy
+Для того чтобы подключить модуль используя механизм [suspense](https://react.dev/reference/react/Suspense), библиотека предоставляет функцию-хелпер `createLazyMounter`:
+
+```tsx
+import React from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
+
+import {
+    createLazyMounter,
+    createModuleLoader,
+    MountableModule,
+} from '@alfalab/scripts-modules';
+
+type ModuleRunParams = {
+    username: string;
+};
+
+const loader = createModuleLoader<MountableModule<ModuleRunParams>>({
+    // ...
+});
+const LazyModule = React.lazy(createLazyMounter({
+    loader,
+    loaderParams: {}, // опционально
+}));
+
+const MyApp = () => (
+    <ErrorBoundary fallback={ <div>Ошибка!</div> }>
+        <React.Suspense fallback={ <div>Загрузка...</div> }>
+            <LazyModule
+                username="Unknown" // props определяется по ModuleRunParams
+            />
+        </React.Suspense>
+    </ErrorBoundary>
+);
+```
+
+У такого способа подключения есть ряд ограничений:
+1. Нет поддержки shadow DOM
+2. `loaderParams` будет передаваться в модуль только один раз, их изменения не будут приводить к перемонтированию модуля
+3. Модуль никогда не будет удаляться из DOM.
+4. Менее гибкая обработка ошибок - при подключении через `useModuleMounter` вы легко можете добавить механизм ретраев, с `lazy` - только показать сообщение об ошибке
+
+Использовать такой способ стоит только для "статичных" модулей, которые всегда остаются на странице и при этом не зависят от loaderParams.
+
+# Серверный рендеринг модулей
+
+Если приложение-хост само рендерится на сервере (например через React 18 streaming), оно может
+включить HTML модуля в первый ответ сервера. Для этого используется отдельный API
+`createSsrMounter` из `@alfalab/scripts-modules/ssr`.
+
+SSR модулей работает по схеме HTML-over-the-wire:
+
+1. сервер хоста вызывает серверный эндпоинт модуля с флагом `ssr`;
+2. сервер модуля возвращает обычные ресурсы, серверное состояние и готовый HTML модуля;
+3. хост вставляет HTML модуля, инлайнит стили и сериализует payload ресурсов в страницу;
+4. клиент читает встроенный payload, не делает повторный запрос за ресурсами и вызывает
+   `hydrate` модуля, если он экспортирован.
+
+SSR поддерживается только для монтируемых модулей (`MountableModule`). Абстрактные модули,
+модули-фабрики и `useShadowDom: true` остаются client-side сценариями.
+
+## Подключение SSR-модуля в приложении-потребителе
+
+```tsx
+import React from 'react';
+
+import { createServerStateModuleFetcher } from '@alfalab/scripts-modules';
+import { createSsrMounter } from '@alfalab/scripts-modules/ssr';
+
+type ModuleRunParams = {
+    name: string;
+    counter: number;
+    onClick?: () => void;
+};
+
+type ModuleSsrRunParams = {
+    name: string;
+    counter: number;
+};
+
+const { ModuleComponent } = createSsrMounter<ModuleRunParams, ModuleSsrRunParams>({
+    hostAppId: 'bar-app',
+    moduleId: 'ServerStateModule',
+    getModuleResources: createServerStateModuleFetcher({
+        baseUrl: 'https://example.com/foo-app',
+    }),
+});
+
+export const MyAwesomeComponent = () => {
+    const ssrRunParams = { name: 'Ivan', counter: 1 };
+
+    return (
+        <React.Suspense fallback={<div>pending...</div>}>
+            <ModuleComponent
+                instanceId='server-state-main'
+                ssrRunParams={ssrRunParams}
+                runParams={{
+                    ...ssrRunParams,
+                    onClick: () => console.log('client-only callback'),
+                }}
+            />
+        </React.Suspense>
+    );
+};
+```
+
+`ssrRunParams` - это сериализуемое подмножество `runParams`, с которым модуль рендерится на
+сервере. В него нельзя класть callback, ref, DOM-ноды и другие клиентские значения. Такие
+значения передаются только в `runParams` и становятся доступны при `hydrate`, `mount` или
+`update`.
+
+Если один и тот же модуль рендерится на странице несколько раз, задавайте стабильный
+`instanceId`, чтобы клиент нашел правильный встроенный payload для каждого инстанса.
+
+## Что должен сделать автор SSR-модуля
+
+На сервере модуля нужно добавить `renderToHtml` в описание модуля:
+
+```tsx
+import React from 'react';
+import { renderToString } from 'react-dom/server';
+
+import { createGetModulesExpress } from '@alfalab/scripts-server/build/express';
+
+import { ServerStateModule } from './modules/server-state-module';
+
+const modulesRouter = createGetModulesExpress({
+    ServerStateModule: {
+        mountMode: 'default',
+        version: '1.0.0',
+        getModuleState: async () => ({
+            baseUrl: 'https://example.com/foo-app',
+            someData: 'server data',
+        }),
+        renderToHtml: async ({ moduleState, ssrRunParams }) =>
+            renderToString(
+                <ServerStateModule
+                    serverState={moduleState}
+                    runParams={(ssrRunParams ?? {}) as Record<string, unknown>}
+                />,
+            ),
+    },
+});
+```
+
+В клиентском экспорте модуля нужно добавить `hydrate`, а если модуль должен обновляться при
+изменении `runParams` без полного перемонтирования - еще и `update`:
+
+```tsx
+import React from 'react';
+import { createRoot, hydrateRoot } from 'react-dom/client';
+
+import type { ModuleMountFunction, ModuleUnmountFunction } from '@alfalab/scripts-modules';
+
+let root: ReturnType<typeof createRoot>;
+
+export const mount: ModuleMountFunction = (targetNode, runParams, serverState) => {
+    root = createRoot(targetNode);
+    root.render(<App runParams={runParams} serverState={serverState} />);
+};
+
+export const hydrate: ModuleMountFunction = (targetNode, runParams, serverState) => {
+    root = hydrateRoot(targetNode, <App runParams={runParams} serverState={serverState} />);
+};
+
+export const update: ModuleMountFunction = (targetNode, runParams, serverState) => {
+    root.render(<App runParams={runParams} serverState={serverState} />);
+};
+
+export const unmount: ModuleUnmountFunction = () => {
+    root?.unmount();
+};
+```
+
+Если модуль вернул HTML, но не экспортирует `hydrate`, клиент очистит серверную разметку и
+вызовет обычный `mount`. Это корректный fallback, но пользователь может увидеть мигание.
+
+По умолчанию стили SSR-модуля инлайнятся в HTML хоста как `<style>` рядом с разметкой
+модуля, чтобы Suspense-boundary раскрывался сразу с готовыми стилями. Если хосту важнее
+меньший HTML и browser cache для CSS, можно передать `stylesMode: 'link'` в
+`createSsrMounter`: сервер отдаст `<link rel='stylesheet' type='text/css'>` с SSR-атрибутами,
+а клиент переиспользует эти теги и не добавит дубликаты. На React 18 Suspense-boundary может
+раскрыться до окончания загрузки CSS, поэтому `inline` остается значением по умолчанию.
+
+Подробное описание API, матрица поведения гидрации и дополнительные ограничения описаны в
+README пакета `@alfalab/scripts-modules`.
+
 # Изоляция стилей
 Если ваши приложения активно используют глобальные стили (то есть не с css-modules или css-in-js), вы вполне
 можете столкнуться с проблемой конфликтов стилей между модулями и приложением-потребителем.
@@ -584,6 +771,10 @@ const loader = createModuleLoader({
 Как альтернативу стоит рассмотреть использование кеширования на уровне http протокола, это дает приемлемую скорость работы без рисков утечки памяти и использования "старой" версии ресурсов.
 
 **Внимание!** Использование `resourcesCache: 'single-item'` не будет работать вместе с `useShadowDom` из-за особенностей работы со стилями.
+
+## Кеширование при использовании `createLazyMounter`
+
+Если вы используете `createLazyMounter` - модуль будет загружаться лишь один раз, не зависимо от используемых `loaderParams`.
 
 # Другие типы модулей
 

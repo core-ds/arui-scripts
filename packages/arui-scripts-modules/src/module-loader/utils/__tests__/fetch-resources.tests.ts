@@ -1,5 +1,6 @@
 import { scriptsFetcher, stylesFetcher } from '../dom-utils';
 import { fetchResources } from '../fetch-resources';
+import { MODULE_SSR_HREF_ATTRIBUTE } from '../get-embedded-module-resources';
 import { isSafari } from '../is-safari';
 
 jest.mock('../dom-utils', () => ({
@@ -124,5 +125,151 @@ describe('fetchResources', () => {
         });
 
         expect(document.head.contains(style)).toBe(false);
+    });
+});
+
+describe('fetchResources — SSR style adoption', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+        (isSafari as jest.Mock).mockReturnValue(false);
+        document.head.innerHTML = '';
+    });
+
+    function appendSsrStyle(href: string, tag: 'style' | 'link' = 'style') {
+        const element = document.createElement(tag);
+
+        element.setAttribute(DATA_APP_ID_ATTRIBUTE, MODULE_ID);
+        element.setAttribute(MODULE_SSR_HREF_ATTRIBUTE, href);
+        if (tag === 'link') {
+            (element as HTMLLinkElement).rel = 'stylesheet';
+            (element as HTMLLinkElement).href = href;
+        }
+        document.head.appendChild(element);
+
+        return element;
+    }
+
+    it('should fetch all styles normally when no SSR tags are present', async () => {
+        await fetchResources({
+            jsTargetNode: document.head,
+            cssTargetNode: document.head,
+            cssTargetSelector: undefined,
+            moduleId: MODULE_ID,
+            scripts: [],
+            styles: ['/static/css/main.css'],
+            baseUrl: '',
+        });
+
+        expect(stylesFetcher).toHaveBeenCalledWith(
+            expect.objectContaining({ urls: ['/static/css/main.css'] }),
+        );
+    });
+
+    it('should adopt a matching inline SSR style and not re-fetch it', async () => {
+        const ssrStyle = appendSsrStyle('/static/css/main.css');
+
+        await fetchResources({
+            jsTargetNode: document.head,
+            cssTargetNode: document.head,
+            cssTargetSelector: undefined,
+            moduleId: MODULE_ID,
+            scripts: [],
+            styles: ['/static/css/main.css'],
+            baseUrl: '',
+        });
+
+        expect(document.head.contains(ssrStyle)).toBe(true);
+        expect(stylesFetcher).toHaveBeenCalledWith(expect.objectContaining({ urls: [] }));
+    });
+
+    it('should fetch only the styles that are not covered by SSR tags', async () => {
+        appendSsrStyle('/static/css/adopted.css');
+
+        await fetchResources({
+            jsTargetNode: document.head,
+            cssTargetNode: document.head,
+            cssTargetSelector: undefined,
+            moduleId: MODULE_ID,
+            scripts: [],
+            styles: ['/static/css/adopted.css', '/static/css/fresh.css'],
+            baseUrl: '',
+        });
+
+        expect(stylesFetcher).toHaveBeenCalledWith(
+            expect.objectContaining({ urls: ['/static/css/fresh.css'] }),
+        );
+    });
+
+    it('should remove non-matching (stale) SSR style tags', async () => {
+        const staleStyle = appendSsrStyle('/static/css/old-version.css');
+        const freshSsrStyle = appendSsrStyle('/static/css/main.css');
+
+        await fetchResources({
+            jsTargetNode: document.head,
+            cssTargetNode: document.head,
+            cssTargetSelector: undefined,
+            moduleId: MODULE_ID,
+            scripts: [],
+            styles: ['/static/css/main.css'],
+            baseUrl: '',
+        });
+
+        expect(document.head.contains(staleStyle)).toBe(false);
+        expect(document.head.contains(freshSsrStyle)).toBe(true);
+    });
+
+    it('should adopt an SSR <link> style, wait until it loads, and not add duplicates', async () => {
+        const ssrLink = appendSsrStyle('/static/css/main.css', 'link') as HTMLLinkElement;
+
+        let resolved = false;
+        const promise = fetchResources({
+            jsTargetNode: document.head,
+            cssTargetNode: document.head,
+            cssTargetSelector: undefined,
+            moduleId: MODULE_ID,
+            scripts: [],
+            styles: ['/static/css/main.css'],
+            baseUrl: '',
+        }).then(() => {
+            resolved = true;
+        });
+
+        // Пока событие load не пришло, а sheet отсутствует (jsdom), промис не резолвится.
+        await Promise.resolve();
+        expect(resolved).toBe(false);
+
+        ssrLink.dispatchEvent(new Event('load'));
+        await promise;
+
+        expect(resolved).toBe(true);
+        expect(document.head.contains(ssrLink)).toBe(true);
+        const ssrLinks = document.head.querySelectorAll(
+            `link[${DATA_APP_ID_ATTRIBUTE}="${MODULE_ID}"][${MODULE_SSR_HREF_ATTRIBUTE}]`,
+        );
+
+        expect(ssrLinks).toHaveLength(1);
+        expect(ssrLinks[0]).toBe(ssrLink);
+        expect(stylesFetcher).toHaveBeenCalledWith(expect.objectContaining({ urls: [] }));
+    });
+
+    it('should not treat scripts as adoptable', async () => {
+        const ssrStyle = appendSsrStyle('/static/js/main.js');
+
+        await fetchResources({
+            jsTargetNode: document.head,
+            cssTargetNode: document.head,
+            cssTargetSelector: undefined,
+            moduleId: MODULE_ID,
+            scripts: ['/static/js/main.js'],
+            styles: [],
+            baseUrl: '',
+        });
+
+        // js всегда грузится заново, серверных js-тегов не бывает
+        expect(scriptsFetcher).toHaveBeenCalledWith(
+            expect.objectContaining({ urls: ['/static/js/main.js'] }),
+        );
+        // а «серверный» тег, не совпавший ни с одним стилем, удаляется
+        expect(document.head.contains(ssrStyle)).toBe(false);
     });
 });

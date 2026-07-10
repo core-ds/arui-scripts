@@ -1,11 +1,13 @@
 import * as rspack from '@rspack/core';
 
+import { AttributeModuleCssPlugin } from '../plugins/attribute-module-css';
 import { postCssPrefix } from '../plugins/postcss-prefix-selector';
 import { TurnOffSplitRemoteEntry } from '../plugins/turn-off-split-remote-entry';
 
 import { type CompatModuleConfig } from './app-configs/types';
 import { findLoader } from './util/find-loader';
 import { configs } from './app-configs';
+import { modulesCssManifest } from './modules-css-manifest';
 
 export function haveExposedDefaultModules() {
     return configs.modules?.exposes;
@@ -88,10 +90,20 @@ export function patchMainWebpackConfigForModules(
             shareScope: configs.modules.shareScope,
         }),
         new TurnOffSplitRemoteEntry(getModuleFederationContainerName()),
+        // на провайдере добавляем css чанки модулей в манифест
+        ...getModuleCssPlugins(isProvider),
     );
 
     return webpackConf;
     /* eslint-enable no-param-reassign */
+}
+
+function getModuleCssPlugins(isProvider: boolean): AttributeModuleCssPlugin[] {
+    if (!isProvider || !configs.modules?.exposes) {
+        return [];
+    }
+
+    return [new AttributeModuleCssPlugin(configs.modules.exposes, modulesCssManifest)];
 }
 
 export function getCssPrefixForModule(module: CompatModuleConfig) {

@@ -68,6 +68,14 @@ export function useModuleMounter<LoaderParams, RunParams, ServerState extends Ba
     runParamsRef.current = runParams;
     loadingStateRef.current = loadingState;
 
+    // Ссылка на уже смонтированный модуль — нужна, чтобы обновлять его через `update()`
+    // при изменении runParams, не перемонтируя.
+    const mountedModuleRef = useRef<{
+        module: MountableModule<RunParams, ServerState>;
+        targetNode: HTMLElement;
+        serverState: ServerState;
+    } | null>(null);
+
     useEffect(() => {
         let unmountFn: () => void | undefined;
         const abortController = new AbortController();
@@ -90,14 +98,18 @@ export function useModuleMounter<LoaderParams, RunParams, ServerState extends Ba
                 }
 
                 const module = unwrapDefaultExport(result.module);
+                const serverState = result.moduleResources.moduleState as ServerState;
 
-                module.mount(
-                    mountTargetNode,
-                    runParamsRef.current as RunParams,
-                    result.moduleResources.moduleState as ServerState,
-                );
+                module.mount(mountTargetNode, runParamsRef.current as RunParams, serverState);
+
+                mountedModuleRef.current = {
+                    module,
+                    targetNode: mountTargetNode,
+                    serverState,
+                };
 
                 unmountFn = () => {
+                    mountedModuleRef.current = null;
                     result.unmount();
                     module.unmount(mountTargetNode);
                 };
@@ -123,6 +135,19 @@ export function useModuleMounter<LoaderParams, RunParams, ServerState extends Ba
             }
         };
     }, [mountTargetNode, loader, cssTargetSelector, useShadowDom]);
+
+    // При изменении runParams обновляем уже смонтированный модуль через `update()`, если он есть.
+    // Если модуль не поддерживает `update` — поведение прежнее (модуль остаётся с параметрами,
+    // с которыми был смонтирован; перемонтирование не происходит).
+    useEffect(() => {
+        const mounted = mountedModuleRef.current;
+
+        if (!mounted?.module.update) {
+            return;
+        }
+
+        mounted.module.update(mounted.targetNode, runParams as RunParams, mounted.serverState);
+    }, [runParams]);
 
     return {
         loadingState,

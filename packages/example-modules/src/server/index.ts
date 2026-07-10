@@ -6,6 +6,8 @@ import express from 'express';
 import { readAssetsManifest } from '@alfalab/scripts-server';
 import { createGetModulesExpress } from '@alfalab/scripts-server/build/express';
 
+import { renderServerStateModuleCompatHtml, renderServerStateModuleHtml } from './render-modules';
+
 const app = express();
 
 app.use('/assets', express.static(path.join(process.cwd(), '.build', 'assets')));
@@ -46,6 +48,8 @@ const moduleRouter = createGetModulesExpress({
                 stuffFromClient: getResourcesRequest.params,
             };
         },
+        renderToHtml: async ({ moduleState, ssrRunParams }) =>
+            renderServerStateModuleCompatHtml(moduleState, ssrRunParams),
     },
     ServerStateModule: {
         mountMode: 'default',
@@ -56,6 +60,8 @@ const moduleRouter = createGetModulesExpress({
                 'It can be constructed from async data, so you may perform some service calls here',
             baseUrl: 'http://localhost:8082',
         }),
+        renderToHtml: async ({ moduleState, ssrRunParams }) =>
+            renderServerStateModuleHtml(moduleState, ssrRunParams),
     },
     ServerStateFactoryModule: {
         mountMode: 'default',
