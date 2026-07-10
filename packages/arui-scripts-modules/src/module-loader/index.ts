@@ -2,6 +2,7 @@ import 'abortcontroller-polyfill/dist/abortcontroller-polyfill-only';
 
 export * from './types';
 export * from './module-types';
+export * from './hooks/types';
 
 export { createModuleLoader } from './create-module-loader';
 export { createModuleFetcher } from './create-module-fetcher';
