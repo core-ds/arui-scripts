@@ -1,5 +1,11 @@
 # @alfalab/scripts-modules
 
+## 1.10.1
+
+### Patch Changes
+
+-   [#534](https://github.com/core-ds/arui-scripts/pull/534) [`37f3c82`](https://github.com/core-ds/arui-scripts/commit/37f3c82c4bdfe7e758f4734b3b05b0e722ede58b) Thanks [@TheDiamondDoge](https://github.com/TheDiamondDoge)! - Добавлен экспорт типа LoadingState
+
 ## 1.10.0
 
 ### Minor Changes
