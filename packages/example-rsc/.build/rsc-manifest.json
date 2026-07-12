@@ -1,0 +1,50 @@
+{
+  "main": {
+    "serverManifest": {
+      "4021670c6f9f964c40370841a697fb94447dd4f23f0abaf40c74c2958cd632e2d6": {
+        "id": "1406",
+        "name": "4021670c6f9f964c40370841a697fb94447dd4f23f0abaf40c74c2958cd632e2d6",
+        "chunks": [],
+        "async": false
+      }
+    },
+    "clientManifest": {
+      "/Users/dmitrbrvsk/alfabank/arui-scripts/packages/example-rsc/src/rsc/components/counter.tsx": {
+        "id": "421",
+        "name": "*",
+        "chunks": [
+          "432",
+          "432.a5f60584.chunk.js",
+          "366",
+          "366.4b4d2056.chunk.js"
+        ],
+        "cssFiles": [
+          "/assets/366.a02d50c0.chunk.css"
+        ],
+        "async": false
+      }
+    },
+    "serverConsumerModuleMap": {
+      "421": {
+        "*": {
+          "id": "407",
+          "name": "*",
+          "chunks": [],
+          "async": false
+        }
+      }
+    },
+    "moduleLoading": {
+      "prefix": "/assets/"
+    },
+    "entryCssFiles": {
+      "/Users/dmitrbrvsk/alfabank/arui-scripts/packages/example-rsc/src/rsc/pages/home.tsx": [
+        "/assets/783.d0e0a1ab.chunk.css"
+      ]
+    },
+    "entryJsFiles": [
+      "/assets/vendor.61f0861c.js",
+      "/assets/main.4494425b.js"
+    ]
+  }
+}
