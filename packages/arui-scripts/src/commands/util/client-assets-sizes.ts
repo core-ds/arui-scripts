@@ -2,7 +2,7 @@ import path from 'path';
 
 import { type Stats } from '@rspack/core';
 import chalk from 'chalk';
-import filesize from 'filesize';
+import { filesize } from 'filesize';
 
 import { configs } from '../../configs/app-configs';
 
