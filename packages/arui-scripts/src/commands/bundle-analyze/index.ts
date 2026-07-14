@@ -1,13 +1,9 @@
 import { RsdoctorRspackPlugin } from '@rsdoctor/rspack-plugin';
-import {
-    rspack,
-    type RspackOptionsNormalized,
-    type WebpackPluginInstance,
-} from '@rspack/core';
+import { rspack, type RspackOptionsNormalized, type WebpackPluginInstance } from '@rspack/core';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 
 import { configs } from '../../configs/app-configs';
-import { webpackClientConfig } from '../../configs/webpack.client.prod';
+import { webpackClientConfig } from '../../configs/rspack.client.prod';
 import { makeTmpDir } from '../util/make-tmp-dir';
 
 type BundleAnalyzerStatsOptions = {

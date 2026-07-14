@@ -54,7 +54,9 @@ export type AppConfigs = {
     codeLoader: 'babel' | 'tsc' | 'swc';
     experimentalReactCompiler: 'disabled' | ReactCompilerOptions;
     installServerSourceMaps: boolean;
-    disableDevWebpackTypecheck: boolean;
+    disableDevRspackTypecheck: boolean;
+    /** @deprecated используйте `disableDevRspackTypecheck` */
+    disableDevWebpackTypecheck?: boolean;
     jestCodeTransformer: 'babel' | 'tsc' | 'swc';
     collectCoverage: boolean;
 

@@ -1,10 +1,10 @@
 import { applyOverrides } from './util/apply-overrides';
 import { findLoader } from './util/find-loader';
 import { createFindPluginFunction } from './util/find-plugin';
-import { createClientWebpackConfig, createSingleClientWebpackConfig } from './webpack.client';
+import { createClientWebpackConfig, createSingleClientWebpackConfig } from './rspack.client';
 
 export const webpackClientConfig = applyOverrides(
-    ['webpack', 'webpackClient', 'webpackProd', 'webpackClientProd'],
+    ['rspack', 'rspackClient', 'rspackProd', 'rspackClientProd'],
     createClientWebpackConfig('prod'),
     {
         createSingleClientWebpackConfig: createSingleClientWebpackConfig.bind(null, 'prod'),

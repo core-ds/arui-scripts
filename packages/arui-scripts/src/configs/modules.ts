@@ -25,7 +25,7 @@ function getSeparateBuildRuntimeName() {
     )}_${MODULES_SEPARATE_BUILD_NAME}`;
 }
 
-export function patchMainWebpackConfigForModules(
+export function patchMainRspackConfigForModules(
     webpackConf: rspack.Configuration,
     mode: 'consumer' | 'provider' | 'both',
 ) {
@@ -93,6 +93,9 @@ export function patchMainWebpackConfigForModules(
     return webpackConf;
     /* eslint-enable no-param-reassign */
 }
+
+/** @deprecated используйте `patchMainRspackConfigForModules` */
+export const patchMainWebpackConfigForModules = patchMainRspackConfigForModules;
 
 export function getCssPrefixForModule(module: CompatModuleConfig) {
     if (module.cssPrefix) {

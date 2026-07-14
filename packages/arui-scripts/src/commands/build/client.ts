@@ -1,10 +1,12 @@
+import { type Configuration, type MultiStats, type Stats } from '@rspack/core';
 import chalk from 'chalk';
-import { Configuration, Stats, MultiStats } from '@rspack/core';
-import build from './build-wrapper';
+
+import { webpackClientConfig } from '../../configs/rspack.client.prod';
 import { printAssetsSizes } from '../util/client-assets-sizes';
-import { webpackClientConfig } from '../../configs/webpack.client.prod';
 import { loadBrowserslist } from '../util/load-browserslist';
 import { printBuildError } from '../util/print-build-error';
+
+import build from './build-wrapper';
 
 loadBrowserslist();
 
@@ -37,7 +39,7 @@ async function main() {
 
         if (Array.isArray(webpackClientConfig)) {
             webpackClientConfig.forEach((conf, index) =>
-                printOutputSizes(conf as any, (stats as MultiStats).stats[index]),
+                printOutputSizes(conf, (stats as MultiStats).stats[index]),
             );
         } else {
             printOutputSizes(webpackClientConfig as any, stats as Stats);

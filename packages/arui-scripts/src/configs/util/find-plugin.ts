@@ -12,10 +12,10 @@ import type AssetsPlugin from 'assets-webpack-plugin';
 import type CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import type CompressionPlugin from 'compression-webpack-plugin';
 import type MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import { type RspackManifestPlugin } from 'rspack-manifest-plugin';
 import { type RunScriptWebpackPlugin } from 'run-script-webpack-plugin';
 import { type TsCheckerRspackPluginOptions } from 'ts-checker-rspack-plugin/lib/plugin-options';
 import { type WebpackDeduplicationPlugin } from 'webpack-deduplication-plugin';
-import { type WebpackManifestPlugin } from 'webpack-manifest-plugin';
 
 /*
     вариации плагинов клиента
@@ -60,7 +60,7 @@ type PluginsListClient = {
         };
     };
     WebpackManifestPlugin: {
-        options: ConstructorParameters<typeof WebpackManifestPlugin>[number];
+        options: ConstructorParameters<typeof RspackManifestPlugin>[number];
     };
     CompressionPlugin: {
         options: ConstructorParameters<typeof CompressionPlugin>[number];
