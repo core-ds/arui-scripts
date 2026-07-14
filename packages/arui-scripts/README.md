@@ -3,7 +3,32 @@ ARUI-scripts
 
 Простой и гибкий инструмент для одновременной сборки клиентской и серверной части react-приложений.
 
+Быстрый старт
+
+===
+
+Самый быстрый способ начать — интерактивный мастер `init`. Он задаст несколько вопросов и сгенерирует готовый к запуску проект:
+
+```bash
+npx arui-scripts init my-app
+cd my-app
+yarn
+yarn start
+```
+
+CLI умеет настраивать:
+
+- **React 19** из коробки, опционально **React + RTK** (Redux Toolkit);
+- режим **SSR** (клиент + сервер, клиент в `src/client/`) или **clientOnly** (статика);
+- SSR-сервер на **Hapi**;
+- транспилятор (**swc**/babel/tsc) и тест-раннер (**Jest**/Vitest);
+- CSS-модули, полифилы (`core-js`), `experimentalReactCompiler`, docker registry, preset.
+
+Также CLI поддерживает глобальные флаги `arui-scripts --help`, `arui-scripts --version` и справку по командам `arui-scripts <команда> --help`.
+Подробнее - в [CLI и генерация проекта](docs/cli.md).
+
 Использование
+
 ===
 
 0. Пакет требует использовать следующие версии:
@@ -19,12 +44,15 @@ ARUI-scripts
 ```bash
 yarn add arui-scripts --dev
 ```
+
 или
+
 ```bash
 npm install arui-scripts --save-dev
 ```
 
 2. Создайте необходимые файлы
+
 - `src/index.{js,jsx,ts,tsx}` - входная точка для клиентского приложения.
 - `src/server/index.{js,jsx,tsx}` - входная точка для серверного приложения.
 Если нужен только клиент, смотреть [Режим clientOnly](./docs/client-only.md).
@@ -44,8 +72,10 @@ npm install arui-scripts --save-dev
 3. Используйте команды из `arui-scripts`!
 
 Документация
+
 ===
 - [Список актуальных версий docker-образов](../alpine-node-nginx/README.md)
+- [CLI и генерация проекта (`init`)](docs/cli.md)
 - [Настройки](docs/settings.md)
 - [Команды](docs/commands.md)
 - [Примеры входных точек](docs/examples.md)
