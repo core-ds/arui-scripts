@@ -1,5 +1,11 @@
 # arui-scripts
 
+## 23.1.0
+
+### Minor Changes
+
+-   [#537](https://github.com/core-ds/arui-scripts/pull/537) [`a1666b0`](https://github.com/core-ds/arui-scripts/commit/a1666b047e991acd2147dfd22197e31785be8fbf) Thanks [@dmitrbrvsk](https://github.com/dmitrbrvsk)! - переименование webpack-ключей оверрайдов в rspack с обратной совместимостью
+
 ## 23.0.2
 
 ### Patch Changes
