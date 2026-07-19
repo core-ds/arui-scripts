@@ -12,7 +12,7 @@ export function updateWithEnv(config: AppConfigs) {
         console.warn('Используйте ARUI_SCRIPTS_CONFIG только для отладки');
         const envSettings = JSON.parse(process.env.ARUI_SCRIPTS_CONFIG);
 
-        validateSettingsKeys(config, envSettings, 'ENV');
+        validateSettingsKeys(envSettings, 'ENV');
 
         return merge(config, envSettings);
     } catch (e) {

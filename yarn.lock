@@ -8534,6 +8534,7 @@ __metadata:
     webpack-bundle-analyzer: "npm:4.10.2"
     webpack-deduplication-plugin: "npm:^0.0.8"
     webpack-node-externals: "npm:3.0.0"
+    zod: "npm:^3.25.0"
   peerDependencies:
     imagemin-gifsicle: ^7.0.0
     imagemin-mozjpeg: ^10.0.0
@@ -24258,5 +24259,12 @@ __metadata:
   version: 2.1.2
   resolution: "yoctocolors@npm:2.1.2"
   checksum: 10/6ee42d665a4cc161c7de3f015b2a65d6c65d2808bfe3b99e228bd2b1b784ef1e54d1907415c025fc12b400f26f372bfc1b71966c6c738d998325ca422eb39363
+  languageName: node
+  linkType: hard
+
+"zod@npm:^3.25.0":
+  version: 3.25.76
+  resolution: "zod@npm:3.25.76"
+  checksum: 10/f0c963ec40cd96858451d1690404d603d36507c1fc9682f2dae59ab38b578687d542708a7fdbf645f77926f78c9ed558f57c3d3aa226c285f798df0c4da16995
   languageName: node
   linkType: hard
