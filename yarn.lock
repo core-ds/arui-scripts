@@ -6411,25 +6411,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/fs-extra@npm:^9.0.13":
-  version: 9.0.13
-  resolution: "@types/fs-extra@npm:9.0.13"
-  dependencies:
-    "@types/node": "npm:*"
-  checksum: 10/ac545e377248039c596ef27d9f277b813507ebdd95d05f32fe7e9c67eb1ed567dafb4ba59f5fdcb6601dd7fd396ff9ba24f8c122e89cef096cdc17987c50a7fa
-  languageName: node
-  linkType: hard
-
-"@types/glob@npm:~7.2.0":
-  version: 7.2.0
-  resolution: "@types/glob@npm:7.2.0"
-  dependencies:
-    "@types/minimatch": "npm:*"
-    "@types/node": "npm:*"
-  checksum: 10/6ae717fedfdfdad25f3d5a568323926c64f52ef35897bcac8aca8e19bc50c0bd84630bbd063e5d52078b2137d8e7d3c26eabebd1a2f03ff350fff8a91e79fc19
-  languageName: node
-  linkType: hard
-
 "@types/graceful-fs@npm:^4.1.3":
   version: 4.1.6
   resolution: "@types/graceful-fs@npm:4.1.6"
@@ -6682,13 +6663,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/minimatch@npm:*":
-  version: 5.1.2
-  resolution: "@types/minimatch@npm:5.1.2"
-  checksum: 10/94db5060d20df2b80d77b74dd384df3115f01889b5b6c40fa2dfa27cfc03a68fb0ff7c1f2a0366070263eb2e9d6bfd8c87111d4bc3ae93c3f291297c1bf56c85
-  languageName: node
-  linkType: hard
-
 "@types/minimist@npm:^1.2.0":
   version: 1.2.2
   resolution: "@types/minimist@npm:1.2.2"
@@ -6869,16 +6843,6 @@ __metadata:
     "@types/mime": "npm:*"
     "@types/node": "npm:*"
   checksum: 10/d5f8f5aaa765be6417aa3f2ebe36591f4e9d2d8a7480edf7d3db041427420fd565cb921fc021271098dd2afafce2b443fc0d978faa3ae21a2a58ebde7d525e9e
-  languageName: node
-  linkType: hard
-
-"@types/shelljs@npm:^0.8.12":
-  version: 0.8.12
-  resolution: "@types/shelljs@npm:0.8.12"
-  dependencies:
-    "@types/glob": "npm:~7.2.0"
-    "@types/node": "npm:*"
-  checksum: 10/c0517e8355614bad2d391270538bd5c7b65d7a771b333cb3ba9fb6321b4b44e1787e99d19cda97ac5d25ec84e2d6b81cb8cc496da5bdae6a725d922de4b44c70
   languageName: node
   linkType: hard
 
@@ -8279,14 +8243,12 @@ __metadata:
     "@types/assets-webpack-plugin": "npm:6.1.2"
     "@types/case-sensitive-paths-webpack-plugin": "npm:2.1.6"
     "@types/compression-webpack-plugin": "npm:4.0.1"
-    "@types/fs-extra": "npm:^9.0.13"
     "@types/jest": "npm:^29.5.14"
     "@types/lodash.merge": "npm:^4.6.7"
     "@types/node": "npm:^20.19.0"
     "@types/postcss-media-query-parser": "npm:0.2.4"
     "@types/semver": "npm:^7.5.0"
     "@types/serialize-javascript": "npm:^5.0.4"
-    "@types/shelljs": "npm:^0.8.12"
     "@types/tar": "npm:^4.0.5"
     "@types/webpack-bundle-analyzer": "npm:4.7.0"
     "@types/webpack-node-externals": "npm:^3.0.0"
@@ -8300,14 +8262,13 @@ __metadata:
     babel-plugin-transform-react-remove-prop-types: "npm:0.4.24"
     brotli-dict: "npm:^1.1.4"
     case-sensitive-paths-webpack-plugin: "npm:2.4.0"
-    chalk: "npm:^2.4.2"
+    chalk: "npm:^4.1.2"
     compression-webpack-plugin: "npm:9.2.0"
     core-js: "npm:3.49.0"
     css-loader: "npm:6.8.1"
     css-minimizer-webpack-plugin: "npm:5.0.0"
     expose-loader: "npm:3.1.0"
     filesize: "npm:^6.4.0"
-    fs-extra: "npm:6.0.1"
     get-port: "npm:7.2.0"
     html-webpack-plugin: "npm:^5.6.0"
     image-minimizer-webpack-plugin: "npm:^3.8.3"
@@ -8343,12 +8304,10 @@ __metadata:
     postcss-url: "npm:^10.0.0"
     react-refresh: "npm:0.10.0"
     react-refresh-typescript: "npm:2.0.2"
-    rimraf: "npm:^2.7.1"
     rspack-manifest-plugin: "npm:5.2.1"
     run-script-webpack-plugin: "npm:0.0.11"
     semver: "npm:^7.5.4"
     serialize-javascript: "npm:^7.0.5"
-    shelljs: "npm:0.8.5"
     strip-ansi: "npm:6.0.1"
     style-loader: "npm:3.3.3"
     swc-loader: "npm:^0.2.6"
@@ -12658,17 +12617,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fs-extra@npm:6.0.1":
-  version: 6.0.1
-  resolution: "fs-extra@npm:6.0.1"
-  dependencies:
-    graceful-fs: "npm:^4.1.2"
-    jsonfile: "npm:^4.0.0"
-    universalify: "npm:^0.1.0"
-  checksum: 10/26ae0ea82c18c963e8277d92d7bc01642931ca932282d44c12c9a8919acacb0f270bfae21824ba26e12ef45c78f4ee642b358815d24f625a3ade2219fcfd07b3
-  languageName: node
-  linkType: hard
-
 "fs-extra@npm:^11.1.1":
   version: 11.2.0
   resolution: "fs-extra@npm:11.2.0"
@@ -13066,7 +13014,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:^7.0.0, glob@npm:^7.1.3, glob@npm:^7.1.4":
+"glob@npm:^7.1.3, glob@npm:^7.1.4":
   version: 7.2.3
   resolution: "glob@npm:7.2.3"
   dependencies:
@@ -13836,13 +13784,6 @@ __metadata:
   version: 2.0.3
   resolution: "internmap@npm:2.0.3"
   checksum: 10/873e0e7fcfe32f999aa0997a0b648b1244508e56e3ea6b8259b5245b50b5eeb3853fba221f96692bd6d1def501da76c32d64a5cb22a0b26cdd9b445664f805e0
-  languageName: node
-  linkType: hard
-
-"interpret@npm:^1.0.0":
-  version: 1.4.0
-  resolution: "interpret@npm:1.4.0"
-  checksum: 10/5beec568d3f60543d0f61f2c5969d44dffcb1a372fe5abcdb8013968114d4e4aaac06bc971a4c9f5bd52d150881d8ebad72a8c60686b1361f5f0522f39c0e1a3
   languageName: node
   linkType: hard
 
@@ -19956,15 +19897,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rechoir@npm:^0.6.2":
-  version: 0.6.2
-  resolution: "rechoir@npm:0.6.2"
-  dependencies:
-    resolve: "npm:^1.1.6"
-  checksum: 10/fe76bf9c21875ac16e235defedd7cbd34f333c02a92546142b7911a0f7c7059d2e16f441fe6fb9ae203f459c05a31b2bcf26202896d89e390eda7514d5d2702b
-  languageName: node
-  linkType: hard
-
 "redent@npm:^3.0.0":
   version: 3.0.0
   resolution: "redent@npm:3.0.0"
@@ -20282,7 +20214,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@npm:^1.1.6, resolve@npm:^1.1.7, resolve@npm:^1.10.0, resolve@npm:^1.14.2, resolve@npm:^1.20.0, resolve@npm:^1.22.4":
+"resolve@npm:^1.1.7, resolve@npm:^1.10.0, resolve@npm:^1.14.2, resolve@npm:^1.20.0, resolve@npm:^1.22.4":
   version: 1.22.6
   resolution: "resolve@npm:1.22.6"
   dependencies:
@@ -20322,7 +20254,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@patch:resolve@npm%3A^1.1.6#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.1.7#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.10.0#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.14.2#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.20.0#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.22.4#optional!builtin<compat/resolve>":
+"resolve@patch:resolve@npm%3A^1.1.7#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.10.0#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.14.2#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.20.0#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.22.4#optional!builtin<compat/resolve>":
   version: 1.22.6
   resolution: "resolve@patch:resolve@npm%3A1.22.6#optional!builtin<compat/resolve>::version=1.22.6&hash=c3c19d"
   dependencies:
@@ -20389,17 +20321,6 @@ __metadata:
   bin:
     rgb: ./bin/rgb
   checksum: 10/d33da6b61be7f200043dec325d2cf359cbd5d8d85ca4c3b3db47b884fbcfbba69dc2f698e97593448a51151b322d8aad3d15254eaed2fac4f6c9c095c3936289
-  languageName: node
-  linkType: hard
-
-"rimraf@npm:^2.7.1":
-  version: 2.7.1
-  resolution: "rimraf@npm:2.7.1"
-  dependencies:
-    glob: "npm:^7.1.3"
-  bin:
-    rimraf: ./bin.js
-  checksum: 10/4586c296c736483e297da7cffd19475e4a3e41d07b1ae124aad5d687c79e4ffa716bdac8732ed1db942caf65271cee9dd39f8b639611de161a2753e2112ffe1d
   languageName: node
   linkType: hard
 
@@ -20901,19 +20822,6 @@ __metadata:
   version: 1.9.0
   resolution: "shell-quote@npm:1.9.0"
   checksum: 10/c3bc91e74a469c4f96b6fd13b0c777fff16bcbda202692a4e5402d3d6b78fc6e02fe92fdf8dc0bddf992a9c6758e43207bfc5bdbefbf8a58190b1c885cbcc171
-  languageName: node
-  linkType: hard
-
-"shelljs@npm:0.8.5":
-  version: 0.8.5
-  resolution: "shelljs@npm:0.8.5"
-  dependencies:
-    glob: "npm:^7.0.0"
-    interpret: "npm:^1.0.0"
-    rechoir: "npm:^0.6.2"
-  bin:
-    shjs: bin/shjs
-  checksum: 10/f2178274b97b44332bbe9ddb78161137054f55ecf701c7a99db9552cb5478fe279ad5f5131d8a7c2f0730e01ccf0c629d01094143f0541962ce1a3d0243d23f7
   languageName: node
   linkType: hard
 

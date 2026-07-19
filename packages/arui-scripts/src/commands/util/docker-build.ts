@@ -1,14 +1,16 @@
+import { existsSync, promises as fs } from 'fs';
 import path from 'path';
 
-import fs from 'fs-extra';
 import satisfies from 'semver/functions/satisfies';
-import shell from 'shelljs';
 
 import { configs } from '../../configs/app-configs';
 import {
     baseNginxConfigFileName,
     nginxConfigFileName,
 } from '../../configs/app-configs/get-defaults';
+
+import { getCommandOutput } from './exec';
+import { createFile, emptyDir } from './fs-helpers';
 
 export function getBuildParamsFromArgs() {
     let imageVersion = configs.version;
@@ -70,7 +72,7 @@ export async function prepareFilesForDocker({
     allowLocalStartScript,
     addNodeModulesToDockerIgnore,
 }: PrepareFilesForDockerParams) {
-    await fs.emptyDir(pathToTempDir);
+    await emptyDir(pathToTempDir);
 
     let nginxBaseConf = '';
 
@@ -122,17 +124,10 @@ export async function prepareFilesForDocker({
 }
 
 export function dockerVersionSatisfies(request: string) {
-    const dockerServerVersion = shell.exec("docker version --format '{{.Server.Version}}'", {
-        silent: true,
-    });
-    const dockerClientVersion = shell.exec("docker version --format '{{.Client.Version}}'", {
-        silent: true,
-    });
+    const dockerServerVersion = getCommandOutput("docker version --format '{{.Server.Version}}'");
+    const dockerClientVersion = getCommandOutput("docker version --format '{{.Client.Version}}'");
 
-    return (
-        satisfies(dockerServerVersion.toString(), request) &&
-        satisfies(dockerClientVersion.toString(), request)
-    );
+    return satisfies(dockerServerVersion, request) && satisfies(dockerClientVersion, request);
 }
 
 type DockerBuildCommandParams = {
@@ -157,13 +152,13 @@ export function getDockerBuildCommand({ tempDirName, imageFullName }: DockerBuil
 }
 
 async function getAndModifyDockerIgnoreContent(dockerIgnoreFilePath: string) {
-    if (fs.existsSync(dockerIgnoreFilePath)) {
+    if (existsSync(dockerIgnoreFilePath)) {
         return fs
             .readFile(dockerIgnoreFilePath, 'utf-8')
             .then((ignores) => `${ignores}\nnode_modules`);
     }
 
-    await fs.createFile(dockerIgnoreFilePath);
+    await createFile(dockerIgnoreFilePath);
 
     return 'node_modules';
 }
