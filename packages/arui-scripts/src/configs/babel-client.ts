@@ -1,3 +1,5 @@
+import { type InputOptions } from '@babel/core';
+
 import { applyOverrides } from './util/apply-overrides';
 import { configs } from './app-configs';
 import { supportingBrowsers as browsers } from './supporting-browsers';
@@ -21,7 +23,7 @@ export const babelClientConfig = applyOverrides(['babel', 'babelClient'], {
             configs.codeLoader !== 'tsc' &&
             require.resolve('@babel/preset-typescript'),
         require.resolve('@babel/preset-react'),
-    ].filter(Boolean),
+    ].filter(Boolean) as InputOptions['presets'],
     plugins: [
         require.resolve('@babel/plugin-transform-proto-to-assign'),
         [require.resolve('@babel/plugin-proposal-decorators'), { legacy: true }],
@@ -47,7 +49,7 @@ export const babelClientConfig = applyOverrides(['babel', 'babelClient'], {
         require.resolve('@babel/plugin-transform-nullish-coalescing-operator'),
         require.resolve('@babel/plugin-transform-optional-chaining'),
         configs.collectCoverage && require.resolve('babel-plugin-istanbul'),
-    ].filter(Boolean),
+    ].filter(Boolean) as InputOptions['plugins'],
     env: {
         production: {
             plugins: [
