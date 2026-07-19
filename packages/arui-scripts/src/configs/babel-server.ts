@@ -13,7 +13,6 @@ export const config = applyOverrides(['babel', 'babelServer'], {
         require.resolve('@babel/preset-react'),
     ].filter(Boolean),
     plugins: [
-        require.resolve('@babel/plugin-syntax-dynamic-import'),
         require.resolve('@babel/plugin-transform-proto-to-assign'),
         [require.resolve('@babel/plugin-proposal-decorators'), { legacy: true }],
         [require.resolve('@babel/plugin-transform-class-properties'), { loose: true }],
