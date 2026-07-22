@@ -1,0 +1,1 @@
+"use strict";(self.rspackChunkexample_rsc=self.rspackChunkexample_rsc||[]).push([[783],{682:function(s,e,c){c.r(e)}}]);
