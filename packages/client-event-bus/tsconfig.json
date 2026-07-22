@@ -1,6 +1,7 @@
 {
     "extends": "../arui-scripts/tsconfig.json",
     "compilerOptions": {
+        "incremental": false,
         "target": "ES2016",
         "module": "commonjs",
         "skipLibCheck": true,
@@ -10,5 +11,5 @@
         "types": ["jest", "node", "webpack-env"]
     },
     "include": ["src/**/*.ts"],
-    "exclude": ["build"]
+    "exclude": ["build", "src/**/__tests__/**"]
 }

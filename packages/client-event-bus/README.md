@@ -10,12 +10,14 @@
 Для того чтобы добавить типизацию событий на проекте, не трогая основной пакет, можно сделать следующее:
 
 `constants/event-bus.ts` - заводим ключ, по которому создается шина данных
+
 ```ts
 // constants/event-bus.ts
 export const BUS_KEY = 'my-first-bus';
 ```
 
 `types/event-bus.ts` - определяем типы событий
+
 ```ts
 // types/event-bus.ts
 type EventType = 'busValueFirst' | 'busValueSecond'
@@ -25,9 +27,10 @@ export type EventTypes = Record<EventType, EventPayload>;
 ```
 
 `types/event-types.d.ts` - добавляем файл для типизации функций `getEventBus` и `createBus`
+
 ```ts
 // types/event-types.d.ts
-import type { AbstractAppEventBus } from '@alfalab/client-event-bus';
+import type { AbstractAppEventBus, EventBusParams } from '@alfalab/client-event-bus';
 
 import { BUS_KEY } from '~/constants/event-bus';
 import type { EventTypes } from '~types/event-bus'
@@ -36,9 +39,6 @@ export declare type EventBus = AbstractAppEventBus<EventTypes>;
 
 declare module '@alfalab/client-event-bus' {
     export declare function getEventBus(busKey: typeof BUS_KEY): EventBus;
-}
-
-declare module '@alfalab/client-event-bus' {
     export declare function createBus(
         key: typeof BUS_KEY,
         params?: EventBusParams,
@@ -63,12 +63,20 @@ declare module '@alfalab/client-event-bus' {
 - `addEventListenerAndGetLast(eventName: string, eventHandler: (event: CustomEvent) => void, options?: AddEventListenerOptions)` - объединяет в себе `addEventListener` и `getLastEvent`. Подписывает на событие и возвращает последнее событие этого типа
 
 ## Использование в react
+
 Если вам нужно использовать значение из event-bus в react коде - вы можете использовать хук `useEventBusValue`:
+
 ```tsx
-import { useEventBusValue } from '@alfalab/client-event-bus';
+import { getEventBus, useEventBusValue } from '@alfalab/client-event-bus';
+
+import { BUS_KEY } from '~/constants/event-bus';
 
 const MyComponent = () => {
-    const currentOrganizationId = useEventBusValue('shared_currentOrganizationId');
+    const eventBus = getEventBus(BUS_KEY);
+    const currentOrganizationId = useEventBusValue(
+        eventBus,
+        'shared_currentOrganizationId',
+    );
 
     return (
         <div>
@@ -79,3 +87,27 @@ const MyComponent = () => {
 ```
 
 Хук всегда будет возвращать последнее значение из eventBus. При изменениях значения будет происходить ререндер.
+
+## Инициализация
+
+Шину должен один раз создать host приложение:
+
+```ts
+import { createBus } from '@alfalab/client-event-bus/implementation';
+
+import { BUS_KEY } from '~/constants/event-bus';
+
+createBus(BUS_KEY);
+```
+
+Повторный вызов `createBus` с тем же ключом возвращает существующую шину. Параметры повторного
+вызова не заменяют параметры уже созданного экземпляра.
+
+## SSR
+
+Пакет предназначен для клиентской части:
+
+- `getEventBus` безопасно возвращает `null`, если `window` недоступен;
+- `createBus` нужно вызывать только на клиенте — вне browser runtime функция выбрасывает
+  понятную ошибку;
+- прямое использование `EventBus` требует совместимых реализаций `EventTarget` и `CustomEvent`.
