@@ -83,7 +83,7 @@
         "mini-css-extract-plugin": "2.7.6",
         "mini-svg-data-uri": "^1.4.4",
         "null-loader": "0.1.1",
-        "postcss": "^8.5.10",
+        "postcss": "^8.5.12",
         "postcss-calc": "^9.0.0",
         "postcss-color-function": "^4.0.0",
         "postcss-color-mod-function": "^3.0.0",
