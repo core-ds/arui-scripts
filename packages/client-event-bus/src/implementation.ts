@@ -1,6 +1,11 @@
 import { type AbstractAppEventBus, type AbstractKnownEventTypes } from './types/abstract-types';
 import { CustomEvent } from './custom-event';
 
+export type EventBusParams = {
+    targetNode?: EventTarget;
+    debugMode?: boolean;
+};
+
 export class EventBus<KnownEventTypes extends AbstractKnownEventTypes>
     implements AbstractAppEventBus<KnownEventTypes>
 {
@@ -9,7 +14,7 @@ export class EventBus<KnownEventTypes extends AbstractKnownEventTypes>
         this.targetNode = targetNode;
     }
 
-    private targetNode: Node;
+    private targetNode: EventTarget;
 
     private debugMode: boolean;
 
@@ -19,8 +24,8 @@ export class EventBus<KnownEventTypes extends AbstractKnownEventTypes>
         EventName extends keyof KnownEventTypes,
         PayloadType extends KnownEventTypes[EventName],
     >(eventName: EventName, detail?: PayloadType): void {
-        this.targetNode.dispatchEvent(new CustomEvent(eventName as string, { detail }));
         this.lastEventValues[eventName] = detail;
+        this.targetNode.dispatchEvent(new CustomEvent(eventName as string, { detail }));
 
         if (this.debugMode) {
             // eslint-disable-next-line no-console
@@ -84,6 +89,10 @@ export function createBus(
     key: string,
     params: EventBusParams = {},
 ): EventBus<AbstractKnownEventTypes> {
+    if (typeof window === 'undefined') {
+        throw new Error('Client event bus can only be created in a browser environment');
+    }
+
     if (!window.__alfa_event_buses) {
         window.__alfa_event_buses = {};
     }
