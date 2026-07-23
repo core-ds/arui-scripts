@@ -25,7 +25,7 @@ export function updateWithPresets(config: AppConfigs, context: AppContext) {
             // ts-node импортирует esModules, из них надо вытягивать default именно так
             presetsSettings = presetsSettings.default;
         }
-        validateSettingsKeys(config, presetsSettings, presetsConfigPath);
+        validateSettingsKeys(presetsSettings, presetsConfigPath);
         // eslint-disable-next-line no-param-reassign
         config = merge(config, presetsSettings);
     }

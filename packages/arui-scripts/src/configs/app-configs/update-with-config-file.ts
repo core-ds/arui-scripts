@@ -8,7 +8,7 @@ export function updateWithConfigFile(config: AppConfigs, context: AppContext) {
     const appSettings = readConfigFile(context.cwd);
 
     if (appSettings) {
-        validateSettingsKeys(config, appSettings, context.cwd);
+        validateSettingsKeys(appSettings, context.cwd);
 
         return merge(config, appSettings);
     }

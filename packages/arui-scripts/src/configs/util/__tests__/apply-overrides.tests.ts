@@ -34,7 +34,7 @@ it('should throw an error when overrides is not a function', () => {
 
     const { applyOverrides } = require('../apply-overrides');
 
-    expect(() => applyOverrides('foo', {})).toThrowError(TypeError);
+    expect(() => applyOverrides('foo', {})).toThrow(TypeError);
 });
 
 it('should call override function and update config', () => {
