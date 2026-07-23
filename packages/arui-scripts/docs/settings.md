@@ -271,6 +271,28 @@ const packageSettings = {
 - `swc` - для всего кода будет использоваться `@swc/jest`.
   Swc более строго следует спецификациям и [не дает возможности](https://github.com/swc-project/swc/issues/5059) делать `spyOn` для экспортов из esm модулей.
 
+#### jestTransformNodeModules
+Список пакетов из `node_modules`, которые нужно прогонять через трансформер при запуске тестов. По умолчанию `[]`.
+
+```js
+module.exports = {
+    jestTransformNodeModules: ['uuid', '@scope/some-package'],
+};
+```
+
+Нужно для пакетов, которые публикуются только в формате ESM (`"type": "module"` без CommonJS сборки).
+По умолчанию jest не трансформирует ничего внутри `node_modules`, а его рантайм — CommonJS: он оборачивает
+файл в `function(module, exports, require, ...)` и выполняет его, поэтому на ESM-коде падает с
+`SyntaxError: Unexpected token 'export'`. Собственный `require(esm)` из Node тут не помогает — jest его не использует,
+а нативный ESM-режим самого jest до сих пор требует запуска ноды с `--experimental-vm-modules`.
+
+Настройка добавляет перечисленные пакеты в исключения `transformIgnorePatterns`, так что их код будет обработан
+тем же трансформером, который выбран в [jestCodeTransformer](#jestcodetransformer). Вложенные установки
+(`node_modules/foo/node_modules/uuid`) тоже учитываются.
+
+Если нужно что-то более тонкое, `transformIgnorePatterns` по-прежнему можно задать напрямую — через ключ `jest`
+в `package.json` или через `jest.config.js`, настройки приложения имеют приоритет над пресетом.
+
 #### collectCoverage
 Добавлять ли инструменты для сборки coverage при сборке. По умолчанию определяется по env переменным - будет выставлено в `true` если `NODE_ENV = 'cypress'` или `USE_ISTANBUL = 'enabled'`.
 Сбор coverage не будет работать при использовании `codeLoader=tsc`.
