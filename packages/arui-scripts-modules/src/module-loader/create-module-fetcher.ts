@@ -1,4 +1,5 @@
 import { fetchAppManifest } from './utils/fetch-app-manifest';
+import { getModuleOverride } from './utils/module-overrides';
 import { urlSegmentWithoutEndSlash } from './utils/normalize-url-segment';
 import { type ModuleResourcesGetter } from './create-module-loader';
 import { type AruiAppManifest, type BaseModuleState, type ModuleResources } from './types';
@@ -18,9 +19,7 @@ export function createModuleFetcher({
     baseUrl,
     assetsUrl = '/assets/webpack-assets.json',
 }: CreateClientResourcesFetcherParams): ModuleResourcesGetter<void, BaseModuleState> {
-    const manifestUrl = `${urlSegmentWithoutEndSlash(baseUrl)}${assetsUrl}`;
-
-    function getModuleFiles(manifest: AruiAppManifest, moduleId: string) {
+    function getModuleFiles(manifest: AruiAppManifest, moduleId: string, manifestUrl: string) {
         if (!manifest[moduleId]) {
             throw new Error(`Module ${moduleId} not found in manifest from ${manifestUrl}`);
         }
@@ -39,8 +38,13 @@ export function createModuleFetcher({
         moduleId,
         hostAppId,
     }): Promise<ModuleResources> {
+        // В dev-режиме адрес приложения-провайдера может быть подменен на локальный, см. getModuleOverride.
+        // В production-сборке этот вызов всегда возвращает undefined и вырезается минификатором.
+        const effectiveBaseUrl = getModuleOverride(moduleId) ?? baseUrl;
+        const manifestUrl = `${urlSegmentWithoutEndSlash(effectiveBaseUrl)}${assetsUrl}`;
+
         const manifest = await fetchAppManifest(manifestUrl);
-        const { mode, ...moduleFiles } = getModuleFiles(manifest, moduleId);
+        const { mode, ...moduleFiles } = getModuleFiles(manifest, moduleId, manifestUrl);
 
         return {
             ...moduleFiles,
@@ -50,7 +54,7 @@ export function createModuleFetcher({
             /* eslint-enable no-underscore-dangle */
             mountMode: mode,
             moduleState: {
-                baseUrl,
+                baseUrl: effectiveBaseUrl,
                 hostAppId,
             },
         };
