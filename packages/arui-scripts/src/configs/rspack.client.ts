@@ -37,6 +37,8 @@ import { babelClientConfig as babelConf } from './babel-client';
 import { babelDependencies } from './babel-dependencies';
 import { addEnvToHtmlTemplate, ClientConfigPlugin } from './client-env-config';
 import {
+    getDevModuleOverrides,
+    MODULE_OVERRIDES_DEFINE_KEY,
     MODULES_SEPARATE_BUILD_NAME,
     patchMainRspackConfigForModules,
     patchWebpackConfigForCompat,
@@ -298,7 +300,17 @@ export const createSingleClientWebpackConfig = (
             // В прод режиме webpack автоматически подставляет NODE_ENV=production, но нам нужно чтобы эта переменная
             // была доступна всегда. При этом мы не хотим давать возможность переопределять ее в production режиме.
             ...(mode === 'dev'
-                ? { 'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV) }
+                ? {
+                      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+                      // Подмены адресов модулей для локальной разработки. В prod-режиме ключ не
+                      // определяется вовсе, и обращение к нему схлопывается в undefined благодаря
+                      // 'process.env': '{}' выше - код чтения подмен вырезается из бандла целиком.
+                      // DefinePlugin подставляет значение как код, поэтому нужен двойной stringify:
+                      // в бандле должен оказаться строковый литерал с json внутри.
+                      [MODULE_OVERRIDES_DEFINE_KEY]: JSON.stringify(
+                          JSON.stringify(getDevModuleOverrides()),
+                      ),
+                  }
                 : {}),
         }),
         new CssExtractRspackPlugin(

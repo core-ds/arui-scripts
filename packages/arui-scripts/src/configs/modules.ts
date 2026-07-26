@@ -14,6 +14,64 @@ export function haveExposedDefaultModules() {
 export const MODULES_ENTRY_NAME = 'remoteEntry.js';
 export const MODULES_SEPARATE_BUILD_NAME = 'wmf';
 
+/**
+ * Переменная окружения, через которую можно задать подмены адресов модулей для одного запуска:
+ * `ARUI_MODULE_OVERRIDES='{"someModule":"http://localhost:8081"}' yarn start`
+ */
+export const MODULE_OVERRIDES_ENV_KEY = 'ARUI_MODULE_OVERRIDES';
+
+/**
+ * Ключ, под которым подмены попадают в клиентскую сборку. Значение читает `@alfalab/scripts-modules`.
+ * Ключ определяется только в dev-режиме: возможность подменить источник исполняемого js в проде -
+ * это возможность выполнить произвольный код на странице приложения.
+ */
+export const MODULE_OVERRIDES_DEFINE_KEY = `process.env.${MODULE_OVERRIDES_ENV_KEY}`;
+
+function parseOverridesFromEnv(): Record<string, string> {
+    const rawValue = process.env[MODULE_OVERRIDES_ENV_KEY];
+
+    if (!rawValue) {
+        return {};
+    }
+
+    let parsed: unknown;
+
+    try {
+        parsed = JSON.parse(rawValue);
+    } catch {
+        console.warn(
+            `Не удалось разобрать ${MODULE_OVERRIDES_ENV_KEY}, подмены модулей будут проигнорированы. Ожидается json вида {"moduleId":"http://localhost:8081"}`,
+        );
+
+        return {};
+    }
+
+    if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+        return {};
+    }
+
+    const result: Record<string, string> = {};
+
+    Object.entries(parsed as Record<string, unknown>).forEach(([moduleId, baseUrl]) => {
+        if (typeof baseUrl === 'string' && baseUrl) {
+            result[moduleId] = baseUrl;
+        }
+    });
+
+    return result;
+}
+
+/**
+ * Собирает подмены адресов модулей для dev-сборки: из `modules.devOverrides` в конфиге приложения
+ * и из переменной окружения. Переменная окружения приоритетнее - она задается на один запуск.
+ */
+export function getDevModuleOverrides(): Record<string, string> {
+    return {
+        ...configs.modules?.devOverrides,
+        ...parseOverridesFromEnv(),
+    };
+}
+
 function getModuleFederationContainerName() {
     return configs.modules?.name || configs.normalizedName;
 }

@@ -104,6 +104,11 @@ export type AppConfigs = {
         exposes?: Record<string, string>;
         options?: ModuleConfigBase;
         shareScope?: string;
+        /**
+         * Подмена адресов приложений, предоставляющих модули: moduleId -> baseUrl.
+         * Применяется только в dev-сборке и нужна для локальной разработки модуля вместе с хостом.
+         */
+        devOverrides?: Record<string, string>;
     } | null;
     nodeExternals?: Omit<webpackNodeExternals.Options, 'allowlist'>;
 };
