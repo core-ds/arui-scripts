@@ -80,7 +80,29 @@ describe('createServerStateModuleFetcher', () => {
 
         mockXHR.onerror?.();
 
-        await expect(promise).rejects.toEqual(new Error(mockXHR.statusText));
+        await expect(promise).rejects.toThrow(
+            /Module resources request for test failed: network error while requesting https:\/\/test\.com\/api\/getModuleResources/,
+        );
+    });
+
+    it('should reject the promise when the response is not a valid json', async () => {
+        const fetchServerResources = createServerStateModuleFetcher({
+            baseUrl: 'https://test.com/',
+        });
+
+        mockXHR.responseText = '<!doctype html>';
+
+        const promise = fetchServerResources({
+            moduleId: 'test',
+            hostAppId: 'test',
+            params: undefined,
+        });
+
+        mockXHR.onload?.();
+
+        await expect(promise).rejects.toThrow(
+            /Module resources request for test failed: https:\/\/test\.com\/api\/getModuleResources returned invalid JSON/,
+        );
     });
 
     it('should reject the promise when the response status is not 200', async () => {
@@ -98,6 +120,8 @@ describe('createServerStateModuleFetcher', () => {
 
         mockXHR.onload?.();
 
-        await expect(promise).rejects.toEqual(new Error(mockXHR.statusText));
+        await expect(promise).rejects.toThrow(
+            'Module resources request for test failed: https://test.com/api/getModuleResources responded with 400 status',
+        );
     });
 });
