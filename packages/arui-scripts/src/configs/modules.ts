@@ -11,6 +11,23 @@ export function haveExposedDefaultModules() {
     return configs.modules?.exposes;
 }
 
+function hasEntries(exposes: Record<string, unknown> | undefined | null) {
+    return Boolean(exposes && Object.keys(exposes).length > 0);
+}
+
+/**
+ * Предоставляет ли приложение модули наружу - неважно, default или compat.
+ * Приложения, которые сами разбираются с WMF (`disableModulesSupport`), провайдерами не считаются:
+ * arui-scripts про их модули ничего не знает.
+ */
+export function isModulesProvider() {
+    if (configs.disableModulesSupport) {
+        return false;
+    }
+
+    return hasEntries(configs.modules?.exposes) || hasEntries(configs.compatModules?.exposes);
+}
+
 export const MODULES_ENTRY_NAME = 'remoteEntry.js';
 export const MODULES_SEPARATE_BUILD_NAME = 'wmf';
 

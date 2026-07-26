@@ -6,6 +6,22 @@ import type http from 'http';
 import { applyOverrides } from './util/apply-overrides';
 import { configs } from './app-configs';
 import { ENV_CONFIG_FILENAME } from './client-env-config';
+import { isModulesProvider } from './modules';
+
+/**
+ * Нужно ли добавлять CORS-заголовки в ответы dev-сервера.
+ *
+ * В режиме `'auto'` они включаются для приложений, предоставляющих модули: хост грузит модуль
+ * с другого origin, и без этих заголовков браузер запрос отклонит. Явно заданное значение
+ * всегда выигрывает.
+ */
+export function isDevServerCorsEnabled() {
+    if (configs.devServerCors !== 'auto') {
+        return configs.devServerCors;
+    }
+
+    return isModulesProvider();
+}
 
 function getServerToClientProxyConfig(): NonNullable<Configuration['proxy']>[number] {
     const assetsRoot = path.normalize(`/${configs.publicPath}`).replace(/\\/g, '/');
@@ -16,7 +32,7 @@ function getServerToClientProxyConfig(): NonNullable<Configuration['proxy']>[num
         // на бэкенд уходят только запросы, чей path не относится к клиентской статике (префикс publicPath).
         pathFilter: (pathname: string) => !pathname.startsWith(assetsRoot),
         ...((configs.devSourceMaps && configs.devSourceMaps.includes('eval')) ||
-        configs.devServerCors
+        isDevServerCorsEnabled()
             ? {
                   on: {
                       proxyRes: (proxyRes: http.IncomingMessage, req: http.IncomingMessage) => {
@@ -38,7 +54,7 @@ function getServerToClientProxyConfig(): NonNullable<Configuration['proxy']>[num
                           }
                           // если включен devServerCors, то нужно принудительно менять статус ответа на 200, чтобы
                           // браузер не отклонял ответы с CORS
-                          if (configs.devServerCors && req.method === 'OPTIONS') {
+                          if (isDevServerCorsEnabled() && req.method === 'OPTIONS') {
                               // eslint-disable-next-line no-param-reassign
                               proxyRes.statusCode = 200;
                           }
@@ -68,7 +84,7 @@ export const devServerConfig = applyOverrides('devServer', {
     },
     static: [configs.serverOutputPath, configs.clientOutputPath],
     proxy: getProxyConfig(),
-    headers: configs.devServerCors
+    headers: isDevServerCorsEnabled()
         ? {
               'Access-Control-Allow-Origin': '*',
               'Access-Control-Allow-Headers': '*',

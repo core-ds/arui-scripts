@@ -12,7 +12,12 @@ export type AppConfigs = {
     serverPort: number;
     debug: boolean;
     devSourceMaps: DevTool;
-    devServerCors: boolean;
+    /**
+     * Добавлять ли CORS-заголовки в ответы dev-сервера.
+     * `'auto'` (по умолчанию) включает их для приложений, предоставляющих модули: без них хост
+     * не сможет загрузить модуль с локально поднятого провайдера.
+     */
+    devServerCors: boolean | 'auto';
     useServerHMR: boolean;
     presets: string | null;
     proxy: DevServerConfiguration['proxy'];
