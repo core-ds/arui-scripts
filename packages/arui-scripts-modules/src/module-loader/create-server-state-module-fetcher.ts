@@ -1,7 +1,8 @@
+import { getModuleOverride } from './utils/module-overrides';
 import { urlSegmentWithoutEndSlash } from './utils/normalize-url-segment';
 import { type ModuleResourcesGetter } from './create-module-loader';
 import { getServerStateModuleFetcherParams } from './get-server-state-module-fetcher-params';
-import { type BaseModuleState } from './types';
+import { type BaseModuleState, type ModuleResources } from './types';
 
 type CreateServerResourcesFetcherParams = {
     baseUrl: string;
@@ -19,7 +20,11 @@ export function createServerStateModuleFetcher<GetResourcesParams = undefined>({
 }: CreateServerResourcesFetcherParams): ModuleResourcesGetter<GetResourcesParams, BaseModuleState> {
     return async function fetchServerResources(params) {
         const { relativePath, method } = getServerStateModuleFetcherParams();
-        const url = `${urlSegmentWithoutEndSlash(baseUrl)}${relativePath}`;
+        // В dev-режиме адрес приложения-провайдера может быть подменен на локальный, см. getModuleOverride.
+        // В production-сборке этот вызов всегда возвращает undefined и вырезается минификатором.
+        const overriddenBaseUrl = getModuleOverride(params.moduleId);
+        const effectiveBaseUrl = overriddenBaseUrl ?? baseUrl;
+        const url = `${urlSegmentWithoutEndSlash(effectiveBaseUrl)}${relativePath}`;
 
         return new Promise((resolve, reject) => {
             const xhr = new XMLHttpRequest();
@@ -31,7 +36,19 @@ export function createServerStateModuleFetcher<GetResourcesParams = undefined>({
             });
             xhr.onload = () => {
                 if (xhr.status === 200) {
-                    resolve(JSON.parse(xhr.responseText));
+                    const resources: ModuleResources = JSON.parse(xhr.responseText);
+
+                    // Локальный сервер модуля вполне может вернуть адрес стенда, захардкоженный в его
+                    // конфиге. Раз разработчик явно попросил грузить модуль с локального адреса -
+                    // подмена должна выигрывать, иначе ресурсы поедут со стенда.
+                    if (overriddenBaseUrl) {
+                        resources.moduleState = {
+                            ...resources.moduleState,
+                            baseUrl: overriddenBaseUrl,
+                        };
+                    }
+
+                    resolve(resources);
                 } else {
                     reject(new Error(xhr.statusText));
                 }
