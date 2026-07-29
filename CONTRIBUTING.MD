@@ -23,7 +23,10 @@ yarn lint
 
 Если вы меняете поведение CLI, то необходимо обновить документацию:
 - `packages/arui-scripts/docs/commands.md`
+- `packages/arui-scripts/docs/cli.md`
 - `packages/arui-scripts/README.md`
+
+Если меняется генератор проектов: `packages/create-arui-scripts-app/README.md`.
 
 ## Выпуск релизной версии
 Данный проект использует [changesets](https://github.com/changesets/changesets/tree/main) для управления релизами.

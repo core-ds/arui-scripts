@@ -63,6 +63,7 @@
         "brotli-dict": "^1.1.4",
         "case-sensitive-paths-webpack-plugin": "2.4.0",
         "chalk": "^2.4.2",
+        "commander": "^12",
         "compression-webpack-plugin": "9.2.0",
         "core-js": "3.32.0",
         "css-loader": "6.8.1",
@@ -151,6 +152,7 @@
     },
     "scripts": {
         "build": "sh bin/build.sh",
+        "cli": "node build/bin/index.js",
         "test": "jest",
         "test:vitest": "vitest",
         "lint:scripts": "arui-presets-lint scripts",

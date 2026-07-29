@@ -1,0 +1,55 @@
+{
+    "name": "create-arui-scripts-app",
+    "version": "0.0.0",
+    "description": "CLI для генерации нового react приложения на arui-scripts",
+    "license": "MPL-2.0",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/core-ds/arui-scripts.git"
+    },
+    "bugs": {
+        "url": "https://github.com/core-ds/arui-scripts/issues"
+    },
+    "homepage": "https://github.com/core-ds/arui-scripts/tree/master/packages/create-arui-scripts-app#readme",
+    "bin": "./bin/create-arui-scripts-app.js",
+    "main": "./build/run.js",
+    "typings": "./build/run.d.ts",
+    "files": [
+        "bin",
+        "build"
+    ],
+    "scripts": {
+        "sync:version": "node ./scripts/sync-arui-scripts-version.js",
+        "build": "yarn sync:version && tsc --project tsconfig.json",
+        "test": "jest",
+        "lint:scripts": "arui-presets-lint scripts",
+        "format": "arui-presets-lint format",
+        "format:check": "arui-presets-lint format:check",
+        "lint": "yarn lint:scripts && yarn format:check",
+        "lint:fix": "yarn lint:scripts --fix && yarn format",
+        "audit": "yarn npm audit --severity high --environment production"
+    },
+    "dependencies": {
+        "chalk": "^2.4.2",
+        "commander": "^12",
+        "fs-extra": "6.0.1",
+        "ora": "^5",
+        "prompts": "^2.4.2",
+        "shelljs": "0.8.5",
+        "validate-npm-package-name": "^5.0.1"
+    },
+    "devDependencies": {
+        "@types/fs-extra": "^9.0.13",
+        "@types/jest": "^29.5.14",
+        "@types/node": "^20.19.0",
+        "@types/prompts": "^2.4.9",
+        "@types/shelljs": "^0.8.12",
+        "@types/validate-npm-package-name": "^3.0.3",
+        "jest": "28.1.3",
+        "ts-jest": "28.0.8",
+        "typescript": "6.0.2"
+    },
+    "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+    }
+}
