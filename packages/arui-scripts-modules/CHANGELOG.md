@@ -1,5 +1,11 @@
 # @alfalab/scripts-modules
 
+## 1.10.2
+
+### Patch Changes
+
+-   [#554](https://github.com/core-ds/arui-scripts/pull/554) [`4aab565`](https://github.com/core-ds/arui-scripts/commit/4aab565af93e0e633229287e082fee1d167db812) Thanks [@dmitrbrvsk](https://github.com/dmitrbrvsk)! - Информативные сообщения об ошибках загрузки модулей: в текст ошибки попадают адрес запроса и код статуса. Невалидный JSON в ответе больше не подвешивает промис навсегда, а отклоняет его с понятной ошибкой. Ошибка загрузки script и link тегов теперь тоже `Error` с адресом ресурса
+
 ## 1.10.1
 
 ### Patch Changes
