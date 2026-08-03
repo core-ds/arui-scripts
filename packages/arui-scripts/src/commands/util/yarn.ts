@@ -1,15 +1,18 @@
-import shell from 'shelljs';
-
 import { configs } from '../../configs/app-configs';
+
+import { getCommandOutput } from './exec';
 
 type YarnVersion = '1' | '2+' | 'unavailable';
 
 export function getYarnVersion(): YarnVersion {
-    if (configs.useYarn && shell.which('yarn')) {
-        const yarnVersion = shell.exec('yarn -v', { silent: true });
-        const yarnMajorVersion = Number(yarnVersion.split('.')[0]);
+    if (configs.useYarn) {
+        const yarnVersion = getCommandOutput('yarn -v');
 
-        return yarnMajorVersion > 1 ? '2+' : '1';
+        if (yarnVersion) {
+            const yarnMajorVersion = Number(yarnVersion.split('.')[0]);
+
+            return yarnMajorVersion > 1 ? '2+' : '1';
+        }
     }
 
     return 'unavailable';

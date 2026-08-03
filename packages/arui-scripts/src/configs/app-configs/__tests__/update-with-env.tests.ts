@@ -34,7 +34,7 @@ describe('update-with-env', () => {
 
         expect(() => {
             updateWithEnv(baseConfig);
-        }).toThrowError();
+        }).toThrow();
     });
 
     it('should update config keys with values from env', () => {

@@ -1,3 +1,5 @@
+import { type InputOptions } from '@babel/core';
+
 import { applyOverrides } from './util/apply-overrides';
 import { configs } from './app-configs';
 import { supportingBrowsers as browsers } from './supporting-browsers';
@@ -12,7 +14,7 @@ export const babelClientConfig = applyOverrides(['babel', 'babelClient'], {
                 // Allow importing core-js in entrypoint and use browserlist to select polyfills
                 useBuiltIns: 'entry',
                 // Set the corejs version we are using to avoid warnings in console
-                corejs: '3.32',
+                corejs: '3.49',
                 // Exclude transforms that make all code slower
                 exclude: ['transform-typeof-symbol'],
             },
@@ -21,9 +23,8 @@ export const babelClientConfig = applyOverrides(['babel', 'babelClient'], {
             configs.codeLoader !== 'tsc' &&
             require.resolve('@babel/preset-typescript'),
         require.resolve('@babel/preset-react'),
-    ].filter(Boolean),
+    ].filter(Boolean) as InputOptions['presets'],
     plugins: [
-        require.resolve('@babel/plugin-syntax-dynamic-import'),
         require.resolve('@babel/plugin-transform-proto-to-assign'),
         [require.resolve('@babel/plugin-proposal-decorators'), { legacy: true }],
         [require.resolve('@babel/plugin-transform-class-properties'), { loose: true }],
@@ -48,7 +49,7 @@ export const babelClientConfig = applyOverrides(['babel', 'babelClient'], {
         require.resolve('@babel/plugin-transform-nullish-coalescing-operator'),
         require.resolve('@babel/plugin-transform-optional-chaining'),
         configs.collectCoverage && require.resolve('babel-plugin-istanbul'),
-    ].filter(Boolean),
+    ].filter(Boolean) as InputOptions['plugins'],
     env: {
         production: {
             plugins: [

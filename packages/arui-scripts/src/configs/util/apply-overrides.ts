@@ -1,9 +1,11 @@
+import { type InputOptions } from '@babel/core';
 import type * as rspack from '@rspack/core';
 import { type Configuration as RspackDevServerConfiguration } from '@rspack/dev-server';
 import { type Options as SwcOptions } from '@swc/core';
 
 import { configs } from '../app-configs';
 import { type AppContextWithConfigs } from '../app-configs/types';
+import { type PostcssPlugin } from '../postcss.config';
 import { type createSingleClientWebpackConfig } from '../rspack.client';
 
 import { type findLoader } from './find-loader';
@@ -22,20 +24,17 @@ type Overrides = {
     devServer: RspackDevServerConfiguration;
     stats: rspack.RspackOptionsNormalized['stats'];
 
-    /* eslint-disable @typescript-eslint/no-explicit-any */
-    babel: any; // TODO: где взять typedef-ы для бабеля?
-    babelClient: any;
-    babelServer: any;
-    babelDependencies: any;
-    /* eslint-enable @typescript-eslint/no-explicit-any */
+    babel: InputOptions;
+    babelClient: InputOptions;
+    babelServer: InputOptions;
+    babelDependencies: InputOptions;
 
     swc: SwcOptions;
     swcServer: SwcOptions;
     swcClient: SwcOptions;
     swcJest: SwcOptions;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    postcss: any[]; // TODO: где взять typedef-ы для postcss
+    postcss: PostcssPlugin[];
     browsers: string[];
     supportingBrowsers: string[];
     supportingNode: string[];
@@ -205,7 +204,6 @@ export function applyOverrides<
                 if (typeof overrideFn !== 'function') {
                     throw new TypeError(`Override ${key} must be a function`);
                 }
-                // eslint-disable-next-line no-param-reassign
                 // @ts-expect-error Union type conflict between rspack and deprecated webpack keys - resolved at runtime
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any,no-param-reassign
                 config = overrideFn(config, configs, args) as T;

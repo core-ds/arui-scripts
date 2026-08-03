@@ -1,12 +1,13 @@
+import { promises as fs, readdirSync } from 'fs';
 import path from 'path';
 
-import fs from 'fs-extra';
 import tar from 'tar';
 
 import { configs } from '../../configs/app-configs';
 import { nginxConfTemplate } from '../../templates/nginx.conf.template';
 import { startScript } from '../../templates/start.template';
 import { exec } from '../util/exec';
+import { emptyDir } from '../util/fs-helpers';
 import { getPruningCommand } from '../util/yarn';
 
 const tempDirName = '.archive-build';
@@ -25,7 +26,7 @@ const packageJsonPath = path.join(configs.cwd, packageJsonFileName);
         console.time('Total time');
         console.time('Setting up time');
 
-        await fs.emptyDir(pathToTempDir);
+        await emptyDir(pathToTempDir);
 
         const nginxConf = configs.localNginxConf
             ? await fs.readFile(configs.localNginxConf, 'utf8')
@@ -34,7 +35,7 @@ const packageJsonPath = path.join(configs.cwd, packageJsonFileName);
         await Promise.all([
             fs.writeFile(nginxConfPath, nginxConf, 'utf8'),
             fs.writeFile(startScriptPath, startScript, { encoding: 'utf8', mode: 0o555 }),
-            fs.remove(configs.buildPath),
+            fs.rm(configs.buildPath, { recursive: true, force: true }),
         ]);
 
         console.timeEnd('Setting up time');
@@ -51,13 +52,20 @@ const packageJsonPath = path.join(configs.cwd, packageJsonFileName);
         console.timeEnd('Remove build dependencies time');
         console.time('Archive build time');
         await Promise.all([
-            fs.copy(configs.buildPath, path.join(pathToTempDir, configs.buildPath)),
-            fs.copy(nodeModulesPath, path.join(pathToTempDir, nodeModulesDirName)),
-            fs.copy(packageJsonPath, path.join(pathToTempDir, packageJsonFileName)),
+            fs.cp(configs.buildPath, path.join(pathToTempDir, configs.buildPath), {
+                recursive: true,
+            }),
+            fs.cp(nodeModulesPath, path.join(pathToTempDir, nodeModulesDirName), {
+                recursive: true,
+            }),
+            fs.cp(packageJsonPath, path.join(pathToTempDir, packageJsonFileName), {
+                recursive: true,
+            }),
             ...configs.additionalBuildPath.map((additionalPath) =>
-                fs.copy(
+                fs.cp(
                     path.join(configs.cwd, additionalPath),
                     path.join(pathToTempDir, additionalPath),
+                    { recursive: true },
                 ),
             ),
         ]);
@@ -66,14 +74,14 @@ const packageJsonPath = path.join(configs.cwd, packageJsonFileName);
                 file: configs.archiveName,
                 cwd: pathToTempDir,
             },
-            fs.readdirSync(pathToTempDir),
+            readdirSync(pathToTempDir),
         );
 
         console.timeEnd('Archive build time');
         console.time('Cleanup time');
 
         // remove temp directory
-        await fs.remove(pathToTempDir);
+        await fs.rm(pathToTempDir, { recursive: true, force: true });
 
         console.timeEnd('Cleanup time');
         console.timeEnd('Total time');

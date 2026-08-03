@@ -1,4 +1,4 @@
-import fs from 'fs-extra';
+import { promises as fs } from 'fs';
 
 import { configs } from '../../configs/app-configs';
 import { nginxBaseConfTemplate } from '../../templates/base-nginx.conf.template';
@@ -31,7 +31,7 @@ import { exec } from '../util/exec';
         });
 
         await exec(getDockerBuildCommand({ tempDirName, imageFullName }));
-        await fs.remove(pathToTempDir);
+        await fs.rm(pathToTempDir, { recursive: true, force: true });
 
         // guard against pushing the image during tests
         if (!configs.debug) {
@@ -40,7 +40,7 @@ import { exec } from '../util/exec';
 
         console.timeEnd('Total time');
     } catch (err) {
-        await fs.remove(pathToTempDir);
+        await fs.rm(pathToTempDir, { recursive: true, force: true });
         console.error('Error during docker-build.');
         if (configs.debug) {
             console.error(err);

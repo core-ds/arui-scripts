@@ -1,4 +1,4 @@
-import fs from 'fs-extra';
+import { promises as fs } from 'fs';
 
 import { configs } from '../../configs/app-configs';
 import { nginxBaseConfTemplate } from '../../templates/base-nginx.conf.template';
@@ -32,7 +32,7 @@ import { getPruningCommand } from '../util/yarn';
             addNodeModulesToDockerIgnore: false,
         });
 
-        await fs.remove(configs.buildPath);
+        await fs.rm(configs.buildPath, { recursive: true, force: true });
 
         console.timeEnd('Setting up time');
         console.time('Build application time');
@@ -59,7 +59,7 @@ import { getPruningCommand } from '../util/yarn';
         console.time('Cleanup time');
 
         // remove temp directory
-        await fs.remove(pathToTempDir);
+        await fs.rm(pathToTempDir, { recursive: true, force: true });
 
         // guard against pushing the image during tests
         if (!configs.debug) {
@@ -69,7 +69,7 @@ import { getPruningCommand } from '../util/yarn';
         console.timeEnd('Cleanup time');
         console.timeEnd('Total time');
     } catch (err) {
-        await fs.remove(pathToTempDir);
+        await fs.rm(pathToTempDir, { recursive: true, force: true });
         console.error('Error during docker-build.');
         if (configs.debug) {
             console.error(err);

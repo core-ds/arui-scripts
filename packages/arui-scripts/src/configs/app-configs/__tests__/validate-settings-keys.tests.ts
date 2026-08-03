@@ -1,19 +1,23 @@
 import { validateSettingsKeys } from '../validate-settings-keys';
 
 describe('validate-settings-keys', () => {
-    it('should warn with console.warn if object contains unknown properties', () => {
-        const objectWithSettings = {
-            name: 'vasia',
-            country: 'russia',
-        };
-        const baseSettings = {
-            name: 'ivan',
-        };
+    afterEach(() => {
+        jest.restoreAllMocks();
+    });
 
-        jest.spyOn(console, 'warn').mockImplementationOnce(() => {});
+    it('warns once about an unknown setting key', () => {
+        const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-        validateSettingsKeys(baseSettings, objectWithSettings);
+        validateSettingsKeys({ clientServerPort: 9000, unknownOption: true });
 
-        expect(console.warn).toHaveBeenCalledTimes(1);
+        expect(warn).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not warn about known keys', () => {
+        const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+        validateSettingsKeys({ clientServerPort: 9000, debug: true });
+
+        expect(warn).not.toHaveBeenCalled();
     });
 });

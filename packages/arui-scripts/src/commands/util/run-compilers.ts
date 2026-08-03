@@ -1,12 +1,11 @@
 import { spawn } from 'child_process';
-
-import fs from 'fs-extra';
+import { existsSync, rmSync } from 'fs';
 
 import { configs } from '../../configs/app-configs';
 
 export function runCompilers(pathToCompilers: Array<string | string[]>) {
-    if (fs.pathExistsSync(configs.serverOutputPath)) {
-        fs.removeSync(configs.serverOutputPath);
+    if (existsSync(configs.serverOutputPath)) {
+        rmSync(configs.serverOutputPath, { recursive: true, force: true });
     }
 
     const compilers = pathToCompilers.map((pathToCompiler) => {

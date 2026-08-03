@@ -519,7 +519,7 @@ function getCodeLoader(mode: 'dev' | 'prod'): RuleSetRule[] {
                 cacheDirectory: mode === 'dev',
                 cacheCompression: false,
                 plugins: [
-                    ...babelConf.plugins,
+                    ...(babelConf.plugins ?? []),
                     mode === 'dev'
                         ? [require.resolve('react-refresh/babel'), { skipEnvCheck: true }]
                         : undefined,
