@@ -11,7 +11,7 @@ describe('readAssetsManifest', () => {
         (readFile as unknown as jest.Mock).mockImplementationOnce(() => {
             throw new Error('File not found');
         });
-        await expect(readAssetsManifest(['vendor', 'main'])).rejects.toThrowError();
+        await expect(readAssetsManifest(['vendor', 'main'])).rejects.toThrow();
     });
 
     it('should return js and css assets', async () => {

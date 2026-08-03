@@ -19,7 +19,7 @@ describe('createGetModulesMethod', () => {
 
         await expect(
             handler({ moduleId: 'test', hostAppId: 'test', params: undefined }),
-        ).rejects.toThrowError('Module test not found');
+        ).rejects.toThrow('Module test not found');
     });
 
     it('should return correct response for compat module', async () => {
@@ -56,7 +56,7 @@ describe('createGetModulesMethod', () => {
             appName: 'module-app-name',
         });
 
-        expect(getModuleState).toBeCalledWith({ moduleId: 'test', hostAppId: 'test' });
+        expect(getModuleState).toHaveBeenCalledWith({ moduleId: 'test', hostAppId: 'test' });
     });
 
     it('should return correct response for default module', async () => {
@@ -88,6 +88,6 @@ describe('createGetModulesMethod', () => {
             appName: 'module-app-name',
         });
 
-        expect(getModuleState).toBeCalledWith({ moduleId: 'test', hostAppId: 'test' });
+        expect(getModuleState).toHaveBeenCalledWith({ moduleId: 'test', hostAppId: 'test' });
     });
 });
