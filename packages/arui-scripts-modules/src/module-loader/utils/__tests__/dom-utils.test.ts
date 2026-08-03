@@ -230,18 +230,18 @@ describe('dom utils', () => {
                 });
             });
 
-            try {
-                await scriptsFetcher({
+            await expect(
+                scriptsFetcher({
                     urls: ['https://example.com/script.js'],
                     targetNode: document.head,
                     attributes: {
                         [DATA_APP_ID_ATTRIBUTE]: MODULE_TEST_ID,
                     },
                     abortSignal: undefined,
-                });
-            } catch (error) {
-                expect((error as Error).toString()).toBe('[object Event]');
-            }
+                }),
+            ).rejects.toThrow(
+                'Failed to load script resource https://example.com/script.js. Check that the file exists and is available',
+            );
 
             const nodes = findResourcesNodes();
 

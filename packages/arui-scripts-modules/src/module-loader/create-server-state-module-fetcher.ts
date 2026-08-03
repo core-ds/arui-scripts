@@ -1,4 +1,5 @@
 import { urlSegmentWithoutEndSlash } from './utils/normalize-url-segment';
+import { createNetworkError, createParseError, createResponseError } from './utils/request-error';
 import { type ModuleResourcesGetter } from './create-module-loader';
 import { getServerStateModuleFetcherParams } from './get-server-state-module-fetcher-params';
 import { type BaseModuleState } from './types';
@@ -20,6 +21,7 @@ export function createServerStateModuleFetcher<GetResourcesParams = undefined>({
     return async function fetchServerResources(params) {
         const { relativePath, method } = getServerStateModuleFetcherParams();
         const url = `${urlSegmentWithoutEndSlash(baseUrl)}${relativePath}`;
+        const errorDescription = `Module resources request for ${params.moduleId}`;
 
         return new Promise((resolve, reject) => {
             const xhr = new XMLHttpRequest();
@@ -30,13 +32,19 @@ export function createServerStateModuleFetcher<GetResourcesParams = undefined>({
                 xhr.setRequestHeader(headerName, headers[headerName]);
             });
             xhr.onload = () => {
-                if (xhr.status === 200) {
+                if (xhr.status !== 200) {
+                    reject(createResponseError(errorDescription, url, xhr));
+
+                    return;
+                }
+
+                try {
                     resolve(JSON.parse(xhr.responseText));
-                } else {
-                    reject(new Error(xhr.statusText));
+                } catch (error) {
+                    reject(createParseError(errorDescription, url, error));
                 }
             };
-            xhr.onerror = () => reject(new Error(xhr.statusText));
+            xhr.onerror = () => reject(createNetworkError(errorDescription, url));
             xhr.send(JSON.stringify(params));
         });
     };
