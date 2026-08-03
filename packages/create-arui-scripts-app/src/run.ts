@@ -8,12 +8,21 @@ import prompts from 'prompts';
 import { buildContext } from './build-context';
 import { buildFileMap } from './build-file-map';
 import { answersFromFlags, type CliFlags, hasAnswerFlags } from './defaults';
-import { detectPackageManager, installDependencies, type PackageManager } from './install-dependencies';
+import {
+    detectPackageManager,
+    installDependencies,
+    type PackageManager,
+} from './install-dependencies';
 import { getQuestions } from './questions';
 import { type InitAnswers, type TemplateContext } from './types';
 import { validateProjectName } from './validate-project-name';
 import { DEFAULT_ARUI_SCRIPTS_VERSION } from './versions';
-import { findConflictingFiles, writeFiles } from './write-files';
+import {
+    copyStaticAssets,
+    findConflictingFiles,
+    STATIC_ASSET_PATHS,
+    writeFiles,
+} from './write-files';
 
 // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
 const { version: cliVersion } = require('../package.json');
@@ -48,7 +57,7 @@ export async function runInit(options: RunInitOptions = {}): Promise<void> {
 
     const context = buildContext(initAnswers, aruiScriptsVersion);
     const files = buildFileMap(context);
-    const conflicts = await findConflictingFiles(targetDir, files);
+    const conflicts = await findConflictingFiles(targetDir, files, STATIC_ASSET_PATHS);
 
     if (conflicts.length > 0 && !flags.force) {
         throw new Error(
@@ -61,8 +70,9 @@ export async function runInit(options: RunInitOptions = {}): Promise<void> {
     }
 
     await writeFiles(targetDir, files);
+    const assetsCount = await copyStaticAssets(targetDir);
 
-    printSuccess(context, targetDir, Object.keys(files).length);
+    printSuccess(context, targetDir, Object.keys(files).length + assetsCount);
 
     const packageManager = detectPackageManager();
 
@@ -116,46 +126,57 @@ async function resolveAnswers(defaultName: string, flags: CliFlags): Promise<Ini
     return mergePromptAnswers(base, answers);
 }
 
-/** Накладывает ответы мастера поверх базовых значений (флаги + дефолты). */
+// Накладывает ответы мастера поверх базовых значений (флаги + дефолты)
 function mergePromptAnswers(base: InitAnswers, answers: prompts.Answers<string>): InitAnswers {
     const merged = { ...base };
 
     if (answers.name !== undefined) {
         merged.name = String(answers.name).trim();
     }
+
     if (answers.useRtk !== undefined) {
         merged.useRtk = Boolean(answers.useRtk);
     }
+
     if (answers.clientOnly !== undefined) {
         merged.clientOnly = Boolean(answers.clientOnly);
     }
+
     if (answers.codeLoader !== undefined) {
         merged.codeLoader = answers.codeLoader;
     }
+
     if (answers.testRunner !== undefined) {
         merged.testRunner = answers.testRunner;
     }
+
     if (answers.cssModules !== undefined) {
         merged.cssModules = Boolean(answers.cssModules);
     }
+
     if (answers.clientServerPort !== undefined) {
         merged.clientServerPort = Number(answers.clientServerPort) || 8080;
     }
+
     if (answers.serverPort !== undefined) {
         merged.serverPort = Number(answers.serverPort) || 3000;
     }
+
     if (answers.dockerRegistry !== undefined) {
         merged.dockerRegistry = String(answers.dockerRegistry);
     }
     if (answers.presets !== undefined) {
         merged.presets = String(answers.presets);
     }
+
     if (answers.polyfills !== undefined) {
         merged.polyfills = Boolean(answers.polyfills);
     }
+
     if (answers.reactCompiler !== undefined) {
         merged.reactCompiler = Boolean(answers.reactCompiler);
     }
+
     if (answers.install !== undefined) {
         merged.install = Boolean(answers.install);
     }
@@ -190,7 +211,7 @@ function printSuccess(context: TemplateContext, targetDir: string, fileCount: nu
     console.log(`    ${chalk.dim(`${fileCount} файлов`)} ${chalk.dim('·')} ${stack}`);
 }
 
-/** Путь для подсказки `cd`: null — цель совпадает с cwd, относительный — если цель внутри cwd, иначе абсолютный. */
+// Путь для подсказки `cd`: null — цель совпадает с cwd, а относительный — если цель внутри cwd, иначе берем абсолютный
 export function resolveCdPath(baseCwd: string, targetDir: string): string | null {
     const relativeDir = path.relative(baseCwd, targetDir);
 

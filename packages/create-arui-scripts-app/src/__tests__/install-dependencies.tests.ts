@@ -68,6 +68,8 @@ describe('installDependencies', () => {
         setPlatform('linux');
         spawnMock.mockImplementation(() => fakeChild(1));
 
-        await expect(installDependencies('/target', 'npm')).rejects.toThrow(/кодом 1[\s\S]*some output/);
+        await expect(installDependencies('/target', 'npm')).rejects.toThrow(
+            /кодом 1[\s\S]*some output/,
+        );
     });
 });

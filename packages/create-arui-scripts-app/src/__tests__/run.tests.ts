@@ -1,6 +1,7 @@
-import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
+
+import fs from 'fs-extra';
 import prompts from 'prompts';
 
 import { resolveCdPath, runInit } from '../run';
@@ -31,6 +32,7 @@ describe('runInit', () => {
         expect(pkg.name).toBe('app');
         expect(pkg.devDependencies['arui-scripts']).toBe('^23.0.1');
         expect(await fs.pathExists(path.join(target, 'src/client/index.tsx'))).toBe(true);
+        expect(await fs.pathExists(path.join(target, '.yarn/releases/yarn-4.9.1.cjs'))).toBe(true);
     });
 
     it('падает при конфликте файлов без --force', async () => {
@@ -46,6 +48,20 @@ describe('runInit', () => {
                 flags: { yes: true },
             }),
         ).rejects.toThrow(/package\.json/);
+    });
+
+    it('падает при существующей папке .yarn без --force', async () => {
+        const target = path.join(tempDir, 'app');
+
+        await fs.ensureDir(path.join(target, '.yarn'));
+
+        await expect(
+            runInit({
+                cwd: tempDir,
+                targetDirArg: 'app',
+                flags: { yes: true },
+            }),
+        ).rejects.toThrow(/\.yarn/);
     });
 
     it('с --force перезаписывает конфликтующие файлы', async () => {

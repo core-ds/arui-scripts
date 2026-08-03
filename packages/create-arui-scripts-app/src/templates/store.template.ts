@@ -1,16 +1,22 @@
 export function storeIndexTemplate(): string {
-    return `import { configureStore } from '@reduxjs/toolkit';
+    return `import { combineReducers, configureStore } from '@reduxjs/toolkit';
 
 import { counterReducer } from './counter-slice';
 
-export const store = configureStore({
-    reducer: {
-        counter: counterReducer,
-    },
+const rootReducer = combineReducers({
+    counter: counterReducer,
 });
 
-export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
+export function makeStore(preloadedState?: Partial<RootState>) {
+    return configureStore({
+        reducer: rootReducer,
+        preloadedState,
+    });
+}
+
+export type RootState = ReturnType<typeof rootReducer>;
+export type AppStore = ReturnType<typeof makeStore>;
+export type AppDispatch = AppStore['dispatch'];
 `;
 }
 

@@ -41,7 +41,7 @@ npx create-arui-scripts-app my-app --yes
 
 - **React 19** из коробки, опционально **React + RTK** (Redux Toolkit)
 - режим **SSR** (клиент + сервер, клиент в `src/client/`) или **clientOnly** (статика)
-- SSR-сервер на **Hapi**
+- SSR-сервер на **Hapi** с рендерингом приложения (`renderToString`) и гидрацией на клиенте
 - транспилятор (**swc** / babel / tsc) и тест-раннер (**Jest** / Vitest)
 - CSS-модули, полифилы (`core-js`), `experimentalReactCompiler`, docker registry, preset
 - опциональная установка зависимостей сразу после генерации
@@ -50,6 +50,7 @@ npx create-arui-scripts-app my-app --yes
 
 Генерируются `package.json`, `arui-scripts.config.ts`, `tsconfig.json`, клиентская точка входа,
 пример компонента со стилями и тестом, `global-definitions.d.ts`, `.gitignore`, `README.md`,
+`.yarnrc.yml` (с `nodeLinker: node-modules`),
 а также в зависимости от ответов - серверная точка входа на Hapi, store на RTK, полифилы и
 `vitest.config.ts`.
 

@@ -62,20 +62,20 @@ export function answersFromFlags(defaultName: string, flags: CliFlags): InitAnsw
 
     return {
         ...base,
-        ...(flags.useRtk !== undefined ? { useRtk: flags.useRtk } : {}),
-        ...(flags.clientOnly !== undefined ? { clientOnly: flags.clientOnly } : {}),
-        ...(flags.codeLoader !== undefined ? { codeLoader: flags.codeLoader } : {}),
-        ...(flags.testRunner !== undefined ? { testRunner: flags.testRunner } : {}),
-        ...(flags.cssModules !== undefined ? { cssModules: flags.cssModules } : {}),
-        ...(flags.clientServerPort !== undefined
-            ? { clientServerPort: flags.clientServerPort }
-            : {}),
-        ...(flags.serverPort !== undefined ? { serverPort: flags.serverPort } : {}),
-        ...(flags.dockerRegistry !== undefined ? { dockerRegistry: flags.dockerRegistry } : {}),
-        ...(flags.presets !== undefined ? { presets: flags.presets } : {}),
-        ...(flags.polyfills !== undefined ? { polyfills: flags.polyfills } : {}),
-        ...(flags.reactCompiler !== undefined ? { reactCompiler: flags.reactCompiler } : {}),
-        ...(flags.install !== undefined ? { install: flags.install } : {}),
+        ...(flags.useRtk === undefined ? {} : { useRtk: flags.useRtk }),
+        ...(flags.clientOnly === undefined ? {} : { clientOnly: flags.clientOnly }),
+        ...(flags.codeLoader === undefined ? {} : { codeLoader: flags.codeLoader }),
+        ...(flags.testRunner === undefined ? {} : { testRunner: flags.testRunner }),
+        ...(flags.cssModules === undefined ? {} : { cssModules: flags.cssModules }),
+        ...(flags.clientServerPort === undefined
+            ? {}
+            : { clientServerPort: flags.clientServerPort }),
+        ...(flags.serverPort === undefined ? {} : { serverPort: flags.serverPort }),
+        ...(flags.dockerRegistry === undefined ? {} : { dockerRegistry: flags.dockerRegistry }),
+        ...(flags.presets === undefined ? {} : { presets: flags.presets }),
+        ...(flags.polyfills === undefined ? {} : { polyfills: flags.polyfills }),
+        ...(flags.reactCompiler === undefined ? {} : { reactCompiler: flags.reactCompiler }),
+        ...(flags.install === undefined ? {} : { install: flags.install }),
         name: (flags.name?.trim() || defaultName).trim(),
     };
 }

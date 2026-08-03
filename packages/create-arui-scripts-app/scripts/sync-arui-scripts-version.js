@@ -3,7 +3,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const aruiScriptsPkg = require(path.join(__dirname, '../../arui-scripts/package.json'));
+const aruiScriptsPkg = require('../../arui-scripts/package.json');
+
 const outFile = path.join(__dirname, '../src/versions.ts');
 
 const content = `/** Версия arui-scripts, которую scaffold кладёт в package.json нового проекта.

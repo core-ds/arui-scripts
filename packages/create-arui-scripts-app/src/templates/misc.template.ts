@@ -5,6 +5,14 @@ export function gitignoreTemplate(): string {
 .build
 build.tar
 .cache-loader
+
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
 `;
 }
 
@@ -30,6 +38,20 @@ declare module '*.css';
 
 export function polyfillsTemplate(): string {
     return "import 'core-js/stable';\n";
+}
+
+export function yarnrcTemplate(): string {
+    return `nodeLinker: node-modules
+
+npmRegistryServer: "http://binary/artifactory/api/npm/npm/"
+
+unsafeHttpWhitelist:
+  - binary
+
+yarnPath: .yarn/releases/yarn-4.9.1.cjs
+
+defaultSemverRangePrefix: ""
+`;
 }
 
 export function readmeTemplate(ctx: TemplateContext): string {

@@ -40,10 +40,10 @@ export function App() {
     return (
 ${view('count')}
 
-            <Button view='accent' size='s' onClick={() => dispatch(increment())}>
+            <Button view='accent' size={48} onClick={() => dispatch(increment())}>
                 +1
             </Button>{' '}
-            <Button view='secondary' size='s' onClick={() => dispatch(decrement())}>
+            <Button view='secondary' size={48} onClick={() => dispatch(decrement())}>
                 -1
             </Button>
         </div>
@@ -64,10 +64,10 @@ export function App() {
     return (
 ${view('count')}
 
-            <Button view='accent' size='s' onClick={() => setCount((prev) => prev + 1)}>
+            <Button view='accent' size={48} onClick={() => setCount((prev) => prev + 1)}>
                 +1
             </Button>{' '}
-            <Button view='secondary' size='s' onClick={() => setCount((prev) => prev - 1)}>
+            <Button view='secondary' size={48} onClick={() => setCount((prev) => prev - 1)}>
                 -1
             </Button>
         </div>

@@ -8,6 +8,7 @@ import {
     globalDefinitionsTemplate,
     polyfillsTemplate,
     readmeTemplate,
+    yarnrcTemplate,
 } from './templates/misc.template';
 import { packageJsonTemplate } from './templates/package-json.template';
 import { serverEntryTemplate } from './templates/server-entry.template';
@@ -32,6 +33,7 @@ export function buildFileMap(ctx: TemplateContext): Record<string, string> {
         'arui-scripts.config.ts': aruiScriptsConfigTemplate(ctx),
         'tsconfig.json': tsconfigTemplate(ctx),
         '.gitignore': gitignoreTemplate(),
+        '.yarnrc.yml': yarnrcTemplate(),
         'global-definitions.d.ts': globalDefinitionsTemplate(),
         'README.md': readmeTemplate(ctx),
         [`${client}/index.tsx`]: clientEntryTemplate(ctx),
@@ -41,7 +43,7 @@ export function buildFileMap(ctx: TemplateContext): Record<string, string> {
     };
 
     if (!ctx.clientOnly) {
-        files['src/server/index.ts'] = serverEntryTemplate(ctx);
+        files['src/server/index.tsx'] = serverEntryTemplate(ctx);
     }
 
     if (ctx.testRunner === 'vitest') {

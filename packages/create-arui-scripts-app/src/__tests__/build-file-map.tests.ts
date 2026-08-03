@@ -41,11 +41,35 @@ describe('buildFileMap', () => {
         );
     });
 
-    it('для SSR создает серверную точку входа', () => {
-        expect(map({ clientOnly: false })['src/server/index.ts']).toBeDefined();
+    it('.yarnrc.yml содержит нужные настройки yarn', () => {
+        const yarnrc = map()['.yarnrc.yml'];
+
+        expect(yarnrc).toContain('nodeLinker: node-modules');
+        expect(yarnrc).toContain('npmRegistryServer: "http://binary/artifactory/api/npm/npm/"');
+        expect(yarnrc).toContain('unsafeHttpWhitelist:');
+        expect(yarnrc).toContain('- binary');
+        expect(yarnrc).toContain('yarnPath: .yarn/releases/yarn-4.9.1.cjs');
+        expect(yarnrc).toContain('defaultSemverRangePrefix: ""');
     });
 
-    it('для SSR клиент лежит в src/client/, для clientOnly — в src/', () => {
+    it('.gitignore игнорирует yarn файлы', () => {
+        const gitignore = map()['.gitignore'];
+
+        expect(gitignore).toContain('node_modules');
+        expect(gitignore).toContain('.pnp.*');
+        expect(gitignore).toContain('.yarn/*');
+        expect(gitignore).toContain('!.yarn/patches');
+        expect(gitignore).toContain('!.yarn/plugins');
+        expect(gitignore).toContain('!.yarn/releases');
+        expect(gitignore).toContain('!.yarn/sdks');
+        expect(gitignore).toContain('!.yarn/versions');
+    });
+
+    it('для SSR создает серверную точку входа', () => {
+        expect(map({ clientOnly: false })['src/server/index.tsx']).toBeDefined();
+    });
+
+    it('для SSR клиент лежит в src/client/, для clientOnly в src/', () => {
         const ssr = map({ clientOnly: false });
 
         expect(ssr['src/client/index.tsx']).toBeDefined();
@@ -59,16 +83,39 @@ describe('buildFileMap', () => {
     });
 
     it('серверная точка входа на Hapi', () => {
-        const server = map({ clientOnly: false })['src/server/index.ts'];
+        const server = map({ clientOnly: false })['src/server/index.tsx'];
 
         expect(server).toContain('@hapi/hapi');
         expect(server).toContain('@hapi/inert');
     });
 
+    it('SSR сервер рендерит приложение, клиент гидрирует разметку', () => {
+        const files = map({ clientOnly: false });
+
+        expect(files['src/server/index.tsx']).toContain('renderToString');
+        expect(files['src/server/index.tsx']).toContain(
+            "import { App } from '../client/components/app'",
+        );
+        expect(files['src/client/index.tsx']).toContain('hydrateRoot');
+    });
+
+    it('SSR с RTK передает состояние store клиенту', () => {
+        const files = map({ clientOnly: false, useRtk: true });
+
+        expect(files['src/server/index.tsx']).toContain('makeStore');
+        expect(files['src/server/index.tsx']).toContain('__PRELOADED_STATE__');
+        expect(files['src/client/index.tsx']).toContain('makeStore(window.__PRELOADED_STATE__)');
+        expect(files['src/client/store/index.ts']).toContain('makeStore');
+    });
+
+    it('clientOnly клиент рендерит с нуля через createRoot', () => {
+        expect(map({ clientOnly: true })['src/index.tsx']).toContain('createRoot');
+    });
+
     it('для clientOnly не создает сервер и ставит clientOnly:true в конфиге', () => {
         const files = map({ clientOnly: true });
 
-        expect(files['src/server/index.ts']).toBeUndefined();
+        expect(files['src/server/index.tsx']).toBeUndefined();
         expect(files['arui-scripts.config.ts']).toContain('clientOnly: true');
     });
 

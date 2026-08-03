@@ -15,6 +15,7 @@
     "main": "./build/run.js",
     "typings": "./build/run.d.ts",
     "files": [
+        "assets",
         "bin",
         "build"
     ],
