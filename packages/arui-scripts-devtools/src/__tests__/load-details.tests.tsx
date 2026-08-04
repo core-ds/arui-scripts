@@ -1,5 +1,7 @@
+import { render } from '@testing-library/react';
+
 import { type ModuleLoadRecord } from '../contract';
-import { createLoadDetails } from '../ui/load-details';
+import { LoadDetails } from '../panel/load-details';
 
 // eslint-disable-next-line no-script-url -- это и есть предмет теста
 const SCRIPT_URL = 'javascript:alert(document.cookie)';
@@ -20,22 +22,24 @@ function createRecord(overrides: Partial<ModuleLoadRecord> = {}): ModuleLoadReco
     };
 }
 
-describe('createLoadDetails', () => {
+describe('LoadDetails', () => {
     it('should show the record meta', () => {
-        const details = createLoadDetails(
-            createRecord({ manifestUrl: 'https://cdn.test/manifest.json' }),
+        const { container } = render(
+            <LoadDetails
+                record={createRecord({ manifestUrl: 'https://cdn.test/manifest.json' })}
+            />,
         );
 
-        expect(details.textContent).toContain('host');
-        expect(details.textContent).toContain('default');
-        expect(details.textContent).toContain('https://cdn.test/manifest.json');
+        expect(container.textContent).toContain('host');
+        expect(container.textContent).toContain('default');
+        expect(container.textContent).toContain('https://cdn.test/manifest.json');
     });
 
     it('should link resources', () => {
-        const details = createLoadDetails(
-            createRecord({ scripts: ['https://cdn.test/module.js'] }),
+        const { container } = render(
+            <LoadDetails record={createRecord({ scripts: ['https://cdn.test/module.js'] })} />,
         );
-        const link = details.querySelector<HTMLAnchorElement>('a.resource__url');
+        const link = container.querySelector<HTMLAnchorElement>('a.resource__url');
 
         expect(link?.href).toBe('https://cdn.test/module.js');
         expect(link?.rel).toBe('noreferrer');
@@ -45,25 +49,31 @@ describe('createLoadDetails', () => {
         // манифест приезжает по сети, а `href` исполняет всё, что в него положили. Владелец
         // манифеста и так может подсунуть приложению любой <script src>, так что это гигиена,
         // а не дыра, - но панель не обязана добавлять ему ещё один способ
-        const details = createLoadDetails(createRecord({ scripts: [SCRIPT_URL] }));
+        const { container } = render(
+            <LoadDetails record={createRecord({ scripts: [SCRIPT_URL] })} />,
+        );
 
-        expect(details.querySelector('a')).toBeNull();
+        expect(container.querySelector('a')).toBeNull();
         // url всё равно надо показать: именно он и есть подозрительный
-        expect(details.textContent).toContain(SCRIPT_URL);
+        expect(container.textContent).toContain(SCRIPT_URL);
     });
 
     it('should not link a data url either', () => {
-        const details = createLoadDetails(createRecord({ styles: ['data:text/css,body{}'] }));
+        const { container } = render(
+            <LoadDetails record={createRecord({ styles: ['data:text/css,body{}'] })} />,
+        );
 
-        expect(details.querySelector('a')).toBeNull();
+        expect(container.querySelector('a')).toBeNull();
     });
 
     it('should link a relative resource url', () => {
         // модуль может лежать на том же origin, и тогда загрузчик кладёт в запись
         // относительный путь - открывать его в новой вкладке ничто не мешает
-        const details = createLoadDetails(createRecord({ scripts: ['/static/module.js'] }));
+        const { container } = render(
+            <LoadDetails record={createRecord({ scripts: ['/static/module.js'] })} />,
+        );
 
-        expect(details.querySelector<HTMLAnchorElement>('a.resource__url')?.href).toBe(
+        expect(container.querySelector<HTMLAnchorElement>('a.resource__url')?.href).toBe(
             'http://localhost/static/module.js',
         );
     });

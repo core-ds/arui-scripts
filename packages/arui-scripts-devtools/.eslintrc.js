@@ -1,6 +1,8 @@
 module.exports = {
     root: true,
-    extends: [require.resolve('arui-presets-lint/eslint')],
+    // jsx-runtime поверх пресета: пакет собирается с automatic-рантаймом JSX,
+    // и `import React` в каждом файле пресету требовать не нужно
+    extends: [require.resolve('arui-presets-lint/eslint'), 'plugin:react/jsx-runtime'],
     parserOptions: {
         tsconfigRootDir: __dirname,
         project: ['./tsconfig.eslint.json'],
@@ -39,7 +41,7 @@ module.exports = {
         {
             // Внутри файла один css-литерал со стилями всей панели. Резать его по счётчику
             // строк нечего: получатся куски, которые всё равно склеиваются обратно
-            files: ['src/ui/styles.ts'],
+            files: ['src/panel/styles.ts'],
             rules: {
                 'max-lines': 'off',
             },

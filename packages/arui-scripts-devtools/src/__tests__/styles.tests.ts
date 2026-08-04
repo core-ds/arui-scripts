@@ -1,5 +1,5 @@
+import { PANEL_STYLES } from '../panel/styles';
 import { BADGE_STYLES } from '../ui/badge';
-import { PANEL_STYLES } from '../ui/styles';
 
 /** объявления токенов живут в одном блоке в начале листа, всё остальное - правила */
 function getRules(css: string) {

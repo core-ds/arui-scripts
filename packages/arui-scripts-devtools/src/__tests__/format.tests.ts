@@ -1,5 +1,5 @@
 import { type ModuleLoadRecord } from '../contract';
-import { EMPTY, formatBytes, formatDuration, getTotalDuration } from '../ui/format';
+import { EMPTY, formatBytes, formatDuration, getTotalDuration } from '../panel/format';
 
 function createRecord(timings: ModuleLoadRecord['timings']): ModuleLoadRecord {
     return {

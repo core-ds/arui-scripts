@@ -1,3 +1,5 @@
+import { act } from 'react';
+
 import { type AruiDevtools, DEVTOOLS_GLOBAL_KEY, type DevtoolsSnapshot } from '../contract';
 import { DEVTOOLS_ROOT_ID, isDevtoolsMounted, mountDevtools, unmountDevtools } from '../mount';
 import { readPanelState, writePanelState } from '../panel-state';
@@ -6,8 +8,12 @@ type GlobalWithDevtools = typeof globalThis & { [DEVTOOLS_GLOBAL_KEY]?: AruiDevt
 type GlobalWithScopes = typeof globalThis & {
     __webpack_share_scopes__?: Record<string, Record<string, Record<string, unknown>>>;
 };
+type GlobalWithAct = typeof globalThis & { IS_REACT_ACT_ENVIRONMENT?: boolean };
 
 const globalWithDevtools = globalThis as GlobalWithDevtools;
+
+// внутри панели React: без этого флага его дев-сборка ругается на обновления вне act
+(globalThis as GlobalWithAct).IS_REACT_ACT_ENVIRONMENT = true;
 
 function createSnapshot(loadsCount: number, eventsCount = 0): DevtoolsSnapshot {
     return {
@@ -57,12 +63,32 @@ function putStore(snapshot: DevtoolsSnapshot) {
     return {
         emit(next: DevtoolsSnapshot) {
             current = next;
-            listeners.forEach((listener) => listener());
+            act(() => {
+                listeners.forEach((listener) => listener());
+            });
         },
         get listenersCount() {
             return listeners.size;
         },
     };
+}
+
+/** mountDevtools рендерит React-дерево - в тестах вызов обязан жить внутри act */
+function mountPanel(options?: Parameters<typeof mountDevtools>[0]) {
+    let unmount: () => void = () => undefined;
+
+    act(() => {
+        unmount = mountDevtools(options);
+    });
+
+    return unmount;
+}
+
+/** клик по элементу панели будит React-обработчики - тоже только под act */
+function click(element: HTMLElement | null | undefined) {
+    act(() => {
+        element?.click();
+    });
 }
 
 function getHost() {
@@ -83,11 +109,13 @@ describe('mountDevtools', () => {
     });
 
     afterEach(() => {
-        unmountDevtools();
+        act(() => {
+            unmountDevtools();
+        });
     });
 
     it('should mount the panel into a shadow root', () => {
-        mountDevtools();
+        mountPanel();
 
         const host = getHost();
 
@@ -97,6 +125,21 @@ describe('mountDevtools', () => {
         expect(document.querySelector('.panel')).toBeNull();
     });
 
+    it('should render synchronously: the panel is in the DOM right after the call', () => {
+        // на это полагаются вызывающие снаружи React: vanilla-версия рисовала синхронно,
+        // и контракт mountDevtools() при переезде на React не поменялся. Вызов нарочно
+        // без act - и без act-окружения, чтобы React не ругался на задуманное
+        (globalThis as GlobalWithAct).IS_REACT_ACT_ENVIRONMENT = false;
+
+        try {
+            mountDevtools();
+
+            expect(getHost()?.shadowRoot?.querySelector('.panel')).not.toBeNull();
+        } finally {
+            (globalThis as GlobalWithAct).IS_REACT_ACT_ENVIRONMENT = true;
+        }
+    });
+
     it('should not leak its styles into the page without shadow dom', () => {
         const { attachShadow } = Element.prototype;
 
@@ -104,7 +147,7 @@ describe('mountDevtools', () => {
         delete Element.prototype.attachShadow;
 
         try {
-            mountDevtools();
+            mountPanel();
 
             const css = getHost()?.querySelector('style')?.textContent ?? '';
 
@@ -124,7 +167,7 @@ describe('mountDevtools', () => {
         body.remove();
 
         try {
-            expect(() => mountDevtools()).not.toThrow();
+            expect(() => mountPanel()).not.toThrow();
             expect(isDevtoolsMounted()).toBe(false);
         } finally {
             document.documentElement.appendChild(body);
@@ -132,7 +175,7 @@ describe('mountDevtools', () => {
     });
 
     it('should not mark the host with the module resources attribute', () => {
-        mountDevtools();
+        mountPanel();
 
         // по этому атрибуту загрузчик модулей вычищает ресурсы из DOM и снёс бы панель
         expect(getHost()?.hasAttribute('data-parent-app-id')).toBe(false);
@@ -142,20 +185,20 @@ describe('mountDevtools', () => {
         const container = document.createElement('section');
 
         document.body.appendChild(container);
-        mountDevtools({ container });
+        mountPanel({ container });
 
         expect(container.querySelector(`#${DEVTOOLS_ROOT_ID}`)).not.toBeNull();
     });
 
     it('should show the waiting state when there is no store', () => {
-        mountDevtools();
+        mountPanel();
 
         expect(getPanelText()).toContain('Ждём загрузчик модулей');
     });
 
     it('should show the unsupported state for a store of another version', () => {
         globalWithDevtools[DEVTOOLS_GLOBAL_KEY] = { version: 5 };
-        mountDevtools();
+        mountPanel();
 
         expect(getPanelText()).toContain('Стор devtools версии 5');
         expect(getHost()?.shadowRoot?.querySelector('.status_error')).not.toBeNull();
@@ -164,7 +207,7 @@ describe('mountDevtools', () => {
     it('should render the snapshot and follow its updates', () => {
         const store = putStore(createSnapshot(2, 3));
 
-        mountDevtools();
+        mountPanel();
 
         expect(getPanelText()).toContain('Загрузок: 2 · событий: 3');
 
@@ -174,8 +217,8 @@ describe('mountDevtools', () => {
     });
 
     it('should be idempotent', () => {
-        const first = mountDevtools();
-        const second = mountDevtools();
+        const first = mountPanel();
+        const second = mountPanel();
 
         expect(second).toBe(first);
         expect(document.querySelectorAll(`#${DEVTOOLS_ROOT_ID}`)).toHaveLength(1);
@@ -183,11 +226,11 @@ describe('mountDevtools', () => {
 
     it('should remove everything on unmount', () => {
         const store = putStore(createSnapshot(1));
-        const unmount = mountDevtools();
+        const unmount = mountPanel();
 
         expect(store.listenersCount).toBe(1);
 
-        unmount();
+        act(() => unmount());
 
         expect(getHost()).toBeNull();
         expect(store.listenersCount).toBe(0);
@@ -195,21 +238,19 @@ describe('mountDevtools', () => {
     });
 
     it('should survive a second unmount call', () => {
-        const unmount = mountDevtools();
+        const unmount = mountPanel();
 
-        unmount();
+        act(() => unmount());
 
-        expect(() => unmount()).not.toThrow();
+        expect(() => act(() => unmount())).not.toThrow();
     });
 
     it('should close by the close button', () => {
         const onClose = jest.fn();
 
-        mountDevtools({ onClose });
+        mountPanel({ onClose });
 
-        const button = getHost()?.shadowRoot?.querySelector('.close') as HTMLButtonElement;
-
-        button.click();
+        click(getHost()?.shadowRoot?.querySelector('.close') as HTMLButtonElement);
 
         expect(getHost()).toBeNull();
         expect(onClose).toHaveBeenCalledTimes(1);
@@ -218,16 +259,18 @@ describe('mountDevtools', () => {
     it('should close by Escape', () => {
         const onClose = jest.fn();
 
-        mountDevtools({ onClose });
+        mountPanel({ onClose });
 
-        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+        act(() => {
+            document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+        });
 
         expect(getHost()).toBeNull();
         expect(onClose).toHaveBeenCalledTimes(1);
     });
 
     it('should not close by Escape from a filled input', () => {
-        mountDevtools();
+        mountPanel();
 
         const input = document.createElement('input');
 
@@ -236,7 +279,9 @@ describe('mountDevtools', () => {
 
         // Esc в непустом фильтре - это «очистить поле». Закрывать заодно всю панель,
         // теряя вкладку и раскрытые строки, пользователь не просил
-        input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+        act(() => {
+            input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+        });
 
         expect(getHost()).not.toBeNull();
 
@@ -244,12 +289,14 @@ describe('mountDevtools', () => {
     });
 
     it('should close by Escape from an empty input', () => {
-        mountDevtools();
+        mountPanel();
 
         const input = document.createElement('input');
 
         document.body.appendChild(input);
-        input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+        act(() => {
+            input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+        });
 
         expect(getHost()).toBeNull();
 
@@ -257,12 +304,14 @@ describe('mountDevtools', () => {
     });
 
     it('should not close by Escape already handled by the host app', () => {
-        mountDevtools();
+        mountPanel();
 
         const event = new KeyboardEvent('keydown', { key: 'Escape', cancelable: true });
 
         event.preventDefault();
-        document.dispatchEvent(event);
+        act(() => {
+            document.dispatchEvent(event);
+        });
 
         expect(getHost()).not.toBeNull();
     });
@@ -281,16 +330,41 @@ describe('mountDevtools', () => {
 
         putStore(broken);
 
-        const unmount = mountDevtools();
+        const unmount = mountPanel();
 
         // панель смонтирована и знает об этом - иначе повторный вызов создаст второй хост
         expect(isDevtoolsMounted()).toBe(true);
 
-        unmount();
+        act(() => unmount());
 
         // и снимается полностью: ни хоста в странице, ни висящего слушателя на document
         expect(getHost()).toBeNull();
         expect(isDevtoolsMounted()).toBe(false);
+
+        error.mockRestore();
+    });
+
+    it('should tell about the failed frame and recover on the next update', () => {
+        const error = jest.spyOn(console, 'error').mockImplementation(() => undefined);
+        const broken = {
+            version: 1,
+            get loads(): never[] {
+                throw new Error('снимок сломан');
+            },
+            events: [],
+        } as unknown as DevtoolsSnapshot;
+
+        const store = putStore(broken);
+
+        mountPanel();
+
+        // кадр пропущен, но панель говорит об этом, а не показывает пустоту
+        expect(getPanelText()).toContain('Не удалось отрисовать панель');
+
+        // следующая нотификация стора - следующая попытка отрисовки
+        store.emit(createSnapshot(2, 1));
+
+        expect(getPanelText()).toContain('Загрузок: 2 · событий: 1');
 
         error.mockRestore();
     });
@@ -308,10 +382,10 @@ describe('mountDevtools', () => {
             events: [],
         } as unknown as DevtoolsSnapshot;
 
-        const unmount = mountDevtools();
+        const unmount = mountPanel();
 
         store.emit(broken);
-        unmount();
+        act(() => unmount());
 
         expect(store.listenersCount).toBe(0);
 
@@ -320,7 +394,7 @@ describe('mountDevtools', () => {
 
     it('should render the loads table', () => {
         putStore(createSnapshot(2));
-        mountDevtools();
+        mountPanel();
 
         expect(getHost()?.shadowRoot?.querySelectorAll('.row:not(.row_header)')).toHaveLength(2);
     });
@@ -330,7 +404,7 @@ describe('mountDevtools', () => {
             default: { react: { '18.3.1': { from: 'example', shareConfig: { singleton: true } } } },
         };
         putStore(createSnapshot(1));
-        mountDevtools();
+        mountPanel();
 
         const shadow = getHost()?.shadowRoot;
 
@@ -340,7 +414,7 @@ describe('mountDevtools', () => {
             tab.textContent?.startsWith('Share scope'),
         ) as HTMLButtonElement;
 
-        shareTab.click();
+        click(shareTab);
 
         expect(shadow?.querySelector('.grid')).toBeNull();
         expect(shadow?.querySelector('.share-scope')?.textContent).toContain('react');
@@ -354,14 +428,14 @@ describe('mountDevtools', () => {
 
         const store = putStore(createSnapshot(0));
 
-        mountDevtools();
+        mountPanel();
 
         const shadow = getHost()?.shadowRoot;
         const shareTab = Array.from(shadow?.querySelectorAll('.tab') ?? []).find((tab) =>
             tab.textContent?.startsWith('Share scope'),
         ) as HTMLButtonElement;
 
-        shareTab.click();
+        click(shareTab);
 
         expect(shadow?.querySelector('.share-scope')?.textContent).not.toContain('react');
 
@@ -377,14 +451,14 @@ describe('mountDevtools', () => {
 
     it('should render the events tab', () => {
         putStore(createSnapshot(1, 2));
-        mountDevtools();
+        mountPanel();
 
         const shadow = getHost()?.shadowRoot;
         const eventsTab = Array.from(shadow?.querySelectorAll('.tab') ?? []).find(
             (tab) => tab.textContent === 'События',
         ) as HTMLButtonElement;
 
-        eventsTab.click();
+        click(eventsTab);
 
         expect(shadow?.querySelectorAll('.row_event:not(.row_header)')).toHaveLength(2);
     });
@@ -392,7 +466,7 @@ describe('mountDevtools', () => {
     it('should restore the last active tab', () => {
         writePanelState({ tab: 'events' });
         putStore(createSnapshot(1, 1));
-        mountDevtools();
+        mountPanel();
 
         const active = getHost()?.shadowRoot?.querySelector('.tab_active');
 
@@ -401,20 +475,20 @@ describe('mountDevtools', () => {
 
     it('should fall back to the first tab when the stored one is unknown', () => {
         writePanelState({ tab: 'какая-то вкладка из будущего' });
-        mountDevtools();
+        mountPanel();
 
         expect(getHost()?.shadowRoot?.querySelector('.tab_active')?.textContent).toBe('Модули');
     });
 
     it('should remember the tab the user switched to', () => {
         putStore(createSnapshot(1));
-        mountDevtools();
+        mountPanel();
 
         const eventsTab = Array.from(getHost()?.shadowRoot?.querySelectorAll('.tab') ?? []).find(
             (tab) => tab.textContent === 'События',
         ) as HTMLButtonElement;
 
-        eventsTab.click();
+        click(eventsTab);
 
         expect(readPanelState().tab).toBe('events');
     });
@@ -424,7 +498,7 @@ describe('mountDevtools', () => {
             default: { react: { '17.0.2': {}, '18.3.1': {} } },
         };
         putStore(createSnapshot(1));
-        mountDevtools();
+        mountPanel();
 
         const titles = Array.from(getHost()?.shadowRoot?.querySelectorAll('.tab') ?? []).map(
             (tab) => tab.textContent,
@@ -436,9 +510,13 @@ describe('mountDevtools', () => {
     it('should not react to Escape after unmount', () => {
         const onClose = jest.fn();
 
-        mountDevtools({ onClose });
-        unmountDevtools();
-        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+        mountPanel({ onClose });
+        act(() => {
+            unmountDevtools();
+        });
+        act(() => {
+            document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+        });
 
         expect(onClose).not.toHaveBeenCalled();
     });

@@ -1,7 +1,9 @@
-import { createPanel } from './ui/panel';
-import { scopeStyles } from './ui/scope-styles';
-import { PANEL_STYLES } from './ui/styles';
-import { watchModulesStore } from './store-client';
+import { flushSync } from 'react-dom';
+import { createRoot, type Root } from 'react-dom/client';
+
+import { PanelApp } from './panel/panel-app';
+import { PANEL_STYLES } from './panel/styles';
+import { scopeStyles } from './scope-styles';
 
 /** id хост-элемента панели в светлом DOM. Внутри него — shadow root, снаружи не видно ничего */
 export const DEVTOOLS_ROOT_ID = 'arui-devtools-root';
@@ -36,6 +38,10 @@ function isEscapeFromFilledInput(event: KeyboardEvent): boolean {
 
 /**
  * Монтирует панель в отдельный хост-элемент с shadow root.
+ *
+ * Сама панель — React-дерево (приватная копия React из бандла), но вся обвязка снаружи
+ * остаётся императивной: хост, shadow root, стили и Esc живут за пределами React,
+ * чтобы публичный контракт функции не зависел от рантайма внутри.
  *
  * Панель намеренно ничего не знает об остальной странице: своих стилей наружу не отдаёт,
  * чужих не получает, в фокус не вмешивается. Хост-элементу нельзя проставлять
@@ -81,10 +87,14 @@ export function mountDevtools(options: MountDevtoolsOptions = {}): () => void {
     style.textContent = shadow ? PANEL_STYLES : scopeStyles(PANEL_STYLES, `#${DEVTOOLS_ROOT_ID}`);
     root.appendChild(style);
 
-    const panel = createPanel({ onClose: () => close() });
+    // React-корень живёт в своём элементе, а не на shadow root: рядом лежит <style>,
+    // и React не должен считать его частью своего дерева
+    const reactContainer = document.createElement('div');
+
+    root.appendChild(reactContainer);
 
     let unmounted = false;
-    let stopWatching: (() => void) | undefined;
+    let reactRoot: Root | undefined;
 
     function unmount() {
         if (unmounted) {
@@ -93,8 +103,7 @@ export function mountDevtools(options: MountDevtoolsOptions = {}): () => void {
 
         unmounted = true;
         document.removeEventListener('keydown', handleKeydown);
-        stopWatching?.();
-        panel.destroy();
+        reactRoot?.unmount();
         host.remove();
         activeUnmount = undefined;
     }
@@ -119,17 +128,30 @@ export function mountDevtools(options: MountDevtoolsOptions = {}): () => void {
         close();
     }
 
-    root.appendChild(panel.element);
     container.appendChild(host);
 
     document.addEventListener('keydown', handleKeydown);
 
     // Размонтирование регистрируем до первой отрисовки. Если она упадёт, панель всё равно
-    // останется снимаемой: иначе в странице повиснет хост с живой подпиской и слушателем
-    // на document, isDevtoolsMounted() соврёт, а повторный вызов создаст второй такой же хост.
+    // останется снимаемой: иначе в странице повиснет хост с живым слушателем на document,
+    // isDevtoolsMounted() соврёт, а повторный вызов создаст второй такой же хост.
     activeUnmount = unmount;
 
-    stopWatching = watchModulesStore(panel.update);
+    try {
+        reactRoot = createRoot(reactContainer);
+        // синхронный первый кадр: после возврата из mountDevtools панель уже в DOM -
+        // ровно это обещала vanilla-версия, и на это полагаются вызывающие
+        flushSync(() => {
+            // mountDevtools - не render-функция, ссылка на close создаётся один раз за монтирование
+            // eslint-disable-next-line react/jsx-no-bind
+            reactRoot?.render(<PanelApp onClose={close} />);
+        });
+    } catch (error) {
+        // внутри дерева ошибки ловит PanelErrorBoundary; сюда долетает только поломка самого
+        // React-корня - панель в этом случае остаётся пустой, но снимаемой, а страница живой
+        // eslint-disable-next-line no-console
+        console.error('[arui devtools] не удалось отрисовать панель', error);
+    }
 
     return unmount;
 }

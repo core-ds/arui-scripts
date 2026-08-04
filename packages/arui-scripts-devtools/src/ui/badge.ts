@@ -1,4 +1,4 @@
-import { scopeStyles } from './scope-styles';
+import { scopeStyles } from '../scope-styles';
 
 /** id хост-элемента бейджа в светлом DOM */
 export const DEVTOOLS_BADGE_ID = 'arui-devtools-badge';
