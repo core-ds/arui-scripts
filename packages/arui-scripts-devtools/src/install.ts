@@ -108,8 +108,10 @@ export function installDevtools(): () => void {
         opening = true;
 
         // именно динамический импорт: код панели должен уехать в отдельный чанк,
-        // в основном бандле остаётся только этот файл с хоткеем и бейджем
-        import('./mount').then(
+        // в основном бандле остаётся только этот файл с хоткеем и бейджем.
+        // Имя чанка фиксируем: иначе в prod оно превращается в числовой id,
+        // а дефолтные cacheGroups splitChunks охотнее дробят безымянное
+        import(/* webpackChunkName: "arui-devtools-panel" */ './mount').then(
             ({ mountDevtools }) => {
                 opening = false;
                 unmountPanel = mountDevtools({

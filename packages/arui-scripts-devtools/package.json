@@ -30,7 +30,7 @@
     "scripts": {
         "build:commonjs": "tsc --project tsconfig.json",
         "build:esm": "tsc --project tsconfig.esm.json",
-        "build": "yarn clean && yarn build:commonjs && yarn build:esm",
+        "build": "yarn clean && yarn build:commonjs && yarn build:esm && node scripts/bundle-mount.js",
         "clean": "rm -rf build tsconfig.tsbuildinfo",
         "test": "jest",
         "lint:scripts": "arui-presets-lint scripts",
