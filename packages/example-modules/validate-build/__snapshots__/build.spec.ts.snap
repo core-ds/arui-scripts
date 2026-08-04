@@ -57,6 +57,7 @@ exports[`modules should create valid css for ModuleCompat 1`] = `
                 border-right:1px solid #c5c5c7;
             }
         }
+
 @keyframes someRandomAnimation{
     0%{
         transform:scaleX(0);

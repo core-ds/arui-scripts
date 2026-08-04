@@ -1,4 +1,4 @@
 /** Версия arui-scripts, которую scaffold кладёт в package.json нового проекта.
  * Генерируется скриптом scripts/sync-arui-scripts-version.js при сборке.
  */
-export const DEFAULT_ARUI_SCRIPTS_VERSION = '23.1.0';
+export const DEFAULT_ARUI_SCRIPTS_VERSION = '23.2.0';
