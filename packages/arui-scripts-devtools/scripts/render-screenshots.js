@@ -69,8 +69,9 @@ global.__webpack_share_scopes__ = {
     },
 };
 
-const { createPanel } = require(path.join(PKG, 'build/ui/panel.js'));
-const { PANEL_STYLES } = require(path.join(PKG, 'build/ui/styles.js'));
+// панель берём из собранного бандла: скрипт заодно работает смоуком артефакта,
+// который реально уезжает в npm
+const { mountDevtools } = require(path.join(PKG, 'build/mount.js'));
 
 const started = TIME_ORIGIN + 1;
 
@@ -223,12 +224,35 @@ const events = [
     },
 ].map((event, index) => ({ ...event, id: index + 1, timestamp: TIME_ORIGIN + 1 + event.time }));
 
-const panel = createPanel({ onClose: () => undefined });
+// стор должен лежать в глобале до монтирования: панель подпишется на него сразу,
+// не заводя поллинг
+globalThis.__ARUI_DEVTOOLS__ = {
+    version: 1,
+    modules: {
+        version: 1,
+        getSnapshot: () => ({ version: 1, loads, events }),
+        subscribe: () => () => undefined,
+    },
+};
 
-panel.update({ status: 'ready', snapshot: { version: 1, loads, events } });
+const unmountPanel = mountDevtools({ container: dom.window.document.body });
+
+const host = dom.window.document.getElementById('arui-devtools-root');
+const shadow = host.shadowRoot;
+const panelElement = shadow.querySelector('.panel');
+// стили берём из <style>, который панель сама положила в shadow root, -
+// отдельного экспорта у бандла для этого не нужно
+const PANEL_STYLES = shadow.querySelector('style').textContent;
+
+// React коммитит обновления от кликов асинхронно - кадр снимаем после макротаски
+function frame() {
+    return new Promise((resolve) => {
+        setTimeout(resolve, 0);
+    });
+}
 
 function activateTab(title) {
-    const tab = Array.from(panel.element.querySelectorAll('.tab')).find(
+    const tab = Array.from(panelElement.querySelectorAll('.tab')).find(
         (item) => item.textContent.indexOf(title) === 0,
     );
 
@@ -244,48 +268,66 @@ body { margin: 0; padding: 24px; background: #eef1f5; }
 ${styles}
 .stage { display: block; width: 880px; height: ${height}px; }
 .panel { position: static; width: 100%; height: 100%; max-width: none; max-height: none; }
-</style></head><body><div class="stage">${panel.element.outerHTML}</div></body></html>`;
+</style></head><body><div class="stage">${panelElement.outerHTML}</div></body></html>`;
 
     fs.writeFileSync(path.join(OUT, `${name}.html`), html);
 
     return { name, height };
 }
 
-const shots = [];
-
 function toggleRow(moduleId) {
-    const row = Array.from(panel.element.querySelectorAll('.row:not(.row_header)')).find(
+    const row = Array.from(panelElement.querySelectorAll('.row:not(.row_header)')).find(
         (item) => item.querySelector('.module-id').textContent === moduleId,
     );
 
     row.click();
 }
 
-// «Модули» с раскрытой удачной загрузкой: водопад всех семи стадий и ресурсы
-toggleRow('Module');
-shots.push(write('panel-modules', 676));
-toggleRow('Module');
+async function main() {
+    const shots = [];
 
-// то же, но с раскрытой ошибкой - ради неё панель и открывают
-toggleRow('AbstractModule');
-shots.push(write('panel-error', 657));
-toggleRow('AbstractModule');
+    // «Модули» с раскрытой удачной загрузкой: водопад всех семи стадий и ресурсы
+    toggleRow('Module');
+    await frame();
+    shots.push(write('panel-modules', 676));
+    toggleRow('Module');
+    await frame();
 
-activateTab('События');
-shots.push(write('panel-events', 488));
+    // то же, но с раскрытой ошибкой - ради неё панель и открывают
+    toggleRow('AbstractModule');
+    await frame();
+    shots.push(write('panel-error', 657));
+    toggleRow('AbstractModule');
+    await frame();
 
-activateTab('Share scope');
-shots.push(write('panel-share-scope', 560));
+    activateTab('События');
+    await frame();
+    shots.push(write('panel-events', 488));
 
-// печатаем готовые команды: высота кадра у каждой картинки своя, и держать её в голове незачем
-const CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
-const PADDING = 24;
+    activateTab('Share scope');
+    await frame();
+    shots.push(write('panel-share-scope', 560));
 
-console.log(`html готовы в ${OUT}. Снять png:\n`);
-shots.forEach(({ name, height }) => {
-    console.log(
-        `"${CHROME}" --headless --force-device-scale-factor=2 ` +
-            `--window-size=928,${height + PADDING * 2} ` +
-            `--screenshot="${path.join(OUT, `${name}.png`)}" "${path.join(OUT, `${name}.html`)}"`,
-    );
+    unmountPanel();
+
+    // печатаем готовые команды: высота кадра у каждой картинки своя, держать её в голове незачем
+    const CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+    const PADDING = 24;
+
+    console.log(`html готовы в ${OUT}. Снять png:\n`);
+    shots.forEach(({ name, height }) => {
+        console.log(
+            `"${CHROME}" --headless --force-device-scale-factor=2 ` +
+                `--window-size=928,${height + PADDING * 2} ` +
+                `--screenshot="${path.join(OUT, `${name}.png`)}" "${path.join(
+                    OUT,
+                    `${name}.html`,
+                )}"`,
+        );
+    });
+}
+
+main().catch((error) => {
+    console.error(error);
+    process.exit(1);
 });
