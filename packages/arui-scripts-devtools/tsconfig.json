@@ -4,6 +4,9 @@
         "incremental": false,
         "target": "ES2016",
         "module": "commonjs",
+        // automatic-рантайм вместо classic из базового конфига: React в панели — приватная
+        // копия, и файлы не должны требовать `import React` ради JSX
+        "jsx": "react-jsx",
         "skipLibCheck": true,
         "outDir": "./build",
         "declaration": true,
@@ -11,6 +14,6 @@
         "lib": ["ES2016", "DOM", "DOM.Iterable"],
         "types": ["jest", "node"]
     },
-    "include": ["src/**/*.ts"],
+    "include": ["src/**/*.ts", "src/**/*.tsx"],
     "exclude": ["build", "src/**/__tests__/**"]
 }
