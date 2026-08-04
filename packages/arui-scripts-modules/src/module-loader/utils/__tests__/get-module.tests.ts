@@ -1,4 +1,5 @@
 /* eslint-disable no-underscore-dangle */
+import { type DevtoolsStage } from '../../../devtools/types';
 import { type ModuleFederationContainer } from '../../types';
 import { getCompatModule, getModule } from '../get-module';
 
@@ -63,6 +64,47 @@ describe('getModule', () => {
         await expect(getModule(windowVarName, moduleId)).rejects.toThrow(
             `Cannot load external remote: ${moduleId}, unable to locate module inside a container`,
         );
+    });
+
+    describe('devtools trace', () => {
+        function createTrace() {
+            const started: string[] = [];
+            const ended: string[] = [];
+
+            return {
+                started,
+                ended,
+                trace: {
+                    start: (stage: DevtoolsStage) => started.push(stage),
+                    end: (stage: DevtoolsStage) => ended.push(stage),
+                },
+            };
+        }
+
+        it('should report all substages of a successful load', async () => {
+            const { started, ended, trace } = createTrace();
+
+            typedWindow[windowVarName] = {
+                init: jest.fn(),
+                get: jest.fn(() => Promise.resolve(() => 'module content')),
+            } as unknown as ModuleFederationContainer;
+
+            await getModule(windowVarName, 'my-module', 'default', trace);
+
+            expect(started).toEqual(['init-sharing', 'container-init', 'container-get', 'factory']);
+            expect(ended).toEqual(started);
+        });
+
+        it('should leave failed substage unfinished', async () => {
+            const { started, ended, trace } = createTrace();
+
+            typedWindow[windowVarName] = {} as unknown as ModuleFederationContainer;
+
+            await expect(getModule(windowVarName, 'my-module', 'default', trace)).rejects.toThrow();
+
+            expect(started).toEqual(['init-sharing', 'container-init']);
+            expect(ended).toEqual(['init-sharing']);
+        });
     });
 });
 

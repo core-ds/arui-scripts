@@ -1,0 +1,762 @@
+/**
+ * Стили панели. Живут внутри shadow root, поэтому наружу не текут, а снаружи их не переопределить.
+ * Шрифты только системные: панель не имеет права тянуть внешние ресурсы.
+ *
+ * Внешний вид собран по дизайн-системе core-components: цвета - тёмная палитра
+ * (`--color-dark-*`), отступы - шкала `--gap-*`, скругления - `--border-radius-*`, кнопки,
+ * вкладки и статусы повторяют геометрию соответствующих компонентов.
+ *
+ * Импортировать `@alfalab/core-components/vars` нельзя: у пакета ноль зависимостей, и любая
+ * из них приехала бы в бандл приложения вместе с панелью. Поэтому переменные дизайн-системы
+ * названы по именам, а их значения продублированы запасными: подключило приложение вары -
+ * панель возьмёт его палитру, не подключило - свою копию.
+ *
+ * Размеры мимо `var()` намеренно: имена вроде `--gap-s` слишком общие, и чужое значение
+ * из приложения развалило бы вёрстку. Цвет в худшем случае просто окажется другим.
+ */
+export const PANEL_STYLES = `
+:host {
+    all: initial;
+
+    /* поверхности */
+    --arui-devtools-bg: var(--color-dark-bg-primary, #0b1f35);
+    --arui-devtools-bg-secondary: var(--color-dark-bg-secondary, #233549);
+    --arui-devtools-bg-tertiary: var(--color-dark-bg-tertiary, #3c4c5d);
+    --arui-devtools-bg-hover: var(--color-dark-specialbg-secondary-transparent, rgba(255, 255, 255, 0.1));
+    --arui-devtools-bg-control: var(--color-dark-specialbg-tertiary-transparent, rgba(255, 255, 255, 0.2));
+    --arui-devtools-bg-control-hover: var(--color-dark-specialbg-tertiary-transparent-tint-7, rgba(255, 255, 255, 0.256));
+
+    /* границы */
+    --arui-devtools-border: var(--color-dark-border-secondary, #3c4c5d);
+    --arui-devtools-border-subtle: var(--color-dark-border-tertiary, #233549);
+    --arui-devtools-border-focus: var(--color-dark-border-link, #007aff);
+    --arui-devtools-border-accent: var(--color-dark-border-accent, #ef3124);
+
+    /* текст */
+    --arui-devtools-text: var(--color-dark-text-primary, #fff);
+    --arui-devtools-text-secondary: var(--color-dark-text-secondary, rgba(255, 255, 255, 0.7));
+    --arui-devtools-text-tertiary: var(--color-dark-text-tertiary, rgba(255, 255, 255, 0.4));
+    --arui-devtools-text-disabled: var(--color-dark-text-disabled, rgba(255, 255, 255, 0.25));
+    --arui-devtools-link: var(--color-dark-text-link-tint-40, rgb(102, 175, 255));
+
+    /* Tooltip дизайн-системы инвертирован относительно поверхности: на тёмной панели он светлый */
+    --arui-devtools-tooltip-bg: var(--color-dark-bg-primary-inverted, #fff);
+    --arui-devtools-tooltip-text: var(--color-dark-text-primary-inverted, #0b1f35);
+    --arui-devtools-tooltip-shadow: var(
+        --shadow-m-hard,
+        0 0 16px rgba(11, 31, 53, 0.08),
+        0 8px 16px rgba(11, 31, 53, 0.16),
+        0 8px 16px rgba(11, 31, 53, 0.16)
+    );
+
+    /* Checkbox берёт цвета из graphic-*, как и одноимённый компонент дизайн-системы */
+    --arui-devtools-checkbox-border: var(--color-dark-graphic-secondary, #b6bcc3);
+    --arui-devtools-checkbox-checked: var(--color-dark-graphic-primary, #fff);
+    --arui-devtools-checkbox-mark: var(--color-dark-graphic-primary-inverted, #0b1f35);
+
+    /* статусы: на тёмном фоне дизайн-система берёт graphic-цвета, они контрастнее text- */
+    --arui-devtools-positive: var(--color-dark-graphic-positive, #2fc26e);
+    --arui-devtools-positive-muted: var(--color-dark-bg-positive-muted, #06311e);
+    --arui-devtools-negative: var(--color-dark-graphic-negative, #f15045);
+    --arui-devtools-negative-muted: var(--color-dark-bg-negative-muted, #410903);
+    --arui-devtools-attention: var(--color-dark-graphic-attention, #e58933);
+    --arui-devtools-attention-muted: var(--color-dark-bg-attention-muted, #432000);
+
+    /* типографика */
+    --arui-devtools-font: var(--font-family-system, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Helvetica, sans-serif);
+    --arui-devtools-font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+    --arui-devtools-shadow: var(--shadow-l, 0 0 24px rgba(11, 31, 53, 0.12), 0 12px 24px rgba(11, 31, 53, 0.24));
+}
+
+/* Панель - модальная поверхность: bg-primary, --border-radius-l, --shadow-l.
+   Базовая типографика paragraph_primary_small (14/20) */
+.panel {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 2147483647;
+    display: flex;
+    flex-direction: column;
+    width: 880px;
+    max-width: calc(100vw - 32px);
+    height: 60vh;
+    max-height: calc(100vh - 32px);
+    overflow: hidden;
+    border-radius: 12px;
+    background: var(--arui-devtools-bg);
+    box-shadow: var(--arui-devtools-shadow);
+    color: var(--arui-devtools-text);
+    font-family: var(--arui-devtools-font);
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.header {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--arui-devtools-border);
+    background: var(--arui-devtools-bg-secondary);
+}
+
+/* accent_primary_small */
+.title {
+    flex: 1;
+    font-weight: 700;
+}
+
+/* Button, size xxs, вариант secondary: высота 32, padding 0 15px, скругление 6 */
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 32px;
+    padding: 0 15px;
+    border: none;
+    border-radius: 6px;
+    background: var(--arui-devtools-bg-control);
+    color: var(--arui-devtools-text);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.button:hover:not(:disabled) {
+    background: var(--arui-devtools-bg-control-hover);
+}
+
+.button:disabled {
+    background: var(--arui-devtools-bg-hover);
+    color: var(--arui-devtools-text-disabled);
+    cursor: default;
+}
+
+.button:focus-visible {
+    outline: 2px solid var(--arui-devtools-border-focus);
+    outline-offset: 1px;
+}
+
+/* IconButton: квадрат по высоте кнопки, без заливки в покое */
+.button_icon {
+    min-width: 32px;
+    padding: 0;
+    background: transparent;
+    color: var(--arui-devtools-text-secondary);
+    font-size: 16px;
+}
+
+.button_icon:hover:not(:disabled) {
+    background: var(--arui-devtools-bg-hover);
+    color: var(--arui-devtools-text);
+}
+
+/* Tabs, вариант primary: подпись secondary → primary, у активной вкладки линия 3px акцентом */
+.tabs {
+    display: flex;
+    flex: none;
+    gap: 24px;
+    padding: 0 16px;
+    border-bottom: 1px solid var(--arui-devtools-border);
+    background: var(--arui-devtools-bg-secondary);
+}
+
+.tab {
+    position: relative;
+    padding: 10px 0;
+    border: none;
+    background: transparent;
+    color: var(--arui-devtools-text-secondary);
+    font: inherit;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.tab:hover {
+    color: var(--arui-devtools-text);
+}
+
+.tab:focus-visible {
+    outline: 2px solid var(--arui-devtools-border-focus);
+    outline-offset: -2px;
+}
+
+.tab_active {
+    color: var(--arui-devtools-text);
+}
+
+.tab_active::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: -1px;
+    left: 0;
+    height: 3px;
+    border-radius: 2px 2px 0 0;
+    background: var(--arui-devtools-border-accent);
+}
+
+/* paragraph_secondary_medium */
+.status {
+    flex: none;
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--arui-devtools-border-subtle);
+    color: var(--arui-devtools-text-secondary);
+    font-size: 12px;
+    line-height: 16px;
+}
+
+.status_error {
+    color: var(--arui-devtools-negative);
+}
+
+.body {
+    flex: 1;
+    overflow: auto;
+}
+
+.placeholder {
+    padding: 16px;
+    color: var(--arui-devtools-text-secondary);
+}
+
+.grid {
+    min-width: 820px;
+}
+
+.row {
+    display: grid;
+    grid-template-columns: 104px minmax(140px, 1.2fr) 80px minmax(100px, 1fr) minmax(140px, 1.4fr) 88px 72px;
+    gap: 12px;
+    align-items: center;
+    width: 100%;
+    padding: 8px 16px;
+    border: none;
+    border-bottom: 1px solid var(--arui-devtools-border-subtle);
+    background: transparent;
+    color: inherit;
+    font-family: inherit;
+    font-size: 12px;
+    line-height: 16px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.row:hover:not(.row_header) {
+    background: var(--arui-devtools-bg-hover);
+}
+
+.row:focus-visible {
+    outline: 2px solid var(--arui-devtools-border-focus);
+    outline-offset: -2px;
+}
+
+/* accent_caps, уменьшенный до плотности таблицы */
+.row_header {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: var(--arui-devtools-bg);
+    color: var(--arui-devtools-text-tertiary);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    cursor: default;
+}
+
+.cell {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cell_mono {
+    font-family: var(--arui-devtools-font-mono);
+    font-variant-numeric: tabular-nums;
+}
+
+.cell_url {
+    direction: rtl;
+    font-family: var(--arui-devtools-font-mono);
+    text-align: left;
+}
+
+/* Status, вариант soft: высота 20, padding 0 8, --border-radius-s, 11/16 700 caps */
+.cell_status {
+    justify-self: start;
+    align-self: center;
+    display: inline-flex;
+    align-items: center;
+    height: 20px;
+    padding: 0 8px;
+    border-radius: 4px;
+    background: var(--arui-devtools-bg-tertiary);
+    color: var(--arui-devtools-text-secondary);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    line-height: 16px;
+    text-transform: uppercase;
+}
+
+.row_loaded .cell_status {
+    background: var(--arui-devtools-positive-muted);
+    color: var(--arui-devtools-positive);
+}
+
+.row_error .cell_status {
+    background: var(--arui-devtools-negative-muted);
+    color: var(--arui-devtools-negative);
+}
+
+.row_pending .cell_status {
+    background: var(--arui-devtools-attention-muted);
+    color: var(--arui-devtools-attention);
+}
+
+.marker {
+    display: inline-block;
+    width: 12px;
+    color: var(--arui-devtools-text-tertiary);
+}
+
+.module-id {
+    font-family: var(--arui-devtools-font-mono);
+    font-weight: 700;
+}
+
+/* Tag: чип рядом с названием */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    height: 20px;
+    margin-left: 8px;
+    padding: 0 6px;
+    border-radius: 4px;
+    background: var(--arui-devtools-bg-tertiary);
+    color: var(--arui-devtools-text-secondary);
+    font-family: var(--arui-devtools-font);
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 16px;
+}
+
+.details {
+    padding: 12px 16px 16px 44px;
+    border-bottom: 1px solid var(--arui-devtools-border-subtle);
+    background: var(--arui-devtools-bg-secondary);
+    font-size: 12px;
+    line-height: 16px;
+}
+
+.details__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 24px;
+    margin-bottom: 12px;
+}
+
+.field__label {
+    margin-right: 8px;
+    color: var(--arui-devtools-text-tertiary);
+}
+
+.field__value {
+    font-family: var(--arui-devtools-font-mono);
+}
+
+/* Plate, вариант negative */
+.error {
+    margin-bottom: 12px;
+    padding: 12px;
+    border-radius: 8px;
+    background: var(--arui-devtools-negative-muted);
+}
+
+.error__title {
+    margin-bottom: 4px;
+    color: var(--arui-devtools-negative);
+    font-weight: 700;
+}
+
+.error__stack {
+    margin: 8px 0 0;
+    max-height: 160px;
+    overflow: auto;
+    color: var(--arui-devtools-text-secondary);
+    font-family: var(--arui-devtools-font-mono);
+    font-size: 11px;
+    line-height: 16px;
+    white-space: pre-wrap;
+}
+
+.resources {
+    margin-top: 12px;
+}
+
+.resources__title {
+    margin-bottom: 4px;
+    color: var(--arui-devtools-text-tertiary);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.resources__empty {
+    color: var(--arui-devtools-text-tertiary);
+}
+
+.resource {
+    display: flex;
+    gap: 16px;
+    justify-content: space-between;
+    padding: 2px 0;
+}
+
+.resource__url {
+    overflow: hidden;
+    color: var(--arui-devtools-link);
+    font-family: var(--arui-devtools-font-mono);
+    text-decoration: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+a.resource__url:hover {
+    text-decoration: underline;
+}
+
+.resource__timing {
+    flex: none;
+    color: var(--arui-devtools-text-tertiary);
+    font-family: var(--arui-devtools-font-mono);
+    font-variant-numeric: tabular-nums;
+}
+
+.waterfall {
+    margin-top: 12px;
+}
+
+.waterfall__title {
+    margin-bottom: 4px;
+    color: var(--arui-devtools-text-tertiary);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+/* первая колонка под самое длинное название стадии вместе с иконкой подсказки */
+.waterfall__row {
+    display: grid;
+    grid-template-columns: 152px 1fr 104px;
+    gap: 12px;
+    align-items: center;
+    padding: 2px 0;
+}
+
+.waterfall__stage {
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+    color: var(--arui-devtools-text-secondary);
+}
+
+.waterfall__stage-name {
+    font-family: var(--arui-devtools-font-mono);
+    white-space: nowrap;
+}
+
+/* иконка-подсказка: контурный кружок, чтобы не шуметь в плотном водопаде */
+.hint {
+    position: relative;
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: 14px;
+    height: 14px;
+    padding: 0;
+    border: 1px solid currentColor;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--arui-devtools-text-tertiary);
+    font-family: var(--arui-devtools-font);
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1;
+    cursor: help;
+    transition: color 0.2s ease;
+}
+
+.hint:hover,
+.hint:focus-visible {
+    color: var(--arui-devtools-text);
+}
+
+.hint:focus-visible {
+    outline: 2px solid var(--arui-devtools-border-focus);
+    outline-offset: 2px;
+}
+
+/* Tooltip, вариант hint: padding --gap-xs, --border-radius-s, 13/16, --shadow-m-hard.
+   Фон и текст инвертированные - на тёмной панели подсказка светлая */
+.hint__tooltip {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    display: none;
+    box-sizing: border-box;
+    max-width: 368px;
+    padding: 8px;
+    border-radius: 4px;
+    background: var(--arui-devtools-tooltip-bg);
+    box-shadow: var(--arui-devtools-tooltip-shadow);
+    color: var(--arui-devtools-tooltip-text);
+    font-family: var(--arui-devtools-font);
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 16px;
+    text-align: left;
+    white-space: normal;
+    cursor: auto;
+}
+
+.hint__tooltip_visible {
+    display: block;
+}
+
+/* ProgressBar: дорожка 8px со скруглением --border-radius-s */
+.waterfall__track {
+    height: 8px;
+    border-radius: 4px;
+    background: var(--arui-devtools-bg-tertiary);
+}
+
+.waterfall__bar {
+    height: 100%;
+    border-radius: 4px;
+    background: var(--arui-devtools-link);
+}
+
+.waterfall__bar_pending {
+    background: repeating-linear-gradient(
+        90deg,
+        var(--arui-devtools-attention),
+        var(--arui-devtools-attention) 4px,
+        transparent 4px,
+        transparent 8px
+    );
+}
+
+.waterfall__duration {
+    color: var(--arui-devtools-text-tertiary);
+    font-family: var(--arui-devtools-font-mono);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+}
+
+.share-scope {
+    padding: 12px 16px 16px;
+}
+
+.scope__title {
+    margin: 12px 0 8px;
+    color: var(--arui-devtools-text-tertiary);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.package {
+    margin-bottom: 24px;
+}
+
+.package__title {
+    margin-bottom: 8px;
+}
+
+.badge_problem {
+    background: var(--arui-devtools-negative-muted);
+    color: var(--arui-devtools-negative);
+}
+
+/* Plate, вариант attention */
+.problem {
+    margin-bottom: 8px;
+    padding: 12px;
+    border-radius: 8px;
+    background: var(--arui-devtools-attention-muted);
+    color: var(--arui-devtools-attention);
+    font-size: 12px;
+    line-height: 16px;
+}
+
+.events {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.events__list {
+    flex: 1;
+    overflow: auto;
+}
+
+.toolbar {
+    display: flex;
+    flex: none;
+    gap: 8px;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--arui-devtools-border-subtle);
+}
+
+.toolbar__counter {
+    color: var(--arui-devtools-text-tertiary);
+    font-size: 12px;
+    line-height: 16px;
+    white-space: nowrap;
+}
+
+/* Input: высота под кнопку рядом, --border-radius-m, подсветка рамкой в фокусе */
+.search {
+    flex: 1;
+    min-width: 0;
+    min-height: 32px;
+    padding: 0 12px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: var(--arui-devtools-bg-hover);
+    color: var(--arui-devtools-text);
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.search::placeholder {
+    color: var(--arui-devtools-text-tertiary);
+}
+
+.search:focus {
+    border-color: var(--arui-devtools-border-focus);
+    outline: none;
+}
+
+/* Checkbox: квадрат 20x20, рамка 1.5px, --border-radius-s; отмеченный заливается
+   graphic-primary, а галка внутри - graphic-primary-inverted, то есть на тёмной теме
+   получается белый квадрат с тёмной галкой */
+.checkbox {
+    display: inline-flex;
+    flex: none;
+    gap: 8px;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+}
+
+/* input прячем от глаз, но не от доступности: он остаётся фокусируемым и озвучивается */
+.checkbox__input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+.checkbox__box {
+    position: relative;
+    display: inline-flex;
+    flex: none;
+    box-sizing: border-box;
+    width: 20px;
+    height: 20px;
+    border: 1.5px solid var(--arui-devtools-checkbox-border);
+    border-radius: 4px;
+    background: var(--arui-devtools-bg);
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.checkbox:hover .checkbox__box {
+    border-color: var(--arui-devtools-text);
+}
+
+.checkbox__input:checked + .checkbox__box {
+    border-color: transparent;
+    background: var(--arui-devtools-checkbox-checked);
+}
+
+/* галка нарисована рамками, а не иконкой: у пакета не может быть зависимости с иконками,
+   а тащить svg ради одной птички в стилевой литерал незачем */
+.checkbox__input:checked + .checkbox__box::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 5.5px;
+    width: 5px;
+    height: 9px;
+    border-right: 2px solid var(--arui-devtools-checkbox-mark);
+    border-bottom: 2px solid var(--arui-devtools-checkbox-mark);
+    transform: rotate(45deg);
+}
+
+.checkbox__input:focus-visible + .checkbox__box {
+    outline: 2px solid var(--arui-devtools-border-focus);
+    outline-offset: 1px;
+}
+
+.checkbox__label {
+    white-space: nowrap;
+}
+
+.grid_events {
+    min-width: 680px;
+}
+
+.row_event {
+    grid-template-columns: 80px 110px minmax(120px, 1fr) 120px minmax(140px, 1.6fr);
+    cursor: default;
+}
+
+.row_event:hover:not(.row_header) {
+    background: var(--arui-devtools-bg-hover);
+}
+
+.cell_type {
+    color: var(--arui-devtools-link);
+    font-family: var(--arui-devtools-font-mono);
+}
+
+.row_event.row_error .cell_type {
+    color: var(--arui-devtools-negative);
+}
+
+.cell_message {
+    color: var(--arui-devtools-text-secondary);
+}
+
+.row_share {
+    grid-template-columns: 110px minmax(120px, 1fr) 84px 64px 84px minmax(120px, 1fr);
+    cursor: default;
+}
+
+.row_share:hover {
+    background: transparent;
+}
+`;

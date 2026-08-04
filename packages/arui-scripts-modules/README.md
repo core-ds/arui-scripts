@@ -20,6 +20,8 @@ yarn add @alfalab/scripts-modules
 - [`useModuleFactory`](#useModuleFactory)
 - [`executeModuleFactory`](#executeModuleFactory)
 
+Помимо методов пакет экспортирует [контракт диагностики загрузки](#диагностика-загрузки-модулей).
+
 ## Использование
 
 ### `createModuleLoader`
@@ -215,4 +217,22 @@ async function mySuperMethod() {
     console.log(executionResult); // Тут будет то, что возвращает модуль-фабрика
 }
 
+```
+
+## Диагностика загрузки модулей
+
+Загрузчик пишет диагностику каждой попытки загрузки — стадии с таймингами, ресурсы, ошибки —
+в публичный версионированный контракт `globalThis.__ARUI_DEVTOOLS__.modules`. В dev-сборке сбор
+включён всегда, в прод-сборке спит, пока его не разбудят ключом `arui:devtools` в `localStorage`
+(в юнит-тестах, где `NODE_ENV=test`, сбор тоже работает — тем же ключом его можно выключить).
+
+Пакет экспортирует всё, что нужно читателю контракта: `getDevtoolsModulesStore`,
+`isCollectingEnabled`, событие `DEVTOOLS_READY_EVENT`, константы `DEVTOOLS_*` и типы записей
+(`ModuleLoadRecord`, `DevtoolsEvent`, `DevtoolsSnapshot`). Смотреть данные удобнее всего в
+[панели отладки модулей](https://github.com/core-ds/arui-scripts/blob/master/packages/arui-scripts/docs/devtools.md),
+но контракт открыт любому читателю — собственному коду мониторинга, расширению браузера
+или просто консоли:
+
+```js
+__ARUI_DEVTOOLS__.modules.getSnapshot();
 ```

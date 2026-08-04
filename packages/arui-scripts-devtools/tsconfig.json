@@ -1,0 +1,16 @@
+{
+    "extends": "../arui-scripts/tsconfig.json",
+    "compilerOptions": {
+        "incremental": false,
+        "target": "ES2016",
+        "module": "commonjs",
+        "skipLibCheck": true,
+        "outDir": "./build",
+        "declaration": true,
+        "rootDir": "./src",
+        "lib": ["ES2016", "DOM", "DOM.Iterable"],
+        "types": ["jest", "node"]
+    },
+    "include": ["src/**/*.ts"],
+    "exclude": ["build", "src/**/__tests__/**"]
+}

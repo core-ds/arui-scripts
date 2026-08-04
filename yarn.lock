@@ -152,6 +152,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@alfalab/scripts-devtools@workspace:^, @alfalab/scripts-devtools@workspace:packages/arui-scripts-devtools":
+  version: 0.0.0-use.local
+  resolution: "@alfalab/scripts-devtools@workspace:packages/arui-scripts-devtools"
+  dependencies:
+    "@types/jest": "npm:^28.1.8"
+    jest: "npm:28.1.3"
+    jest-environment-jsdom: "npm:^29.6.2"
+    jsdom: "npm:^20.0.3"
+    ts-jest: "npm:28.0.8"
+    typescript: "npm:6.0.2"
+  languageName: unknown
+  linkType: soft
+
 "@alfalab/scripts-modules@workspace:*, @alfalab/scripts-modules@workspace:packages/arui-scripts-modules":
   version: 0.0.0-use.local
   resolution: "@alfalab/scripts-modules@workspace:packages/arui-scripts-modules"
@@ -6599,6 +6612,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/jest@npm:^28.1.8":
+  version: 28.1.8
+  resolution: "@types/jest@npm:28.1.8"
+  dependencies:
+    expect: "npm:^28.0.0"
+    pretty-format: "npm:^28.0.0"
+  checksum: 10/ef2024e72b27b0d5fa647955d35ef2ad19d1a753f21c3877897b18d544cae1f4930082097388d3929a6591ecf3f2c70f346e0ebd54586410fbb487c9a675c80e
+  languageName: node
+  linkType: hard
+
 "@types/jest@npm:^29.5.14":
   version: 29.5.14
   resolution: "@types/jest@npm:29.5.14"
@@ -8298,6 +8321,7 @@ __metadata:
   resolution: "arui-scripts@workspace:packages/arui-scripts"
   dependencies:
     "@alfalab/postcss-custom-properties": "npm:^9.1.2"
+    "@alfalab/scripts-devtools": "workspace:^"
     "@babel/core": "npm:7.22.10"
     "@babel/plugin-proposal-decorators": "npm:^7.23.7"
     "@babel/plugin-proposal-export-default-from": "npm:^7.23.3"
@@ -12361,7 +12385,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expect@npm:^28.1.3":
+"expect@npm:^28.0.0, expect@npm:^28.1.3":
   version: 28.1.3
   resolution: "expect@npm:28.1.3"
   dependencies:
@@ -15751,7 +15775,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jsdom@npm:^20.0.0":
+"jsdom@npm:^20.0.0, jsdom@npm:^20.0.3":
   version: 20.0.3
   resolution: "jsdom@npm:20.0.3"
   dependencies:
@@ -19459,7 +19483,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pretty-format@npm:^28.1.3":
+"pretty-format@npm:^28.0.0, pretty-format@npm:^28.1.3":
   version: 28.1.3
   resolution: "pretty-format@npm:28.1.3"
   dependencies:

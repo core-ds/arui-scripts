@@ -108,7 +108,25 @@ export type AppConfigs = {
         shareScope?: string;
     } | null;
     nodeExternals?: Omit<webpackNodeExternals.Options, 'allowlist'>;
+
+    // Devtools
+    /**
+     * Подмешивать ли в основной клиентский бандл панель отладки модулей.
+     *
+     * Настройка управляет только тем, попадёт ли код панели в сборку. Видимостью панели
+     * управляет ключ `arui:devtools` в localStorage, поэтому в прод-сборке с `always`
+     * панель молчит, пока её не включат руками.
+     *
+     * - `dev` - только в dev-сборку, в проде кода панели нет вовсе. Значение по умолчанию
+     * - `always` - и в прод-сборку тоже: так панель можно включить на стенде
+     * - `off` - не подмешивать никогда
+     */
+    devtools: DevtoolsMode;
 };
+
+export type DevtoolsMode = 'dev' | 'always' | 'off';
+
+export const DEVTOOLS_MODES: DevtoolsMode[] = ['dev', 'always', 'off'];
 
 export type ModuleConfigBase = {
     cssPrefix?: false | string;

@@ -1,7 +1,22 @@
+import {
+    createStageTracker,
+    reportLoadError,
+    reportLoadStart,
+    reportLoadSuccess,
+    reportLoadUpdate,
+    reportStageEnd,
+    reportStageStart,
+    reportUnmount,
+} from '../devtools/report';
+
 import { cleanGlobal } from './utils/clean-global';
 import { getConsumerCounter } from './utils/consumers-counter';
 import { removeModuleResources } from './utils/dom-utils';
-import { fetchResources, getResourcesTargetNodes } from './utils/fetch-resources';
+import {
+    fetchResources,
+    getResourcesTargetNodes,
+    resolveResourceUrl,
+} from './utils/fetch-resources';
 import { getCompatModule, getModule } from './utils/get-module';
 import { addCleanupMethod, cleanupModule, getModulesCache } from './utils/modules-cache';
 import { type MountableModule } from './module-types';
@@ -154,7 +169,16 @@ export function createModuleLoader<
 
         consumerCounter.increase(moduleId);
         const resourcesNodes = getResourcesTargetNodes({ resourcesTargetNode, cssTargetSelector });
-        const unmount = createUnmountHandler(moduleId, resourcesNodes, resourcesCache);
+        const removeResources = createUnmountHandler(moduleId, resourcesNodes, resourcesCache);
+        const loadId = reportLoadStart({
+            moduleId,
+            hostAppId,
+            shareScope: shareScope ?? 'default',
+        });
+        const unmount = () => {
+            reportUnmount(loadId);
+            removeResources();
+        };
 
         abortSignal?.addEventListener('abort', unmount);
 
@@ -162,17 +186,27 @@ export function createModuleLoader<
             resourcesCache === 'single-item' &&
             modulesCache[moduleId]?.[JSON.stringify(getResourcesParams)];
 
+        reportLoadUpdate(loadId, { fromCache: Boolean(isModuleResourcesCached) });
+
         lifecycleHooks.onStart?.(moduleId);
+
+        reportStageStart(loadId, 'fetch-manifest');
 
         const moduleResources = await getModuleResourcesWithCache(
             getResourcesParams as GetResourcesParams,
         ).catch((error) => {
+            reportLoadError(loadId, 'fetch-manifest', error);
             lifecycleHooks.onError?.(moduleId, 'fetch-manifest', error);
             throw error;
         });
 
+        reportStageEnd(loadId, 'fetch-manifest');
+        reportModuleResources(loadId, moduleResources);
+
         if (!isModuleResourcesCached) {
             await lifecycleHooks.onBeforeResourcesMount?.(moduleId, moduleResources);
+
+            reportStageStart(loadId, 'fetch-resources');
 
             await fetchResources({
                 cssTargetNode: resourcesNodes.css,
@@ -185,25 +219,69 @@ export function createModuleLoader<
                 abortSignal,
                 disableInlineStyleSafari,
             }).catch((error) => {
+                reportLoadError(loadId, 'fetch-resources', error);
                 lifecycleHooks.onError?.(moduleId, 'fetch-resources', error);
                 throw error;
             });
+
+            reportStageEnd(loadId, 'fetch-resources');
         }
 
         await lifecycleHooks.onBeforeModuleMount?.(moduleId, moduleResources);
 
-        let loadedModule =
-            moduleResources.mountMode === 'default'
-                ? await getModule<ModuleExportType>(moduleResources.appName, moduleId, shareScope)
-                : getCompatModule<ModuleExportType>(moduleId);
+        // подстадии получения модуля живут внутри getModule, поэтому туда протаскивается
+        // репортёр — он же запоминает, на какой стадии нас застала ошибка
+        const stageTracker = createStageTracker(
+            loadId,
+            moduleResources.mountMode === 'default' ? 'container-get' : 'compat-get',
+        );
+
+        const getModuleContent = async () => {
+            try {
+                if (moduleResources.mountMode === 'default') {
+                    return await getModule<ModuleExportType>(
+                        moduleResources.appName,
+                        moduleId,
+                        shareScope,
+                        stageTracker,
+                    );
+                }
+
+                // у compat-модуля нет стадий module federation: он целиком берётся из window
+                stageTracker.start('compat-get');
+
+                const compatModule = getCompatModule<ModuleExportType>(moduleId);
+
+                stageTracker.end('compat-get');
+
+                return compatModule;
+            } catch (error) {
+                reportLoadError(loadId, stageTracker.current, error);
+                throw error;
+            }
+        };
+
+        let loadedModule = await getModuleContent();
 
         if (!loadedModule) {
-            throw new Error(`Module ${moduleId} is not available`);
+            const error = new Error(`Module ${moduleId} is not available`);
+
+            // у default-модуля пустоту вернула фабрика, у compat — глобала так и не оказалось в window
+            reportLoadError(
+                loadId,
+                moduleResources.mountMode === 'default' ? 'factory' : 'compat-get',
+                error,
+            );
+
+            throw error;
         }
 
         if (isMountableModule(loadedModule)) {
-            loadedModule = wrapMountWithHooks(loadedModule, moduleId, lifecycleHooks);
+            reportLoadUpdate(loadId, { mountInstrumented: true });
+            loadedModule = wrapMountWithHooks(loadedModule, moduleId, lifecycleHooks, loadId);
         }
+
+        reportLoadSuccess(loadId);
 
         await lifecycleHooks.onAfterModuleMount?.(moduleId, moduleResources, loadedModule);
 
@@ -256,23 +334,68 @@ function wrapMountWithHooks<ModuleType extends MountableModule>(
         onAfterMountableModuleMount?: ModuleLoaderMountHook;
         onError?: ModuleLoaderErrorHook;
     },
+    loadId?: string,
 ): ModuleType {
     return {
         ...module,
         mount: (...args) => {
             hooks.onBeforeMountableModuleMount?.(moduleId, args[0]);
+            reportStageStart(loadId, 'mount');
             try {
                 const result = module.mount(...args);
 
+                reportStageEnd(loadId, 'mount');
                 hooks.onAfterMountableModuleMount?.(moduleId, args[0]);
 
                 return result;
             } catch (error) {
+                reportLoadError(loadId, 'mount', error);
                 hooks.onError?.(moduleId, 'mount', error);
                 throw error;
             }
         },
     };
+}
+
+/**
+ * Диагностике обещаны абсолютные url — те же, что браузер запишет в Resource Timing.
+ * `resolveResourceUrl` абсолютизирует только по абсолютному baseUrl; с относительным
+ * или пустым остался бы путь вида `/assets/main.js`, по которому Resource Timing ничего
+ * не найдёт. Дорешиваем так же, как браузер при вставке тега — от document.baseURI.
+ */
+function toAbsoluteUrl(url: string): string {
+    try {
+        if (typeof document === 'undefined') {
+            return url;
+        }
+
+        return new URL(url, document.baseURI).href;
+    } catch {
+        return url;
+    }
+}
+
+/**
+ * Переносит в диагностику всё, что стало известно из манифеста.
+ * Url ресурсов считаются той же функцией, что и при их реальной загрузке,
+ * поэтому по ним потом можно достать Resource Timing.
+ */
+function reportModuleResources(loadId: string | undefined, moduleResources: ModuleResources) {
+    const baseUrl = moduleResources.moduleState?.baseUrl ?? '';
+
+    reportLoadUpdate(loadId, {
+        containerId: moduleResources.appName,
+        moduleVersion: moduleResources.moduleVersion,
+        mountMode: moduleResources.mountMode,
+        manifestUrl: moduleResources.manifestUrl,
+        baseUrl: baseUrl || undefined,
+        scripts: (moduleResources.scripts ?? []).map((src) =>
+            toAbsoluteUrl(resolveResourceUrl(src, baseUrl)),
+        ),
+        styles: (moduleResources.styles ?? []).map((src) =>
+            toAbsoluteUrl(resolveResourceUrl(src, baseUrl)),
+        ),
+    });
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

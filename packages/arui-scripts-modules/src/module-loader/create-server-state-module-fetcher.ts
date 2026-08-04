@@ -39,7 +39,9 @@ export function createServerStateModuleFetcher<GetResourcesParams = undefined>({
                 }
 
                 try {
-                    resolve(JSON.parse(xhr.responseText));
+                    // manifestUrl не приходит с сервера, но для диагностики важно знать,
+                    // откуда именно приехали ресурсы
+                    resolve({ manifestUrl: url, ...JSON.parse(xhr.responseText) });
                 } catch (error) {
                     reject(createParseError(errorDescription, url, error));
                 }

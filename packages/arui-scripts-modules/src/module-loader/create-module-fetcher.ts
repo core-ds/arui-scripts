@@ -49,6 +49,7 @@ export function createModuleFetcher({
             appName: manifest.__metadata__.name,
             /* eslint-enable no-underscore-dangle */
             mountMode: mode,
+            manifestUrl,
             moduleState: {
                 baseUrl,
                 hostAppId,

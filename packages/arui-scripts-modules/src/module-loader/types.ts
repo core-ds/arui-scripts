@@ -63,6 +63,8 @@ export type ModuleResources<ModuleState extends BaseModuleState = BaseModuleStat
     appName: string;
     /** то, как подключать модуль на страницу. */
     mountMode: MountMode;
+    /** адрес, по которому были получены эти ресурсы. Используется только для диагностики */
+    manifestUrl?: string;
     /** предподготовленное "состояние" модуля, которое он получит при монтировании на страницу */
     moduleState: ModuleState;
 };

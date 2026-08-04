@@ -36,6 +36,7 @@ describe('createModuleFetcher', () => {
             moduleVersion: '1.0',
             appName: 'Test App',
             mountMode: 'compat',
+            manifestUrl: 'http://example.com/assets/webpack-assets.json',
             moduleState: {
                 baseUrl: 'http://example.com',
                 hostAppId: 'app1',

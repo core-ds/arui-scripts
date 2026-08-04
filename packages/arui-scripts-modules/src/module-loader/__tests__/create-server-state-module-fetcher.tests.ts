@@ -64,7 +64,10 @@ describe('createServerStateModuleFetcher', () => {
 
         mockXHR.onload?.();
 
-        await expect(promise).resolves.toEqual(JSON.parse(mockXHR.responseText));
+        await expect(promise).resolves.toEqual({
+            ...JSON.parse(mockXHR.responseText),
+            manifestUrl: 'https://test.com/api/getModuleResources',
+        });
     });
 
     it('should handle xhr error event correctly', async () => {

@@ -78,7 +78,12 @@ export async function fetchResources({
     ]);
 }
 
-function resolveResourceUrl(src: string, baseUrl: string) {
+/**
+ * Приводит путь до ресурса модуля к тому виду, в котором он будет запрошен браузером.
+ * Экспортируется, чтобы сборщик диагностики мог записать те же самые url,
+ * не протаскивая колбэки через всю цепочку загрузки ресурсов.
+ */
+export function resolveResourceUrl(src: string, baseUrl: string) {
     if (ABSOLUTE_URL_REGEXP.test(src)) {
         return src;
     }

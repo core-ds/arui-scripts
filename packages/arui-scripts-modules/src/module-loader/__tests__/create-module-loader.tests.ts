@@ -340,7 +340,12 @@ describe('createModuleLoader', () => {
 
         await loader({ getResourcesParams: undefined });
 
-        expect(getModule).toHaveBeenCalledWith('AppName', 'test', 'exampleScope');
+        expect(getModule).toHaveBeenCalledWith(
+            'AppName',
+            'test',
+            'exampleScope',
+            expect.objectContaining({ start: expect.any(Function), end: expect.any(Function) }),
+        );
     });
 
     it('should call getCompatModule with correct params if mountMode is compat', async () => {
