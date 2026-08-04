@@ -1,5 +1,14 @@
 # arui-scripts
 
+## 23.3.0
+
+### Minor Changes
+
+-   [#561](https://github.com/core-ds/arui-scripts/pull/561) [`98a2da5`](https://github.com/core-ds/arui-scripts/commit/98a2da587e1f0bc1d9b053cf509d96379b2e9af2) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Добавлена настройка `jestTransformNodeModules` — список пакетов из `node_modules`, которые нужно прогонять
+    через трансформер при запуске тестов. Нужна для зависимостей, публикующихся только в формате ESM: рантайм jest
+    работает в CommonJS, а его нативный ESM-режим до сих пор требует `--experimental-vm-modules`.
+    По умолчанию `[]`, поведение не меняется.
+
 ## 23.2.0
 
 ### Minor Changes
