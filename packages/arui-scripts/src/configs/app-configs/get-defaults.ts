@@ -60,6 +60,7 @@ export function getDefaultAppConfig(): AppConfigs {
         installServerSourceMaps: false,
         disableDevRspackTypecheck: true,
         jestCodeTransformer: 'swc',
+        jestTransformNodeModules: [],
         collectCoverage:
             process.env.NODE_ENV === 'cypress' || process.env.USE_ISTANBUL === 'enabled',
 

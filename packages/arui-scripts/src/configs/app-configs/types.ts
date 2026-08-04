@@ -58,6 +58,7 @@ export type AppConfigs = {
     /** @deprecated используйте `disableDevRspackTypecheck` */
     disableDevWebpackTypecheck?: boolean;
     jestCodeTransformer: 'babel' | 'tsc' | 'swc';
+    jestTransformNodeModules: string[];
     collectCoverage: boolean;
 
     // image processing
