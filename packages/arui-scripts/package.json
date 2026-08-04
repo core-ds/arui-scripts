@@ -202,7 +202,7 @@
             ]
         },
         "transformIgnorePatterns": [
-            "/node_modules/(?!@rspack/)"
+            "/node_modules/(?!@rspack/|uuid/)"
         ]
     }
 }

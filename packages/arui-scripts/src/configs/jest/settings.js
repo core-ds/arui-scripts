@@ -28,6 +28,7 @@ module.exports = {
         '\\.css$': require.resolve('./css-mock'),
         ...pathsToModuleNameMapper(getPathMapping(), { prefix: '<rootDir>/' }),
     },
+    transformIgnorePatterns: ['/node_modules/(?!@rspack/|uuid/)'],
     snapshotSerializers: [require.resolve('jest-snapshot-serializer-class-name-to-string')],
     globals: {
         'ts-jest': {
