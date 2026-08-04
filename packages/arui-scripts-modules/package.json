@@ -42,6 +42,6 @@
     },
     "dependencies": {
         "abortcontroller-polyfill": "^1.7.5",
-        "uuid": "^9.0.1"
+        "uuid": "^14.0.0"
     }
 }
