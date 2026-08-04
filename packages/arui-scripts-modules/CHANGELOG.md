@@ -1,5 +1,14 @@
 # @alfalab/scripts-modules
 
+## 1.10.3
+
+### Patch Changes
+
+-   [#561](https://github.com/core-ds/arui-scripts/pull/561) [`8ab5238`](https://github.com/core-ds/arui-scripts/commit/8ab5238e9fa1aee92b3db787c3dd95badf5a36ed) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Убрана зависимость от `uuid`. Пакет публикуется в том числе как CommonJS, а `uuid` начиная с 13 версии
+    поставляется только в формате ESM — из-за этого падали тесты в приложениях-потребителях, использующих jest.
+    `useId` теперь генерирует запасной id (для React < 18) через счётчик; значение используется только как
+    DOM-атрибут `data-module-mount-id`, поэтому формат `arui-module-N` вместо uuid ни на что не влияет.
+
 ## 1.10.2
 
 ### Patch Changes
