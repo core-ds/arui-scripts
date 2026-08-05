@@ -27,6 +27,7 @@ import {
     type StylesMode,
 } from './server-module-loader';
 import { readSuspenseResource } from './suspense-resource-cache';
+import { useModuleSsrRequestContext } from './request-context';
 
 const DATA_APP_ID_ATTRIBUTE = 'data-parent-app-id';
 
@@ -166,6 +167,7 @@ export function createSsrMounter<
         getResourcesParams,
         instanceId: instanceIdProp,
     }: SsrModuleComponentProps<RunParams, SsrRunParams, GetResourcesParams>) {
+        const { cache } = useModuleSsrRequestContext();
         const instanceId = instanceIdProp ?? getDefaultInstanceId(ssrRunParams);
         const cacheKey = [
             moduleId,
@@ -174,7 +176,7 @@ export function createSsrMounter<
             safeStringify(ssrRunParams),
         ].join('::');
 
-        const { resources, inlineStyles, styleUrls } = readSuspenseResource(cacheKey, () =>
+        const { resources, inlineStyles, styleUrls } = readSuspenseResource(cache, cacheKey, () =>
             loadServerModule<GetResourcesParams, ModuleState>({
                 moduleId,
                 hostAppId,

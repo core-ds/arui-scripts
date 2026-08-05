@@ -7,7 +7,7 @@ import { act, waitFor } from '@testing-library/react';
 
 import { type ModuleResources } from '../../module-loader/types';
 import { createSsrMounter } from '../create-ssr-mounter';
-import { resetSuspenseResourceCache } from '../suspense-resource-cache';
+import { ModuleSsrRequestProvider } from '../request-context';
 
 // В jsdom `react-dom/server` резолвится в browser-сборку без renderToPipeableStream — берём node-сборку.
 const { renderToPipeableStream } =
@@ -33,7 +33,13 @@ const buildResources = (overrides: Partial<ModuleResources> = {}): ModuleResourc
 });
 
 /** Рендерит дерево «на сервере» (без window), собирая полный HTML после резолва Suspense. */
-function renderServerHtml(element: React.ReactElement): Promise<string> {
+function renderServerHtml(element: React.ReactElement, wrapInProvider = true): Promise<string> {
+    const tree = wrapInProvider ? (
+        <ModuleSsrRequestProvider requestId='test-request'>{element}</ModuleSsrRequestProvider>
+    ) : (
+        element
+    );
+
     const originalWindow = global.window;
 
     // @ts-expect-error — эмулируем серверное окружение без window
@@ -51,7 +57,7 @@ function renderServerHtml(element: React.ReactElement): Promise<string> {
         writable.on('finish', () => resolve(Buffer.concat(chunks).toString('utf8')));
         writable.on('error', reject);
 
-        const { pipe } = renderToPipeableStream(element, {
+        const { pipe } = renderToPipeableStream(tree, {
             onAllReady() {
                 pipe(writable);
             },
@@ -66,7 +72,6 @@ describe('createSsrMounter', () => {
     let container: HTMLDivElement;
 
     beforeEach(() => {
-        resetSuspenseResourceCache();
         container = document.createElement('div');
         document.body.appendChild(container);
     });
@@ -408,6 +413,26 @@ describe('createSsrMounter', () => {
         });
 
         expect(console.warn).toHaveBeenCalledWith(expect.stringContaining('CollisionModule'));
+    });
+
+    it('throws on the server when the tree has no request provider', async () => {
+        const getModuleResources = jest.fn().mockResolvedValue(buildResources());
+        const { ModuleComponent } = createSsrMounter<RunParams>({
+            moduleId: MODULE_ID,
+            hostAppId: 'host',
+            getModuleResources,
+        });
+
+        // ошибка рендера внутри Suspense-boundary попадает в HTML как fallback
+        // с сообщением об отсутствии провайдера
+        const html = await renderServerHtml(
+            <Suspense fallback={<span>loading</span>}>
+                <ModuleComponent instanceId={INSTANCE_ID} ssrRunParams={{ name: 'Vasia' }} />
+            </Suspense>,
+            false,
+        );
+
+        expect(html).toContain('ModuleSsrRequestProvider');
     });
 });
 
