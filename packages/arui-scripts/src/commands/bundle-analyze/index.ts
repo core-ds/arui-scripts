@@ -4,6 +4,7 @@ import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 
 import { configs } from '../../configs/app-configs';
 import { webpackClientConfig } from '../../configs/rspack.client.prod';
+import { loadBrowserslist } from '../util/load-browserslist';
 import { makeTmpDir } from '../util/make-tmp-dir';
 
 type BundleAnalyzerStatsOptions = {
@@ -29,6 +30,7 @@ const bundleAnalyzerStatsOptions: BundleAnalyzerStatsOptions = {
 };
 
 (async () => {
+    loadBrowserslist();
     console.log('Starting bundle analysis...');
 
     const clientWebpackConfigs = Array.isArray(webpackClientConfig)
