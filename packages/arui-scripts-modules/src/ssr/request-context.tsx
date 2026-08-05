@@ -26,7 +26,7 @@ export function ModuleSsrRequestProvider({
     children,
 }: {
     requestId: string;
-    children: React.ReactNode;
+    children?: React.ReactNode;
 }) {
     const cacheRef = useRef<{ requestId: string; cache: Map<string, CacheEntry<unknown>> } | null>(
         null,
