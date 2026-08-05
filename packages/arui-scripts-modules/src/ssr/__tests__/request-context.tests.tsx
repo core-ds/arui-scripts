@@ -3,8 +3,8 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { render } from '@testing-library/react';
 
 import {
-    ModuleSsrRequestProvider,
     type ModuleSsrRequest,
+    ModuleSsrRequestProvider,
     useModuleSsrRequestContext,
 } from '../request-context';
 

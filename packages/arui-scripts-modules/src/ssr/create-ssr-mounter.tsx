@@ -20,6 +20,7 @@ import { serializeForHtml } from '../module-loader/utils/serialize-for-html';
 import { unwrapDefaultExport } from '../module-loader/utils/unwrap-default-export';
 
 import { getDefaultInstanceId } from './instance-id';
+import { useModuleSsrRequestContext } from './request-context';
 import {
     createDefaultFetchStyleContent,
     type FetchStyleContent,
@@ -27,7 +28,6 @@ import {
     type StylesMode,
 } from './server-module-loader';
 import { readSuspenseResource } from './suspense-resource-cache';
-import { useModuleSsrRequestContext } from './request-context';
 
 const DATA_APP_ID_ATTRIBUTE = 'data-parent-app-id';
 
