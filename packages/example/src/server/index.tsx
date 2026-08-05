@@ -4,6 +4,7 @@ import React from 'react';
 import { renderToPipeableStream } from 'react-dom/server';
 import express from 'express';
 
+import { ModuleSsrRequestProvider } from '@alfalab/scripts-modules/ssr';
 import { readAssetsManifest } from '@alfalab/scripts-server';
 
 import { App } from '#/components/app';
@@ -67,7 +68,9 @@ app.get('/suspense', async (req, res) => {
 
     const { pipe, abort } = renderToPipeableStream(
         <AppHtml scripts={assets.js} styles={assets.css}>
-            <App />
+            <ModuleSsrRequestProvider requestId={crypto.randomUUID()}>
+                <App />
+            </ModuleSsrRequestProvider>
         </AppHtml>,
         {
             bootstrapScripts: [],
