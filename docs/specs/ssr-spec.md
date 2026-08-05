@@ -542,7 +542,8 @@ and the adoption logic. Independent of and after Phases 0–4.
 
 These were consciously **not** implemented in the first `createSsrMounter` cut. None block the
 core goal (server render + client hydrate with no duplicate resources request); each is isolated
-enough to add without reworking what shipped.
+enough to add without reworking what shipped. Note: the cache part of §11.2 has since been
+resolved (see §12); only the abort wiring remains open.
 
 ### 11.1 `fallback?: ReactNode` factory option (§5.3) — deferred
 
@@ -571,28 +572,17 @@ server↔client handoff to build. If (b): render `fallback` inside the same `dat
 wrapper on both sides, emit a payload marker that says "SSR fallback, mount fresh on client", and
 have the client clear the fallback and `mount()` (never `hydrate()`).
 
-### 11.2 Server suspense cache is process-global, not per-request
+### 11.2 No abort wiring for the server resource fetch (§9)
 
-`suspense-resource-cache.ts` keys entries by `moduleId + instanceId + params + ssrRunParams` in a
-module-level `Map`, and evicts each entry on a microtask right after it is read (just long enough
-to survive the throw-promise → retry cycle within one render). Consequences:
+The host-server `getModuleResources` is not wired to the render's abort signal: a
+`renderToPipeableStream({ ... }).abort()` can leave a pending resources fetch running. It resolves
+into an entry of the per-request cache (section 12), which dies with the request — so not a
+correctness bug for the response, but a potential dangling request and a wasted server round-trip.
 
-- **Cross-request sharing edge case:** two requests rendering concurrently with an *identical*
-  cache key can share one in-flight fetch. That's correct only if `moduleState` is a pure function
-  of the key. If `moduleState` depends on request context **not** captured in `params`/`ssrRunParams`
-  (auth headers, cookies, locale from the request), concurrent identical-keyed requests could leak
-  one request's state into another. Documented contract (§4.3) already requires render output to
-  depend only on the serializable params + `moduleState`; this makes that a hard requirement for
-  SSR, not just a recommendation.
-- **No abort wiring (§9 "abort/timeout on the host server"):** the cache entry does not reject on
-  the host render's abort signal, so a `renderToPipeableStream({ ... }).abort()` can leave a pending
-  resources fetch running (it just resolves into a soon-to-be-evicted entry). Not a correctness bug
-  for the response, but a potential dangling request.
-
-**When picking this up:** the clean fix is a **per-request cache** rather than a module-global one —
-e.g. pass a cache object via React context that the host creates per request, or adopt React 19's
-`cache()` / `use()` once we can rely on it. That also gives a natural place to thread the render's
-`AbortSignal` into `getModuleResources` so aborts cancel in-flight fetches.
+**When picking this up:** the per-request context (section 12) is the natural place to thread the
+render's `AbortSignal` into `getModuleResources` — the provider could carry the signal and
+`loadServerModule` (which already accepts one) could pass it to the fetcher. Deliberately out of
+scope for the first cut.
 
 ### 11.3 `<link>`-mode style adoption
 
@@ -600,3 +590,62 @@ The Phase 2 adoption logic (`fetch-resources.ts`) handles both `<style>` and `<l
 `data-module-ssr-href`. Inline mode emits loaded `<style>` tags. Link mode emits stylesheet links;
 the client keeps matching links in place, waits for `link.sheet`/`load` with the existing timeout,
 and avoids appending duplicate stylesheet tags.
+
+## 12. Resolved: per-request server resource cache
+
+Status: resolved. Replaces the §11.2 "process-global cache" deferral for the host-server side of
+`createSsrMounter`. Only the abort-wiring part remains deferred (§11.2).
+
+### 12.1 Problem
+
+The first cut of `createSsrMounter` deduplicated the server-side `getModuleResources` in a
+module-level global `Map` (`suspense-resource-cache.ts`), keyed by
+`moduleId + instanceId + params + ssrRunParams`. Eviction happened only on a successful read, so a
+**pending** entry could be shared between two concurrent HTTP requests rendering the same key —
+one request's `moduleState` could leak into the other when it depends on request context (cookies,
+auth, locale). Entries from aborted renders were also never collected.
+
+### 12.2 Design: per-request cache via React context
+
+The cache is no longer module-global. A new isomorphic provider owns a **fresh `Map` per HTTP
+request**; the host-server mounter reads it from context.
+
+```tsx
+// @alfalab/scripts-modules/ssr
+type ModuleSsrRequest = {
+    requestId: string;
+    cache: Map<string, CacheEntry<unknown>>;
+};
+
+function ModuleSsrRequestProvider({ requestId, children }): ReactElement;
+function useModuleSsrRequestContext(): ModuleSsrRequest; // throws if no provider
+```
+
+- **Contract on the server: the provider is required.** `ServerModule` calls
+  `useModuleSsrRequestContext()`; without a provider it throws a clear error telling the host to
+  wrap the tree. On the client the provider is a no-op (nothing reads the context).
+- **`requestId` rules.** The host generates one fresh `requestId` per HTTP request
+  (e.g. `crypto.randomUUID()`) and passes it as a prop — it must NOT be generated inside the
+  render (a Suspense throw→retry could change it and reset the cache mid-render). The provider
+  resets its cache when `requestId` changes, which also catches the common mistake of hoisting the
+  provider element to module scope. Reusing one `requestId` across requests violates the contract
+  and is documented as such.
+- **Isomorphic requirement.** Because server and client render the same tree, the provider must be
+  present in both entry points of the host app (server and client), otherwise hydration mismatches.
+- **Mechanics.** `readSuspenseResource(cache, key, load)` is now a pure function over the provided
+  `Map`; the global `Map` and `resetSuspenseResourceCache` are removed. Eviction semantics are
+  unchanged (the entry survives the throw→retry cycle, then is removed on the next microtask after
+  a successful read), so dedup still works for identical keys within one synchronous render pass.
+  Entries from aborted renders die with the request's `Map` (GC).
+
+### 12.3 What this closes
+
+- Cross-request data leak: a concurrent request can no longer attach to another request's pending
+  fetch, because keys are isolated per request.
+- Unbounded global cache growth: there is no global `Map` at all.
+- Structurally enforces the §4.3 rule that render output depends only on serializable params +
+  `moduleState` — one request's state cannot leak into another.
+
+### 12.4 Still deferred
+
+- Abort wiring of the render's signal into `getModuleResources` — see §11.2.
