@@ -630,8 +630,10 @@ function useModuleSsrRequestContext(): ModuleSsrRequest; // throws if no provide
   resets its cache when `requestId` changes, which also catches the common mistake of hoisting the
   provider element to module scope. Reusing one `requestId` across requests violates the contract
   and is documented as such.
-- **Isomorphic requirement.** Because server and client render the same tree, the provider must be
-  present in both entry points of the host app (server and client), otherwise hydration mismatches.
+- **Server-only placement.** The provider emits no DOM (it renders `children` as-is), so it is
+  hydration-transparent: it needs to be present only in the host's server entry point. On the
+  client it is unnecessary — `ClientModule` never reads the context, and omitting the provider
+  does not cause a hydration mismatch.
 - **Mechanics.** `readSuspenseResource(cache, key, load)` is now a pure function over the provided
   `Map`; the global `Map` and `resetSuspenseResourceCache` are removed. Eviction semantics are
   unchanged (the entry survives the throw→retry cycle, then is removed on the next microtask after
