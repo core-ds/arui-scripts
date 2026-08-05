@@ -10,7 +10,7 @@ import {
     type GetResourcesRequest,
     type ModuleResources,
 } from '@alfalab/scripts-modules';
-import { createSsrMounter } from '@alfalab/scripts-modules/ssr';
+import { createSsrMounter, ModuleSsrRequestProvider } from '@alfalab/scripts-modules/ssr';
 
 const BUILD_PATH = path.join(__dirname, '../.build');
 
@@ -142,13 +142,17 @@ describe('ssr modules', () => {
 
         const html = await renderStream(
             React.createElement(
-                Suspense,
-                { fallback: React.createElement('span', null, 'loading') },
-                React.createElement(ModuleComponent, {
-                    instanceId: 'server-state-ssr-demo',
-                    runParams: { name: 'Vasia', counter: 1 },
-                    ssrRunParams: { name: 'Vasia', counter: 1 },
-                }),
+                ModuleSsrRequestProvider,
+                { requestId: 'validate-build-request' },
+                React.createElement(
+                    Suspense,
+                    { fallback: React.createElement('span', null, 'loading') },
+                    React.createElement(ModuleComponent, {
+                        instanceId: 'server-state-ssr-demo',
+                        runParams: { name: 'Vasia', counter: 1 },
+                        ssrRunParams: { name: 'Vasia', counter: 1 },
+                    }),
+                ),
             ),
         );
 
