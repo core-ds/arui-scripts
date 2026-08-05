@@ -1,5 +1,11 @@
 # arui-scripts
 
+## 23.3.1
+
+### Patch Changes
+
+-   [#563](https://github.com/core-ds/arui-scripts/pull/563) [`6d9bf3b`](https://github.com/core-ds/arui-scripts/commit/6d9bf3b9077025827179b8fe094fb905e2687e40) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Исправлен запуск команды bundle-analyze с параметрами по умолчанию
+
 ## 23.3.0
 
 ### Minor Changes
