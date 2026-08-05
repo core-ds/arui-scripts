@@ -30,6 +30,45 @@ import { readSuspenseResource } from './suspense-resource-cache';
 
 const DATA_APP_ID_ATTRIBUTE = 'data-parent-app-id';
 
+// Пары moduleId+instanceId, на которые уже предупредили — чтобы не спамить в консоль.
+const warnedInstanceCollisions = new Set<string>();
+
+/**
+ * Предупреждает о коллизии дефолтных instanceId на клиенте: если в DOM несколько
+ * SSR-инстансов одного модуля с одинаковым (moduleId, instanceId), серверная разметка
+ * будет распределена неверно. Проверяем по payload-скриптам (они есть только при SSR);
+ * в чисто клиентском пути (SPA) payload-ов нет и коллизии не возникает.
+ */
+function warnOnInstanceIdCollision(moduleId: string, instanceId: string) {
+    if (process.env.NODE_ENV === 'production') {
+        return;
+    }
+
+    const key = `${moduleId}::${instanceId}`;
+
+    if (warnedInstanceCollisions.has(key)) {
+        return;
+    }
+
+    if (typeof document === 'undefined') {
+        return;
+    }
+
+    const payloads = document.querySelectorAll(
+        `script[${MODULE_SSR_PAYLOAD_ATTRIBUTE}="${moduleId}"][${MODULE_SSR_INSTANCE_ATTRIBUTE}="${instanceId}"]`,
+    );
+
+    if (payloads.length > 1) {
+        warnedInstanceCollisions.add(key);
+        // eslint-disable-next-line no-console -- dev-подсказка разработчику
+        console.warn(
+            `Модуль "${moduleId}" отрендерен на сервере несколько раз с одинаковыми ssrRunParams ` +
+                `(instanceId "${instanceId}"). Передавайте явный стабильный instanceId каждому инстансу, ` +
+                'иначе серверная разметка будет распределена между инстансами неверно.',
+        );
+    }
+}
+
 export type CreateSsrMounterOptions<
     RunParams,
     GetResourcesParams,
@@ -212,6 +251,12 @@ export function createSsrMounter<
         }
 
         const instanceId = instanceIdProp ?? getDefaultInstanceId(ssrRunParams);
+
+        // Несколько инстансов одного модуля с одинаковыми ssrRunParams и без явного instanceId
+        // дают один и тот же хеш: на сервере рендерятся два одинаковых payload-а, и клиент не
+        // сможет корректно распределить серверную разметку. Варним один раз на пару
+        // moduleId+instanceId.
+        warnOnInstanceIdCollision(moduleId, instanceId);
 
         const rootRef = useRef<HTMLDivElement>(null);
         const runParamsRef = useRef(runParams);

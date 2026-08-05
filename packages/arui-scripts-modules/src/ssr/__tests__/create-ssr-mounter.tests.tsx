@@ -378,6 +378,37 @@ describe('createSsrMounter', () => {
             renderToStaticClient(<ModuleComponent instanceId={INSTANCE_ID} useShadowDom={true} />),
         ).toThrow(/shadow DOM/);
     });
+
+    it('warns when several server instances share the same default instanceId', async () => {
+        jest.spyOn(console, 'warn').mockImplementation(() => {});
+        const getModuleResources = jest.fn().mockResolvedValue(buildResources());
+        const { ModuleComponent } = createSsrMounter<RunParams>({
+            moduleId: 'CollisionModule',
+            hostAppId: 'host',
+            getModuleResources,
+        });
+
+        const element = (
+            <Suspense fallback={<span>loading</span>}>
+                <ModuleComponent ssrRunParams={{ name: 'Vasia' }} />
+                <ModuleComponent ssrRunParams={{ name: 'Vasia' }} />
+            </Suspense>
+        );
+
+        const html = await renderServerHtml(element);
+
+        // на сервере оба инстанса эмитят payload с одной и той же парой (moduleId, instanceId)
+        container.innerHTML = html;
+        expect(
+            container.querySelectorAll('script[data-module-ssr-payload="CollisionModule"]').length,
+        ).toBe(2);
+
+        await act(async () => {
+            hydrateRoot(container, element);
+        });
+
+        expect(console.warn).toHaveBeenCalledWith(expect.stringContaining('CollisionModule'));
+    });
 });
 
 // Небольшой помощник: синхронно рендерит клиентский компонент, пробрасывая ошибки рендера.

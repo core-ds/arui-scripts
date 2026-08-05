@@ -74,11 +74,11 @@ export async function fetchResources({
     });
 
     // Удаляем ранее добавленные (не серверные) стили этого модуля, кроме усыновлённых.
-    const previouslyAddedStyles = Array.from(
+    const stylesToRemove = Array.from(
         cssTargetNode.querySelectorAll(`${styleTag}[${DATA_APP_ID_ATTRIBUTE}="${moduleId}"]`),
     ).filter((style) => !adoptedStyleTags.includes(style));
 
-    previouslyAddedStyles.forEach((style) => style.remove());
+    stylesToRemove.forEach((style) => style.remove());
 
     await Promise.all([
         scriptsFetcher({

@@ -9,17 +9,23 @@ describe('createServerStateModuleFetcher', () => {
 
     function mockResponse({
         ok = true,
+        status = 200,
         statusText = 'OK',
         json = {},
+        text = '',
     }: {
         ok?: boolean;
+        status?: number;
         statusText?: string;
         json?: unknown;
+        text?: string;
     }) {
         mockFetch.mockResolvedValueOnce({
             ok,
+            status,
             statusText,
             json: jest.fn().mockResolvedValue(json),
+            text: jest.fn().mockResolvedValue(text),
         });
     }
 
@@ -106,8 +112,13 @@ describe('createServerStateModuleFetcher', () => {
         ).resolves.toEqual(responseBody);
     });
 
-    it('should reject when the response is not ok', async () => {
-        mockResponse({ ok: false, statusText: 'Bad Request' });
+    it('should reject with status and response body when the response is not ok', async () => {
+        mockResponse({
+            ok: false,
+            status: 400,
+            statusText: 'Bad Request',
+            text: '{"error":"invalid"}',
+        });
 
         const fetchServerResources = createServerStateModuleFetcher({
             baseUrl: 'https://test.com',
@@ -119,7 +130,36 @@ describe('createServerStateModuleFetcher', () => {
                 hostAppId: 'test',
                 params: undefined,
             }),
-        ).rejects.toEqual(new Error('Bad Request'));
+        ).rejects.toEqual(
+            new Error(
+                'Module resources request for test failed: https://test.com/api/getModuleResources responded with 400 Bad Request\n{"error":"invalid"}',
+            ),
+        );
+    });
+
+    it('should reject with status even when statusText is empty and body is not readable', async () => {
+        mockFetch.mockResolvedValueOnce({
+            ok: false,
+            status: 500,
+            statusText: '',
+            text: jest.fn().mockRejectedValue(new Error('body read failed')),
+        });
+
+        const fetchServerResources = createServerStateModuleFetcher({
+            baseUrl: 'https://test.com',
+        });
+
+        await expect(
+            fetchServerResources({
+                moduleId: 'test',
+                hostAppId: 'test',
+                params: undefined,
+            }),
+        ).rejects.toEqual(
+            new Error(
+                'Module resources request for test failed: https://test.com/api/getModuleResources responded with 500',
+            ),
+        );
     });
 
     it('should reject when fetch rejects (network error)', async () => {

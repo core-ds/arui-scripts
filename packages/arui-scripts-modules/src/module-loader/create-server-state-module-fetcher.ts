@@ -32,7 +32,18 @@ export function createServerStateModuleFetcher<GetResourcesParams = undefined>({
         });
 
         if (!response.ok) {
-            throw new Error(response.statusText);
+            // В теле может быть полезная для клиента информация об ошибке, поэтому кладём его
+            // в сообщение целиком. Статус (без statusText) включаем всегда: под HTTP/2
+            // statusText приходит пустым.
+            const responseText = await response.text().catch(() => '');
+
+            throw new Error(
+                `Module resources request for ${params.moduleId} failed: ${url} responded with ${
+                    response.statusText
+                        ? `${response.status} ${response.statusText}`
+                        : response.status
+                }${responseText ? `\n${responseText}` : ''}`,
+            );
         }
 
         return response.json();
