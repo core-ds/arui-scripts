@@ -314,6 +314,32 @@ export const Page = () => {
 только в `runParams` и доступны модулю на этапе `hydrate`/`mount`/`update`. Если один и тот же
 модуль рендерится на странице несколько раз, передавайте стабильный `instanceId`.
 
+Серверный рендеринг модулей использует per-request кэш ресурсов. На сервере оберните дерево
+в `ModuleSsrRequestProvider` и передайте ему уникальный `requestId` на каждый HTTP-запрос
+(например, `crypto.randomUUID()`):
+
+```tsx
+import { ModuleSsrRequestProvider } from '@alfalab/scripts-modules/ssr';
+
+// внутри обработчика запроса хоста:
+const requestId = crypto.randomUUID();
+
+renderToPipeableStream(
+    <AppHtml>
+        <ModuleSsrRequestProvider requestId={requestId}>
+            <App />
+        </ModuleSsrRequestProvider>
+    </AppHtml>,
+    ...
+);
+```
+
+`requestId` должен быть стабильным в рамках одного запроса (генерируйте его один раз на запрос,
+а не внутри рендера) и уникальным между запросами — иначе кэш переживёт границу запросов и
+`moduleState` одного запроса может попасть в другой. Если на сервере SSR-модуль рендерится без
+провайдера, рендер упадёт с понятной ошибкой. На клиенте провайдер не нужен (он не рендерит DOM
+и не влияет на гидрацию).
+
 Поведение при гидрации:
 
 | HTML от сервера | У модуля есть `hydrate` | Результат |
