@@ -1,4 +1,4 @@
-type CacheEntry<T> = {
+export type CacheEntry<T> = {
     status: 'pending' | 'success' | 'error';
     promise: Promise<void>;
     value?: T;

@@ -10,3 +10,8 @@ export {
     type ServerModulePayload,
 } from './server-module-loader';
 export { getDefaultInstanceId } from './instance-id';
+export {
+    ModuleSsrRequestProvider,
+    useModuleSsrRequestContext,
+    type ModuleSsrRequest,
+} from './request-context';
