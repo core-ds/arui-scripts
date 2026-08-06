@@ -116,6 +116,7 @@ describe('runInit', () => {
                 '', // presets
                 false, // polyfills
                 false, // reactCompiler
+                false, // useLint
                 false, // install
             ]);
 
@@ -137,7 +138,7 @@ describe('runInit', () => {
             const config = await fs.readFile(path.join(target, 'arui-scripts.config.ts'), 'utf8');
 
             expect(config).toContain('clientOnly: true');
-            expect(config).toContain('codeLoader: "babel"');
+            expect(config).toContain("codeLoader: 'babel'");
             expect(config).toContain('clientServerPort: 8081');
         });
 

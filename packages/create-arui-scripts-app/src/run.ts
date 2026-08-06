@@ -10,7 +10,9 @@ import { buildFileMap } from './build-file-map';
 import { answersFromFlags, type CliFlags, hasAnswerFlags } from './defaults';
 import {
     detectPackageManager,
+    hasGitRepository,
     installDependencies,
+    installLefthook,
     type PackageManager,
 } from './install-dependencies';
 import { getQuestions } from './questions';
@@ -86,9 +88,38 @@ export async function runInit(options: RunInitOptions = {}): Promise<void> {
             spinner.fail(chalk.red('Не удалось установить зависимости'));
             throw error;
         }
+
+        if (initAnswers.useLint) {
+            await tryInstallLefthook(targetDir);
+        }
     }
 
     printNextSteps(targetDir, baseCwd, initAnswers, packageManager);
+}
+
+async function tryInstallLefthook(targetDir: string): Promise<void> {
+    if (!hasGitRepository(targetDir)) {
+        console.log(
+            `  ${chalk.dim(
+                'lefthook: пропущено (нет .git). После git init выполните: npx --no-install lefthook install',
+            )}`,
+        );
+
+        return;
+    }
+
+    const spinner = ora({ text: 'Устанавливаю git-хуки lefthook…', color: 'cyan' }).start();
+
+    try {
+        await installLefthook(targetDir);
+        spinner.succeed(chalk.green('Git-хуки lefthook установлены'));
+    } catch (error) {
+        spinner.fail(chalk.yellow('Не удалось установить lefthook'));
+
+        if (error instanceof Error && error.message) {
+            console.log(`  ${chalk.dim(error.message)}`);
+        }
+    }
 }
 
 async function resolveAnswers(defaultName: string, flags: CliFlags): Promise<InitAnswers> {
@@ -177,6 +208,10 @@ function mergePromptAnswers(base: InitAnswers, answers: prompts.Answers<string>)
         merged.reactCompiler = Boolean(answers.reactCompiler);
     }
 
+    if (answers.useLint !== undefined) {
+        merged.useLint = Boolean(answers.useLint);
+    }
+
     if (answers.install !== undefined) {
         merged.install = Boolean(answers.install);
     }
@@ -199,6 +234,7 @@ function printSuccess(context: TemplateContext, targetDir: string, fileCount: nu
         chalk.dim(context.clientOnly ? 'clientOnly' : 'SSR'),
         chalk.dim(context.codeLoader),
         chalk.dim(context.testRunner),
+        ...(context.useLint ? [chalk.dim('lint')] : []),
     ].join(chalk.dim(' · '));
 
     console.log();
@@ -243,6 +279,14 @@ function printNextSteps(
 
     if (!answers.install) {
         steps.push(installCommand);
+    }
+
+    if (answers.useLint && (!answers.install || !hasGitRepository(targetDir))) {
+        steps.push('npx --no-install lefthook install');
+    }
+
+    if (answers.useLint) {
+        steps.push(packageManager === 'yarn' ? 'yarn lint' : 'npm run lint');
     }
 
     steps.push(startCommand);

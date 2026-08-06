@@ -2,10 +2,9 @@ import { type TemplateContext } from '../types';
 
 const HMR_BLOCK = `if (process.env.NODE_ENV !== 'production' && module.hot) {
     module.hot.accept('./components/app', () => {
-        // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
-        const NextApp = require('./components/app').App;
+        const mod = require('./components/app') as { App: typeof App };
 
-        render(NextApp);
+        render(mod.App);
     });
 }
 `;

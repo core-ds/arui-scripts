@@ -1,4 +1,6 @@
 import { spawn } from 'child_process';
+import fs from 'fs';
+import path from 'path';
 
 import shell from 'shelljs';
 
@@ -8,15 +10,10 @@ export function detectPackageManager(): PackageManager {
     return shell.which('yarn') ? 'yarn' : 'npm';
 }
 
-export function installDependencies(
-    targetDir: string,
-    packageManager: PackageManager = detectPackageManager(),
-): Promise<void> {
-    const args = packageManager === 'yarn' ? [] : ['install'];
-
+function runCommand(command: string, args: string[], cwd: string): Promise<void> {
     return new Promise((resolve, reject) => {
-        const child = spawn(packageManager, args, {
-            cwd: targetDir,
+        const child = spawn(command, args, {
+            cwd,
             stdio: ['ignore', 'pipe', 'pipe'],
             // для windows
             shell: process.platform === 'win32',
@@ -37,12 +34,27 @@ export function installDependencies(
             } else {
                 reject(
                     new Error(
-                        `${packageManager} ${args.join(
-                            ' ',
-                        )} завершился с кодом ${code}\n${output.trim()}`,
+                        `${command} ${args.join(' ')} завершился с кодом ${code}\n${output.trim()}`,
                     ),
                 );
             }
         });
     });
+}
+
+export function installDependencies(
+    targetDir: string,
+    packageManager: PackageManager = detectPackageManager(),
+): Promise<void> {
+    const args = packageManager === 'yarn' ? [] : ['install'];
+
+    return runCommand(packageManager, args, targetDir);
+}
+
+export function hasGitRepository(targetDir: string): boolean {
+    return fs.existsSync(path.join(targetDir, '.git'));
+}
+
+export function installLefthook(targetDir: string): Promise<void> {
+    return runCommand('npx', ['--no-install', 'lefthook', 'install'], targetDir);
 }

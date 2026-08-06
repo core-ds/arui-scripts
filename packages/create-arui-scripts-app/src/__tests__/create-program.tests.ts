@@ -22,10 +22,11 @@ describe('createProgram', () => {
     });
 
     it('позитивные флаги дают true', async () => {
-        const flags = await parseFlags(['--rtk', '--css-modules', '--install']);
+        const flags = await parseFlags(['--rtk', '--css-modules', '--lint', '--install']);
 
         expect(flags.useRtk).toBe(true);
         expect(flags.cssModules).toBe(true);
+        expect(flags.useLint).toBe(true);
         expect(flags.install).toBe(true);
     });
 
@@ -35,6 +36,7 @@ describe('createProgram', () => {
             '--no-css-modules',
             '--no-polyfills',
             '--no-react-compiler',
+            '--no-lint',
             '--no-install',
         ]);
 
@@ -42,6 +44,7 @@ describe('createProgram', () => {
         expect(flags.cssModules).toBe(false);
         expect(flags.polyfills).toBe(false);
         expect(flags.reactCompiler).toBe(false);
+        expect(flags.useLint).toBe(false);
         expect(flags.install).toBe(false);
     });
 

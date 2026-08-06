@@ -4,6 +4,12 @@ import { appTestTemplate } from './templates/app-test.template';
 import { aruiScriptsConfigTemplate } from './templates/arui-scripts-config.template';
 import { clientEntryTemplate } from './templates/client-entry.template';
 import {
+    eslintConfigTemplate,
+    knipConfigTemplate,
+    lefthookConfigTemplate,
+    secretlintConfigTemplate,
+} from './templates/lint.template';
+import {
     gitignoreTemplate,
     globalDefinitionsTemplate,
     polyfillsTemplate,
@@ -39,7 +45,7 @@ export function buildFileMap(ctx: TemplateContext): Record<string, string> {
         [`${client}/index.tsx`]: clientEntryTemplate(ctx),
         [`${client}/components/app.tsx`]: appComponentTemplate(ctx),
         [`${client}/components/${appStylesFileName(ctx)}`]: appStylesTemplate(ctx),
-        [`${client}/components/__tests__/app.test.tsx`]: appTestTemplate(ctx),
+        [`${client}/components/__tests__/app.test.ts`]: appTestTemplate(ctx),
     };
 
     if (!ctx.clientOnly) {
@@ -58,6 +64,13 @@ export function buildFileMap(ctx: TemplateContext): Record<string, string> {
         files[`${client}/store/index.ts`] = storeIndexTemplate();
         files[`${client}/store/hooks.ts`] = storeHooksTemplate();
         files[`${client}/store/counter-slice.ts`] = counterSliceTemplate();
+    }
+
+    if (ctx.useLint) {
+        files['eslint.config.mts'] = eslintConfigTemplate();
+        files['knip.ts'] = knipConfigTemplate();
+        files['.secretlintrc.json'] = secretlintConfigTemplate();
+        files['lefthook.yml'] = lefthookConfigTemplate();
     }
 
     return files;

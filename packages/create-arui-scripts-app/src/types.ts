@@ -20,6 +20,8 @@ export type InitAnswers = {
     polyfills: boolean;
     // Включить experimentalReactCompiler
     reactCompiler: boolean;
+    // Подключить arui-presets-lint
+    useLint: boolean;
     // Установить зависимости сразу после генерации
     install: boolean;
 };
@@ -37,6 +39,7 @@ export type TemplateContext = {
     presets: string;
     polyfills: boolean;
     reactCompiler: boolean;
+    useLint: boolean;
     aruiScriptsVersion: string;
     dependencies: Record<string, string>;
     devDependencies: Record<string, string>;
