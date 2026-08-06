@@ -48,13 +48,15 @@ export function warnAboutArtifactsDeprecations() {
     }
     warned = true;
 
-    const usedSettings = (Object.keys(DEPRECATED_SETTINGS) as Array<keyof typeof DEPRECATED_SETTINGS>)
+    const usedSettings = (
+        Object.keys(DEPRECATED_SETTINGS) as Array<keyof typeof DEPRECATED_SETTINGS>
+    )
         .filter((setting) => configs[setting] !== undefined)
         .map((setting) => `  ${setting} → ${DEPRECATED_SETTINGS[setting]}`);
 
-    const usedOverrides = (Object.keys(DEPRECATED_OVERRIDES) as Array<
-        keyof typeof DEPRECATED_OVERRIDES
-    >)
+    const usedOverrides = (
+        Object.keys(DEPRECATED_OVERRIDES) as Array<keyof typeof DEPRECATED_OVERRIDES>
+    )
         .filter((key) => hasOverride(key))
         .map((key) => `  оверрайд ${key} → ${DEPRECATED_OVERRIDES[key]}`);
 
