@@ -1,9 +1,10 @@
 import chalk from 'chalk';
-import build from './build-wrapper';
 
-import { webpackServerConfig } from '../../configs/webpack.server.prod';
 import { supportingNode } from '../../configs/supporting-node';
+import { webpackServerConfig } from '../../configs/webpack.server.prod';
 import { printBuildError } from '../util/print-build-error';
+
+import build from './build-wrapper';
 
 process.env.BROWSERSLIST = supportingNode.join(',');
 

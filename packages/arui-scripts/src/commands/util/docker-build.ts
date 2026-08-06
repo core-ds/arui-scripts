@@ -1,52 +1,45 @@
 import path from 'path';
 
-import fs from 'fs-extra';
-import satisfies from 'semver/functions/satisfies';
-import shell from 'shelljs';
-
-import { configs } from '../../configs/app-configs';
 import {
-    baseNginxConfigFileName,
-    nginxConfigFileName,
-} from '../../configs/app-configs/get-defaults';
+    type BuildParams,
+    dockerVersionSatisfies,
+    getBuildParams,
+    getBuildParamsFromArgs as dockerGetBuildParamsFromArgs,
+    getDockerBuildCommand as dockerGetBuildCommand,
+    prepareFilesForDocker as dockerPrepareFilesForDocker,
+} from '@alfalab/scripts-artifacts';
 
-export function getBuildParamsFromArgs() {
-    let imageVersion = configs.version;
-    let imageName = configs.name;
-    let { dockerRegistry } = configs;
-    const commandLineArguments = process.argv.slice(3);
+import { getResolvedArtifactsConfig } from './artifacts-options';
 
-    commandLineArguments.forEach((arg) => {
-        let [argName, argValue] = arg.split('=');
+export { dockerVersionSatisfies };
 
-        argName = argName.toLowerCase().trim();
-        argValue = argValue ? argValue.trim() : '';
-        switch (argName) {
-            case 'version':
-                imageVersion = argValue;
-                break;
-            case 'name':
-                imageName = argValue;
-                break;
-            case 'registry':
-                dockerRegistry = argValue;
-                break;
-            default:
-                console.warn(`Unknown argument ${argName}`);
-        }
-    });
+/**
+ * Совместимый слой поверх @alfalab/scripts-artifacts: сохраняет исторические сигнатуры, которыми
+ * пользуются внешние потребители (в первую очередь newclick-builder) и реэкспорт из `arui-scripts`.
+ *
+ * @deprecated Используйте одноименные функции из `@alfalab/scripts-artifacts` — они принимают явный
+ * конфиг и не зависят от глобального `configs`.
+ */
+export function getBuildParamsFromArgs(): BuildParams {
+    return dockerGetBuildParamsFromArgs(getResolvedArtifactsConfig(), process.argv.slice(3));
+}
 
-    const tempDirName = '.docker-build';
-    const pathToTempDir = path.join(configs.cwd, tempDirName);
-    const imageFullName = `${
-        dockerRegistry ? `${dockerRegistry}/` : ''
-    }${imageName}:${imageVersion}`;
+/**
+ * Разбирает `registry/name:version` обратно на имя и версию, чтобы собрать конфиг, из которого
+ * @alfalab/scripts-artifacts соберет ровно ту же строку.
+ */
+function splitImageFullName(imageFullName: string) {
+    const lastColon = imageFullName.lastIndexOf(':');
+    const lastSlash = imageFullName.lastIndexOf('/');
 
-    return {
-        pathToTempDir,
-        imageFullName,
-        tempDirName,
-    };
+    if (lastColon > lastSlash) {
+        return {
+            name: imageFullName.slice(0, lastColon),
+            version: imageFullName.slice(lastColon + 1),
+        };
+    }
+
+    return { name: imageFullName, version: '' };
 }
 
 type PrepareFilesForDockerParams = {
@@ -60,6 +53,9 @@ type PrepareFilesForDockerParams = {
     addNodeModulesToDockerIgnore: boolean;
 };
 
+/**
+ * @deprecated Используйте `prepareFilesForDocker` из `@alfalab/scripts-artifacts`.
+ */
 export async function prepareFilesForDocker({
     dockerfileTemplate,
     nginxConfTemplate,
@@ -70,69 +66,22 @@ export async function prepareFilesForDocker({
     allowLocalStartScript,
     addNodeModulesToDockerIgnore,
 }: PrepareFilesForDockerParams) {
-    await fs.emptyDir(pathToTempDir);
-
-    let nginxBaseConf = '';
-
-    if (configs.nginx) {
-        nginxBaseConf = configs.localNginxBaseConf
-            ? await fs.readFile(configs.localNginxBaseConf, 'utf8')
-            : nginxBaseConfTemplate;
-    }
-
-    const nginxConf = configs.localNginxConf
-        ? await fs.readFile(configs.localNginxConf, 'utf8')
-        : nginxConfTemplate;
-
-    const dockerfile =
-        configs.localDockerfile && allowLocalDockerfile
-            ? await fs.readFile(configs.localDockerfile, 'utf8')
-            : dockerfileTemplate;
-
-    const startScript =
-        configs.localStartScript && allowLocalStartScript
-            ? await fs.readFile(configs.localStartScript, 'utf8')
-            : startScriptTemplate;
-
-    const dockerIgnoreFilePath = path.join(process.cwd(), '.dockerignore');
-
-    const dockerIgnoreFileContent =
-        addNodeModulesToDockerIgnore &&
-        (await getAndModifyDockerIgnoreContent(dockerIgnoreFilePath));
-
-    await Promise.all(
-        [
-            fs.writeFile(path.join(pathToTempDir, 'Dockerfile'), dockerfile, 'utf8'),
-            fs.writeFile(path.join(pathToTempDir, nginxConfigFileName), nginxConf, 'utf8'),
-            nginxBaseConf &&
-                fs.writeFile(
-                    path.join(pathToTempDir, baseNginxConfigFileName),
-                    nginxBaseConf,
-                    'utf8',
-                ),
-            fs.writeFile(path.join(pathToTempDir, 'start.sh'), startScript, {
-                encoding: 'utf8',
-                mode: 0o555,
-            }),
-            addNodeModulesToDockerIgnore &&
-                dockerIgnoreFileContent &&
-                fs.writeFile(dockerIgnoreFilePath, dockerIgnoreFileContent, 'utf-8'),
-        ].filter(Boolean),
-    );
-}
-
-export function dockerVersionSatisfies(request: string) {
-    const dockerServerVersion = shell.exec("docker version --format '{{.Server.Version}}'", {
-        silent: true,
+    return dockerPrepareFilesForDocker({
+        config: {
+            ...getResolvedArtifactsConfig(),
+            cwd: path.dirname(pathToTempDir),
+            tempDirName: path.basename(pathToTempDir),
+            allowLocalDockerfile,
+            allowLocalStartScript,
+            addNodeModulesToDockerIgnore,
+        },
+        templates: {
+            dockerfile: dockerfileTemplate,
+            nginxConf: nginxConfTemplate,
+            nginxBaseConf: nginxBaseConfTemplate,
+            startScript: startScriptTemplate,
+        },
     });
-    const dockerClientVersion = shell.exec("docker version --format '{{.Client.Version}}'", {
-        silent: true,
-    });
-
-    return (
-        satisfies(dockerServerVersion.toString(), request) &&
-        satisfies(dockerClientVersion.toString(), request)
-    );
 }
 
 type DockerBuildCommandParams = {
@@ -140,30 +89,16 @@ type DockerBuildCommandParams = {
     imageFullName: string;
 };
 
+/**
+ * @deprecated Используйте `getDockerBuildCommand` из `@alfalab/scripts-artifacts`.
+ */
 export function getDockerBuildCommand({ tempDirName, imageFullName }: DockerBuildCommandParams) {
-    // если пытаться собрать проект на маках с m1, докер будет пытаться вытянуть базовый образ под свою платформу и
-    // упадет с ошибкой. Чтобы этого избежать - достаточно использовать флаг --platform. Но он поддерживается без экспериментальных
-    // флагов только начиная с docker 20.10.21, а на многих серверах, используемых для сборки до сих пор живет докер 1.13.1
-    // Соответственно они будут падать при наличии этого флага.
-    // https://docs.docker.com/engine/release-notes/20.10/
-    const canUsePlatformFlag = dockerVersionSatisfies('>=20.10.21');
-
-    return `docker build ${canUsePlatformFlag ? '--platform linux/x86_64' : ''} \
-    -f "./${tempDirName}/Dockerfile" \
-    --build-arg START_SH_LOCATION="./${tempDirName}/start.sh" \
-    --build-arg NGINX_CONF_LOCATION="./${tempDirName}/${nginxConfigFileName}" \
-    --build-arg NGINX_BASE_CONF_LOCATION="./${tempDirName}/${baseNginxConfigFileName}" \
-    -t ${imageFullName} .`;
+    return dockerGetBuildCommand({
+        ...getResolvedArtifactsConfig(),
+        ...splitImageFullName(imageFullName),
+        dockerRegistry: '',
+        tempDirName,
+    });
 }
 
-async function getAndModifyDockerIgnoreContent(dockerIgnoreFilePath: string) {
-    if (fs.existsSync(dockerIgnoreFilePath)) {
-        return fs
-            .readFile(dockerIgnoreFilePath, 'utf-8')
-            .then((ignores) => `${ignores}\nnode_modules`);
-    }
-
-    await fs.createFile(dockerIgnoreFilePath);
-
-    return 'node_modules';
-}
+export { getBuildParams };

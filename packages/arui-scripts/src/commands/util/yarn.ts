@@ -1,57 +1,29 @@
-import shell from 'shelljs';
+import {
+    getInstallProductionCommand as dockerGetInstallProductionCommand,
+    getPruningCommand as dockerGetPruningCommand,
+    getYarnVersion as dockerGetYarnVersion,
+    type YarnVersion,
+} from '@alfalab/scripts-artifacts';
 
 import { configs } from '../../configs/app-configs';
 
-type YarnVersion = '1' | '2+' | 'unavailable';
-
+/**
+ * Совместимый слой поверх @alfalab/scripts-artifacts: сохраняет исторические сигнатуры без аргументов,
+ * подставляя значения из глобального `configs`.
+ *
+ * @deprecated Используйте одноименные функции из `@alfalab/scripts-artifacts`.
+ */
 export function getYarnVersion(): YarnVersion {
-    if (configs.useYarn && shell.which('yarn')) {
-        const yarnVersion = shell.exec('yarn -v', { silent: true });
-        const yarnMajorVersion = Number(yarnVersion.split('.')[0]);
-
-        return yarnMajorVersion > 1 ? '2+' : '1';
-    }
-
-    return 'unavailable';
+    return dockerGetYarnVersion({ useYarn: configs.useYarn });
 }
 
 export function getPruningCommand(): string {
-    if (configs.clientOnly) {
-        return 'echo "Skipping pruning in client only mode"';
-    }
-    const yarnVersion = getYarnVersion();
-
-    switch (yarnVersion) {
-        case '1': {
-            return 'yarn install --production --ignore-optional --frozen-lockfile --ignore-scripts --prefer-offline';
-        }
-        case '2+': {
-            return 'yarn workspaces focus --production --all';
-        }
-        case 'unavailable': {
-            return 'npm prune --production';
-        }
-        default: {
-            return '';
-        }
-    }
+    return dockerGetPruningCommand({
+        yarnVersion: getYarnVersion(),
+        clientOnly: configs.clientOnly,
+    });
 }
 
 export function getInstallProductionCommand(): string {
-    const yarnVersion = getYarnVersion();
-
-    switch (yarnVersion) {
-        case '1': {
-            return 'yarn install --production --ignore-optional --frozen-lockfile --ignore-scripts --prefer-offline';
-        }
-        case '2+': {
-            return 'yarn workspaces focus --production --all';
-        }
-        case 'unavailable': {
-            return 'npm install --production';
-        }
-        default: {
-            return '';
-        }
-    }
+    return dockerGetInstallProductionCommand(getYarnVersion());
 }

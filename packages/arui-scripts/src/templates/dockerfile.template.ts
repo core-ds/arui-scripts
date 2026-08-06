@@ -1,46 +1,9 @@
-import { configs } from '../configs/app-configs';
+import { renderDockerfile } from '@alfalab/scripts-artifacts';
+
+import { getResolvedArtifactsConfig } from '../commands/util/artifacts-options';
 import { applyOverrides } from '../configs/util/apply-overrides';
 
-const appPathToAdd = configs.clientOnly ? configs.buildPath : '.';
-const appTargetPath = configs.clientOnly ? `/src/${configs.buildPath}` : '/src';
-const nginxConfTargetLocation = configs.clientOnly
-    ? '/etc/nginx/conf.d/default.conf'
-    : '/src/nginx.conf';
-const { nginx } = configs;
-
-const nginxNonRootPart = configs.runFromNonRootUser
-    ? `RUN chown -R nginx:nginx /src && \\
-       mkdir -p /var/lib/nginx && \\
-       chown -R nginx:nginx /var/lib/nginx && \\
-       chown -R nginx:nginx /var/log/nginx && \\
-       chown -R nginx:nginx /etc/nginx/conf.d
-
-   RUN touch /var/run/nginx.pid && \\
-       chown -R nginx:nginx /var/run/nginx.pid
-
-   USER nginx`
-    : '';
-
-const template = `
-FROM ${configs.baseDockerImage}
-ARG START_SH_LOCATION
-ARG NGINX_CONF_LOCATION
-ARG NGINX_BASE_CONF_LOCATION
-
-WORKDIR /src
-ADD $START_SH_LOCATION /src/start.sh
-ADD $NGINX_CONF_LOCATION ${nginxConfTargetLocation}
-${nginx ? 'ADD $NGINX_BASE_CONF_LOCATION /etc/nginx/nginx.conf' : ''}
-
-${nginxNonRootPart}
-
-${
-    configs.runFromNonRootUser
-        ? `ADD --chown=nginx:nginx ${appPathToAdd} ${appTargetPath}`
-        : `ADD ${appPathToAdd} ${appTargetPath}`
-}
-${configs.clientOnly ? 'COPY env-config.jso[n] /src/' : ''}
-${configs.clientOnly ? 'CMD ["nginx"]' : ''}
-`;
-
-export const dockerfileTemplate = applyOverrides('Dockerfile', template);
+export const dockerfileTemplate = applyOverrides(
+    'Dockerfile',
+    renderDockerfile(getResolvedArtifactsConfig()),
+);

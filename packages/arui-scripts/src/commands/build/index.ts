@@ -1,5 +1,5 @@
-import { runCompilers } from '../util/run-compilers';
 import { configs } from '../../configs/app-configs';
+import { runCompilers } from '../util/run-compilers';
 
 process.env.BABEL_ENV = 'production';
 process.env.NODE_ENV = 'production';

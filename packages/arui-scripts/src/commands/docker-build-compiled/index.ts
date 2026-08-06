@@ -1,50 +1,19 @@
-import fs from 'fs-extra';
+import { buildDockerImage } from '@alfalab/scripts-artifacts';
 
-import { configs } from '../../configs/app-configs';
-import { nginxBaseConfTemplate } from '../../templates/base-nginx.conf.template';
-import { dockerfileTemplate } from '../../templates/dockerfile-compiled.template';
-import { nginxConfTemplate } from '../../templates/nginx.conf.template';
-import { startScript } from '../../templates/start.template';
-import {
-    getBuildParamsFromArgs,
-    getDockerBuildCommand,
-    prepareFilesForDocker,
-} from '../util/docker-build';
-import { exec } from '../util/exec';
+import { getArtifactsOptions } from '../util/artifacts-options';
 
 (async () => {
-    const { imageFullName, pathToTempDir, tempDirName } = getBuildParamsFromArgs();
-
     try {
-        console.log(`Build docker image ${imageFullName}`);
-        console.time('Total time');
-
-        await prepareFilesForDocker({
-            pathToTempDir,
-            dockerfileTemplate,
-            nginxConfTemplate,
-            nginxBaseConfTemplate,
-            startScriptTemplate: startScript,
+        await buildDockerImage({
+            ...getArtifactsOptions(),
+            variant: 'compiled',
             allowLocalDockerfile: false,
             allowLocalStartScript: false,
             addNodeModulesToDockerIgnore: true,
+            argv: process.argv.slice(3),
         });
-
-        await exec(getDockerBuildCommand({ tempDirName, imageFullName }));
-        await fs.remove(pathToTempDir);
-
-        // guard against pushing the image during tests
-        if (!configs.debug) {
-            await exec(`docker push ${imageFullName}`);
-        }
-
-        console.timeEnd('Total time');
-    } catch (err) {
-        await fs.remove(pathToTempDir);
-        console.error('Error during docker-build.');
-        if (configs.debug) {
-            console.error(err);
-        }
+    } catch {
+        // buildDockerImage уже напечатал ошибку (и стек, если включен debug)
         process.exit(1);
     }
 })();
