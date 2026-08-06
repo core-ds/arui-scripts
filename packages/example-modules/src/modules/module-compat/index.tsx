@@ -1,8 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 
-import { type WindowWithModule } from '@alfalab/scripts-modules';
-import { type MountableModule } from '@alfalab/scripts-modules/src/module-loader/module-types';
+import { type MountableModule, type WindowWithModule } from '@alfalab/scripts-modules';
 
 import { CompatModule } from '#/modules/module-compat/compat-module';
 

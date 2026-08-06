@@ -8,6 +8,9 @@ on:
         required: true
         default: 'next'
 
+permissions:
+  contents: read
+  pull-requests: write
 
 jobs:
   release:
@@ -25,13 +28,27 @@ jobs:
       - name: Install Dependencies
         run: yarn install --immutable
 
-      - name: Publish snapshot release
-        id: release
+      - name: Test and version snapshot
         run: |
             yarn run turbo test build
             yarn run changeset version --snapshot ${{ github.event.inputs.prefix }}
-            yarn workspaces foreach --all --no-private npm publish --tolerate-republish --access public --tag next
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      - name: Collect snapshot versions
+        run: node .github/scripts/capture-snapshot-versions.cjs ${{ github.event.inputs.prefix }}
+
+      - name: Publish snapshot release
+        run: yarn workspaces foreach --all --no-private npm publish --tolerate-republish --access public --tag next
+        env:
           YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Comment PR with released versions
+        run: |
+            PR=$(gh pr list --repo "$GITHUB_REPOSITORY" --head "$GITHUB_REF_NAME" --state open --json number --jq '.[0].number')
+            if [ -n "$PR" ] && [ -s comment-body.md ]; then
+              gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" --body-file comment-body.md
+            fi
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}

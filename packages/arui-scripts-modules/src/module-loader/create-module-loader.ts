@@ -12,10 +12,17 @@ import {
     type ModuleResources,
 } from './types';
 
+export type ModuleResourcesGetterOptions = {
+    /** Сигнал отмены запроса ресурсов модуля */
+    signal?: AbortSignal;
+};
 export type ModuleResourcesGetter<
     GetResourcesParams,
     ModuleState extends BaseModuleState = BaseModuleState,
-> = (params: GetResourcesRequest<GetResourcesParams>) => Promise<ModuleResources<ModuleState>>;
+> = (
+    params: GetResourcesRequest<GetResourcesParams>,
+    options?: ModuleResourcesGetterOptions,
+) => Promise<ModuleResources<ModuleState>>;
 export type ModuleLoaderSimpleHook = (moduleId: string) => void;
 export type ModuleLoaderMountHook = (moduleId: string, targetNode: HTMLElement) => void;
 export type ModuleLoaderHook<ModuleState extends BaseModuleState = BaseModuleState> = (
@@ -115,7 +122,10 @@ export function createModuleLoader<
 
     const modulesCache = getModulesCache();
 
-    async function getModuleResourcesWithCache(getResourcesParams: GetResourcesParams) {
+    async function getModuleResourcesWithCache(
+        getResourcesParams: GetResourcesParams,
+        abortSignal?: AbortSignal,
+    ) {
         const paramsSerialized = JSON.stringify(getResourcesParams);
 
         if (resourcesCache === 'single-item' && modulesCache[moduleId]?.[paramsSerialized]) {
@@ -126,11 +136,14 @@ export function createModuleLoader<
         // В любом случае нам надо удалить ресурсы и почистить глобальные переменные
         cleanupModule(moduleId);
 
-        const resources = await getModuleResources({
-            moduleId,
-            hostAppId,
-            params: getResourcesParams,
-        });
+        const resources = await getModuleResources(
+            {
+                moduleId,
+                hostAppId,
+                params: getResourcesParams,
+            },
+            { signal: abortSignal },
+        );
 
         if (resourcesCache === 'single-item') {
             if (!modulesCache[moduleId]) {
@@ -166,6 +179,7 @@ export function createModuleLoader<
 
         const moduleResources = await getModuleResourcesWithCache(
             getResourcesParams as GetResourcesParams,
+            abortSignal,
         ).catch((error) => {
             lifecycleHooks.onError?.(moduleId, 'fetch-manifest', error);
             throw error;
@@ -180,7 +194,12 @@ export function createModuleLoader<
                 cssTargetSelector,
                 moduleId,
                 scripts: moduleResources.scripts,
-                styles: moduleResources.styles,
+                // Стили default-модулей грузит рантайм module federation, а не мы.
+                // Начиная с поддержки SSR сервер может присылать
+                // css default-модуля в `styles` — но только чтобы хост-сервер отрендерил
+                // серверные стили. На клиенте их наследует MF-рантайм по `data-href`,
+                // поэтому здесь их НЕ подключаем, иначе будет двойная загрузка.
+                styles: moduleResources.mountMode === 'default' ? [] : moduleResources.styles,
                 baseUrl: moduleResources.moduleState.baseUrl,
                 abortSignal,
                 disableInlineStyleSafari,
