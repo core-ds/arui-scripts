@@ -3,7 +3,7 @@ import path from 'path';
 import fs from 'fs-extra';
 import shell from 'shelljs';
 
-import { type YarnVersion } from '../types';
+import { type YarnVersion } from '../config/types';
 
 type GetYarnVersionParams = {
     useYarn: boolean;

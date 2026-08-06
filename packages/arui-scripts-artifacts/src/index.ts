@@ -1,50 +1,56 @@
-export * from './types';
-export * from './constants';
+/**
+ * Публичное API пакета. Реэкспортит доменные модули: конфиг, общий пайплайн и по одному модулю на
+ * тип артефакта (`docker`, `archive`) и на файлы, которые в них кладутся (`nginx`, `start-script`).
+ */
 
+/* Конфиг */
 export { resolveArtifactsConfig } from './config';
-export {
-    BUILT_IN_COMMANDS,
-    defineConfig,
-    getAvailableCommands,
-    resolveCommandOptions,
-    type ArtifactsConfigFile,
-    type ArtifactsConfigFileExport,
-} from './config-file';
-export {
-    CONFIG_FILE_NAMES,
-    findConfigFile,
-    loadConfigFile,
-    resolveConfigFile,
-} from './load-config-file';
-export { createCli, extractConfigPath, type CreateCliParams, type RunCommandParams } from './cli';
-export { buildArtifact, type BuildArtifactOptions } from './build-artifact';
-export { buildDockerImage, type BuildDockerImageOptions } from './build-docker-image';
-export { buildArchive, type BuildArchiveOptions } from './build-archive';
-export { runHostPipeline, type BeforeBuildHook } from './host-pipeline';
-export { renderTemplates, type RenderTemplatesParams } from './render';
+export type {
+    ArchiveOptions,
+    ArtifactKind,
+    ArtifactsOptions,
+    ArtifactTemplateOverrides,
+    ArtifactTemplates,
+    BuildOptions,
+    DockerfileVariant,
+    DockerOptions,
+    DockerPlatform,
+    LocalFilesOptions,
+    NginxBaseConfOptions,
+    NginxOptions,
+    PackageManagerOptions,
+    RenderedTemplates,
+    ResolvedArchiveConfig,
+    ResolvedArtifactsConfig,
+    ResolvedBuildConfig,
+    ResolvedDockerConfig,
+    ResolvedLocalFilesConfig,
+    ResolvedNginxBaseConf,
+    ResolvedNginxConfig,
+    ResolvedPackageManagerConfig,
+    TemplateKey,
+    TemplateOverride,
+    TemplateRenderer,
+    YarnVersion,
+} from './config/types';
 
-export {
-    renderDockerfile,
-    renderDockerfileCompiled,
-    renderNginxConf,
-    renderBaseNginxConf,
-    renderStartScript,
-} from './templates';
+/* Общий пайплайн сборки артефакта */
+export * from './pipeline';
 
-export {
-    applyCommandLineArguments,
-    dockerVersionSatisfies,
-    getBuildParams,
-    getBuildParamsFromArgs,
-    getDockerBuildCommand,
-    getPlatformFlag,
-    prepareFilesForDocker,
-    shellQuote,
-    type BuildParams,
-    type PrepareFilesForDockerResult,
-} from './utils/docker-build';
+/* Артефакты */
+export * from './docker';
+export * from './archive';
 
+/* Файлы, которые кладутся в артефакт */
+export * from './nginx';
+export * from './start-script';
+
+/* CLI и файл конфига */
+export * from './cli';
+
+/* Утилиты */
 export { exec, ExecError } from './utils/exec';
+export { shellQuote } from './utils/shell';
 export {
     detectUseYarn,
     getInstallProductionCommand,

@@ -1,6 +1,10 @@
 Настройки сборки артефакта
 ===
 
+> ⚠️ Сборка артефактов живет в отдельном пакете [@alfalab/scripts-artifacts](../../arui-scripts-artifacts/README.md).
+> Настройки и оверрайды артефакта в конфиге arui-scripts объявлены устаревшими и будут удалены в
+> следующей мажорной версии — новые проекты настраивают сборку через `arui-scripts-artifacts.ts`.
+
 ## docker
 
 По-умолчанию, базовым образом для сборки артефакта является [alpine-node-nginx](../../alpine-node-nginx).
@@ -9,13 +13,13 @@
 
 Вы также можете переопределить полностью процесс сборки docker-образа используя механизм [overrides](#тонкая-настройка)
 или создав в корневой директории проекта `Dockerfile` содержащий необходимый набор инструкций.
-Пример [Dockerfile](src/templates/dockerfile.template.ts).
+Пример [Dockerfile](../../arui-scripts-artifacts/src/docker/templates/dockerfile.template.ts).
 
 `Dockerfile` в корне проекта имеет приоритет над overrides.
 
 Чтобы переопределить скрипт запуска, воспользуйтесь механизмом [overrides](#тонкая-настройка)
 или создайте в корневой директории проекта `start.sh` файл содержащий необходимый набор инструкций.
-Пример [start.sh](src/templates/start.template.ts).
+Пример [start.sh](../../arui-scripts-artifacts/src/start-script/start.template.ts).
 
 `start.sh` в корне проекта имеет приоритет над overrides.
 
@@ -23,7 +27,7 @@
 ## Концигурация nginx
 Несмотря на то, что nginx имеет готовый конфиг с роутингом, иногда возникает необходимость добавлять свои роуты.
 Вы можете использовать механизм [overrides](overrides.md).
-Так же вы можете создать `nginx.conf` на уровне проекта со своими роутами. Пример конфига [тут](../src/templates/nginx.conf.template.ts).
+Так же вы можете создать `nginx.conf` на уровне проекта со своими роутами. Пример конфига [тут](../../arui-scripts-artifacts/src/nginx/templates/nginx.conf.template.ts).
 Файл nginx.conf имеет приоритет над оверрайдами.
 
 ### Использование env переменных в nginx.conf

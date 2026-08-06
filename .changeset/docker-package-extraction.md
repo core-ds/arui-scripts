@@ -21,6 +21,15 @@ dev-зависимостей) у них общий.
 Попутно починен `archive-build`: он падал с `TypeError: Cannot read properties of undefined
 (reading 'c')`, потому что в `tar@7` нет default-экспорта, а код использовал `import tar from 'tar'`.
 
+Настройки сборки артефактов в конфиге arui-scripts (`dockerRegistry`, `baseDockerImage`,
+`nginxRootPath`, `nginx`, `runFromNonRootUser`, `removeDevDependenciesDuringDockerBuild`,
+`archiveName`, `additionalBuildPath`) и оверрайды `Dockerfile`, `DockerfileCompiled`, `nginx`,
+`nginxConf`, `start.sh` объявлены устаревшими: они продолжают работать, но команды сборки печатают
+предупреждение со ссылкой на замену, а в следующей мажорной версии будут удалены.
+
+Настройки в конфиге @alfalab/scripts-artifacts сгруппированы по доменам: `docker`, `nginx`, `archive`, `build`,
+`packageManager`, `localFiles`. Так же разложен и код пакета — по папке на домен.
+
 Единственное отличие в поведении: `archive-build` теперь подхватывает локальный `start.sh` из корня
 проекта так же, как уже подхватывал `nginx.conf` (раньше игнорировал). Отключается опцией
-`allowLocalStartScript: false`.
+`localFiles.allowStartScript: false`.

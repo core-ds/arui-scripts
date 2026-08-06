@@ -3,6 +3,8 @@ import { type Configuration as DevServerConfiguration } from '@rspack/dev-server
 import { type PluginOptions as ReactCompilerOptions } from 'babel-plugin-react-compiler';
 import type webpackNodeExternals from 'webpack-node-externals';
 
+import { type NginxBaseConfOptions } from '@alfalab/scripts-artifacts';
+
 /**
  * Конфигурация arui-scripts, которая может быть переопределена приложением
  */
@@ -21,28 +23,40 @@ export type AppConfigs = {
     // paths
     buildPath: string;
     assetsPath: string;
-    additionalBuildPath: string[];
     statsOutputFilename: string;
     serverEntry: string | string[] | Record<string, string | string[]>;
     serverOutput: string;
     clientPolyfillsEntry: null | string | string[];
     clientEntry: string | string[] | Record<string, string | string[]>;
 
-    // docker compilation configs
-    dockerRegistry: string;
-    baseDockerImage: string;
-    nginxRootPath: string;
-    nginx: {
-        workerProcesses?: number;
-        workerRlimitNoFile?: number;
-        workerConnections?: number;
-        eventsUse?: string;
-        daemon?: string;
-    } | null;
-    runFromNonRootUser: boolean;
-    removeDevDependenciesDuringDockerBuild: boolean;
-    // archive compilation configs
-    archiveName: string;
+    /*
+     * Настройки сборки docker-образа и tar-архива.
+     *
+     * Значения по умолчанию задаются в @alfalab/scripts-artifacts (`resolveArtifactsConfig`),
+     * поэтому здесь они опциональны: arui-scripts только транслирует то, что задал пользователь.
+     *
+     * Все они объявлены устаревшими и будут удалены в следующей мажорной версии — их место в
+     * конфиге `arui-scripts-artifacts.ts`.
+     */
+    /** @deprecated Используйте `docker.registry` в конфиге @alfalab/scripts-artifacts. */
+    dockerRegistry?: string;
+    /** @deprecated Используйте `docker.baseImage` в конфиге @alfalab/scripts-artifacts. */
+    baseDockerImage?: string;
+    /** @deprecated Используйте `nginx.rootPath` в конфиге @alfalab/scripts-artifacts. */
+    nginxRootPath?: string;
+    /** @deprecated Используйте `nginx.baseConf` в конфиге @alfalab/scripts-artifacts. */
+    nginx?: NginxBaseConfOptions | null;
+    /** @deprecated Используйте `docker.runFromNonRootUser` в конфиге @alfalab/scripts-artifacts. */
+    runFromNonRootUser?: boolean;
+    /** @deprecated Используйте `build.removeDevDependencies` в конфиге @alfalab/scripts-artifacts. */
+    removeDevDependenciesDuringDockerBuild?: boolean;
+    /** @deprecated Используйте `archive.name` в конфиге @alfalab/scripts-artifacts. */
+    archiveName?: string;
+    /**
+     * Директории проекта, которые кладутся в tar-архив рядом со сборкой.
+     * @deprecated Используйте `archive.additionalPaths` в конфиге @alfalab/scripts-artifacts.
+     */
+    additionalBuildPath?: string[];
 
     dictionaryCompression: {
         dictionaryPath: string[];

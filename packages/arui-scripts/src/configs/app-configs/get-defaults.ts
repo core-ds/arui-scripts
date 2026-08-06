@@ -31,22 +31,24 @@ export function getDefaultAppConfig(): AppConfigs {
         // paths
         buildPath: '.build',
         assetsPath: 'assets',
-        additionalBuildPath: ['config'],
         statsOutputFilename: 'stats.json',
         serverEntry: path.resolve(absoluteSrcPath, 'server/index'),
         serverOutput: 'server.js',
         clientPolyfillsEntry: null,
         clientEntry: path.resolve(absoluteSrcPath, 'index'),
 
-        // docker compilation configs
-        dockerRegistry: '',
-        baseDockerImage: 'alfabankui/arui-scripts:24.10.0-slim',
-        nginxRootPath: '/src',
-        nginx: null,
-        runFromNonRootUser: true,
-        removeDevDependenciesDuringDockerBuild: true,
-        // archive compilation configs
-        archiveName: 'build.tar',
+        // docker/archive compilation configs
+        // Дефолты этих настроек живут в @alfalab/scripts-artifacts (resolveArtifactsConfig).
+        // Здесь ключи объявлены без значений, чтобы настройка из package.json/конфига не считалась
+        // неизвестной, а `undefined` доехал до scripts-artifacts и был заполнен там.
+        dockerRegistry: undefined,
+        baseDockerImage: undefined,
+        nginxRootPath: undefined,
+        nginx: undefined,
+        runFromNonRootUser: undefined,
+        removeDevDependenciesDuringDockerBuild: undefined,
+        archiveName: undefined,
+        additionalBuildPath: undefined,
 
         dictionaryCompression: {
             dictionaryPath: [],

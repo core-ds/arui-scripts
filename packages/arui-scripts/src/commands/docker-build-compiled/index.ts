@@ -5,11 +5,10 @@ import { getArtifactsOptions } from '../util/artifacts-options';
 (async () => {
     try {
         await buildDockerImage({
-            ...getArtifactsOptions(),
-            variant: 'compiled',
-            allowLocalDockerfile: false,
-            allowLocalStartScript: false,
-            addNodeModulesToDockerIgnore: true,
+            ...getArtifactsOptions({
+                docker: { variant: 'compiled', addNodeModulesToDockerIgnore: true },
+                localFiles: { allowDockerfile: false, allowStartScript: false },
+            }),
             argv: process.argv.slice(3),
         });
     } catch {

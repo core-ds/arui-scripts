@@ -19,9 +19,13 @@ yarn add -D @alfalab/scripts-artifacts
 import { defineConfig } from '@alfalab/scripts-artifacts';
 
 export default defineConfig({
-    baseDockerImage: 'alfabankui/arui-scripts:24.10.0-slim',
-    dockerRegistry: 'registry.example.com',
-    nginx: { workerProcesses: 4 },
+    docker: {
+        baseImage: 'alfabankui/arui-scripts:24.10.0-slim',
+        registry: 'registry.example.com',
+    },
+    nginx: {
+        baseConf: { workerProcesses: 4 },
+    },
 });
 ```
 
@@ -35,6 +39,32 @@ export default defineConfig({
     }
 }
 ```
+
+## Структура конфига
+
+Настройки сгруппированы по тому, к чему относятся. На верхнем уровне остается только то, что общее
+для всех артефактов, — идентификация и форма самого приложения:
+
+| Секция           | За что отвечает                                                                  |
+| ---------------- | -------------------------------------------------------------------------------- |
+| _верхний уровень_ | `artifact`, `name`, `version`, `cwd`, `debug`, `clientOnly`, `buildPath`, `serverOutput`, `serverPort`, `assetsPath`, `publicPath` |
+| `docker`         | `variant`, `registry`, `baseImage`, `runFromNonRootUser`, `context`, `tempDirName`, `push`, `platform`, `buildArgs`, `addNodeModulesToDockerIgnore` |
+| `nginx`          | `port`, `rootPath`, `enablePreviousVersionHeaders`, `baseConf` (http-блок)        |
+| `archive`        | `name`, `tempDirName`, `additionalPaths`                                          |
+| `build`          | хост-пайплайн: `cleanBuildPath`, `command`, `removeDevDependencies`               |
+| `packageManager` | `useYarn`, `yarnVersion`, `installProductionCommand`, `pruneCommand`              |
+| `localFiles`     | пути до `dockerfile`/`startScript`/`nginxConf`/`nginxBaseConf` и флаги `allowDockerfile`/`allowStartScript` |
+| `templates`, `overrides` | кастомизация шаблонов (см. ниже)                                          |
+
+Все поля опциональны — недостающие донасыщает `resolveArtifactsConfig`. Дефолты совпадают с
+историческим поведением `arui-scripts`, поэтому конфиг без единой настройки соберет тот же образ,
+что и `arui-scripts docker-build`.
+
+`nginx.baseConf` по умолчанию `null` — базовый конфиг не генерируется и не кладется в артефакт
+(используется тот, что лежит в базовом образе). Любой объект включает его; `false`/`null` — выключает.
+
+Код пакета разложен по тем же доменам: `src/docker`, `src/nginx`, `src/archive`, `src/start-script`,
+`src/config`, `src/pipeline`, `src/cli`.
 
 ## CLI
 
@@ -76,29 +106,29 @@ CLI сам подхватывает лежащие в корне `Dockerfile`, `
 import { defineConfig } from '@alfalab/scripts-artifacts';
 
 export default defineConfig({
-    baseDockerImage: 'registry.example.com/base:2.0.0',
-    nginx: { workerProcesses: 4 },
+    docker: { baseImage: 'registry.example.com/base:2.0.0' },
+    nginx: { baseConf: { workerProcesses: 4 } },
 
     commands: {
         // серверный образ: свой энтрипоинт и порт, всё остальное — из верхнего уровня
         'docker-build:server': {
-            variant: 'compiled',
+            docker: { variant: 'compiled' },
             serverOutput: 'server/index.js',
-            clientServerPort: 9090,
-            nginx: { workerConnections: 100 }, // сольется с верхнеуровневым workerProcesses
+            // сольется с верхнеуровневой секцией nginx
+            nginx: { port: 9090, baseConf: { workerConnections: 100 } },
         },
 
         // образ только со статикой
         'docker-build:static': {
             clientOnly: true,
-            buildCommand: 'npm run build:static',
+            build: { command: 'npm run build:static' },
         },
 
         // еще один архив — с отдельным именем и своей сборкой
         'archive-build:e2e': {
             artifact: 'archive',
-            archiveName: 'e2e.tar',
-            buildCommand: 'npm run build:e2e',
+            archive: { name: 'e2e.tar' },
+            build: { command: 'npm run build:e2e' },
         },
     },
 });
@@ -110,15 +140,15 @@ arui-scripts-artifacts docker-build:server
 
 Запуск без команды печатает список доступных — встроенные плюс объявленные в конфиге.
 
-Вложенные объекты (`nginx`, `localFiles`, `templates`, `overrides`, `extraBuildArgs`) сливаются по
-полям, остальные опции заменяются целиком.
+Секции (`docker`, `nginx`, `archive`, `build`, `packageManager`, `localFiles`, `templates`,
+`overrides`) сливаются по полям, скалярные опции заменяются целиком.
 
 ## Кастомизация файлов образа
 
 Каждый файл настраивается на четырех уровнях, по возрастанию приоритета:
 
-1. **Опции** — `baseDockerImage`, `clientOnly`, `runFromNonRootUser`, `nginx`, `platform`,
-   `extraBuildArgs`, `buildPath`, `serverOutput`, `publicPath` и остальные из `DockerBuildOptions`.
+1. **Опции** — секции `docker`, `nginx` и верхнеуровневые `clientOnly`, `buildPath`, `serverOutput`,
+   `publicPath` и остальные из `ArtifactsOptions`.
 2. **`templates`** — полная замена рендерера: `(config) => string`.
 3. **`overrides`** — точечная функция поверх сгенерированного: `(generated, config) => string`.
 4. **Локальные файлы** — `Dockerfile`, `start.sh`, `nginx.conf`, `base-nginx.conf` в корне проекта.
@@ -127,7 +157,7 @@ arui-scripts-artifacts docker-build:server
 (http-блок), `startScript`.
 
 ```ts
-import { defineConfig, renderNginxConf } from '@alfalab/scripts-artifacts';
+import { defineConfig } from '@alfalab/scripts-artifacts';
 
 export default defineConfig({
     // целиком свой server-блок nginx
@@ -136,7 +166,7 @@ export default defineConfig({
 client_max_body_size 20m;
 
 server {
-    listen ${config.clientServerPort};
+    listen ${config.nginx.port};
     location = /health { return 200 ''; }
     location / { proxy_pass http://127.0.0.1:${config.serverPort}; }
 }`,
@@ -163,11 +193,13 @@ server {
 import { buildArtifact } from '@alfalab/scripts-artifacts';
 
 await buildArtifact({
-    variant: 'compiled',
     name: 'my-app',
     version: '1.0.0',
-    dockerRegistry: 'registry.example.com',
-    extraBuildArgs: { COMMIT_SHA: process.env.COMMIT_SHA ?? '' },
+    docker: {
+        variant: 'compiled',
+        registry: 'registry.example.com',
+        buildArgs: { COMMIT_SHA: process.env.COMMIT_SHA ?? '' },
+    },
 });
 ```
 
@@ -179,12 +211,15 @@ import {
     getBuildParams,
     getDockerBuildCommand,
     prepareFilesForDocker,
-    renderDockerTemplates,
-    resolveDockerConfig,
+    renderTemplates,
+    resolveArtifactsConfig,
 } from '@alfalab/scripts-artifacts';
 
-const config = resolveDockerConfig({ variant: 'compiled', serverOutput: 'server/index.js' });
-const templates = renderDockerTemplates({ config });
+const config = resolveArtifactsConfig({
+    serverOutput: 'server/index.js',
+    docker: { variant: 'compiled' },
+});
+const templates = renderTemplates({ config });
 
 const { restoreDockerIgnore } = await prepareFilesForDocker({ config, templates });
 
@@ -196,10 +231,14 @@ await exec(`docker push ${getBuildParams(config).imageFullName}`);
 Разбор конфига тоже доступен отдельно — так CLI можно встроить в свой:
 
 ```ts
-import { resolveCommandOptions, resolveConfigFile, parseArgv } from '@alfalab/scripts-artifacts';
+import {
+    extractConfigPath,
+    resolveCommandOptions,
+    resolveConfigFile,
+} from '@alfalab/scripts-artifacts';
 
-const { configPath, rest } = parseArgv(process.argv.slice(3));
-const configFile = await resolveConfigFile(process.cwd(), configPath);
+const argv = process.argv.slice(2);
+const configFile = await resolveConfigFile(process.cwd(), extractConfigPath(argv));
 const options = resolveCommandOptions('docker-build:server', configFile);
 ```
 
@@ -208,33 +247,41 @@ const options = resolveCommandOptions('docker-build:server', configFile);
 Хост-пайплайн общий для образа и архива, поэтому оба собираются из одного состояния проекта.
 Какие шаги выполнятся — зависит от типа артефакта, варианта и опций:
 
-| Шаг                       | Опция                                    | Дефолт `runtime`  | Дефолт `compiled` |
-| ------------------------- | ---------------------------------------- | ----------------- | ----------------- |
-| очистка `buildPath`       | `cleanBuildPath`                         | `true`            | `false`           |
-| хук перед сборкой         | `beforeBuild`                            | —                 | —                 |
-| сборка приложения         | `buildCommand`                           | `'npm run build'` | `null`            |
-| удаление dev-зависимостей | `removeDevDependencies` / `pruneCommand` | `true`            | `false`           |
-| `docker build` / `tar`    | —                                        | всегда            | всегда            |
-| `docker push`             | `push`                                   | `!debug`          | `!debug`          |
+| Шаг                       | Опция                                             | Дефолт `runtime`  | Дефолт `compiled` |
+| ------------------------- | ------------------------------------------------- | ----------------- | ----------------- |
+| очистка `buildPath`       | `build.cleanBuildPath`                            | `true`            | `false`           |
+| хук перед сборкой         | `beforeBuild`                                     | —                 | —                 |
+| сборка приложения         | `build.command`                                   | `'npm run build'` | `null`            |
+| удаление dev-зависимостей | `build.removeDevDependencies` / `packageManager.pruneCommand` | `true` | `false`   |
+| `docker build` / `tar`    | —                                                 | всегда            | всегда            |
+| `docker push`             | `docker.push`                                     | `!debug`          | `!debug`          |
 
 Для `artifact: 'archive'` хост-пайплайн включен всегда (внутри tar-а собирать нечего), поэтому
-`variant` на него не влияет.
+`docker.variant` на него не влияет.
 
 ## Миграция с `arui-scripts docker-build`
 
-Поведение и шаблоны совпадают, отличаются имена настроек:
+Поведение и шаблоны совпадают, отличаются имена и расположение настроек:
 
-| arui-scripts                                                 | @alfalab/scripts-artifacts           |
-| ------------------------------------------------------------ | ------------------------------------ |
-| `configs.removeDevDependenciesDuringDockerBuild`             | `removeDevDependencies`              |
-| `configs.archiveName`, `configs.additionalBuildPath`         | `archiveName`, `additionalBuildPath` |
-| `configs.dictionaryCompression.enablePreviousVersionHeaders` | `enablePreviousVersionHeaders`       |
-| `configs.localDockerfile` и соседние                         | `localFiles.dockerfile` и соседние   |
-| оверрайд `Dockerfile`                                        | `overrides.dockerfile`               |
-| оверрайд `DockerfileCompiled`                                | `overrides.dockerfileCompiled`       |
-| оверрайд `nginx` (server-блок)                               | `overrides.nginxConf`                |
-| оверрайд `nginxConf` (базовый http-блок)                     | `overrides.baseNginxConf`            |
-| оверрайд `start.sh`                                          | `overrides.startScript`              |
+| arui-scripts                                                 | @alfalab/scripts-artifacts             |
+| ------------------------------------------------------------ | -------------------------------------- |
+| `configs.dockerRegistry`                                     | `docker.registry`                      |
+| `configs.baseDockerImage`                                    | `docker.baseImage`                     |
+| `configs.runFromNonRootUser`                                 | `docker.runFromNonRootUser`            |
+| `configs.clientServerPort`                                   | `nginx.port`                           |
+| `configs.nginxRootPath`                                      | `nginx.rootPath`                       |
+| `configs.nginx` (настройки базового конфига)                 | `nginx.baseConf`                       |
+| `configs.dictionaryCompression.enablePreviousVersionHeaders` | `nginx.enablePreviousVersionHeaders`   |
+| `configs.archiveName`                                        | `archive.name`                         |
+| `configs.additionalBuildPath`                                | `archive.additionalPaths`              |
+| `configs.removeDevDependenciesDuringDockerBuild`             | `build.removeDevDependencies`          |
+| `configs.useYarn`                                            | `packageManager.useYarn`               |
+| `configs.localDockerfile` и соседние                         | `localFiles.dockerfile` и соседние     |
+| оверрайд `Dockerfile`                                        | `overrides.dockerfile`                 |
+| оверрайд `DockerfileCompiled`                                | `overrides.dockerfileCompiled`         |
+| оверрайд `nginx` (server-блок)                               | `overrides.nginxConf`                  |
+| оверрайд `nginxConf` (базовый http-блок)                     | `overrides.baseNginxConf`              |
+| оверрайд `start.sh`                                          | `overrides.startScript`                |
 
 ⚠️ В `arui-scripts` имена `nginx` и `nginxConf` исторически перепутаны: `nginx` — это server-блок, а
 `nginxConf` — базовый конфиг. Здесь они названы по смыслу, поэтому **`nginxConf` в двух пакетах
@@ -248,4 +295,4 @@ const options = resolveCommandOptions('docker-build:server', configFile);
 
 Старый `arui-scripts archive-build` подхватывал локальный `nginx.conf`, но игнорировал локальный
 `start.sh`. Здесь локальные файлы обрабатываются единообразно: `start.sh` из корня проекта тоже
-используется. Отключается через `allowLocalStartScript: false`.
+используется. Отключается через `localFiles.allowStartScript: false`.

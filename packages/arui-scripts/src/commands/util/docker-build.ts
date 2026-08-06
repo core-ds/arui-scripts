@@ -4,9 +4,9 @@ import {
     type BuildParams,
     dockerVersionSatisfies,
     getBuildParams,
-    getBuildParamsFromArgs as dockerGetBuildParamsFromArgs,
-    getDockerBuildCommand as dockerGetBuildCommand,
-    prepareFilesForDocker as dockerPrepareFilesForDocker,
+    getBuildParamsFromArgs as artifactsGetBuildParamsFromArgs,
+    getDockerBuildCommand as artifactsGetBuildCommand,
+    prepareFilesForDocker as artifactsPrepareFilesForDocker,
 } from '@alfalab/scripts-artifacts';
 
 import { getResolvedArtifactsConfig } from './artifacts-options';
@@ -15,13 +15,13 @@ export { dockerVersionSatisfies };
 
 /**
  * Совместимый слой поверх @alfalab/scripts-artifacts: сохраняет исторические сигнатуры, которыми
- * пользуются внешние потребители (в первую очередь newclick-builder) и реэкспорт из `arui-scripts`.
+ * пользуются сторонние сборки и реэкспорт из `arui-scripts`.
  *
  * @deprecated Используйте одноименные функции из `@alfalab/scripts-artifacts` — они принимают явный
- * конфиг и не зависят от глобального `configs`.
+ * конфиг и не зависят от глобального `configs`. В следующей мажорной версии реэкспорт будет удален.
  */
 export function getBuildParamsFromArgs(): BuildParams {
-    return dockerGetBuildParamsFromArgs(getResolvedArtifactsConfig(), process.argv.slice(3));
+    return artifactsGetBuildParamsFromArgs(getResolvedArtifactsConfig(), process.argv.slice(3));
 }
 
 /**
@@ -54,7 +54,8 @@ type PrepareFilesForDockerParams = {
 };
 
 /**
- * @deprecated Используйте `prepareFilesForDocker` из `@alfalab/scripts-artifacts`.
+ * @deprecated Используйте `prepareFilesForDocker` из `@alfalab/scripts-artifacts`. В следующей
+ * мажорной версии реэкспорт будет удален.
  */
 export async function prepareFilesForDocker({
     dockerfileTemplate,
@@ -66,14 +67,22 @@ export async function prepareFilesForDocker({
     allowLocalStartScript,
     addNodeModulesToDockerIgnore,
 }: PrepareFilesForDockerParams) {
-    return dockerPrepareFilesForDocker({
+    const config = getResolvedArtifactsConfig();
+
+    return artifactsPrepareFilesForDocker({
         config: {
-            ...getResolvedArtifactsConfig(),
+            ...config,
             cwd: path.dirname(pathToTempDir),
-            tempDirName: path.basename(pathToTempDir),
-            allowLocalDockerfile,
-            allowLocalStartScript,
-            addNodeModulesToDockerIgnore,
+            docker: {
+                ...config.docker,
+                tempDirName: path.basename(pathToTempDir),
+                addNodeModulesToDockerIgnore,
+            },
+            localFiles: {
+                ...config.localFiles,
+                allowDockerfile: allowLocalDockerfile,
+                allowStartScript: allowLocalStartScript,
+            },
         },
         templates: {
             dockerfile: dockerfileTemplate,
@@ -90,14 +99,17 @@ type DockerBuildCommandParams = {
 };
 
 /**
- * @deprecated Используйте `getDockerBuildCommand` из `@alfalab/scripts-artifacts`.
+ * @deprecated Используйте `getDockerBuildCommand` из `@alfalab/scripts-artifacts`. В следующей
+ * мажорной версии реэкспорт будет удален.
  */
 export function getDockerBuildCommand({ tempDirName, imageFullName }: DockerBuildCommandParams) {
-    return dockerGetBuildCommand({
-        ...getResolvedArtifactsConfig(),
+    const config = getResolvedArtifactsConfig();
+
+    return artifactsGetBuildCommand({
+        ...config,
         ...splitImageFullName(imageFullName),
-        dockerRegistry: '',
-        tempDirName,
+        // имя образа уже содержит registry, второй раз подставлять его не нужно
+        docker: { ...config.docker, registry: '', tempDirName },
     });
 }
 

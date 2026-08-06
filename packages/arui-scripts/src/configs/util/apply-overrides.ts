@@ -40,10 +40,19 @@ type Overrides = {
     supportingBrowsers: string[];
     supportingNode: string[];
 
+    /*
+     * Оверрайды файлов артефакта поставки. Объявлены устаревшими и будут удалены в следующей
+     * мажорной версии — их место в секции `overrides` конфига `arui-scripts-artifacts.ts`.
+     */
+    /** @deprecated Используйте `overrides.dockerfile` в конфиге @alfalab/scripts-artifacts. */
     Dockerfile: string;
+    /** @deprecated Используйте `overrides.dockerfileCompiled` в конфиге @alfalab/scripts-artifacts. */
     DockerfileCompiled: string;
+    /** @deprecated Используйте `overrides.nginxConf` в конфиге @alfalab/scripts-artifacts. */
     nginx: string;
+    /** @deprecated Используйте `overrides.baseNginxConf` в конфиге @alfalab/scripts-artifacts. */
     nginxConf: string;
+    /** @deprecated Используйте `overrides.startScript` в конфиге @alfalab/scripts-artifacts. */
     'start.sh': string;
     serverExternalsExemptions: Array<string | RegExp>;
 
@@ -116,6 +125,16 @@ overrides = configs.overridesPath.map((path) => {
         return {};
     }
 });
+
+/**
+ * Объявлен ли оверрайд с таким ключом хоть в одном файле оверрайдов. Нужно, чтобы предупреждать об
+ * устаревших ключах только тем, кто ими действительно пользуется.
+ */
+export function hasOverride(overridesKey: keyof Overrides): boolean {
+    return overrides.some((override) =>
+        Object.prototype.hasOwnProperty.call(override, overridesKey),
+    );
+}
 
 /**
  *

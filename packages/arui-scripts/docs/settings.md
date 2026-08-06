@@ -132,6 +132,9 @@ export default settings;
 #### additionalBuildPath
 Массив путей, которые попадут в архив при использовании [команды archive-build](./commands.md#archive-build). По умолчанию `['config']`.
 
+:warning: Настройка устарела, см. [настройки сборки артефактов](#настройки-сборки-артефактов).
+Замена — `archive.additionalPaths` в конфиге `arui-scripts-artifacts.ts`.
+
 #### statsOutputFilename
 Имя [stats-файла](https://webpack.js.org/api/stats/), которое будет использоваться в [bundle-analyze команде](./commands.md#bundle-analyze). По умолчанию `stats.json`
 
@@ -165,6 +168,13 @@ const settings = {
 и, в dev режиме, необходимые для hot-module-reload файлы
 
 ### Настройки сборки артефактов
+
+> ⚠️ **Объявлены устаревшими.** Эти настройки arui-scripts просто транслирует в
+> [@alfalab/scripts-artifacts](../../arui-scripts-artifacts/README.md), где и живут их значения по
+> умолчанию. В следующей мажорной версии arui-scripts они будут удалены — переносите их в конфиг
+> `arui-scripts-artifacts.ts` в корне проекта (таблица соответствия — в
+> [README пакета](../../arui-scripts-artifacts/README.md#миграция-с-arui-scripts-docker-build)).
+> Команды сборки предупреждают о таких настройках в консоли.
 
 #### dockerRegistry
 Адрес используемого docker registry, по умолчанию `''`, то есть используется публичный registry
