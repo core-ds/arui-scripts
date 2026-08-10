@@ -121,6 +121,14 @@ export function getQuestions(defaultName: string, prefill: CliFlags = {}): promp
             inactive: 'нет',
         },
         {
+            type: unlessAnswered('useLint', 'toggle'),
+            name: 'useLint',
+            message: 'Подключить arui-presets-lint',
+            initial: false,
+            active: 'да',
+            inactive: 'нет',
+        },
+        {
             type: unlessAnswered('install', 'toggle'),
             name: 'install',
             message: 'Установить зависимости сейчас',

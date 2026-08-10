@@ -22,6 +22,7 @@ const VERSIONS = {
     tsJest: '^29.1.0',
     typesJest: '^29.5.0',
     vitest: '^4.1.5',
+    aruiPresetsLint: '^11.0.0',
 } as const;
 
 export function buildContext(answers: InitAnswers, aruiScriptsVersion: string): TemplateContext {
@@ -69,6 +70,10 @@ export function buildContext(answers: InitAnswers, aruiScriptsVersion: string): 
         devDependencies.vitest = VERSIONS.vitest;
     }
 
+    if (answers.useLint) {
+        devDependencies['arui-presets-lint'] = VERSIONS.aruiPresetsLint;
+    }
+
     return {
         name: answers.name,
         useRtk: answers.useRtk,
@@ -82,6 +87,7 @@ export function buildContext(answers: InitAnswers, aruiScriptsVersion: string): 
         presets: answers.presets.trim(),
         polyfills: answers.polyfills,
         reactCompiler: answers.reactCompiler,
+        useLint: answers.useLint,
         aruiScriptsVersion,
         dependencies,
         devDependencies,

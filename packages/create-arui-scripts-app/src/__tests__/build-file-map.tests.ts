@@ -15,6 +15,7 @@ const base: InitAnswers = {
     presets: '',
     polyfills: false,
     reactCompiler: false,
+    useLint: false,
     install: false,
 };
 
@@ -36,7 +37,7 @@ describe('buildFileMap', () => {
                 'README.md',
                 'src/client/index.tsx',
                 'src/client/components/app.tsx',
-                'src/client/components/__tests__/app.test.tsx',
+                'src/client/components/__tests__/app.test.ts',
             ]),
         );
     });
@@ -74,7 +75,7 @@ describe('buildFileMap', () => {
 
         expect(ssr['src/client/index.tsx']).toBeDefined();
         expect(ssr['src/index.tsx']).toBeUndefined();
-        expect(ssr['arui-scripts.config.ts']).toContain('clientEntry: "./src/client"');
+        expect(ssr['arui-scripts.config.ts']).toContain("clientEntry: './src/client'");
 
         const spa = map({ clientOnly: true });
 
@@ -121,7 +122,7 @@ describe('buildFileMap', () => {
 
     it('выбранный codeLoader попадает в конфиг', () => {
         expect(map({ codeLoader: 'babel' })['arui-scripts.config.ts']).toContain(
-            'codeLoader: "babel"',
+            "codeLoader: 'babel'",
         );
     });
 
@@ -144,14 +145,15 @@ describe('buildFileMap', () => {
             presets: 'my-preset\\name',
         })['arui-scripts.config.ts'];
 
-        expect(config).toContain('dockerRegistry: "reg.io/org\'s"');
-        expect(config).toContain('presets: "my-preset\\\\name"');
+        expect(config).toContain("dockerRegistry: 'reg.io/org\\'s'");
+        expect(config).toContain("presets: 'my-preset\\\\name'");
     });
 
     it('экранирует имя проекта в JSX', () => {
         const app = map({ name: "O'Reilly <App>" })['src/client/components/app.tsx'];
 
-        expect(app).toContain(`{${JSON.stringify("O'Reilly <App>")}}`);
+        expect(app).toContain("const appName = 'O\\'Reilly <App>';");
+        expect(app).toContain('{appName}');
     });
 
     it('App построен на core-components, конфиг подключает тему', () => {
@@ -187,7 +189,7 @@ describe('buildFileMap', () => {
 
         expect(files['src/client/polyfills.ts']).toBeDefined();
         expect(files['arui-scripts.config.ts']).toContain(
-            'clientPolyfillsEntry: "./src/client/polyfills"',
+            "clientPolyfillsEntry: './src/client/polyfills'",
         );
     });
 
@@ -216,5 +218,44 @@ describe('buildFileMap', () => {
 
         expect(files['vitest.config.ts']).toBeUndefined();
         expect(files['package.json']).toContain('"preset": "arui-scripts"');
+    });
+
+    it('useLint создает конфиги и scripts arui-presets-lint', () => {
+        const files = map({ useLint: true });
+        const pkg = JSON.parse(files['package.json']) as {
+            prettier: string;
+            stylelint: { extends: string };
+            commitlint: { extends: string };
+            scripts: Record<string, string>;
+            devDependencies: Record<string, string>;
+        };
+
+        expect(files['eslint.config.mts']).toContain('arui-presets-lint/eslint');
+        expect(files['knip.ts']).toContain("import baseConfig from 'arui-presets-lint/knip'");
+        expect(files['knip.ts']).toContain("'ts-jest'");
+        expect(files['.secretlintrc.json']).toContain(
+            '@secretlint/secretlint-rule-preset-recommend',
+        );
+        expect(files['lefthook.yml']).toContain(
+            './node_modules/arui-presets-lint/lefthook/index.yml',
+        );
+        expect(pkg.prettier).toBe('arui-presets-lint/prettier');
+        expect(pkg.stylelint.extends).toBe('arui-presets-lint/stylelint');
+        expect(pkg.commitlint.extends).toBe('./node_modules/arui-presets-lint/commitlint');
+        expect(pkg.scripts.lint).toContain('yarn lint:scripts');
+        expect(pkg.scripts['lint:styles']).toBe('arui-presets-lint styles --max-warnings=0');
+        expect(pkg.scripts['lint:scripts']).toBe('arui-presets-lint scripts --max-warnings=0');
+        expect(pkg.devDependencies).toHaveProperty('arui-presets-lint');
+        expect(files['README.md']).toContain('yarn lint');
+    });
+
+    it('без useLint не создает lint-конфиги', () => {
+        const files = map({ useLint: false });
+
+        expect(files['eslint.config.mts']).toBeUndefined();
+        expect(files['knip.ts']).toBeUndefined();
+        expect(files['.secretlintrc.json']).toBeUndefined();
+        expect(files['lefthook.yml']).toBeUndefined();
+        expect(files['package.json']).not.toContain('arui-presets-lint');
     });
 });

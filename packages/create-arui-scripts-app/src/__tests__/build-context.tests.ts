@@ -14,6 +14,7 @@ const base: InitAnswers = {
     presets: '',
     polyfills: false,
     reactCompiler: false,
+    useLint: false,
     install: false,
 };
 
@@ -81,5 +82,14 @@ describe('buildContext', () => {
 
         expect(vitestCtx.devDependencies).toHaveProperty('vitest');
         expect(vitestCtx.devDependencies).not.toHaveProperty('ts-jest');
+    });
+
+    it('useLint добавляет arui-presets-lint', () => {
+        const withLint = buildContext({ ...base, useLint: true }, '1.0.0');
+        const withoutLint = buildContext({ ...base, useLint: false }, '1.0.0');
+
+        expect(withLint.devDependencies['arui-presets-lint']).toBe('^11.0.0');
+        expect(withLint.useLint).toBe(true);
+        expect(withoutLint.devDependencies).not.toHaveProperty('arui-presets-lint');
     });
 });

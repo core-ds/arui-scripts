@@ -57,6 +57,13 @@ defaultSemverRangePrefix: ""
 export function readmeTemplate(ctx: TemplateContext): string {
     const testCommand =
         ctx.testRunner === 'jest' ? 'arui-scripts test' : 'arui-scripts test:vitest';
+    const lintSection = ctx.useLint
+        ? `
+    yarn lint         - eslint, stylelint, prettier, knip, secretlint
+    yarn lint:fix    - автофикс eslint/stylelint + format
+    yarn format       - prettier
+`
+        : '';
 
     return `# ${ctx.name}
 
@@ -66,8 +73,7 @@ export function readmeTemplate(ctx: TemplateContext): string {
 
     arui-scripts start - запуск dev-сервера
     arui-scripts build - production-сборка
-    ${testCommand}${' '.repeat(Math.max(1, 20 - testCommand.length))}- запуск тестов
-
+    ${testCommand}${' '.repeat(Math.max(1, 20 - testCommand.length))}- запуск тестов${lintSection}
 ## Установка
 
     yarn install

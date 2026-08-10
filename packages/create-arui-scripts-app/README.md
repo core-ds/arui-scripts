@@ -35,7 +35,7 @@ npx create-arui-scripts-app my-app --yes
 - `--css-modules` / `--no-css-modules` - CSS-модули
 - `--client-port` / `--server-port` - порты клиента и сервера
 - `--docker-registry` / `--presets` - docker registry и preset
-- `--polyfills` / `--react-compiler` / `--install` - и соответствующие `--no-*`
+- `--polyfills` / `--react-compiler` / `--lint` / `--install` - и соответствующие `--no-*`
 
 ## Что настраивает мастер
 
@@ -44,15 +44,24 @@ npx create-arui-scripts-app my-app --yes
 - SSR-сервер на **Hapi** с рендерингом приложения (`renderToString`) и гидрацией на клиенте
 - транспилятор (**swc** / babel / tsc) и тест-раннер (**Jest** / Vitest)
 - CSS-модули, полифилы (`core-js`), `experimentalReactCompiler`, docker registry, preset
+- опционально **arui-presets-lint** (eslint, prettier, stylelint, knip, secretlint, lefthook)
 - опциональная установка зависимостей сразу после генерации
+
+Пример с линтерами:
+
+```bash
+npx create-arui-scripts-app my-app --yes --lint --install
+```
 
 ## Результат
 
 Генерируются `package.json`, `arui-scripts.config.ts`, `tsconfig.json`, клиентская точка входа,
 пример компонента со стилями и тестом, `global-definitions.d.ts`, `.gitignore`, `README.md`,
 `.yarnrc.yml` (с `nodeLinker: node-modules`),
-а также в зависимости от ответов - серверная точка входа на Hapi, store на RTK, полифилы и
-`vitest.config.ts`.
+а также в зависимости от ответов - серверная точка входа на Hapi, store на RTK, полифилы,
+`vitest.config.ts` и конфиги `arui-presets-lint` (`eslint.config.mts`, `knip.ts`,
+`.secretlintrc.json`, `lefthook.yml`).
 
 Дальнейшая сборка и запуск через команды `arui-scripts` в созданном проекте.
 См. [документацию arui-scripts](../arui-scripts/README.md).
+При подключении lint: `yarn lint` / `yarn lint:fix`.

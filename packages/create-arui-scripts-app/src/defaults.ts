@@ -15,6 +15,7 @@ export type CliFlags = {
     presets?: string;
     polyfills?: boolean;
     reactCompiler?: boolean;
+    useLint?: boolean;
     install?: boolean;
 };
 
@@ -32,6 +33,7 @@ export function defaultAnswers(name: string): InitAnswers {
         presets: '',
         polyfills: false,
         reactCompiler: false,
+        useLint: false,
         install: false,
     };
 }
@@ -49,6 +51,7 @@ const ANSWER_FLAG_KEYS: Array<keyof CliFlags> = [
     'presets',
     'polyfills',
     'reactCompiler',
+    'useLint',
     'install',
 ];
 
@@ -75,6 +78,7 @@ export function answersFromFlags(defaultName: string, flags: CliFlags): InitAnsw
         ...(flags.presets === undefined ? {} : { presets: flags.presets }),
         ...(flags.polyfills === undefined ? {} : { polyfills: flags.polyfills }),
         ...(flags.reactCompiler === undefined ? {} : { reactCompiler: flags.reactCompiler }),
+        ...(flags.useLint === undefined ? {} : { useLint: flags.useLint }),
         ...(flags.install === undefined ? {} : { install: flags.install }),
         name: (flags.name?.trim() || defaultName).trim(),
     };

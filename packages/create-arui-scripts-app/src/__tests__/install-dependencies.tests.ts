@@ -7,7 +7,7 @@ jest.mock('child_process', () => ({
 }));
 
 // eslint-disable-next-line import/first
-import { installDependencies } from '../install-dependencies';
+import { installDependencies, installLefthook } from '../install-dependencies';
 
 function fakeChild(exitCode: number) {
     const child = new EventEmitter() as EventEmitter & {
@@ -70,6 +70,19 @@ describe('installDependencies', () => {
 
         await expect(installDependencies('/target', 'npm')).rejects.toThrow(
             /кодом 1[\s\S]*some output/,
+        );
+    });
+
+    it('installLefthook вызывает npx --no-install lefthook install', async () => {
+        setPlatform('linux');
+        spawnMock.mockImplementation(() => fakeChild(0));
+
+        await installLefthook('/target');
+
+        expect(spawnMock).toHaveBeenCalledWith(
+            'npx',
+            ['--no-install', 'lefthook', 'install'],
+            expect.objectContaining({ cwd: '/target', shell: false }),
         );
     });
 });

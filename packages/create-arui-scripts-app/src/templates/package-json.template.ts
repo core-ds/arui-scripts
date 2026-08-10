@@ -21,6 +21,20 @@ export function packageJsonTemplate(ctx: TemplateContext): string {
         scripts['docker-build'] = 'arui-scripts docker-build';
     }
 
+    if (ctx.useLint) {
+        scripts['lint:styles'] = 'arui-presets-lint styles --max-warnings=0';
+        scripts['lint:scripts'] = 'arui-presets-lint scripts --max-warnings=0';
+        scripts.format = 'arui-presets-lint format';
+        scripts['format:check'] = 'arui-presets-lint format:check';
+        scripts['lint:unused'] = 'arui-presets-lint knip';
+        scripts['lint:unused:fix'] = 'arui-presets-lint knip --fix';
+        scripts['lint:secrets'] = 'arui-presets-lint secretlint';
+        scripts.lint =
+            'yarn lint:styles && yarn lint:scripts && yarn format:check && yarn lint:unused && yarn lint:secrets';
+        scripts['lint:fix'] =
+            'yarn lint:styles --fix && yarn lint:scripts --fix && yarn format && yarn lint:secrets';
+    }
+
     const pkg: Record<string, unknown> = {
         name: ctx.name,
         version: '0.1.0',
@@ -30,6 +44,12 @@ export function packageJsonTemplate(ctx: TemplateContext): string {
             node: '>=24.11.1',
         },
     };
+
+    if (ctx.useLint) {
+        pkg.prettier = 'arui-presets-lint/prettier';
+        pkg.stylelint = { extends: 'arui-presets-lint/stylelint' };
+        pkg.commitlint = { extends: './node_modules/arui-presets-lint/commitlint' };
+    }
 
     if (ctx.testRunner === 'jest') {
         pkg.jest = { preset: 'arui-scripts' };

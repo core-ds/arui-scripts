@@ -18,6 +18,7 @@ describe('getQuestions', () => {
             '', // presets
             false, // polyfills
             false, // reactCompiler
+            false, // useLint
             false, // install
         ]);
 
@@ -41,6 +42,7 @@ describe('getQuestions', () => {
             '', // presets
             false, // polyfills
             false, // reactCompiler
+            false, // useLint
             false, // install
         ]);
 
@@ -62,6 +64,7 @@ describe('getQuestions', () => {
             '', // presets
             false, // polyfills
             false, // reactCompiler
+            false, // useLint
             false, // install
         ]);
 
@@ -91,6 +94,7 @@ describe('getQuestions', () => {
             '', // presets
             false, // polyfills
             false, // reactCompiler
+            true, // useLint
             false, // install
         ]);
 
@@ -98,5 +102,6 @@ describe('getQuestions', () => {
 
         expect(answers.clientOnly).toBe(false);
         expect(answers.serverPort).toBeUndefined();
+        expect(answers.useLint).toBe(true);
     });
 });

@@ -39,6 +39,8 @@ export function createProgram(onInit: InitHandler = defaultInitHandler): Command
         .option('--no-polyfills', 'Без полифилов')
         .option('--react-compiler', 'Включить experimentalReactCompiler')
         .option('--no-react-compiler', 'Выключить experimentalReactCompiler')
+        .option('--lint', 'Подключить arui-presets-lint')
+        .option('--no-lint', 'Без arui-presets-lint')
         .option('--install', 'Установить зависимости после генерации')
         .option('--no-install', 'Не устанавливать зависимости')
         .showHelpAfterError('(используйте --help для справки)')
@@ -109,6 +111,10 @@ export function mapOptsToFlags(opts: Record<string, unknown>): CliFlags {
 
     if (typeof opts.reactCompiler === 'boolean') {
         flags.reactCompiler = opts.reactCompiler;
+    }
+
+    if (typeof opts.lint === 'boolean') {
+        flags.useLint = opts.lint;
     }
 
     if (typeof opts.install === 'boolean') {

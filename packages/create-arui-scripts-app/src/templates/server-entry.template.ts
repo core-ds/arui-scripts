@@ -6,38 +6,17 @@ export function serverEntryTemplate(ctx: TemplateContext): string {
 
     const renderPageFn = ctx.useRtk
         ? `function renderPage(appHtml: string, assets: Assets, preloadedState: string): string {
-    const css = assets.css
-        .map((href) => '<link rel="stylesheet" href="/' + href + '" />')
-        .join('');
-    const js = assets.js.map((src) => '<script src="/' + src + '"></script>').join('');
-    const state = '<script>window.__PRELOADED_STATE__ = ' + preloadedState + ';</script>';
+    const css = assets.css.map((href) => \`<link rel="stylesheet" href="/\${href}" />\`).join('');
+    const js = assets.js.map((src) => \`<script src="/\${src}"></script>\`).join('');
+    const state = \`<script>window.__PRELOADED_STATE__ = \${preloadedState};</script>\`;
 
-    return (
-        '<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8" /><base href="/" />' +
-        css +
-        '</head><body><div id="react-app">' +
-        appHtml +
-        '</div>' +
-        state +
-        js +
-        '</body></html>'
-    );
+    return \`<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8" /><base href="/" />\${css}</head><body><div id="react-app">\${appHtml}</div>\${state}\${js}</body></html>\`;
 }`
         : `function renderPage(appHtml: string, assets: Assets): string {
-    const css = assets.css
-        .map((href) => '<link rel="stylesheet" href="/' + href + '" />')
-        .join('');
-    const js = assets.js.map((src) => '<script src="/' + src + '"></script>').join('');
+    const css = assets.css.map((href) => \`<link rel="stylesheet" href="/\${href}" />\`).join('');
+    const js = assets.js.map((src) => \`<script src="/\${src}"></script>\`).join('');
 
-    return (
-        '<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8" /><base href="/" />' +
-        css +
-        '</head><body><div id="react-app">' +
-        appHtml +
-        '</div>' +
-        js +
-        '</body></html>'
-    );
+    return \`<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8" /><base href="/" />\${css}</head><body><div id="react-app">\${appHtml}</div>\${js}</body></html>\`;
 }`;
 
     const handlerBody = ctx.useRtk
@@ -57,12 +36,11 @@ export function serverEntryTemplate(ctx: TemplateContext): string {
 
             return renderPage(appHtml, assets);`;
 
-    return `import path from 'path';
-
+    return `import React from 'react';
+import { renderToString } from 'react-dom/server';${reduxImport}
 import Hapi from '@hapi/hapi';
 import Inert from '@hapi/inert';
-import React from 'react';
-import { renderToString } from 'react-dom/server';${reduxImport}
+import path from 'node:path';
 
 import { readAssetsManifest } from '@alfalab/scripts-server';
 
@@ -108,10 +86,10 @@ ${handlerBody}
     });
 
     await server.start();
-    // eslint-disable-next-line no-console
-    console.log('Server is listening on ' + server.info.uri);
+    // eslint-disable-next-line no-console -- стартовый лог dev-сервера
+    console.log(\`Server is listening on \${server.info.uri}\`);
 }
 
-start();
+void start();
 `;
 }

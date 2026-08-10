@@ -7,25 +7,23 @@ export function appStylesFileName(ctx: TemplateContext): string {
 export function appStylesTemplate(ctx: TemplateContext): string {
     if (ctx.cssModules) {
         return `.root {
-    padding: 16px;
-    font-family: sans-serif;
+    padding: var(--gap-16);
 }
 
 .title {
-    margin: 0 0 12px;
-    font-size: 24px;
+    margin: var(--gap-0) var(--gap-0) var(--gap-12);
+    @mixin headline_small;
 }
 `;
     }
 
     return `.app {
-    padding: 16px;
-    font-family: sans-serif;
+    padding: var(--gap-16);
 }
 
 .app__title {
-    margin: 0 0 12px;
-    font-size: 24px;
+    margin: var(--gap-0) var(--gap-0) var(--gap-12);
+    @mixin headline_small;
 }
 `;
 }
