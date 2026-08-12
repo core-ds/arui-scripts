@@ -39,6 +39,13 @@ RUN ${installProductionCommand}  && \\
 
 ADD --chown=nginx:nginx . /src
 
+# При необходимости удаляем npm и связанные библиотеки из образа
+${
+    configs.deleteNpm
+        ? 'RUN rm -rf /usr/local/bin/npm /usr/local/bin/npx /usr/local/lib/node_modules/npm'
+        : ''
+}
+
 # Создаем директории для nginx и выставляем правильные права
 RUN mkdir -p /var/lib/nginx && \
     chown -R nginx:nginx /var/lib/nginx && \
