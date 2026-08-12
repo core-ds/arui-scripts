@@ -45,6 +45,7 @@ export function getDefaultAppConfig(): AppConfigs {
         nginx: null,
         runFromNonRootUser: true,
         removeDevDependenciesDuringDockerBuild: true,
+        deleteNpm: false,
         // archive compilation configs
         archiveName: 'build.tar',
 
