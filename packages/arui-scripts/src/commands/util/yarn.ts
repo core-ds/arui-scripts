@@ -1,3 +1,6 @@
+import fs from 'fs';
+import path from 'path';
+
 import shell from 'shelljs';
 
 import { configs } from '../../configs/app-configs';
@@ -54,4 +57,51 @@ export function getInstallProductionCommand(): string {
             return '';
         }
     }
+}
+
+/**
+ * Читает значение yarnPath из .yarnrc.yml.
+ * Возвращает путь к бинарнику yarn (например .yarn/releases/yarn-4.18.0.cjs) или null.
+ */
+export function getYarnPathFromRc(): string | null {
+    const rcPath = path.join(configs.cwd, '.yarnrc.yml');
+
+    if (!shell.test('-f', rcPath)) {
+        return null;
+    }
+
+    let content: string;
+
+    try {
+        content = fs.readFileSync(rcPath, 'utf8');
+    } catch {
+        return null;
+    }
+
+    // Ищем строку вида: yarnPath: .yarn/releases/yarn-4.18.0.cjs
+    // Значение может быть в кавычках или без
+    const match = content.match(/^\s*yarnPath:\s*['"]?([^'"\s]+)['"]?\s*$/m);
+
+    return match ? match[1] : null;
+}
+
+/**
+ * Возвращает команду для создания symlink на yarn бинарник в Docker-образе.
+ * Используется при yarn 2+ с yarnPath в .yarnrc.yml, чтобы yarn был доступен
+ * в PATH внутри Docker-образов (где yarn не установлен глобально).
+ * Возвращает пустую строку, если symlink не нужен.
+ */
+export function getYarnBinSymlinkCommand(): string {
+    if (getYarnVersion() !== '2+') {
+        return '';
+    }
+
+    const yarnPath = getYarnPathFromRc();
+
+    if (!yarnPath) {
+        return '';
+    }
+
+    // WORKDIR в Dockerfile = /src
+    return `ln -s /src/${yarnPath} /usr/local/bin/yarn && \\\n    `;
 }

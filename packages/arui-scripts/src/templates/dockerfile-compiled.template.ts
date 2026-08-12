@@ -1,9 +1,14 @@
-import { getInstallProductionCommand, getYarnVersion } from '../commands/util/yarn';
+import {
+    getInstallProductionCommand,
+    getYarnBinSymlinkCommand,
+    getYarnVersion,
+} from '../commands/util/yarn';
 import { configs } from '../configs/app-configs';
 import { applyOverrides } from '../configs/util/apply-overrides';
 
 const installProductionCommand = getInstallProductionCommand();
 const yarnVersion = getYarnVersion();
+const yarnBinSymlinkCommand = getYarnBinSymlinkCommand();
 
 const { nginx } = configs;
 
@@ -34,7 +39,7 @@ ${filesRequiredToInstallDependencies
     .map((file) => `ADD --chown=nginx:nginx ${file} /src/${file}`)
     .join('\n')}
 
-RUN ${installProductionCommand}  && \\
+RUN ${yarnBinSymlinkCommand}${installProductionCommand}  && \\
     ${yarnVersion === 'unavailable' ? 'npm cache clean --force' : 'yarn cache clean --all'}
 
 ADD --chown=nginx:nginx . /src
