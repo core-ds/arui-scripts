@@ -4,7 +4,8 @@
 
 The `docker-build` and `docker-build:compiled` commands generate a Dockerfile based on the
 `alfabankui/arui-scripts` base image, which ships with `node`, `npm` and `npx` installed.
-At runtime the server does not need `npm`/`npx`, so leaving them in the image wastes space.
+At runtime the server does not need `npm`/`npx`, but leaving them in the image adds unused
+dependencies and packages that trigger security scanners and produce false-positive findings.
 
 ## Goal
 
@@ -60,7 +61,8 @@ time, tests mock `../configs/app-configs` (via `jest.doMock` + `jest.resetModule
 
 `packages/arui-scripts/docs/settings.md`: add a `deleteNpm` section next to
 `removeDevDependenciesDuringDockerBuild` explaining the flag, default value (`false`), and that it
-removes `npm`/`npx` from the docker image to reduce its size.
+removes `npm`/`npx` from the docker image to reduce its size and avoid unused packages that
+trigger security scanners.
 
 ### 6. Changeset
 
