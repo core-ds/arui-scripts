@@ -63,6 +63,21 @@ export function getQuestions(defaultName: string, prefill: CliFlags = {}): promp
             ],
         },
         {
+            type: unlessAnswered('e2eFramework', 'select'),
+            name: 'e2eFramework',
+            message: 'e2e фреймворк',
+            initial: 2,
+            choices: [
+                { title: 'Cypress', value: 'cypress', description: 'классический e2e фреймворк' },
+                {
+                    title: 'Playwright',
+                    value: 'playwright',
+                    description: 'Быстрый и современный e2e фреймворку',
+                },
+                { title: 'Без e2e', value: 'none', description: 'Не подключать e2e' },
+            ],
+        },
+        {
             type: unlessAnswered('cssModules', 'toggle'),
             name: 'cssModules',
             message: 'Использовать CSS-модули',

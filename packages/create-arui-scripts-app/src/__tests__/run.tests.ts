@@ -110,6 +110,7 @@ describe('runInit', () => {
                 false, // useRtk
                 'babel', // codeLoader
                 'vitest', // testRunner
+                'none', // e2eFramework
                 true, // cssModules
                 8081, // clientServerPort
                 '', // dockerRegistry

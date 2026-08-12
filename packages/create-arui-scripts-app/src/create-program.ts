@@ -2,7 +2,7 @@ import { Command, Option } from 'commander';
 
 import { type CliFlags } from './defaults';
 import { runInit } from './run';
-import { type CodeLoader, type TestRunner } from './types';
+import { type CodeLoader, type E2eFramework, type TestRunner } from './types';
 
 // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
 const { version } = require('../package.json');
@@ -29,6 +29,13 @@ export function createProgram(onInit: InitHandler = defaultInitHandler): Command
             new Option('--code-loader <loader>', 'Транспилятор').choices(['swc', 'babel', 'tsc']),
         )
         .addOption(new Option('--test-runner <runner>', 'Тест-раннер').choices(['jest', 'vitest']))
+        .addOption(
+            new Option('--e2e-framework <framework>', 'e2e фреймворк').choices([
+                'cypress',
+                'playwright',
+                'none',
+            ]),
+        )
         .option('--css-modules', 'CSS-модули')
         .option('--no-css-modules', 'Обычный css')
         .option('--client-port <port>', 'Порт dev-сервера', (value) => Number(value))
@@ -84,6 +91,10 @@ export function mapOptsToFlags(opts: Record<string, unknown>): CliFlags {
 
     if (typeof opts.testRunner === 'string') {
         flags.testRunner = opts.testRunner as TestRunner;
+    }
+
+    if (typeof opts.e2eFramework === 'string') {
+        flags.e2eFramework = opts.e2eFramework as E2eFramework;
     }
 
     if (typeof opts.cssModules === 'boolean') {

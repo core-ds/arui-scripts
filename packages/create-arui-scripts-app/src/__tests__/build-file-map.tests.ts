@@ -8,6 +8,7 @@ const base: InitAnswers = {
     clientOnly: false,
     codeLoader: 'swc',
     testRunner: 'jest',
+    e2eFramework: 'none',
     cssModules: true,
     clientServerPort: 8080,
     serverPort: 3000,
@@ -257,5 +258,56 @@ describe('buildFileMap', () => {
         expect(files['.secretlintrc.json']).toBeUndefined();
         expect(files['lefthook.yml']).toBeUndefined();
         expect(files['package.json']).not.toContain('arui-presets-lint');
+    });
+
+    it('playwright создает конфиг, helpers, smoke тест и скрипты', () => {
+        const files = map({ e2eFramework: 'playwright', clientServerPort: 9090 });
+        const pkg = JSON.parse(files['package.json']) as {
+            scripts: Record<string, string>;
+            devDependencies: Record<string, string>;
+        };
+
+        expect(files['playwright.config.ts']).toContain("testDir: './e2e'");
+        expect(files['playwright.config.ts']).toContain("baseURL: 'http://localhost:9090'");
+        expect(files['playwright.config.ts']).toContain("command: 'yarn start'");
+        expect(files['e2e/helpers/index.ts']).toContain('gotoHome');
+        expect(files['e2e/example.spec.ts']).toContain("from './helpers'");
+        expect(files['.gitignore']).toContain('playwright-report/');
+        expect(files['README.md']).toContain('yarn playwright install');
+        expect(pkg.scripts.e2e).toBe('playwright test');
+        expect(pkg.scripts['e2e:ui']).toBe('playwright test --ui');
+        expect(pkg.devDependencies).toHaveProperty('@playwright/test');
+        expect(files['cypress.config.ts']).toBeUndefined();
+    });
+
+    it('cypress создает конфиг, support, smoke тест и скрипты', () => {
+        const files = map({ e2eFramework: 'cypress', clientServerPort: 7070 });
+        const pkg = JSON.parse(files['package.json']) as {
+            scripts: Record<string, string>;
+            devDependencies: Record<string, string>;
+        };
+
+        expect(files['cypress.config.ts']).toContain("baseUrl: 'http://localhost:7070'");
+        expect(files['cypress/support/e2e.ts']).toContain("import './commands'");
+        expect(files['cypress/support/commands.ts']).toBeDefined();
+        expect(files['cypress/e2e/example.cy.ts']).toContain("cy.visit('/')");
+        expect(files['.gitignore']).toContain('cypress/videos/');
+        expect(files['README.md']).toContain('yarn e2e:open');
+        expect(pkg.scripts.e2e).toBe('cypress run');
+        expect(pkg.scripts['e2e:open']).toBe('cypress open');
+        expect(pkg.devDependencies).toHaveProperty('cypress');
+        expect(files['playwright.config.ts']).toBeUndefined();
+    });
+
+    it('без e2e не создает e2e файлы и скрипты', () => {
+        const files = map({ e2eFramework: 'none' });
+        const pkg = JSON.parse(files['package.json']) as { scripts: Record<string, string> };
+
+        expect(files['playwright.config.ts']).toBeUndefined();
+        expect(files['cypress.config.ts']).toBeUndefined();
+        expect(files['e2e/example.spec.ts']).toBeUndefined();
+        expect(files['cypress/e2e/example.cy.ts']).toBeUndefined();
+        expect(pkg.scripts.e2e).toBeUndefined();
+        expect(files['README.md']).not.toContain('## E2E');
     });
 });

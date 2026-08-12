@@ -22,6 +22,8 @@ const VERSIONS = {
     tsJest: '^29.1.0',
     typesJest: '^29.5.0',
     vitest: '^4.1.5',
+    playwrightTest: '^1.57.0',
+    cypress: '^15.19.0',
     aruiPresetsLint: '^11.0.0',
 } as const;
 
@@ -70,6 +72,12 @@ export function buildContext(answers: InitAnswers, aruiScriptsVersion: string): 
         devDependencies.vitest = VERSIONS.vitest;
     }
 
+    if (answers.e2eFramework === 'playwright') {
+        devDependencies['@playwright/test'] = VERSIONS.playwrightTest;
+    } else if (answers.e2eFramework === 'cypress') {
+        devDependencies.cypress = VERSIONS.cypress;
+    }
+
     if (answers.useLint) {
         devDependencies['arui-presets-lint'] = VERSIONS.aruiPresetsLint;
     }
@@ -80,6 +88,7 @@ export function buildContext(answers: InitAnswers, aruiScriptsVersion: string): 
         clientOnly: answers.clientOnly,
         codeLoader: answers.codeLoader,
         testRunner: answers.testRunner,
+        e2eFramework: answers.e2eFramework,
         cssModules: answers.cssModules,
         clientServerPort: answers.clientServerPort,
         serverPort: answers.serverPort,

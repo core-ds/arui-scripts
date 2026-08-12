@@ -54,4 +54,16 @@ describe('createProgram', () => {
 
         await expect(parseFlags(['--client-only', '--ssr'])).rejects.toThrow();
     });
+
+    it('--e2e-framework парсит cypress, playwright и none', async () => {
+        await expect(parseFlags(['--e2e-framework', 'playwright'])).resolves.toEqual({
+            e2eFramework: 'playwright',
+        });
+        await expect(parseFlags(['--e2e-framework', 'cypress'])).resolves.toEqual({
+            e2eFramework: 'cypress',
+        });
+        await expect(parseFlags(['--e2e-framework', 'none'])).resolves.toEqual({
+            e2eFramework: 'none',
+        });
+    });
 });

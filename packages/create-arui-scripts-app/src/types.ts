@@ -1,5 +1,6 @@
 export type CodeLoader = 'swc' | 'babel' | 'tsc';
 export type TestRunner = 'jest' | 'vitest';
+export type E2eFramework = 'cypress' | 'playwright' | 'none';
 
 export type InitAnswers = {
     name: string;
@@ -9,6 +10,8 @@ export type InitAnswers = {
     clientOnly: boolean;
     codeLoader: CodeLoader;
     testRunner: TestRunner;
+    // e2e фреймворк (cypress / playwright / без e2e фреймворка)
+    e2eFramework: E2eFramework;
     // Подключать ли пример с CSS-модулями
     cssModules: boolean;
     clientServerPort: number;
@@ -32,6 +35,7 @@ export type TemplateContext = {
     clientOnly: boolean;
     codeLoader: CodeLoader;
     testRunner: TestRunner;
+    e2eFramework: E2eFramework;
     cssModules: boolean;
     clientServerPort: number;
     serverPort: number;
