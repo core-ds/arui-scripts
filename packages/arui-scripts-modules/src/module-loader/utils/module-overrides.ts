@@ -1,23 +1,11 @@
-/**
- * Ключ localStorage, в котором хранятся dev-подмены адресов модулей.
- * Значение - json вида `{ "moduleId": "http://localhost:8081" }`.
- */
+
+// Ключ localStorage, в котором хранятся значение такого формата { "moduleId": "http://localhost:8080" }
 export const MODULE_OVERRIDES_STORAGE_KEY = 'arui:module-overrides';
 
-/**
- * Имя переменной окружения с dev-подменами. В клиентскую сборку она попадает через DefinePlugin,
- * который подставляет ее значение только в dev-режиме.
- */
 export const MODULE_OVERRIDES_ENV_KEY = 'ARUI_MODULE_OVERRIDES';
 
 type Overrides = Record<string, string>;
 
-/**
- * Парсит json подмен moduleId -> baseUrl.
- * Формат и правила фильтрации должны совпадать с `parseOverridesFromEnv` в
- * `arui-scripts` (`configs/modules.ts`): общий пакет ради этой утилиты не
- * заводим, build-time и runtime живут в разных бандлах.
- */
 function parseOverrides(rawValue: string | undefined | null, source: string): Overrides {
     if (!rawValue) {
         return {};

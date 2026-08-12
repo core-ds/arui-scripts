@@ -22,7 +22,7 @@ export function getDefaultAppConfig(): AppConfigs {
         serverPort: 3000,
         debug: false,
         devSourceMaps: 'cheap-module-source-map', // так получаются нормальные сорсмапы, с eval - они не работают
-        devServerCors: false,
+        devServerCors: 'auto',
         useServerHMR: false,
         presets: configFile?.presets || appPackage?.aruiScripts?.presets || null,
         proxy: appPackage.proxy || [],
