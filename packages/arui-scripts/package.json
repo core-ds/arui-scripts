@@ -1,6 +1,6 @@
 {
     "name": "arui-scripts",
-    "version": "23.3.1",
+    "version": "23.4.0",
     "main": "./build/index.js",
     "typings": "./build/index.d.ts",
     "exports": {
