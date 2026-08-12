@@ -12,6 +12,8 @@ export type InitAnswers = {
     testRunner: TestRunner;
     // e2e фреймворк (cypress / playwright / без e2e фреймворка)
     e2eFramework: E2eFramework;
+    // Подключать ли React Router
+    useRouter: boolean;
     // Подключать ли пример с CSS-модулями
     cssModules: boolean;
     clientServerPort: number;
@@ -36,6 +38,7 @@ export type TemplateContext = {
     codeLoader: CodeLoader;
     testRunner: TestRunner;
     e2eFramework: E2eFramework;
+    useRouter: boolean;
     cssModules: boolean;
     clientServerPort: number;
     serverPort: number;

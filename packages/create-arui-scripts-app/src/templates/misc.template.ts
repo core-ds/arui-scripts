@@ -110,6 +110,15 @@ Dev-сервер поднимается автоматически через we
 `;
     }
 
+    const routerSection = ctx.useRouter
+        ? `
+## Маршруты
+
+    /       - главная (Home)
+    /about  - о проекте (About)
+`
+        : '';
+
     return `# ${ctx.name}
 
 Проект создан с помощью arui-scripts.
@@ -122,5 +131,5 @@ Dev-сервер поднимается автоматически через we
 ## Установка
 
     yarn install
-${e2eSection}`;
+${routerSection}${e2eSection}`;
 }

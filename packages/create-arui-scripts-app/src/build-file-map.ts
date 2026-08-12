@@ -28,6 +28,12 @@ import {
     yarnrcTemplate,
 } from './templates/misc.template';
 import { packageJsonTemplate } from './templates/package-json.template';
+import {
+    aboutPageTemplate,
+    homePageTemplate,
+    layoutTemplate,
+    routesTemplate,
+} from './templates/router.template';
 import { serverEntryTemplate } from './templates/server-entry.template';
 import {
     counterSliceTemplate,
@@ -75,6 +81,13 @@ export function buildFileMap(ctx: TemplateContext): Record<string, string> {
         files[`${client}/store/index.ts`] = storeIndexTemplate();
         files[`${client}/store/hooks.ts`] = storeHooksTemplate();
         files[`${client}/store/counter-slice.ts`] = counterSliceTemplate();
+    }
+
+    if (ctx.useRouter) {
+        files[`${client}/routes.tsx`] = routesTemplate();
+        files[`${client}/components/layout.tsx`] = layoutTemplate(ctx);
+        files[`${client}/pages/home.tsx`] = homePageTemplate(ctx);
+        files[`${client}/pages/about.tsx`] = aboutPageTemplate(ctx);
     }
 
     if (ctx.useLint) {

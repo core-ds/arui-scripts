@@ -17368,6 +17368,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"modules-demo@workspace:packages/modules-demo":
+  version: 0.0.0-use.local
+  resolution: "modules-demo@workspace:packages/modules-demo"
+  dependencies:
+    "@alfalab/core-components": "npm:^42.1.0"
+    "@alfalab/scripts-modules": "workspace:*"
+    "@types/node": "npm:^14.18.54"
+    "@types/react": "npm:18.3.24"
+    "@types/react-dom": "npm:18.3.7"
+    "@types/webpack-env": "npm:^1.18.1"
+    arui-scripts: "workspace:*"
+    react: "npm:18.3.1"
+    react-dom: "npm:18.3.1"
+    typescript: "npm:6.0.2"
+  languageName: unknown
+  linkType: soft
+
 "moo@npm:^0.5.0":
   version: 0.5.2
   resolution: "moo@npm:0.5.2"

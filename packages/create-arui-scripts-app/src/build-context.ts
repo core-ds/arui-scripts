@@ -24,6 +24,7 @@ const VERSIONS = {
     vitest: '^4.1.5',
     playwrightTest: '^1.57.0',
     cypress: '^15.19.0',
+    reactRouterDom: '^7.6.0',
     aruiPresetsLint: '^11.0.0',
 } as const;
 
@@ -54,6 +55,11 @@ export function buildContext(answers: InitAnswers, aruiScriptsVersion: string): 
     if (answers.useRtk) {
         dependencies['@reduxjs/toolkit'] = VERSIONS.reduxToolkit;
         dependencies['react-redux'] = VERSIONS.reactRedux;
+    }
+
+    if (answers.useRouter) {
+        dependencies['react-router'] = VERSIONS.reactRouterDom;
+        dependencies['react-router-dom'] = VERSIONS.reactRouterDom;
     }
 
     if (answers.polyfills) {
@@ -89,6 +95,7 @@ export function buildContext(answers: InitAnswers, aruiScriptsVersion: string): 
         codeLoader: answers.codeLoader,
         testRunner: answers.testRunner,
         e2eFramework: answers.e2eFramework,
+        useRouter: answers.useRouter,
         cssModules: answers.cssModules,
         clientServerPort: answers.clientServerPort,
         serverPort: answers.serverPort,

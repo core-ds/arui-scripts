@@ -72,10 +72,18 @@ export function getQuestions(defaultName: string, prefill: CliFlags = {}): promp
                 {
                     title: 'Playwright',
                     value: 'playwright',
-                    description: 'Быстрый и современный e2e фреймворку',
+                    description: 'Быстрый и современный e2e фреймворк',
                 },
                 { title: 'Без e2e', value: 'none', description: 'Не подключать e2e' },
             ],
+        },
+        {
+            type: unlessAnswered('useRouter', 'toggle'),
+            name: 'useRouter',
+            message: 'Подключить React Router',
+            initial: false,
+            active: 'да',
+            inactive: 'нет',
         },
         {
             type: unlessAnswered('cssModules', 'toggle'),

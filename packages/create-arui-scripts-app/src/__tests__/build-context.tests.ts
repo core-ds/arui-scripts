@@ -8,6 +8,7 @@ const base: InitAnswers = {
     codeLoader: 'swc',
     testRunner: 'jest',
     e2eFramework: 'none',
+    useRouter: false,
     cssModules: true,
     clientServerPort: 8080,
     serverPort: 3000,
@@ -107,5 +108,14 @@ describe('buildContext', () => {
 
         expect(cypressCtx.devDependencies).toHaveProperty('cypress');
         expect(cypressCtx.devDependencies).not.toHaveProperty('@playwright/test');
+    });
+
+    it('useRouter добавляет react-router и react-router-dom', () => {
+        const withRouter = buildContext({ ...base, useRouter: true }, '1.0.0');
+        const withoutRouter = buildContext({ ...base, useRouter: false }, '1.0.0');
+
+        expect(withRouter.dependencies).toHaveProperty('react-router-dom');
+        expect(withRouter.dependencies).toHaveProperty('react-router');
+        expect(withoutRouter.dependencies).not.toHaveProperty('react-router-dom');
     });
 });

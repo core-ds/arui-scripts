@@ -9,6 +9,7 @@ const base: InitAnswers = {
     codeLoader: 'swc',
     testRunner: 'jest',
     e2eFramework: 'none',
+    useRouter: false,
     cssModules: true,
     clientServerPort: 8080,
     serverPort: 3000,
@@ -309,5 +310,32 @@ describe('buildFileMap', () => {
         expect(files['cypress/e2e/example.cy.ts']).toBeUndefined();
         expect(pkg.scripts.e2e).toBeUndefined();
         expect(files['README.md']).not.toContain('## E2E');
+    });
+
+    it('useRouter создает routes, layout, pages и BrowserRouter/StaticRouter', () => {
+        const files = map({ useRouter: true, clientOnly: false });
+        const pkg = JSON.parse(files['package.json']) as {
+            dependencies: Record<string, string>;
+        };
+
+        expect(files['src/client/routes.tsx']).toContain('AppRoutes');
+        expect(files['src/client/components/layout.tsx']).toContain('Outlet');
+        expect(files['src/client/pages/home.tsx']).toContain('HomePage');
+        expect(files['src/client/pages/about.tsx']).toContain('AboutPage');
+        expect(files['src/client/components/app.tsx']).toContain('AppRoutes');
+        expect(files['src/client/index.tsx']).toContain('BrowserRouter');
+        expect(files['src/server/index.tsx']).toContain('StaticRouter');
+        expect(files['src/server/index.tsx']).toContain('/{path*}');
+        expect(files['README.md']).toContain('/about');
+        expect(pkg.dependencies).toHaveProperty('react-router-dom');
+    });
+
+    it('без useRouter не создает routes/pages', () => {
+        const files = map({ useRouter: false });
+
+        expect(files['src/client/routes.tsx']).toBeUndefined();
+        expect(files['src/client/pages/home.tsx']).toBeUndefined();
+        expect(files['src/client/index.tsx']).not.toContain('BrowserRouter');
+        expect(files['package.json']).not.toContain('react-router-dom');
     });
 });

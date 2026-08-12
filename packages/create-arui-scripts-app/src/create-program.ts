@@ -36,6 +36,8 @@ export function createProgram(onInit: InitHandler = defaultInitHandler): Command
                 'none',
             ]),
         )
+        .option('--router', 'Подключить React Router')
+        .option('--no-router', 'Без React Router')
         .option('--css-modules', 'CSS-модули')
         .option('--no-css-modules', 'Обычный css')
         .option('--client-port <port>', 'Порт dev-сервера', (value) => Number(value))
@@ -122,6 +124,10 @@ export function mapOptsToFlags(opts: Record<string, unknown>): CliFlags {
 
     if (typeof opts.reactCompiler === 'boolean') {
         flags.reactCompiler = opts.reactCompiler;
+    }
+
+    if (typeof opts.router === 'boolean') {
+        flags.useRouter = opts.router;
     }
 
     if (typeof opts.lint === 'boolean') {

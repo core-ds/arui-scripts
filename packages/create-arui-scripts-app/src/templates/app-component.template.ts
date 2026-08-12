@@ -5,6 +5,17 @@ function tsString(value: string): string {
 }
 
 export function appComponentTemplate(ctx: TemplateContext): string {
+    if (ctx.useRouter) {
+        return `import React from 'react';
+
+import { AppRoutes } from '../routes';
+
+export function App() {
+    return <AppRoutes />;
+}
+`;
+    }
+
     const styleImport = ctx.cssModules
         ? "import styles from './app.module.css';"
         : "import './app.css';";
