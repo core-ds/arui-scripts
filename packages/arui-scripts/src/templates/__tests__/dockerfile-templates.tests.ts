@@ -35,6 +35,7 @@ describe('dockerfile.template (normal mode)', () => {
 describe('dockerfile-compiled.template (compiled mode)', () => {
     function getTemplate(deleteNpm: boolean) {
         jest.resetModules();
+
         jest.doMock('../../configs/app-configs', () => ({
             configs: {
                 baseDockerImage: 'test-image',
@@ -83,6 +84,7 @@ describe('dockerfile-compiled.template with yarn 2+ symlink', () => {
         yarnVersion?: '1' | '2+' | 'unavailable';
     }) {
         const { yarnPath = null, yarnVersion = '2+' } = opts;
+
         jest.resetModules();
         jest.doMock('../../configs/app-configs', () => ({
             configs: {
