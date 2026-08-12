@@ -198,6 +198,13 @@ const settings = {
 Отключает удаление devDependencies из node_modules при сборке докер образа. Используется когда вам не нужно удалять devDependencies,
 т.к. в своём Dockerfile вы не переносите node_modules в докер-контейнер. По умолчанию `true`.
 
+#### deleteNpm
+Удаляет npm и связанные с ним библиотеки (`/usr/local/bin/npm`, `/usr/local/bin/npx`,
+`/usr/local/lib/node_modules/npm`) из итогового docker-образа, собираемого командами
+[docker-build](./commands.md#docker-build) и [docker-build:compiled](./commands.md#docker-buildcompiled).
+Полезно для уменьшения поверхности атаки и исключения неиспользуемых пакетов, которые могут
+ложно срабатывать в security-сканерах. По умолчанию `false`.
+
 #### archiveName
 Имя архива, который будет создан при использовании команды [archive-build](./commands.md#archive-build). По умолчанию `'build.tar'`.
 

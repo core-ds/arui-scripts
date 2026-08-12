@@ -39,6 +39,11 @@ ${
         ? `ADD --chown=nginx:nginx ${appPathToAdd} ${appTargetPath}`
         : `ADD ${appPathToAdd} ${appTargetPath}`
 }
+${
+    configs.deleteNpm
+        ? 'RUN rm -rf /usr/local/bin/npm /usr/local/bin/npx /usr/local/lib/node_modules/npm'
+        : ''
+}
 ${configs.clientOnly ? 'COPY env-config.jso[n] /src/' : ''}
 ${configs.clientOnly ? 'CMD ["nginx"]' : ''}
 `;

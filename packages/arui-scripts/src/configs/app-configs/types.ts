@@ -41,6 +41,7 @@ export type AppConfigs = {
     } | null;
     runFromNonRootUser: boolean;
     removeDevDependenciesDuringDockerBuild: boolean;
+    deleteNpm: boolean;
     // archive compilation configs
     archiveName: string;
 
