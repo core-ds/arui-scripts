@@ -12,7 +12,7 @@ export type AppConfigs = {
     serverPort: number;
     debug: boolean;
     devSourceMaps: DevTool;
-    devServerCors: boolean;
+    devServerCors: boolean | 'auto';
     useServerHMR: boolean;
     presets: string | null;
     proxy: DevServerConfiguration['proxy'];
@@ -106,6 +106,7 @@ export type AppConfigs = {
         exposes?: Record<string, string>;
         options?: ModuleConfigBase;
         shareScope?: string;
+        devOverrides?: Record<string, string>;
     } | null;
     nodeExternals?: Omit<webpackNodeExternals.Options, 'allowlist'>;
 };

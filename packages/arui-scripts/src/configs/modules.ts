@@ -11,8 +11,93 @@ export function haveExposedDefaultModules() {
     return configs.modules?.exposes;
 }
 
+function hasEntries(exposes: Record<string, unknown> | undefined | null) {
+    return Boolean(exposes && Object.keys(exposes).length > 0);
+}
+
+/**
+ * Предоставляет ли приложение модули наружу - неважно, default или compat.
+ * Приложения, которые сами разбираются с WMF (`disableModulesSupport`), провайдерами не считаются:
+ * arui-scripts про их модули ничего не знает.
+ */
+export function isModulesProvider() {
+    if (configs.disableModulesSupport) {
+        return false;
+    }
+
+    return hasEntries(configs.modules?.exposes) || hasEntries(configs.compatModules?.exposes);
+}
+
 export const MODULES_ENTRY_NAME = 'remoteEntry.js';
 export const MODULES_SEPARATE_BUILD_NAME = 'wmf';
+
+/**
+ * Переменная окружения, через которую можно задать подмены адресов модулей для одного запуска:
+ * `ARUI_MODULE_OVERRIDES='{"someModule":"http://localhost:8081"}' yarn start`
+ */
+export const MODULE_OVERRIDES_ENV_KEY = 'ARUI_MODULE_OVERRIDES';
+
+/**
+ * Ключ, под которым подмены попадают в клиентскую сборку. Значение читает `@alfalab/scripts-modules`.
+ * Ключ определяется только в dev-режиме: возможность подменить источник исполняемого js в проде -
+ * это возможность выполнить произвольный код на странице приложения.
+ */
+export const MODULE_OVERRIDES_DEFINE_KEY = `process.env.${MODULE_OVERRIDES_ENV_KEY}`;
+
+/**
+ * Парсит json подмен moduleId -> baseUrl.
+ * Формат и правила фильтрации должны совпадать с `parseOverrides` в
+ * `@alfalab/scripts-modules` (`module-overrides.ts`): общий пакет ради этой
+ * утилиты не заводим, build-time и runtime живут в разных бандлах.
+ */
+function parseOverridesFromEnv(): Record<string, string> {
+    const rawValue = process.env[MODULE_OVERRIDES_ENV_KEY];
+
+    if (!rawValue) {
+        return {};
+    }
+
+    let parsed: unknown;
+
+    try {
+        parsed = JSON.parse(rawValue);
+    } catch {
+        console.warn(
+            `Не удалось разобрать ${MODULE_OVERRIDES_ENV_KEY}, подмены модулей будут проигнорированы. Ожидается json вида {"moduleId":"http://localhost:8081"}`,
+        );
+
+        return {};
+    }
+
+    if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+        console.warn(
+            `${MODULE_OVERRIDES_ENV_KEY} должен быть json-объектом вида {"moduleId":"http://localhost:8081"}, подмены будут проигнорированы.`,
+        );
+
+        return {};
+    }
+
+    const result: Record<string, string> = {};
+
+    Object.entries(parsed as Record<string, unknown>).forEach(([moduleId, baseUrl]) => {
+        if (typeof baseUrl === 'string' && baseUrl) {
+            result[moduleId] = baseUrl;
+        }
+    });
+
+    return result;
+}
+
+/**
+ * Собирает подмены адресов модулей для dev-сборки: из `modules.devOverrides` в конфиге приложения
+ * и из переменной окружения. Переменная окружения приоритетнее - она задается на один запуск.
+ */
+export function getDevModuleOverrides(): Record<string, string> {
+    return {
+        ...configs.modules?.devOverrides,
+        ...parseOverridesFromEnv(),
+    };
+}
 
 function getModuleFederationContainerName() {
     return configs.modules?.name || configs.normalizedName;
