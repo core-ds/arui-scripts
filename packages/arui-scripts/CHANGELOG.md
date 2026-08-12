@@ -1,5 +1,11 @@
 # arui-scripts
 
+## 23.5.0
+
+### Minor Changes
+
+-   [#571](https://github.com/core-ds/arui-scripts/pull/571) [`9c548f5`](https://github.com/core-ds/arui-scripts/commit/9c548f51c44d6198c8a98dd4b03f6a3a372324b7) Thanks [@syn7xx](https://github.com/syn7xx)! - Добавлен автоматический symlink на yarn бинарник в Dockerfile при использовании yarn 2+ с yarnPath в .yarnrc.yml. Это исправляет ошибку `yarn: not found` в Docker-образах (ни полный, ни slim-образ не содержат yarn).
+
 ## 23.4.0
 
 ### Minor Changes
