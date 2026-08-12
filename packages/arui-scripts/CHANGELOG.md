@@ -1,5 +1,13 @@
 # arui-scripts
 
+## 23.4.0
+
+### Minor Changes
+
+-   [#569](https://github.com/core-ds/arui-scripts/pull/569) [`ea2dfc8`](https://github.com/core-ds/arui-scripts/commit/ea2dfc84ee753f85c94900b015d26b776f3ecc30) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Добавлена настройка `deleteNpm` для команд `docker-build` и `docker-build:compiled`. При её
+    включении из docker-образа удаляются npm и связанные с ним библиотеки, что уменьшает
+    поверхность атаки и исключает неиспользуемые пакеты из результатов security-сканирования.
+
 ## 23.3.1
 
 ### Patch Changes
