@@ -1,8 +1,9 @@
+import { getModuleOverride } from './utils/module-overrides';
 import { urlSegmentWithoutEndSlash } from './utils/normalize-url-segment';
 import { createNetworkError, createParseError, createResponseError } from './utils/request-error';
 import { type ModuleResourcesGetter } from './create-module-loader';
 import { getServerStateModuleFetcherParams } from './get-server-state-module-fetcher-params';
-import { type BaseModuleState } from './types';
+import { type BaseModuleState, type ModuleResources } from './types';
 
 type CreateServerResourcesFetcherParams = {
     baseUrl: string;
@@ -20,7 +21,10 @@ export function createServerStateModuleFetcher<GetResourcesParams = undefined>({
 }: CreateServerResourcesFetcherParams): ModuleResourcesGetter<GetResourcesParams, BaseModuleState> {
     return async function fetchServerResources(params) {
         const { relativePath, method } = getServerStateModuleFetcherParams();
-        const url = `${urlSegmentWithoutEndSlash(baseUrl)}${relativePath}`;
+        // при локальной разработке адрес remote приложения может быть заменен на локальный
+        const overriddenBaseUrl = getModuleOverride(params.moduleId);
+        const effectiveBaseUrl = overriddenBaseUrl ?? baseUrl;
+        const url = `${urlSegmentWithoutEndSlash(effectiveBaseUrl)}${relativePath}`;
         const errorDescription = `Module resources request for ${params.moduleId}`;
 
         return new Promise((resolve, reject) => {
@@ -39,7 +43,17 @@ export function createServerStateModuleFetcher<GetResourcesParams = undefined>({
                 }
 
                 try {
-                    resolve(JSON.parse(xhr.responseText));
+                    const resources: ModuleResources = JSON.parse(xhr.responseText);
+
+                    // при локальной разработке адрес remote приложения может быть заменен на локальный
+                    if (overriddenBaseUrl) {
+                        resources.moduleState = {
+                            ...resources.moduleState,
+                            baseUrl: overriddenBaseUrl,
+                        };
+                    }
+
+                    resolve(resources);
                 } catch (error) {
                     reject(createParseError(errorDescription, url, error));
                 }
