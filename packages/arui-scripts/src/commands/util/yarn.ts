@@ -103,5 +103,5 @@ export function getYarnBinSymlinkCommand(): string {
     }
 
     // WORKDIR в Dockerfile = /src
-    return `ln -s /src/${yarnPath} /usr/local/bin/yarn && \\\n    `;
+    return `ln -sf /src/${yarnPath} /usr/local/bin/yarn && \\\n    `;
 }
