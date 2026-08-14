@@ -178,6 +178,16 @@ describe('buildFileMap', () => {
         );
     });
 
+    it('стили импортируют vars, чтобы были доступны миксины core-components', () => {
+        const modulesCss = map({ cssModules: true })['src/client/components/app.module.css'];
+        const globalCss = map({ cssModules: false })['src/client/components/app.css'];
+
+        expect(modulesCss).toContain("@import '@alfalab/core-components/vars'");
+        expect(modulesCss).toContain('@mixin headline_small');
+        expect(globalCss).toContain("@import '@alfalab/core-components/vars'");
+        expect(globalCss).toContain('@mixin headline_small');
+    });
+
     it('cssModules:false создает app.css и глобальный импорт', () => {
         const files = map({ cssModules: false });
 

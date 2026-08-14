@@ -1,5 +1,7 @@
 import { type TemplateContext } from '../types';
 
+const CORE_COMPONENTS_VARS_IMPORT = "@import '@alfalab/core-components/vars';";
+
 export function appStylesFileName(ctx: TemplateContext): string {
     return ctx.cssModules ? 'app.module.css' : 'app.css';
 }
@@ -21,7 +23,9 @@ export function appStylesTemplate(ctx: TemplateContext): string {
 `
             : '';
 
-        return `.root {
+        return `${CORE_COMPONENTS_VARS_IMPORT}
+
+.root {
     padding: var(--gap-16);
 }
 
@@ -47,7 +51,9 @@ ${nav}`;
 `
         : '';
 
-    return `.app {
+    return `${CORE_COMPONENTS_VARS_IMPORT}
+
+.app {
     padding: var(--gap-16);
 }
 
