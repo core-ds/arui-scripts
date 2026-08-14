@@ -1,5 +1,11 @@
 # arui-scripts
 
+## 23.5.1
+
+### Patch Changes
+
+-   [#574](https://github.com/core-ds/arui-scripts/pull/574) [`2e48012`](https://github.com/core-ds/arui-scripts/commit/2e4801232e988fc8da639faac6e6e5fd716118e8) Thanks [@artemgafarov66](https://github.com/artemgafarov66)! - Исправлено создание ссылки на Yarn при сборке Docker-образа, если бинарник уже существует.
+
 ## 23.5.0
 
 ### Minor Changes
