@@ -101,7 +101,7 @@ describe('dockerfile-compiled.template with yarn 2+ symlink', () => {
                     : 'npm install --production',
             getYarnVersion: () => yarnVersion,
             getYarnBinSymlinkCommand: () =>
-                yarnPath ? `ln -s /src/${yarnPath} /usr/local/bin/yarn && \\\n    ` : '',
+                yarnPath ? `ln -sf /src/${yarnPath} /usr/local/bin/yarn && \\\n    ` : '',
         }));
 
         // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
@@ -113,7 +113,9 @@ describe('dockerfile-compiled.template with yarn 2+ symlink', () => {
             yarnPath: '.yarn/releases/yarn-4.18.0.cjs',
         });
 
-        expect(template).toContain('ln -s /src/.yarn/releases/yarn-4.18.0.cjs /usr/local/bin/yarn');
+        expect(template).toContain(
+            'ln -sf /src/.yarn/releases/yarn-4.18.0.cjs /usr/local/bin/yarn',
+        );
         expect(template).toContain('yarn workspaces focus --production --all');
         expect(template).toContain('yarn cache clean --all');
     });
