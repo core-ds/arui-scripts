@@ -77,6 +77,12 @@ function createConfig({ outDir, esm }) {
         module: {
             rules: [
                 {
+                    // css панели приезжает в бандл строкой и вставляется в <style>
+                    // внутри shadow root - см. mount.tsx
+                    test: /\.css$/,
+                    type: 'asset/source',
+                },
+                {
                     test: /\.tsx?$/,
                     loader: 'builtin:swc-loader',
                     options: {

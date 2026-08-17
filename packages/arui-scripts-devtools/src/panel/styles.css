@@ -1,20 +1,25 @@
-/**
+/*
  * Стили панели. Живут внутри shadow root, поэтому наружу не текут, а снаружи их не переопределить.
  * Шрифты только системные: панель не имеет права тянуть внешние ресурсы.
  *
  * Внешний вид собран по дизайн-системе core-components: цвета - тёмная палитра
- * (`--color-dark-*`), отступы - шкала `--gap-*`, скругления - `--border-radius-*`, кнопки,
- * вкладки и статусы повторяют геометрию соответствующих компонентов.
+ * ('--color-dark-*'), кнопки, вкладки и статусы повторяют геометрию соответствующих компонентов.
+ * Импортировать '@alfalab/core-components/vars' нельзя: у пакета ноль зависимостей. Поэтому
+ * переменные дизайн-системы названы по именам с запасными значениями: подключило приложение
+ * вары - панель возьмёт его палитру, не подключило - свою копию. Размеры мимо 'var()' намеренно:
+ * имена вроде '--gap-s' слишком общие, и чужое значение из приложения развалило бы вёрстку.
  *
- * Импортировать `@alfalab/core-components/vars` нельзя: у пакета ноль зависимостей, и любая
- * из них приехала бы в бандл приложения вместе с панелью. Поэтому переменные дизайн-системы
- * названы по именам, а их значения продублированы запасными: подключило приложение вары -
- * панель возьмёт его палитру, не подключило - свою копию.
+ * В бандл файл попадает строкой (asset/source в scripts/bundle-mount.js) и вставляется
+ * в <style> внутри shadow root - см. mount.tsx.
  *
- * Размеры мимо `var()` намеренно: имена вроде `--gap-s` слишком общие, и чужое значение
- * из приложения развалило бы вёрстку. Цвет в худшем случае просто окажется другим.
+ * Отключённые ниже правила stylelint написаны для приложений с установленной дизайн-системой:
+ * они требуют её переменные и миксины, которые панели недоступны по построению.
+ * ВАЖНО: fixer плагина игнорирует disable-комментарии - не запускать stylelint --fix
+ * по этому файлу, он перепишет намеренные числовые размеры на переменные дизайн-системы.
  */
-export const PANEL_STYLES = `
+
+/* stylelint-disable stylelint-core-vars/use-vars, stylelint-core-vars/use-mixins, stylelint-core-vars/use-one-of-mixins, stylelint-core-vars/do-not-use-dark-colors */
+
 :host {
     all: initial;
 
@@ -22,9 +27,18 @@ export const PANEL_STYLES = `
     --arui-devtools-bg: var(--color-dark-bg-primary, #0b1f35);
     --arui-devtools-bg-secondary: var(--color-dark-bg-secondary, #233549);
     --arui-devtools-bg-tertiary: var(--color-dark-bg-tertiary, #3c4c5d);
-    --arui-devtools-bg-hover: var(--color-dark-specialbg-secondary-transparent, rgba(255, 255, 255, 0.1));
-    --arui-devtools-bg-control: var(--color-dark-specialbg-tertiary-transparent, rgba(255, 255, 255, 0.2));
-    --arui-devtools-bg-control-hover: var(--color-dark-specialbg-tertiary-transparent-tint-7, rgba(255, 255, 255, 0.256));
+    --arui-devtools-bg-hover: var(
+        --color-dark-specialbg-secondary-transparent,
+        rgba(255, 255, 255, 0.1)
+    );
+    --arui-devtools-bg-control: var(
+        --color-dark-specialbg-tertiary-transparent,
+        rgba(255, 255, 255, 0.2)
+    );
+    --arui-devtools-bg-control-hover: var(
+        --color-dark-specialbg-tertiary-transparent-tint-7,
+        rgba(255, 255, 255, 0.256)
+    );
 
     /* границы */
     --arui-devtools-border: var(--color-dark-border-secondary, #3c4c5d);
@@ -63,10 +77,22 @@ export const PANEL_STYLES = `
     --arui-devtools-attention-muted: var(--color-dark-bg-attention-muted, #432000);
 
     /* типографика */
-    --arui-devtools-font: var(--font-family-system, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Helvetica, sans-serif);
+    --arui-devtools-font: var(
+        --font-family-system,
+        system-ui,
+        -apple-system,
+        'Segoe UI',
+        Roboto,
+        'Helvetica Neue',
+        Helvetica,
+        sans-serif
+    );
     --arui-devtools-font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-
-    --arui-devtools-shadow: var(--shadow-l, 0 0 24px rgba(11, 31, 53, 0.12), 0 12px 24px rgba(11, 31, 53, 0.24));
+    --arui-devtools-shadow: var(
+        --shadow-l,
+        0 0 24px rgba(11, 31, 53, 0.12),
+        0 12px 24px rgba(11, 31, 53, 0.24)
+    );
 }
 
 /* Панель - модальная поверхность: bg-primary, --border-radius-l, --shadow-l.
@@ -192,7 +218,7 @@ export const PANEL_STYLES = `
     color: var(--arui-devtools-text);
 }
 
-.tab_active::after {
+.tab_active:after {
     content: '';
     position: absolute;
     right: 0;
@@ -704,7 +730,7 @@ a.resource__url:hover {
 
 /* галка нарисована рамками, а не иконкой: у пакета не может быть зависимости с иконками,
    а тащить svg ради одной птички в стилевой литерал незачем */
-.checkbox__input:checked + .checkbox__box::after {
+.checkbox__input:checked + .checkbox__box:after {
     content: '';
     position: absolute;
     top: 2px;
@@ -759,4 +785,3 @@ a.resource__url:hover {
 .row_share:hover {
     background: transparent;
 }
-`;

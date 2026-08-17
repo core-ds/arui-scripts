@@ -2,7 +2,8 @@ import { flushSync } from 'react-dom';
 import { createRoot, type Root } from 'react-dom/client';
 
 import { PanelApp } from './panel/panel-app';
-import { PANEL_STYLES } from './panel/styles';
+// css приезжает строкой: правило asset/source в пре-бандле, трансформер в jest
+import PANEL_STYLES from './panel/styles.css';
 import { scopeStyles } from './scope-styles';
 
 /** id хост-элемента панели в светлом DOM. Внутри него — shadow root, снаружи не видно ничего */

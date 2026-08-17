@@ -38,13 +38,5 @@ module.exports = {
                 '@typescript-eslint/no-var-requires': 'off',
             },
         },
-        {
-            // Внутри файла один css-литерал со стилями всей панели. Резать его по счётчику
-            // строк нечего: получатся куски, которые всё равно склеиваются обратно
-            files: ['src/panel/styles.ts'],
-            rules: {
-                'max-lines': 'off',
-            },
-        },
     ],
 };

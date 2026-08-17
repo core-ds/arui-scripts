@@ -1,4 +1,4 @@
-import { PANEL_STYLES } from '../panel/styles';
+import PANEL_STYLES from '../panel/styles.css';
 import { BADGE_STYLES } from '../ui/badge';
 
 /** объявления токенов живут в одном блоке в начале листа, всё остальное - правила */
