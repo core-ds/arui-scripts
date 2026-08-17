@@ -1,5 +1,11 @@
 # create-arui-scripts-app
 
+## 1.2.0
+
+### Minor Changes
+
+-   [#577](https://github.com/core-ds/arui-scripts/pull/577) [`231321b`](https://github.com/core-ds/arui-scripts/commit/231321bf2707abbbd909931cbd358880e488a2b5) Thanks [@dmitrbrvsk](https://github.com/dmitrbrvsk)! - В CLI генерации приложения добавлена возможность выбор e2e фреймворка (Cypress, Playwright) и подключение простого роутинга через React Router
+
 ## 1.1.0
 
 ### Minor Changes
