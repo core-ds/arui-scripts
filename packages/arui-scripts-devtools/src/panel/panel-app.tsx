@@ -1,8 +1,9 @@
 import { Fragment, useMemo, useState } from 'react';
 
-import { readPanelState, writePanelState } from '../panel-state';
-import { countShareProblems, readShareScopes, type ShareScope } from '../share-scope';
-import { type ModulesStoreState } from '../store-client';
+import { PANEL_TABS } from '../constants';
+import { countShareProblems, readShareScopes } from '../share-scope';
+import { type PanelAppProps, type PanelBodyProps, type PanelTabId } from '../types';
+import { readPanelState, writePanelState } from '../utils/panel-state';
 
 import { PanelErrorBoundary } from './error-boundary';
 import { EventsView } from './events-view';
@@ -10,34 +11,14 @@ import { LoadsTable } from './loads-table';
 import { ShareScopeView } from './share-scope-view';
 import { useModulesStore } from './use-modules-store';
 
-const TABS = [
-    { id: 'modules', title: 'Модули' },
-    { id: 'events', title: 'События' },
-    { id: 'share-scope', title: 'Share scope' },
-] as const;
-
-type TabId = (typeof TABS)[number]['id'];
-
-function restoreActiveTab(): TabId {
+function restoreActiveTab(): PanelTabId {
     const stored = readPanelState().tab;
-    const known = TABS.find((tab) => tab.id === stored);
+    const known = PANEL_TABS.find((tab) => tab.id === stored);
 
     // неизвестный id из хранилища - например, вкладка из будущей версии - не должен
     // оставить панель без активной вкладки
-    return known ? known.id : TABS[0].id;
+    return known ? known.id : PANEL_TABS[0].id;
 }
-
-type PanelBodyProps = {
-    state: ModulesStoreState;
-    activeTab: TabId;
-    scopes: ShareScope[];
-    expandedLoads: ReadonlySet<string>;
-    onToggleLoad(loadId: string): void;
-    eventsQuery: string;
-    onEventsQueryChange(query: string): void;
-    eventsOnlyErrors: boolean;
-    onEventsOnlyErrorsChange(onlyErrors: boolean): void;
-};
 
 /**
  * Строка состояния и тело активной вкладки.
@@ -94,11 +75,6 @@ function PanelBody({
     );
 }
 
-export type PanelAppProps = {
-    /** вызывается крестиком; Esc обрабатывает mount - он живёт на document за пределами дерева */
-    onClose(): void;
-};
-
 /**
  * Корень панели: шапка, вкладки, строка состояния и содержимое активной вкладки.
  *
@@ -107,7 +83,7 @@ export type PanelAppProps = {
  */
 export function PanelApp({ onClose }: PanelAppProps) {
     const state = useModulesStore();
-    const [activeTab, setActiveTab] = useState<TabId>(restoreActiveTab);
+    const [activeTab, setActiveTab] = useState<PanelTabId>(restoreActiveTab);
     const [expandedLoads, setExpandedLoads] = useState<ReadonlySet<string>>(() => new Set());
     const [eventsQuery, setEventsQuery] = useState('');
     const [eventsOnlyErrors, setEventsOnlyErrors] = useState(false);
@@ -120,7 +96,7 @@ export function PanelApp({ onClose }: PanelAppProps) {
     const scopes = useMemo(() => readShareScopes(), [state, activeTab]);
     const problems = countShareProblems(scopes);
 
-    const selectTab = (tab: TabId) => {
+    const selectTab = (tab: PanelTabId) => {
         setActiveTab(tab);
         writePanelState({ tab });
     };
@@ -157,7 +133,7 @@ export function PanelApp({ onClose }: PanelAppProps) {
                 </button>
             </div>
             <div className='tabs' role='tablist'>
-                {TABS.map((tab) => {
+                {PANEL_TABS.map((tab) => {
                     const note = tab.id === 'share-scope' && problems ? `проблем: ${problems}` : '';
 
                     return (

@@ -1,19 +1,5 @@
-/**
- * Ключ, под которым панель помнит саму себя.
- *
- * Именно sessionStorage: панель открывают, чтобы разобраться с конкретной страницей, и после
- * перезагрузки она должна остаться открытой в этой вкладке - но не всплывать во всех остальных.
- */
-export const PANEL_STATE_KEY = 'arui:devtools:panel';
-
-export type PanelState = {
-    /** панель была открыта в момент ухода со страницы */
-    open: boolean;
-    /** id последней активной вкладки */
-    tab?: string;
-};
-
-const DEFAULT_STATE: PanelState = { open: false };
+import { DEFAULT_PANEL_STATE, PANEL_STATE_KEY } from '../constants';
+import { type PanelState } from '../types';
 
 function getStorage(): Storage | undefined {
     try {
@@ -28,14 +14,14 @@ export function readPanelState(): PanelState {
     const storage = getStorage();
 
     if (!storage) {
-        return DEFAULT_STATE;
+        return DEFAULT_PANEL_STATE;
     }
 
     try {
         const raw = storage.getItem(PANEL_STATE_KEY);
 
         if (!raw) {
-            return DEFAULT_STATE;
+            return DEFAULT_PANEL_STATE;
         }
 
         const parsed = JSON.parse(raw) as Partial<PanelState>;
@@ -46,7 +32,7 @@ export function readPanelState(): PanelState {
         };
     } catch {
         // мусор в хранилище не должен мешать панели открыться
-        return DEFAULT_STATE;
+        return DEFAULT_PANEL_STATE;
     }
 }
 

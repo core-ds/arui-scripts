@@ -2,40 +2,16 @@ import { flushSync } from 'react-dom';
 import { createRoot, type Root } from 'react-dom/client';
 
 import { PanelApp } from './panel/panel-app';
+import { isEscapeFromFilledInput } from './utils/escape-from-input';
+import { scopeStyles } from './utils/scope-styles';
+import { DEVTOOLS_ROOT_ID } from './constants';
+import { type MountDevtoolsOptions } from './types';
+
 // css приезжает строкой: правило asset/source в пре-бандле, трансформер в jest
 import PANEL_STYLES from './panel/styles.css';
-import { scopeStyles } from './scope-styles';
-
-/** id хост-элемента панели в светлом DOM. Внутри него — shadow root, снаружи не видно ничего */
-export const DEVTOOLS_ROOT_ID = 'arui-devtools-root';
-
-export type MountDevtoolsOptions = {
-    /** куда монтировать хост панели. По умолчанию — `document.body` */
-    container?: HTMLElement;
-    /** вызывается, когда панель закрыли изнутри: крестиком или по Esc */
-    onClose?(): void;
-};
 
 /** функция размонтирования уже смонтированной панели */
 let activeUnmount: (() => void) | undefined;
-
-/**
- * Пришёл ли Esc из непустого поля ввода панели.
- *
- * Слушаем мы на `document`, а событие из shadow root туда приходит ретаргетенным на хост-элемент —
- * настоящую цель видно только в `composedPath`.
- */
-function isEscapeFromFilledInput(event: KeyboardEvent): boolean {
-    const target = (
-        typeof event.composedPath === 'function' ? event.composedPath()[0] : event.target
-    ) as HTMLElement | null;
-
-    if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) {
-        return target.value !== '';
-    }
-
-    return false;
-}
 
 /**
  * Монтирует панель в отдельный хост-элемент с shadow root.

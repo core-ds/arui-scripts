@@ -1,28 +1,8 @@
-import { type DevtoolsEvent } from '../contract';
-import { isFromPreviousPageLoad } from '../resource-timing';
-
-import { EMPTY, formatDuration } from './format';
-
-const COLUMNS = ['Время', 'Событие', 'Модуль', 'Стадия', 'Сообщение'];
-
-function matches(event: DevtoolsEvent, query: string) {
-    if (!query) {
-        return true;
-    }
-
-    return [event.moduleId, event.type, event.stage, event.message]
-        .filter(Boolean)
-        .some((value) => value!.toLowerCase().includes(query));
-}
-
-export type EventsViewProps = {
-    events: DevtoolsEvent[];
-    /** фильтры контролирует панель: значения должны переживать переключение вкладок */
-    query: string;
-    onQueryChange(query: string): void;
-    onlyErrors: boolean;
-    onOnlyErrorsChange(onlyErrors: boolean): void;
-};
+import { EMPTY, EVENTS_COLUMNS } from '../constants';
+import { type EventsViewProps } from '../types';
+import { matchesEvent } from '../utils/event-matches';
+import { formatDuration } from '../utils/format';
+import { isFromPreviousPageLoad } from '../utils/resource-timing';
 
 /**
  * Лог событий загрузчика: то, чего не видно в таблице модулей - порядок событий между модулями.
@@ -38,7 +18,7 @@ export function EventsView({
 }: EventsViewProps) {
     const normalized = query.trim().toLowerCase();
     const filtered = events.filter(
-        (event) => (!onlyErrors || event.type === 'error') && matches(event, normalized),
+        (event) => (!onlyErrors || event.type === 'error') && matchesEvent(event, normalized),
     );
 
     let list = (
@@ -51,7 +31,7 @@ export function EventsView({
         list = (
             <div className='grid grid_events'>
                 <div className='row row_event row_header'>
-                    {COLUMNS.map((title) => (
+                    {EVENTS_COLUMNS.map((title) => (
                         <span className='cell' key={title}>
                             {title}
                         </span>

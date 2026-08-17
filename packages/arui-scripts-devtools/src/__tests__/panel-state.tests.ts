@@ -1,4 +1,5 @@
-import { PANEL_STATE_KEY, readPanelState, writePanelState } from '../panel-state';
+import { PANEL_STATE_KEY } from '../constants';
+import { readPanelState, writePanelState } from '../utils/panel-state';
 
 describe('panel-state', () => {
     beforeEach(() => {

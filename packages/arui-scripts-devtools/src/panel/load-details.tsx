@@ -1,9 +1,11 @@
 import { type ReactNode } from 'react';
 
-import { type ModuleLoadRecord } from '../contract';
-import { readResourceTiming } from '../resource-timing';
+import { EMPTY } from '../constants';
+import { type LoadDetailsProps } from '../types';
+import { formatBytes, formatDuration } from '../utils/format';
+import { readResourceTiming } from '../utils/resource-timing';
+import { toSafeHref } from '../utils/safe-href';
 
-import { EMPTY, formatBytes, formatDuration } from './format';
 import { Waterfall } from './waterfall';
 
 function Field({ label, value }: { label: string; value: string | undefined }) {
@@ -13,26 +15,6 @@ function Field({ label, value }: { label: string; value: string | undefined }) {
             <span className='field__value'>{value || EMPTY}</span>
         </div>
     );
-}
-
-/**
- * Ссылку делаем только на то, что браузер откроет как страницу.
- *
- * `href` исполняет и `javascript:`, а url приезжает из манифеста, то есть снаружи. Правами это
- * никого не наделяет - кто пишет манифест, тот и так получает произвольный `<script src>`
- * в origin приложения, - но панель не обязана добавлять к этому ещё один способ.
- *
- * @returns абсолютный url или undefined, если открывать его не стоит
- */
-function toSafeHref(url: string): string | undefined {
-    try {
-        // относительный путь - обычное дело для модуля с того же origin, поэтому с базой
-        const { protocol, href } = new URL(url, document.baseURI);
-
-        return protocol === 'http:' || protocol === 'https:' ? href : undefined;
-    } catch {
-        return undefined;
-    }
 }
 
 function ResourceUrl({ url }: { url: string }) {
@@ -80,10 +62,6 @@ function ResourceList({ title, urls }: { title: string; urls: string[] }) {
         </div>
     );
 }
-
-export type LoadDetailsProps = {
-    record: ModuleLoadRecord;
-};
 
 /**
  * Подробности одной попытки загрузки: то, что не влезло в строку таблицы.

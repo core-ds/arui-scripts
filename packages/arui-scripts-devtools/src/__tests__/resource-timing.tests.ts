@@ -1,4 +1,4 @@
-import { isFromPreviousPageLoad, readResourceTiming } from '../resource-timing';
+import { isFromPreviousPageLoad, readResourceTiming } from '../utils/resource-timing';
 
 describe('resource-timing', () => {
     const originalGetEntriesByName = performance.getEntriesByName;

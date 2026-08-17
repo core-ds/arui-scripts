@@ -1,4 +1,4 @@
-import { scopeStyles } from '../scope-styles';
+import { scopeStyles } from '../utils/scope-styles';
 
 describe('scopeStyles', () => {
     it('should prefix a plain selector with the scope', () => {

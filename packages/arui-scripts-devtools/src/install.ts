@@ -1,17 +1,14 @@
 import { mountBadge } from './ui/badge';
+import { readPanelState, writePanelState } from './utils/panel-state';
 import {
-    type AruiDevtools,
+    DEVTOOLS_ENABLED_KEY,
     DEVTOOLS_GLOBAL_KEY,
     DEVTOOLS_MODULES_NAMESPACE,
     DEVTOOLS_READY_EVENT,
-} from './contract';
-import { readPanelState, writePanelState } from './panel-state';
-
-/** ключ в localStorage, которым панель включают руками — в том числе в прод-сборке на стенде */
-export const DEVTOOLS_ENABLED_KEY = 'arui:devtools';
-
-const ENABLED_VALUES = ['1', 'true', 'on'];
-const DISABLED_VALUES = ['0', 'false', 'off'];
+    DISABLED_VALUES,
+    ENABLED_VALUES,
+} from './constants';
+import { type GlobalWithDevtools } from './types';
 
 function readFlag(): string | undefined {
     try {
@@ -66,9 +63,7 @@ export function isDevtoolsEnabled(): boolean {
  */
 function hasModulesStore(): boolean {
     try {
-        const root = (globalThis as typeof globalThis & { [DEVTOOLS_GLOBAL_KEY]?: AruiDevtools })[
-            DEVTOOLS_GLOBAL_KEY
-        ];
+        const root = (globalThis as GlobalWithDevtools)[DEVTOOLS_GLOBAL_KEY];
 
         return Boolean(root?.[DEVTOOLS_MODULES_NAMESPACE]);
     } catch {

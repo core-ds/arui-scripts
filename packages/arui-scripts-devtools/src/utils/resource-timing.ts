@@ -1,12 +1,4 @@
-export type ResourceTiming = {
-    /** сколько заняла загрузка ресурса, мс */
-    duration: number;
-    /**
-     * сколько байт реально приехало по сети.
-     * Отсутствует, когда браузер отказался это сообщать - см. комментарий в {@link readResourceTiming}
-     */
-    transferSize?: number;
-};
+import { type ResourceTiming } from '../types';
 
 /**
  * Достаёт данные Resource Timing по абсолютному url ресурса.

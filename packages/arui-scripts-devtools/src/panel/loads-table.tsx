@@ -1,26 +1,11 @@
 import { Fragment } from 'react';
 
-import { type ModuleLoadRecord } from '../contract';
-import { isFromPreviousPageLoad } from '../resource-timing';
+import { EMPTY, LOADS_TABLE_COLUMNS, STATUS_LABELS } from '../constants';
+import { type LoadsTableProps, type ModuleLoadRecord } from '../types';
+import { formatDuration, getTotalDuration } from '../utils/format';
+import { isFromPreviousPageLoad } from '../utils/resource-timing';
 
-import { EMPTY, formatDuration, getTotalDuration } from './format';
 import { LoadDetails } from './load-details';
-
-const STATUS_LABELS: Record<ModuleLoadRecord['status'], string> = {
-    pending: 'грузится',
-    loaded: 'загружен',
-    error: 'ошибка',
-    unmounted: 'размонтирован',
-};
-
-const COLUMNS = ['Статус', 'Модуль', 'Версия', 'Container', 'baseUrl', 'Режим', 'Время'];
-
-export type LoadsTableProps = {
-    loads: ModuleLoadRecord[];
-    /** loadId раскрытых строк. Состояние держит панель, чтобы оно переживало переключение вкладок */
-    expanded: ReadonlySet<string>;
-    onToggle(loadId: string): void;
-};
 
 function Row({
     record,
@@ -81,7 +66,7 @@ export function LoadsTable({ loads, expanded, onToggle }: LoadsTableProps) {
         <div className='table'>
             <div className='grid'>
                 <div className='row row_header'>
-                    {COLUMNS.map((title) => (
+                    {LOADS_TABLE_COLUMNS.map((title) => (
                         <span className='cell' key={title}>
                             {title}
                         </span>

@@ -1,31 +1,16 @@
 import {
-    type AruiDevtools,
-    type AruiModulesDevtools,
     DEVTOOLS_GLOBAL_KEY,
     DEVTOOLS_MODULES_NAMESPACE,
-    type DevtoolsSnapshot,
+    STORE_POLL_INTERVAL,
     SUPPORTED_DEVTOOLS_VERSION,
     SUPPORTED_MODULES_VERSION,
-} from './contract';
-
-/**
- * Как часто перепроверяем появление стора, пока его нет.
- * Неймспейс `modules` создаётся при первой попытке загрузить модуль, а она может случиться
- * сильно позже открытия панели — например, по клику пользователя.
- */
-export const STORE_POLL_INTERVAL = 500;
-
-export type ModulesStoreState =
-    /** стор на странице есть, версия понятная */
-    | { status: 'ready'; snapshot: DevtoolsSnapshot }
-    /** стора пока нет: либо загрузчик не подключён, либо ни один модуль ещё не грузился */
-    | { status: 'waiting' }
-    /** стор есть, но его версия новее или старше той, что мы умеем читать */
-    | { status: 'unsupported'; found: number; supported: number };
-
-type GlobalWithDevtools = typeof globalThis & {
-    [DEVTOOLS_GLOBAL_KEY]?: AruiDevtools;
-};
+} from './constants';
+import {
+    type AruiDevtools,
+    type AruiModulesDevtools,
+    type GlobalWithDevtools,
+    type ModulesStoreState,
+} from './types';
 
 function readGlobal(): AruiDevtools | undefined {
     if (typeof globalThis === 'undefined') {
@@ -41,7 +26,7 @@ function isReadableStore(store: AruiModulesDevtools): boolean {
 
 /**
  * Читает стор неймспейса `modules` из глобала.
- * Возвращает `undefined` во всех случаях, когда читать нечего или небезопасно —
+ * Возвращает `undefined` во всех случаях, когда читать нечего или небезопасно -
  * различить эти случаи можно через {@link readStoreState}.
  */
 export function readModulesStore(): AruiModulesDevtools | undefined {
@@ -62,7 +47,7 @@ export function readModulesStore(): AruiModulesDevtools | undefined {
 
 /**
  * Текущее состояние стора вместе с причиной, по которой данных нет.
- * Панель показывает эту причину пользователю: «нет стора» и «стор от несовместимой версии» —
+ * Панель показывает эту причину пользователю: «нет стора» и «стор от несовместимой версии» -
  * это разные проблемы с разными действиями.
  */
 export function readStoreState(): ModulesStoreState {
@@ -150,7 +135,7 @@ export function watchModulesStore(listener: (state: ModulesStoreState) => void):
 
     /**
      * Один тик опроса. Стор может появиться не только совместимым: если у него незнакомая
-     * версия, подключаться не к чему и ждать дальше нечего — но пользователю нужно сказать
+     * версия, подключаться не к чему и ждать дальше нечего - но пользователю нужно сказать
      * про версию, а не молча показывать «ждём модули» под вечный таймер.
      */
     function poll() {

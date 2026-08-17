@@ -1,60 +1,25 @@
+import {
+    type RawSharedItem,
+    type SharedPackage,
+    type SharedVersion,
+    type ShareProblem,
+    type ShareScope,
+} from './types';
+
 /**
  * `__webpack_share_scopes__` - свободная переменная webpack/rspack, а не свойство `window`:
  * бандлер подставляет её при сборке того бандла, в который попала панель.
- * Если module federation в приложении не включён, переменной не будет вовсе.
+ * Если module federation в приложении не включён, значением будет `undefined`.
  */
 // eslint-disable-next-line @typescript-eslint/naming-convention
 declare const __webpack_share_scopes__: unknown;
 
-export type SharedVersion = {
-    version: string;
-    /** имя контейнера, который положил эту версию в скоуп */
-    from?: string;
-    /** модуль уже исполнен и отдан потребителю */
-    loaded: boolean;
-    eager?: boolean;
-    singleton?: boolean;
-    /** диапазон, который потребовал тот, кто положил запись. Требования остальных сюда не попадают */
-    requiredVersion?: string;
-    strictVersion?: boolean;
-};
-
-export type ShareProblemType = 'multiple-versions' | 'singleton-major-mismatch';
-
-export type ShareProblem = {
-    type: ShareProblemType;
-    message: string;
-};
-
-export type SharedPackage = {
-    name: string;
-    versions: SharedVersion[];
-    problems: ShareProblem[];
-};
-
-export type ShareScope = {
-    name: string;
-    packages: SharedPackage[];
-};
-
-type RawShareConfig = {
-    singleton?: boolean;
-    requiredVersion?: string | false;
-    strictVersion?: boolean;
-    eager?: boolean;
-};
-
-type RawSharedItem = {
-    loaded?: unknown;
-    eager?: unknown;
-    from?: unknown;
-    shareConfig?: RawShareConfig;
-};
-
 function readRawShareScopes(): Record<string, unknown> | undefined {
     try {
         // typeof на необъявленном идентификаторе не бросает - это единственный безопасный способ
-        // спросить про свободную переменную, которой может не быть
+        // спросить про свободную переменную, которой может не быть. Второй guard обязателен:
+        // бандлер заменяет typeof литералом "object", а значение остаётся undefined,
+        // пока share-рантайм не подключён
         if (typeof __webpack_share_scopes__ === 'undefined' || !__webpack_share_scopes__) {
             return undefined;
         }
@@ -134,7 +99,7 @@ export function readShareScopes(): ShareScope[] {
         return Object.keys(raw).map((scopeName) => {
             const scope = (raw[scopeName] ?? {}) as Record<string, Record<string, RawSharedItem>>;
 
-            const packages = Object.keys(scope).map((name) => {
+            const packages: SharedPackage[] = Object.keys(scope).map((name) => {
                 const versions = Object.keys(scope[name] ?? {})
                     .map((version) => toSharedVersion(version, scope[name][version]))
                     // numeric: иначе сравниваются строки, и 10.0.0 встаёт перед 9.0.0 -

@@ -1,11 +1,6 @@
-import { type AruiDevtools, DEVTOOLS_GLOBAL_KEY, type DevtoolsSnapshot } from '../contract';
-import {
-    type ModulesStoreState,
-    readModulesStore,
-    readStoreState,
-    STORE_POLL_INTERVAL,
-    watchModulesStore,
-} from '../store-client';
+import { DEVTOOLS_GLOBAL_KEY, STORE_POLL_INTERVAL } from '../constants';
+import { readModulesStore, readStoreState, watchModulesStore } from '../store-client';
+import { type AruiDevtools, type DevtoolsSnapshot, type ModulesStoreState } from '../types';
 
 type GlobalWithDevtools = typeof globalThis & { [DEVTOOLS_GLOBAL_KEY]?: AruiDevtools };
 

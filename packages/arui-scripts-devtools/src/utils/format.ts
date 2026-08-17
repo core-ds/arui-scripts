@@ -1,7 +1,5 @@
-import { type ModuleLoadRecord } from '../contract';
-
-/** прочерк вместо пустого места: так видно, что данных нет, а не что колонка съехала */
-export const EMPTY = '—';
+import { EMPTY } from '../constants';
+import { type ModuleLoadRecord } from '../types';
 
 export function formatDuration(ms: number | undefined): string {
     if (ms === undefined || !Number.isFinite(ms)) {

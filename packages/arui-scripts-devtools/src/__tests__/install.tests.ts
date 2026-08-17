@@ -1,19 +1,16 @@
 import {
+    DEVTOOLS_BADGE_ID,
+    DEVTOOLS_ENABLED_KEY,
     DEVTOOLS_GLOBAL_KEY,
     DEVTOOLS_MODULES_NAMESPACE,
     DEVTOOLS_READY_EVENT,
+    DEVTOOLS_ROOT_ID,
     SUPPORTED_DEVTOOLS_VERSION,
     SUPPORTED_MODULES_VERSION,
-} from '../contract';
-import {
-    DEVTOOLS_ENABLED_KEY,
-    installDevtools,
-    isDevtoolsEnabled,
-    isToggleHotkey,
-} from '../install';
-import { DEVTOOLS_ROOT_ID, unmountDevtools } from '../mount';
-import { readPanelState, writePanelState } from '../panel-state';
-import { DEVTOOLS_BADGE_ID } from '../ui/badge';
+} from '../constants';
+import { installDevtools, isDevtoolsEnabled, isToggleHotkey } from '../install';
+import { unmountDevtools } from '../mount';
+import { readPanelState, writePanelState } from '../utils/panel-state';
 
 function flush() {
     return new Promise((resolve) => {

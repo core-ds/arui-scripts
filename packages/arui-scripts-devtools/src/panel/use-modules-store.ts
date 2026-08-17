@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
-import { type ModulesStoreState, readStoreState, watchModulesStore } from '../store-client';
+import { readStoreState, watchModulesStore } from '../store-client';
+import { type ModulesStoreState } from '../types';
 
 /**
  * Состояние стора загрузчика для React-дерева панели.

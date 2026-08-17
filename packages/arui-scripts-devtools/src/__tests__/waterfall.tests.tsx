@@ -1,8 +1,9 @@
 import { act } from 'react';
 import { render } from '@testing-library/react';
 
+import { PENDING_TICK_INTERVAL } from '../constants';
 import { type ModuleLoadRecord } from '../contract';
-import { PENDING_TICK_INTERVAL, Waterfall } from '../panel/waterfall';
+import { Waterfall } from '../panel/waterfall';
 
 function createRecord(
     timings: ModuleLoadRecord['timings'],

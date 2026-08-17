@@ -7,8 +7,8 @@ import {
     useState,
 } from 'react';
 
-/** отступ от края экрана и от самой иконки, px */
-const GAP = 8;
+import { type HintProps } from '../types';
+import { getHintPosition } from '../utils/hint-position';
 
 /**
  * Подсказка на экране всегда одна.
@@ -19,25 +19,6 @@ const GAP = 8;
  * у них нет.
  */
 let hideVisible: (() => void) | undefined;
-
-/** координаты подсказки: над иконкой, если сверху есть место, и не выезжая за края экрана */
-function getPosition(anchor: DOMRect, own: DOMRect) {
-    const above = anchor.top - own.height - GAP;
-    const centered = anchor.left + anchor.width / 2 - own.width / 2;
-    const maxLeft = document.documentElement.clientWidth - own.width - GAP;
-
-    return {
-        top: above >= GAP ? above : anchor.bottom + GAP,
-        left: Math.max(GAP, Math.min(centered, maxLeft)),
-    };
-}
-
-export type HintProps = {
-    /** что показать */
-    text: string;
-    /** чем кнопку назовёт скринридер */
-    label?: string;
-};
 
 /**
  * Иконка «i» с подсказкой по наведению и по фокусу.
@@ -68,7 +49,7 @@ export function Hint({ text, label = 'Что это значит' }: HintProps) 
         }
 
         setPosition(
-            getPosition(
+            getHintPosition(
                 buttonRef.current.getBoundingClientRect(),
                 tooltipRef.current.getBoundingClientRect(),
             ),

@@ -1,8 +1,7 @@
 import { Fragment } from 'react';
 
-import { type SharedPackage, type SharedVersion, type ShareScope } from '../share-scope';
-
-import { EMPTY } from './format';
+import { EMPTY } from '../constants';
+import { type SharedPackage, type SharedVersion, type ShareScopeViewProps } from '../types';
 
 function VersionRow({ version }: { version: SharedVersion }) {
     return (
@@ -48,11 +47,6 @@ function PackageBlock({ item }: { item: SharedPackage }) {
         </div>
     );
 }
-
-export type ShareScopeViewProps = {
-    /** снимок скоупов собирает панель: он должен обновляться и по нотификациям стора */
-    scopes: ShareScope[];
-};
 
 /**
  * Вкладка share scope: что реально лежит в скоупах на текущий момент.

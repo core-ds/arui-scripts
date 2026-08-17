@@ -1,18 +1,6 @@
-import { Component, type ErrorInfo, type ReactNode } from 'react';
+import { Component, type ErrorInfo } from 'react';
 
-type PanelErrorBoundaryProps = {
-    /**
-     * Смена ключа сбрасывает ошибку и пробует отрисовать содержимое заново.
-     * Панель передаёт сюда состояние стора: следующая нотификация - следующая попытка.
-     */
-    resetKey: unknown;
-    children: ReactNode;
-};
-
-type PanelErrorBoundaryState = {
-    failed: boolean;
-    resetKey: unknown;
-};
+import { type PanelErrorBoundaryProps, type PanelErrorBoundaryState } from '../types';
 
 /**
  * Панель не имеет права ронять приложение, в которое её инжектнули, и не должна ломаться

@@ -1,7 +1,5 @@
-import { scopeStyles } from '../scope-styles';
-
-/** id хост-элемента бейджа в светлом DOM */
-export const DEVTOOLS_BADGE_ID = 'arui-devtools-badge';
+import { DEVTOOLS_BADGE_ID } from '../constants';
+import { scopeStyles } from '../utils/scope-styles';
 
 /**
  * Стили бейджа. Значения - те же токены дизайн-системы, что и у панели, но лист свой:

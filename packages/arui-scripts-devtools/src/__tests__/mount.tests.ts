@@ -1,8 +1,9 @@
 import { act } from 'react';
 
+import { DEVTOOLS_ROOT_ID } from '../constants';
 import { type AruiDevtools, DEVTOOLS_GLOBAL_KEY, type DevtoolsSnapshot } from '../contract';
-import { DEVTOOLS_ROOT_ID, isDevtoolsMounted, mountDevtools, unmountDevtools } from '../mount';
-import { readPanelState, writePanelState } from '../panel-state';
+import { isDevtoolsMounted, mountDevtools, unmountDevtools } from '../mount';
+import { readPanelState, writePanelState } from '../utils/panel-state';
 
 type GlobalWithDevtools = typeof globalThis & { [DEVTOOLS_GLOBAL_KEY]?: AruiDevtools };
 type GlobalWithScopes = typeof globalThis & {
