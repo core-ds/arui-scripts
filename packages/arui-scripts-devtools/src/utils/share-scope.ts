@@ -120,13 +120,3 @@ export function analyzeShareScopes(
         }),
     }));
 }
-
-/** сколько всего проблем в снимке - нужно, чтобы подсветить вкладку */
-export function countShareProblems(scopes: ShareScope[]): number {
-    return scopes.reduce(
-        (total, scope) =>
-            total +
-            scope.packages.reduce((scopeTotal, item) => scopeTotal + item.problems.length, 0),
-        0,
-    );
-}

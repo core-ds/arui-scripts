@@ -3,7 +3,7 @@ import { Fragment, useMemo, useState } from 'react';
 import { PANEL_TABS } from '../constants';
 import { type PanelAppProps, type PanelBodyProps, type PanelTabId } from '../types';
 import { readPanelState, writePanelState } from '../utils/panel-state';
-import { analyzeShareScopes, countShareProblems } from '../utils/share-scope';
+import { analyzeShareScopes } from '../utils/share-scope';
 
 import { PanelErrorBoundary } from './error-boundary';
 import { EventBusView } from './event-bus-view';
@@ -153,8 +153,6 @@ export function PanelApp({ source, onClose }: PanelAppProps) {
 
         return Array.from(found).sort();
     }, [state]);
-    const problems = countShareProblems(scopes);
-
     const selectTab = (tab: PanelTabId) => {
         setActiveTab(tab);
         writePanelState({ tab });
@@ -195,22 +193,20 @@ export function PanelApp({ source, onClose }: PanelAppProps) {
                 )}
             </div>
             <div className='tabs' role='tablist'>
-                {PANEL_TABS.map((tab) => {
-                    const note = tab.id === 'share-scope' && problems ? `проблем: ${problems}` : '';
-
-                    return (
-                        <button
-                            type='button'
-                            role='tab'
-                            key={tab.id}
-                            className={`tab${tab.id === activeTab ? ' tab_active' : ''}`}
-                            aria-selected={tab.id === activeTab}
-                            onClick={() => selectTab(tab.id)}
-                        >
-                            {note ? `${tab.title} · ${note}` : tab.title}
-                        </button>
-                    );
-                })}
+                {/* только название: счётчик проблем живёт внутри вкладки, рядом с самими
+                    проблемами, а в полоске он превращал заголовок в бегущую строку */}
+                {PANEL_TABS.map((tab) => (
+                    <button
+                        type='button'
+                        role='tab'
+                        key={tab.id}
+                        className={`tab${tab.id === activeTab ? ' tab_active' : ''}`}
+                        aria-selected={tab.id === activeTab}
+                        onClick={() => selectTab(tab.id)}
+                    >
+                        {tab.title}
+                    </button>
+                ))}
             </div>
             <PanelErrorBoundary resetKey={devtoolsState}>
                 <PanelBody

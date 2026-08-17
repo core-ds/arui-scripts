@@ -1,5 +1,5 @@
 import { type DevtoolsShareScope } from '../types';
-import { analyzeShareScopes, countShareProblems } from '../utils/share-scope';
+import { analyzeShareScopes } from '../utils/share-scope';
 
 function scope(packages: DevtoolsShareScope['packages']): DevtoolsShareScope[] {
     return [{ name: 'default', packages }];
@@ -217,43 +217,5 @@ describe('analyzeShareScopes with declared requirements', () => {
         );
 
         expect(result[0].packages[0].problems).toEqual([]);
-    });
-});
-
-describe('countShareProblems', () => {
-    it('should count nothing in an empty snapshot', () => {
-        expect(countShareProblems([])).toBe(0);
-    });
-
-    it('should count problems across every scope and package', () => {
-        const scopes = analyzeShareScopes([
-            {
-                name: 'default',
-                packages: [
-                    {
-                        name: 'react',
-                        versions: [
-                            { version: '17.0.2', loaded: false, singleton: true },
-                            { version: '18.3.1', loaded: false, singleton: true },
-                        ],
-                    },
-                ],
-            },
-            {
-                name: 'custom',
-                packages: [
-                    {
-                        name: 'lodash',
-                        versions: [
-                            { version: '4.17.20', loaded: false },
-                            { version: '4.17.21', loaded: false },
-                        ],
-                    },
-                ],
-            },
-        ]);
-
-        // две у react (версии + мажоры singleton) и одна у lodash
-        expect(countShareProblems(scopes)).toBe(3);
     });
 });
