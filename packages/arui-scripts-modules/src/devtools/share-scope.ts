@@ -1,4 +1,17 @@
-import { type DevtoolsShareScope, type DevtoolsSharedVersion } from './types';
+import {
+    type DevtoolsShareScope,
+    type DevtoolsSharedRequirement,
+    type DevtoolsSharedVersion,
+} from './types';
+
+/**
+ * Объявленные требования к общим библиотекам: их подставляет arui-scripts на сборке
+ * (см. SHARED_REQUIREMENTS_VARIABLE). В рантайме взять их больше неоткуда - share scope
+ * хранит только то, что в него положили, а требования потребителей живут внутри
+ * сгенерированного кода consume-shared модулей.
+ */
+// eslint-disable-next-line @typescript-eslint/naming-convention
+declare const __ARUI_MODULES_SHARED_REQUIREMENTS__: Record<string, DevtoolsSharedRequirement>;
 
 type RawShareConfig = {
     singleton?: boolean;
@@ -13,6 +26,28 @@ type RawSharedItem = {
     from?: unknown;
     shareConfig?: RawShareConfig;
 };
+
+/**
+ * Объявленные требования приложения к общим библиотекам.
+ *
+ * Пустой объект, если приложение собрано без module federation или старой версией
+ * arui-scripts, которая переменную ещё не подставляла.
+ */
+export function readSharedRequirements(): Record<string, DevtoolsSharedRequirement> {
+    try {
+        // typeof на необъявленном идентификаторе не бросает - единственный безопасный способ
+        // спросить про свободную переменную, которой может не быть
+        if (typeof __ARUI_MODULES_SHARED_REQUIREMENTS__ === 'undefined') {
+            return {};
+        }
+
+        const raw = __ARUI_MODULES_SHARED_REQUIREMENTS__;
+
+        return typeof raw === 'object' && raw !== null ? raw : {};
+    } catch {
+        return {};
+    }
+}
 
 /**
  * Содержимое share scope на текущий момент.

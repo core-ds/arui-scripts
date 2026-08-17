@@ -1,12 +1,13 @@
 import { announceStoreCreated } from './announce';
 import { isCollectingEnabled } from './enabled';
-import { readShareScopes } from './share-scope';
+import { readSharedRequirements, readShareScopes } from './share-scope';
 import { EVENTS_LIMIT, LOADS_LIMIT, persistSnapshot, restoreSnapshot } from './snapshot-storage';
 import {
     type AruiDevtools,
     type AruiModulesDevtools,
     type DevtoolsEvent,
     type DevtoolsShareScope,
+    type DevtoolsSharedRequirement,
     type DevtoolsSnapshot,
     type ModuleLoadRecord,
 } from './types';
@@ -57,11 +58,14 @@ function createModulesStore(): DevtoolsModulesStore {
     // на старте скоуп ещё пуст: его наполняет первая же загрузка модуля. Восстановленный
     // из sessionStorage снимок сюда не тащим - он относится к прошлой странице
     let shareScopes: DevtoolsShareScope[] = [];
+    // требования подставлены на сборке и за время жизни страницы не меняются - читаем один раз
+    const sharedRequirements: Record<string, DevtoolsSharedRequirement> = readSharedRequirements();
     let snapshot: DevtoolsSnapshot = {
         version: DEVTOOLS_MODULES_VERSION,
         loads,
         events,
         shareScopes,
+        sharedRequirements,
     };
 
     const listeners = new Set<() => void>();
@@ -103,6 +107,7 @@ function createModulesStore(): DevtoolsModulesStore {
             loads,
             events,
             shareScopes,
+            sharedRequirements,
         };
 
         listeners.forEach((listener) => {

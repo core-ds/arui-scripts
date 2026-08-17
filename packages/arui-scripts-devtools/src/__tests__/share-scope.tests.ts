@@ -136,6 +136,90 @@ describe('analyzeShareScopes', () => {
     });
 });
 
+describe('analyzeShareScopes with declared requirements', () => {
+    it('should attach the requirement the application declared', () => {
+        // требования приходят из сборки: в самом скоупе их нет и быть не может
+        const result = analyzeShareScopes(
+            scope([{ name: 'react', versions: [{ version: '18.3.1', loaded: true }] }]),
+            { react: { requiredVersion: '^18.0.0', singleton: true } },
+        );
+
+        expect(result[0].packages[0].requirement).toEqual({
+            requiredVersion: '^18.0.0',
+            singleton: true,
+        });
+    });
+
+    it('should report a requirement nothing in the scope satisfies', () => {
+        // ровно тот случай, который из скоупа не виден: хост просит одно, лежит другое
+        const result = analyzeShareScopes(
+            scope([{ name: 'react', versions: [{ version: '17.0.2', loaded: true }] }]),
+            { react: { requiredVersion: '^18.0.0' } },
+        );
+
+        expect(result[0].packages[0].problems.map((problem) => problem.type)).toEqual([
+            'requirement-unsatisfied',
+        ]);
+    });
+
+    it('should stay quiet when a version satisfies the range', () => {
+        const result = analyzeShareScopes(
+            scope([{ name: 'react', versions: [{ version: '18.3.1', loaded: true }] }]),
+            { react: { requiredVersion: '^18.0.0' } },
+        );
+
+        expect(result[0].packages[0].problems).toEqual([]);
+    });
+
+    it('should be satisfied when at least one version fits', () => {
+        const result = analyzeShareScopes(
+            scope([
+                {
+                    name: 'react',
+                    versions: [
+                        { version: '17.0.2', loaded: false },
+                        { version: '18.3.1', loaded: true },
+                    ],
+                },
+            ]),
+            { react: { requiredVersion: '^18.0.0' } },
+        );
+
+        expect(result[0].packages[0].problems.map((problem) => problem.type)).toEqual([
+            'multiple-versions',
+        ]);
+    });
+
+    it('should stay quiet about ranges it cannot parse', () => {
+        // ложная тревога хуже молчания: полноценный semver пакету не по средствам
+        const result = analyzeShareScopes(
+            scope([{ name: 'react', versions: [{ version: '18.3.1', loaded: true }] }]),
+            { react: { requiredVersion: '*' } },
+        );
+
+        expect(result[0].packages[0].problems).toEqual([]);
+    });
+
+    it('should not invent a problem for a package nobody declared', () => {
+        const result = analyzeShareScopes(
+            scope([{ name: 'lodash', versions: [{ version: '4.17.21', loaded: true }] }]),
+            { react: { requiredVersion: '^18.0.0' } },
+        );
+
+        expect(result[0].packages[0].problems).toEqual([]);
+        expect(result[0].packages[0].requirement).toBeUndefined();
+    });
+
+    it('should work without requirements at all', () => {
+        // старый загрузчик поля не кладёт
+        const result = analyzeShareScopes(
+            scope([{ name: 'react', versions: [{ version: '18.3.1', loaded: true }] }]),
+        );
+
+        expect(result[0].packages[0].problems).toEqual([]);
+    });
+});
+
 describe('countShareProblems', () => {
     it('should count nothing in an empty snapshot', () => {
         expect(countShareProblems([])).toBe(0);

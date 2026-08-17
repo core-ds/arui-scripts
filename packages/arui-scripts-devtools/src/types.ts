@@ -31,6 +31,19 @@ export type DevtoolsSnapshot = {
      * ни из расширения браузера. Старый загрузчик поля не кладёт - читаем защитно.
      */
     shareScopes?: DevtoolsShareScope[];
+    /**
+     * Что приложение объявило в `modules.shared`. Подставляется на сборке: в рантайме
+     * требований нет нигде, и без них расхождение «хост просит ^18, провайдер просит ^17»
+     * не видно ничем. Старый загрузчик поля не кладёт - читаем защитно.
+     */
+    sharedRequirements?: Record<string, DevtoolsSharedRequirement>;
+};
+
+export type DevtoolsSharedRequirement = {
+    requiredVersion?: string;
+    singleton?: boolean;
+    strictVersion?: boolean;
+    eager?: boolean;
 };
 
 /* Сырые данные скоупа - ровно то, что кладёт в контракт загрузчик. Разбор проблем поверх них
@@ -127,7 +140,10 @@ export type SharedVersion = {
     strictVersion?: boolean;
 };
 
-export type ShareProblemType = 'multiple-versions' | 'singleton-major-mismatch';
+export type ShareProblemType =
+    | 'multiple-versions'
+    | 'singleton-major-mismatch'
+    | 'requirement-unsatisfied';
 
 export type ShareProblem = {
     type: ShareProblemType;
@@ -138,6 +154,8 @@ export type SharedPackage = {
     name: string;
     versions: SharedVersion[];
     problems: ShareProblem[];
+    /** что приложение просило у этого пакета; из сборки, а не из скоупа */
+    requirement?: DevtoolsSharedRequirement;
 };
 
 export type ShareScope = {

@@ -25,6 +25,77 @@ function getSeparateBuildRuntimeName() {
     )}_${MODULES_SEPARATE_BUILD_NAME}`;
 }
 
+/**
+ * Свободная переменная с объявленными требованиями к общим библиотекам.
+ *
+ * Читает её `@alfalab/scripts-modules` и кладёт в контракт диагностики, откуда их забирает
+ * расширение отладки: сама по себе эта информация в рантайме не сохраняется нигде.
+ */
+export const SHARED_REQUIREMENTS_VARIABLE = '__ARUI_MODULES_SHARED_REQUIREMENTS__';
+
+type SharedConfig = NonNullable<
+    ConstructorParameters<typeof rspack.container.ModuleFederationPlugin>[0]['shared']
+>;
+
+/**
+ * Приводит `shared` к плоскому виду `{ пакет: { requiredVersion, singleton, ... } }`.
+ *
+ * Записать его можно тремя способами - массивом имён, объектом с версией строкой или объектом
+ * с конфигом, - а читателю нужен один.
+ */
+export function getSharedRequirements(shared: SharedConfig | undefined) {
+    const result: Record<
+        string,
+        { requiredVersion?: string; singleton?: boolean; strictVersion?: boolean; eager?: boolean }
+    > = {};
+
+    if (!shared) {
+        return result;
+    }
+
+    const entries = Array.isArray(shared)
+        ? shared.map((item) => (typeof item === 'string' ? [item, {}] : Object.entries(item)[0]))
+        : Object.entries(shared);
+
+    entries.forEach((entry) => {
+        if (!entry) {
+            return;
+        }
+
+        const [name, value] = entry as [string, unknown];
+
+        if (typeof value === 'string') {
+            result[name] = { requiredVersion: value };
+
+            return;
+        }
+
+        if (typeof value === 'object' && value !== null) {
+            const config = value as {
+                requiredVersion?: unknown;
+                singleton?: unknown;
+                strictVersion?: unknown;
+                eager?: unknown;
+            };
+
+            result[name] = {
+                requiredVersion:
+                    typeof config.requiredVersion === 'string' ? config.requiredVersion : undefined,
+                singleton: typeof config.singleton === 'boolean' ? config.singleton : undefined,
+                strictVersion:
+                    typeof config.strictVersion === 'boolean' ? config.strictVersion : undefined,
+                eager: typeof config.eager === 'boolean' ? config.eager : undefined,
+            };
+
+            return;
+        }
+
+        result[name] = {};
+    });
+
+    return result;
+}
+
 export function patchMainRspackConfigForModules(
     webpackConf: rspack.Configuration,
     mode: 'consumer' | 'provider' | 'both',
@@ -77,17 +148,26 @@ export function patchMainRspackConfigForModules(
         };
     }
 
+    const shared =
+        (mode === 'provider' && configs.modules.options?.separateBuildShared) ||
+        configs.modules.shared;
+
     webpackConf.plugins.push(
         new rspack.container.ModuleFederationPlugin({
             name: getModuleFederationContainerName(),
             filename: isProvider && configs.modules.exposes ? MODULES_ENTRY_NAME : undefined,
-            shared:
-                (mode === 'provider' && configs.modules.options?.separateBuildShared) ||
-                configs.modules.shared,
+            shared,
             exposes: isProvider ? configs.modules.exposes : {},
             shareScope: configs.modules.shareScope,
         }),
         new TurnOffSplitRemoteEntry(getModuleFederationContainerName()),
+        // Объявленные требования к общим библиотекам известны только здесь, на сборке:
+        // в рантайме share scope хранит лишь то, что в него положили, а требования
+        // потребителей живут в сгенерированном коде consume-shared модулей.
+        // Без них расхождение «хост просит ^18, провайдер просит ^17» не видно ничем.
+        new rspack.DefinePlugin({
+            [SHARED_REQUIREMENTS_VARIABLE]: JSON.stringify(getSharedRequirements(shared)),
+        }),
     );
 
     return webpackConf;

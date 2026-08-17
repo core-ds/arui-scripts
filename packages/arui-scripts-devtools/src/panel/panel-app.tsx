@@ -110,7 +110,11 @@ export function PanelApp({ source, onClose }: PanelAppProps) {
     // загрузчик. Разбираем на каждый снимок, даже с закрытой вкладкой: число проблем
     // показывается в её заголовке, то есть нужно до открытия.
     const scopes = useMemo(
-        () => analyzeShareScopes(state.status === 'ready' ? state.snapshot.shareScopes : undefined),
+        () =>
+            analyzeShareScopes(
+                state.status === 'ready' ? state.snapshot.shareScopes : undefined,
+                state.status === 'ready' ? state.snapshot.sharedRequirements : undefined,
+            ),
         [state],
     );
 

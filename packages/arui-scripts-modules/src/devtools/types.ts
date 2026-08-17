@@ -47,6 +47,21 @@ export type DevtoolsSnapshot = {
      * остаётся читателю.
      */
     shareScopes: DevtoolsShareScope[];
+    /**
+     * Что приложение объявило в `modules.shared`: диапазоны версий и флаги.
+     *
+     * В рантайме этого нет нигде - скоуп хранит только положенное, - поэтому значение
+     * подставляет сборка. Ради этих данных видно расхождение «хост просит ^18,
+     * провайдер просит ^17», невидимое из самого скоупа.
+     */
+    sharedRequirements: Record<string, DevtoolsSharedRequirement>;
+};
+
+export type DevtoolsSharedRequirement = {
+    requiredVersion?: string;
+    singleton?: boolean;
+    strictVersion?: boolean;
+    eager?: boolean;
 };
 
 export type DevtoolsShareScope = {

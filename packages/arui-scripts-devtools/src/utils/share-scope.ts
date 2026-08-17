@@ -1,9 +1,28 @@
 import {
+    type DevtoolsSharedRequirement,
     type DevtoolsShareScope,
     type SharedVersion,
     type ShareProblem,
     type ShareScope,
 } from '../types';
+
+/**
+ * Удовлетворяет ли версия объявленному диапазону.
+ *
+ * Разбор нарочно грубый: полноценный semver - это зависимость, а пакету её иметь нельзя.
+ * Хватает мажора, потому что именно на нём ломается совместимость, а `^18.0.0` против
+ * `18.3.1` - самый частый вопрос. Всё, чего не понимаем, считаем удовлетворённым:
+ * ложная тревога хуже молчания.
+ */
+function satisfiesRange(version: string, range: string): boolean {
+    const wanted = /^[\^~>=<]*\s*(\d+)\./.exec(range.trim());
+
+    if (!wanted) {
+        return true;
+    }
+
+    return version.split('.')[0] === wanted[1];
+}
 
 function getMajor(version: string): string {
     return version.split('.')[0];
@@ -15,7 +34,11 @@ function getMajor(version: string): string {
  * Разбор живёт на стороне читателя, а не загрузчика: контракт возит данные, а «проблема» -
  * это уже интерпретация, и она может меняться, не ломая контракт.
  */
-function findProblems(name: string, versions: SharedVersion[]): ShareProblem[] {
+function findProblems(
+    name: string,
+    versions: SharedVersion[],
+    requirement?: DevtoolsSharedRequirement,
+): ShareProblem[] {
     const problems: ShareProblem[] = [];
 
     if (versions.length > 1) {
@@ -40,6 +63,21 @@ function findProblems(name: string, versions: SharedVersion[]): ShareProblem[] {
         });
     }
 
+    const required = requirement?.requiredVersion;
+
+    if (
+        required &&
+        versions.length > 0 &&
+        !versions.some((item) => satisfiesRange(item.version, required))
+    ) {
+        problems.push({
+            type: 'requirement-unsatisfied',
+            message: `Приложение просит ${name} ${required}, а в скоупе ${versions
+                .map((item) => item.version)
+                .join(', ')}. Кто-то получит не ту версию, на которую рассчитывал.`,
+        });
+    }
+
     return problems;
 }
 
@@ -52,7 +90,10 @@ function findProblems(name: string, versions: SharedVersion[]): ShareProblem[] {
  * загрузчик, а панель - хоть инжектнутая в страницу, хоть расширение браузера - разбирает
  * одни и те же данные.
  */
-export function analyzeShareScopes(scopes: DevtoolsShareScope[] | undefined): ShareScope[] {
+export function analyzeShareScopes(
+    scopes: DevtoolsShareScope[] | undefined,
+    requirements: Record<string, DevtoolsSharedRequirement> = {},
+): ShareScope[] {
     if (!Array.isArray(scopes)) {
         return [];
     }
@@ -68,7 +109,14 @@ export function analyzeShareScopes(scopes: DevtoolsShareScope[] | undefined): Sh
                     left.version.localeCompare(right.version, undefined, { numeric: true }),
                 );
 
-            return { name: item.name, versions, problems: findProblems(item.name, versions) };
+            const requirement = requirements?.[item.name];
+
+            return {
+                name: item.name,
+                versions,
+                requirement,
+                problems: findProblems(item.name, versions, requirement),
+            };
         }),
     }));
 }
