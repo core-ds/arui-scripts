@@ -8,6 +8,8 @@ const base: InitAnswers = {
     clientOnly: false,
     codeLoader: 'swc',
     testRunner: 'jest',
+    e2eFramework: 'none',
+    useRouter: false,
     cssModules: true,
     clientServerPort: 8080,
     serverPort: 3000,
@@ -176,6 +178,16 @@ describe('buildFileMap', () => {
         );
     });
 
+    it('стили импортируют vars, чтобы были доступны миксины core-components', () => {
+        const modulesCss = map({ cssModules: true })['src/client/components/app.module.css'];
+        const globalCss = map({ cssModules: false })['src/client/components/app.css'];
+
+        expect(modulesCss).toContain("@import '@alfalab/core-components/vars'");
+        expect(modulesCss).toContain('@mixin headline_small');
+        expect(globalCss).toContain("@import '@alfalab/core-components/vars'");
+        expect(globalCss).toContain('@mixin headline_small');
+    });
+
     it('cssModules:false создает app.css и глобальный импорт', () => {
         const files = map({ cssModules: false });
 
@@ -257,5 +269,83 @@ describe('buildFileMap', () => {
         expect(files['.secretlintrc.json']).toBeUndefined();
         expect(files['lefthook.yml']).toBeUndefined();
         expect(files['package.json']).not.toContain('arui-presets-lint');
+    });
+
+    it('playwright создает конфиг, helpers, smoke тест и скрипты', () => {
+        const files = map({ e2eFramework: 'playwright', clientServerPort: 9090 });
+        const pkg = JSON.parse(files['package.json']) as {
+            scripts: Record<string, string>;
+            devDependencies: Record<string, string>;
+        };
+
+        expect(files['playwright.config.ts']).toContain("testDir: './e2e'");
+        expect(files['playwright.config.ts']).toContain("baseURL: 'http://localhost:9090'");
+        expect(files['playwright.config.ts']).toContain("command: 'yarn start'");
+        expect(files['e2e/helpers/index.ts']).toContain('gotoHome');
+        expect(files['e2e/example.spec.ts']).toContain("from './helpers'");
+        expect(files['.gitignore']).toContain('playwright-report/');
+        expect(files['README.md']).toContain('yarn playwright install');
+        expect(pkg.scripts.e2e).toBe('playwright test');
+        expect(pkg.scripts['e2e:ui']).toBe('playwright test --ui');
+        expect(pkg.devDependencies).toHaveProperty('@playwright/test');
+        expect(files['cypress.config.ts']).toBeUndefined();
+    });
+
+    it('cypress создает конфиг, support, smoke тест и скрипты', () => {
+        const files = map({ e2eFramework: 'cypress', clientServerPort: 7070 });
+        const pkg = JSON.parse(files['package.json']) as {
+            scripts: Record<string, string>;
+            devDependencies: Record<string, string>;
+        };
+
+        expect(files['cypress.config.ts']).toContain("baseUrl: 'http://localhost:7070'");
+        expect(files['cypress/support/e2e.ts']).toContain("import './commands'");
+        expect(files['cypress/support/commands.ts']).toBeDefined();
+        expect(files['cypress/e2e/example.cy.ts']).toContain("cy.visit('/')");
+        expect(files['.gitignore']).toContain('cypress/videos/');
+        expect(files['README.md']).toContain('yarn e2e:open');
+        expect(pkg.scripts.e2e).toBe('cypress run');
+        expect(pkg.scripts['e2e:open']).toBe('cypress open');
+        expect(pkg.devDependencies).toHaveProperty('cypress');
+        expect(files['playwright.config.ts']).toBeUndefined();
+    });
+
+    it('без e2e не создает e2e файлы и скрипты', () => {
+        const files = map({ e2eFramework: 'none' });
+        const pkg = JSON.parse(files['package.json']) as { scripts: Record<string, string> };
+
+        expect(files['playwright.config.ts']).toBeUndefined();
+        expect(files['cypress.config.ts']).toBeUndefined();
+        expect(files['e2e/example.spec.ts']).toBeUndefined();
+        expect(files['cypress/e2e/example.cy.ts']).toBeUndefined();
+        expect(pkg.scripts.e2e).toBeUndefined();
+        expect(files['README.md']).not.toContain('## E2E');
+    });
+
+    it('useRouter создает routes, layout, pages и BrowserRouter/StaticRouter', () => {
+        const files = map({ useRouter: true, clientOnly: false });
+        const pkg = JSON.parse(files['package.json']) as {
+            dependencies: Record<string, string>;
+        };
+
+        expect(files['src/client/routes.tsx']).toContain('AppRoutes');
+        expect(files['src/client/components/layout.tsx']).toContain('Outlet');
+        expect(files['src/client/pages/home.tsx']).toContain('HomePage');
+        expect(files['src/client/pages/about.tsx']).toContain('AboutPage');
+        expect(files['src/client/components/app.tsx']).toContain('AppRoutes');
+        expect(files['src/client/index.tsx']).toContain('BrowserRouter');
+        expect(files['src/server/index.tsx']).toContain('StaticRouter');
+        expect(files['src/server/index.tsx']).toContain('/{path*}');
+        expect(files['README.md']).toContain('/about');
+        expect(pkg.dependencies).toHaveProperty('react-router-dom');
+    });
+
+    it('без useRouter не создает routes/pages', () => {
+        const files = map({ useRouter: false });
+
+        expect(files['src/client/routes.tsx']).toBeUndefined();
+        expect(files['src/client/pages/home.tsx']).toBeUndefined();
+        expect(files['src/client/index.tsx']).not.toContain('BrowserRouter');
+        expect(files['package.json']).not.toContain('react-router-dom');
     });
 });

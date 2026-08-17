@@ -181,6 +181,10 @@ function mergePromptAnswers(base: InitAnswers, answers: prompts.Answers<string>)
         merged.testRunner = answers.testRunner;
     }
 
+    if (answers.e2eFramework !== undefined) {
+        merged.e2eFramework = answers.e2eFramework;
+    }
+
     if (answers.cssModules !== undefined) {
         merged.cssModules = Boolean(answers.cssModules);
     }
@@ -206,6 +210,10 @@ function mergePromptAnswers(base: InitAnswers, answers: prompts.Answers<string>)
 
     if (answers.reactCompiler !== undefined) {
         merged.reactCompiler = Boolean(answers.reactCompiler);
+    }
+
+    if (answers.useRouter !== undefined) {
+        merged.useRouter = Boolean(answers.useRouter);
     }
 
     if (answers.useLint !== undefined) {
@@ -234,6 +242,8 @@ function printSuccess(context: TemplateContext, targetDir: string, fileCount: nu
         chalk.dim(context.clientOnly ? 'clientOnly' : 'SSR'),
         chalk.dim(context.codeLoader),
         chalk.dim(context.testRunner),
+        ...(context.e2eFramework !== 'none' ? [chalk.dim(context.e2eFramework)] : []),
+        ...(context.useRouter ? [chalk.dim('router')] : []),
         ...(context.useLint ? [chalk.dim('lint')] : []),
     ].join(chalk.dim(' · '));
 

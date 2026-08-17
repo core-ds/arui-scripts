@@ -32,6 +32,7 @@ npx create-arui-scripts-app my-app --yes
 - `--ssr` / `--client-only` - SSR или только клиент
 - `--code-loader <swc|babel|tsc>` - транспилятор
 - `--test-runner <jest|vitest>` - тест-раннер
+- `--e2e-framework <cypress|playwright|none>` - e2e фреймворк
 - `--css-modules` / `--no-css-modules` - CSS-модули
 - `--client-port` / `--server-port` - порты клиента и сервера
 - `--docker-registry` / `--presets` - docker registry и preset
@@ -43,6 +44,8 @@ npx create-arui-scripts-app my-app --yes
 - режим **SSR** (клиент + сервер, клиент в `src/client/`) или **clientOnly** (статика)
 - SSR-сервер на **Hapi** с рендерингом приложения (`renderToString`) и гидрацией на клиенте
 - транспилятор (**swc** / babel / tsc) и тест-раннер (**Jest** / Vitest)
+- опционально **e2e** (**Cypress** / Playwright) с конфигом и хелперами
+- опционально **React Router**
 - CSS-модули, полифилы (`core-js`), `experimentalReactCompiler`, docker registry, preset
 - опционально **arui-presets-lint** (eslint, prettier, stylelint, knip, secretlint, lefthook)
 - опциональная установка зависимостей сразу после генерации
@@ -59,8 +62,8 @@ npx create-arui-scripts-app my-app --yes --lint --install
 пример компонента со стилями и тестом, `global-definitions.d.ts`, `.gitignore`, `README.md`,
 `.yarnrc.yml` (с `nodeLinker: node-modules`),
 а также в зависимости от ответов - серверная точка входа на Hapi, store на RTK, полифилы,
-`vitest.config.ts` и конфиги `arui-presets-lint` (`eslint.config.mts`, `knip.ts`,
-`.secretlintrc.json`, `lefthook.yml`).
+`vitest.config.ts`, e2e-каркас (Playwright или Cypress), роуты React Router и конфиги
+`arui-presets-lint` (`eslint.config.mts`, `knip.ts`, `.secretlintrc.json`, `lefthook.yml`).
 
 Дальнейшая сборка и запуск через команды `arui-scripts` в созданном проекте.
 См. [документацию arui-scripts](../arui-scripts/README.md).

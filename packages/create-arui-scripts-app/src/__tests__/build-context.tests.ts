@@ -7,6 +7,8 @@ const base: InitAnswers = {
     clientOnly: false,
     codeLoader: 'swc',
     testRunner: 'jest',
+    e2eFramework: 'none',
+    useRouter: false,
     cssModules: true,
     clientServerPort: 8080,
     serverPort: 3000,
@@ -91,5 +93,29 @@ describe('buildContext', () => {
         expect(withLint.devDependencies['arui-presets-lint']).toBe('^11.0.0');
         expect(withLint.useLint).toBe(true);
         expect(withoutLint.devDependencies).not.toHaveProperty('arui-presets-lint');
+    });
+
+    it('playwright добавляет @playwright/test, cypress - cypress, а для none ничего', () => {
+        const noneCtx = buildContext({ ...base, e2eFramework: 'none' }, '1.0.0');
+        const playwrightCtx = buildContext({ ...base, e2eFramework: 'playwright' }, '1.0.0');
+        const cypressCtx = buildContext({ ...base, e2eFramework: 'cypress' }, '1.0.0');
+
+        expect(noneCtx.devDependencies).not.toHaveProperty('@playwright/test');
+        expect(noneCtx.devDependencies).not.toHaveProperty('cypress');
+
+        expect(playwrightCtx.devDependencies).toHaveProperty('@playwright/test');
+        expect(playwrightCtx.devDependencies).not.toHaveProperty('cypress');
+
+        expect(cypressCtx.devDependencies).toHaveProperty('cypress');
+        expect(cypressCtx.devDependencies).not.toHaveProperty('@playwright/test');
+    });
+
+    it('useRouter добавляет react-router и react-router-dom', () => {
+        const withRouter = buildContext({ ...base, useRouter: true }, '1.0.0');
+        const withoutRouter = buildContext({ ...base, useRouter: false }, '1.0.0');
+
+        expect(withRouter.dependencies).toHaveProperty('react-router-dom');
+        expect(withRouter.dependencies).toHaveProperty('react-router');
+        expect(withoutRouter.dependencies).not.toHaveProperty('react-router-dom');
     });
 });

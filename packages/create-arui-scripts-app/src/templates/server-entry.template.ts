@@ -2,6 +2,7 @@ import { type TemplateContext } from '../types';
 
 export function serverEntryTemplate(ctx: TemplateContext): string {
     const reduxImport = ctx.useRtk ? "\nimport { Provider } from 'react-redux';" : '';
+    const routerImport = ctx.useRouter ? "\nimport { StaticRouter } from 'react-router';" : '';
     const storeImport = ctx.useRtk ? "\nimport { makeStore } from '../client/store';" : '';
 
     const renderPageFn = ctx.useRtk
@@ -19,25 +20,47 @@ export function serverEntryTemplate(ctx: TemplateContext): string {
     return \`<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8" /><base href="/" />\${css}</head><body><div id="react-app">\${appHtml}</div>\${js}</body></html>\`;
 }`;
 
+    const appJsx = (() => {
+        let inner = '<App />';
+
+        if (ctx.useRtk) {
+            inner = `<Provider store={store}>
+                    ${inner}
+                </Provider>`;
+        }
+
+        if (ctx.useRouter) {
+            inner = `<StaticRouter location={location}>
+                    ${inner}
+                </StaticRouter>`;
+        }
+
+        return inner;
+    })();
+
     const handlerBody = ctx.useRtk
         ? `            const assets = await readAssetsManifest();
             const store = makeStore();
             const appHtml = renderToString(
-                <Provider store={store}>
-                    <App />
-                </Provider>,
+                ${appJsx},
             );
             // Экранируем символ "<", чтобы через состояние нельзя было внедрить теги в HTML
             const preloadedState = JSON.stringify(store.getState()).replace(/</g, '\\\\u003c');
 
             return renderPage(appHtml, assets, preloadedState);`
         : `            const assets = await readAssetsManifest();
-            const appHtml = renderToString(<App />);
+            const appHtml = renderToString(${appJsx});
 
             return renderPage(appHtml, assets);`;
 
+    const routePath = ctx.useRouter ? '/{path*}' : '/';
+    const locationLine = ctx.useRouter
+        ? `
+            const location = request.url.pathname;`
+        : '';
+
     return `import React from 'react';
-import { renderToString } from 'react-dom/server';${reduxImport}
+import { renderToString } from 'react-dom/server';${reduxImport}${routerImport}
 import Hapi from '@hapi/hapi';
 import Inert from '@hapi/inert';
 import path from 'node:path';
@@ -79,8 +102,8 @@ async function start() {
 
     server.route({
         method: 'GET',
-        path: '/',
-        handler: async () => {
+        path: '${routePath}',
+        handler: async (${ctx.useRouter ? 'request' : ''}) => {${locationLine}
 ${handlerBody}
         },
     });

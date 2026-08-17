@@ -1,6 +1,23 @@
 import { type TemplateContext } from '../types';
 
-export function gitignoreTemplate(): string {
+export function gitignoreTemplate(ctx?: TemplateContext): string {
+    let e2eIgnores = '';
+
+    if (ctx?.e2eFramework === 'playwright') {
+        e2eIgnores = `
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+`;
+    } else if (ctx?.e2eFramework === 'cypress') {
+        e2eIgnores = `
+cypress/videos/
+cypress/screenshots/
+cypress/downloads/
+`;
+    }
+
     return `node_modules
 .build
 build.tar
@@ -13,7 +30,7 @@ build.tar
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
-`;
+${e2eIgnores}`;
 }
 
 export function globalDefinitionsTemplate(): string {
@@ -65,6 +82,43 @@ export function readmeTemplate(ctx: TemplateContext): string {
 `
         : '';
 
+    let e2eSection = '';
+
+    if (ctx.e2eFramework === 'playwright') {
+        e2eSection = `
+## E2E (Playwright)
+
+Перед первым запуском установите браузеры:
+
+    yarn playwright install
+
+Команды:
+
+    yarn e2e      - headless-прогон
+    yarn e2e:ui   - UI-режим Playwright
+
+Dev-сервер поднимается автоматически через webServer в playwright.config.ts.
+`;
+    } else if (ctx.e2eFramework === 'cypress') {
+        e2eSection = `
+## E2E (Cypress)
+
+Сначала запустите приложение (\`yarn start\`), затем в другом терминале:
+
+    yarn e2e       - headless-прогон
+    yarn e2e:open  - интерактивный Cypress
+`;
+    }
+
+    const routerSection = ctx.useRouter
+        ? `
+## Маршруты
+
+    /       - главная (Home)
+    /about  - о проекте (About)
+`
+        : '';
+
     return `# ${ctx.name}
 
 Проект создан с помощью arui-scripts.
@@ -77,5 +131,5 @@ export function readmeTemplate(ctx: TemplateContext): string {
 ## Установка
 
     yarn install
-`;
+${routerSection}${e2eSection}`;
 }

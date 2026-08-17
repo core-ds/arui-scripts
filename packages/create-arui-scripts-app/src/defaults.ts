@@ -1,4 +1,4 @@
-import { type CodeLoader, type InitAnswers, type TestRunner } from './types';
+import { type CodeLoader, type E2eFramework, type InitAnswers, type TestRunner } from './types';
 
 export type CliFlags = {
     yes?: boolean;
@@ -8,6 +8,8 @@ export type CliFlags = {
     clientOnly?: boolean;
     codeLoader?: CodeLoader;
     testRunner?: TestRunner;
+    e2eFramework?: E2eFramework;
+    useRouter?: boolean;
     cssModules?: boolean;
     clientServerPort?: number;
     serverPort?: number;
@@ -26,6 +28,8 @@ export function defaultAnswers(name: string): InitAnswers {
         clientOnly: false,
         codeLoader: 'swc',
         testRunner: 'jest',
+        e2eFramework: 'none',
+        useRouter: false,
         cssModules: true,
         clientServerPort: 8080,
         serverPort: 3000,
@@ -44,6 +48,8 @@ const ANSWER_FLAG_KEYS: Array<keyof CliFlags> = [
     'clientOnly',
     'codeLoader',
     'testRunner',
+    'e2eFramework',
+    'useRouter',
     'cssModules',
     'clientServerPort',
     'serverPort',
@@ -69,6 +75,8 @@ export function answersFromFlags(defaultName: string, flags: CliFlags): InitAnsw
         ...(flags.clientOnly === undefined ? {} : { clientOnly: flags.clientOnly }),
         ...(flags.codeLoader === undefined ? {} : { codeLoader: flags.codeLoader }),
         ...(flags.testRunner === undefined ? {} : { testRunner: flags.testRunner }),
+        ...(flags.e2eFramework === undefined ? {} : { e2eFramework: flags.e2eFramework }),
+        ...(flags.useRouter === undefined ? {} : { useRouter: flags.useRouter }),
         ...(flags.cssModules === undefined ? {} : { cssModules: flags.cssModules }),
         ...(flags.clientServerPort === undefined
             ? {}

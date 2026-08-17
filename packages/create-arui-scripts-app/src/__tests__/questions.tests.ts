@@ -11,6 +11,8 @@ describe('getQuestions', () => {
             true, // clientOnly
             'swc', // codeLoader
             'jest', // testRunner
+            'none', // e2eFramework
+            false, // useRouter
             true, // cssModules
             8080, // clientServerPort
             // serverPort пропущен
@@ -35,6 +37,8 @@ describe('getQuestions', () => {
             false, // clientOnly
             'swc', // codeLoader
             'jest', // testRunner
+            'none', // e2eFramework
+            false, // useRouter
             true, // cssModules
             8080, // clientServerPort
             3001, // serverPort
@@ -58,6 +62,8 @@ describe('getQuestions', () => {
         prompts.inject([
             'app', // name
             false, // useRtk
+            'none', // e2eFramework
+            false, // useRouter
             true, // cssModules
             8080, // clientServerPort
             '', // dockerRegistry
@@ -80,6 +86,30 @@ describe('getQuestions', () => {
         expect(answers.install).toBe(false);
     });
 
+    it('пропускает e2eFramework, когда он задан флагом', async () => {
+        prompts.inject([
+            'app', // name
+            false, // useRtk
+            true, // clientOnly
+            'swc', // codeLoader
+            'jest', // testRunner
+            // e2eFramework задан флагом
+            false, // useRouter
+            true, // cssModules
+            8080, // clientServerPort
+            '', // dockerRegistry
+            '', // presets
+            false, // polyfills
+            false, // reactCompiler
+            false, // useLint
+            false, // install
+        ]);
+
+        const answers = await prompts(getQuestions('app', { e2eFramework: 'playwright' }));
+
+        expect(answers.e2eFramework).toBeUndefined();
+    });
+
     it('пропускает serverPort, когда он задан флагом', async () => {
         prompts.inject([
             'app', // name
@@ -87,6 +117,8 @@ describe('getQuestions', () => {
             false, // clientOnly (SSR)
             'swc', // codeLoader
             'jest', // testRunner
+            'cypress', // e2eFramework
+            false, // useRouter
             true, // cssModules
             8080, // clientServerPort
             // serverPort задан флагом — вопрос пропущен
@@ -102,6 +134,7 @@ describe('getQuestions', () => {
 
         expect(answers.clientOnly).toBe(false);
         expect(answers.serverPort).toBeUndefined();
+        expect(answers.e2eFramework).toBe('cypress');
         expect(answers.useLint).toBe(true);
     });
 });

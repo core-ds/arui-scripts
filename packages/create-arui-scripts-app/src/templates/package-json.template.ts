@@ -35,6 +35,14 @@ export function packageJsonTemplate(ctx: TemplateContext): string {
             'yarn lint:styles --fix && yarn lint:scripts --fix && yarn format && yarn lint:secrets';
     }
 
+    if (ctx.e2eFramework === 'playwright') {
+        scripts.e2e = 'playwright test';
+        scripts['e2e:ui'] = 'playwright test --ui';
+    } else if (ctx.e2eFramework === 'cypress') {
+        scripts.e2e = 'cypress run';
+        scripts['e2e:open'] = 'cypress open';
+    }
+
     const pkg: Record<string, unknown> = {
         name: ctx.name,
         version: '0.1.0',
