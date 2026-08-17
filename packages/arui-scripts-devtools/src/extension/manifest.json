@@ -4,5 +4,12 @@
     "version": "0.1.0",
     "description": "Панель отладки модулей arui-scripts: загрузки, стадии, события и share scope",
     "devtools_page": "devtools.html",
-    "minimum_chrome_version": "88"
+    "minimum_chrome_version": "88",
+    "permissions": [
+        "declarativeNetRequest"
+    ],
+    "optional_host_permissions": [
+        "http://*/*",
+        "https://*/*"
+    ]
 }

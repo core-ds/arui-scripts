@@ -70,11 +70,20 @@ export const PANEL_STATE_KEY = 'arui:devtools:panel';
 
 export const DEFAULT_PANEL_STATE: PanelState = { open: false };
 
+/**
+ * Ключ, под которым расширение помнит подмены адресов.
+ *
+ * localStorage документа расширения, а не страницы: правила живут в сессии браузера
+ * и переживают закрытие DevTools - список в интерфейсе должен переживать тоже.
+ */
+export const OVERRIDES_STORAGE_KEY = 'arui:devtools:overrides';
+
 /** вкладки панели в порядке отображения; первая - вкладка по умолчанию */
 export const PANEL_TABS: readonly PanelTabDefinition[] = [
     { id: 'modules', title: 'Модули' },
     { id: 'events', title: 'События' },
     { id: 'timeline', title: 'Таймлайн' },
+    { id: 'overrides', title: 'Подмена' },
     { id: 'share-scope', title: 'Share scope' },
 ];
 

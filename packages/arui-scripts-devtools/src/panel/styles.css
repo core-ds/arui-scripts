@@ -444,6 +444,52 @@
     outline-offset: 1px;
 }
 
+/* Вкладка подмены: строка на каждый origin провайдера */
+.overrides {
+    padding: 12px 16px;
+}
+
+.overrides__hint {
+    margin-bottom: 12px;
+    color: var(--arui-devtools-text-secondary);
+    font-size: 12px;
+    line-height: 16px;
+}
+
+.overrides__note {
+    margin-bottom: 12px;
+    padding: 8px 12px;
+    border-left: 3px solid var(--arui-devtools-border-accent);
+    background: var(--arui-devtools-negative-muted);
+    font-size: 12px;
+    line-height: 16px;
+}
+
+.overrides__row {
+    display: grid;
+    grid-template-columns: minmax(140px, 1fr) 16px minmax(140px, 1fr) auto auto;
+    gap: 8px;
+    align-items: center;
+    padding: 6px 0;
+}
+
+.overrides__from {
+    overflow: hidden;
+    font-family: var(--arui-devtools-font-mono);
+    font-size: 12px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.overrides__arrow {
+    color: var(--arui-devtools-text-tertiary);
+    text-align: center;
+}
+
+.overrides__to_invalid {
+    border-color: var(--arui-devtools-border-accent);
+}
+
 /* Таймлайн: все загрузки страницы на одной оси. Геометрия та же, что у водопада,
    но строка здесь - целая загрузка, а не стадия */
 .timeline {

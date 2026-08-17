@@ -8,6 +8,7 @@ import { analyzeShareScopes, countShareProblems } from '../utils/share-scope';
 import { PanelErrorBoundary } from './error-boundary';
 import { EventsView } from './events-view';
 import { LoadsTable } from './loads-table';
+import { OverridesView, toOrigin } from './overrides-view';
 import { ShareScopeView } from './share-scope-view';
 import { TimelineView } from './timeline-view';
 import { useModulesStore } from './use-modules-store';
@@ -31,6 +32,7 @@ function PanelBody({
     state,
     activeTab,
     scopes,
+    providerOrigins,
     expandedLoads,
     onToggleLoad,
     loadsQuery,
@@ -74,6 +76,8 @@ function PanelBody({
         );
     } else if (activeTab === 'timeline') {
         content = <TimelineView loads={loads} />;
+    } else if (activeTab === 'overrides') {
+        content = <OverridesView origins={providerOrigins} />;
     } else if (activeTab === 'share-scope') {
         content = <ShareScopeView scopes={scopes} />;
     }
@@ -109,6 +113,25 @@ export function PanelApp({ source, onClose }: PanelAppProps) {
         () => analyzeShareScopes(state.status === 'ready' ? state.snapshot.shareScopes : undefined),
         [state],
     );
+
+    // адреса провайдеров, встреченные в диагностике: подменять есть смысл только их,
+    // а вводить руками - лишний способ ошибиться в адресе
+    const providerOrigins = useMemo(() => {
+        const loads = state.status === 'ready' ? state.snapshot.loads : [];
+        const found = new Set<string>();
+
+        loads.forEach((record) => {
+            [record.baseUrl, record.manifestUrl].forEach((url) => {
+                const origin = toOrigin(url);
+
+                if (origin) {
+                    found.add(origin);
+                }
+            });
+        });
+
+        return Array.from(found).sort();
+    }, [state]);
     const problems = countShareProblems(scopes);
 
     const selectTab = (tab: PanelTabId) => {
@@ -173,6 +196,7 @@ export function PanelApp({ source, onClose }: PanelAppProps) {
                     state={state}
                     activeTab={activeTab}
                     scopes={scopes}
+                    providerOrigins={providerOrigins}
                     expandedLoads={expandedLoads}
                     onToggleLoad={toggleLoad}
                     loadsQuery={loadsQuery}

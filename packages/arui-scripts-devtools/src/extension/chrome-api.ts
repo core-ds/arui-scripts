@@ -14,7 +14,41 @@ export type EvalExceptionInfo = {
     value?: string;
 };
 
+/** правило подмены: с какого адреса и куда */
+export type OverrideRule = {
+    /** origin провайдера, как он записан в диагностике */
+    from: string;
+    /** куда перенаправлять, обычно локальный дев-сервер */
+    to: string;
+};
+
+export type DeclarativeNetRequestRule = {
+    id: number;
+    priority: number;
+    action: {
+        type: 'redirect';
+        redirect: { transform: { scheme?: string; host?: string; port?: string } };
+    };
+    condition: { urlFilter: string; resourceTypes: string[] };
+};
+
 export type ChromeApi = {
+    /** просим доступ к origin только когда подмену включают: до этого он не нужен */
+    permissions?: {
+        contains(permissions: { origins?: string[] }, callback: (granted: boolean) => void): void;
+        request(permissions: { origins?: string[] }, callback: (granted: boolean) => void): void;
+        remove?(permissions: { origins?: string[] }, callback: (removed: boolean) => void): void;
+    };
+    declarativeNetRequest?: {
+        updateSessionRules(
+            options: { addRules?: DeclarativeNetRequestRule[]; removeRuleIds?: number[] },
+            callback?: () => void,
+        ): void;
+        getSessionRules(callback: (rules: DeclarativeNetRequestRule[]) => void): void;
+    };
+    runtime?: {
+        lastError?: { message?: string };
+    };
     devtools?: {
         inspectedWindow?: {
             eval(

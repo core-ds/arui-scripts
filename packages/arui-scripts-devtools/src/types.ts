@@ -202,7 +202,12 @@ export type TimelineViewProps = {
     loads: ModuleLoadRecord[];
 };
 
-export type PanelTabId = 'modules' | 'events' | 'timeline' | 'share-scope';
+export type OverridesViewProps = {
+    /** origin провайдеров, встреченные в диагностике: подменять есть смысл только их */
+    origins: string[];
+};
+
+export type PanelTabId = 'modules' | 'events' | 'timeline' | 'overrides' | 'share-scope';
 
 export type PanelTabDefinition = {
     id: PanelTabId;
@@ -237,6 +242,8 @@ export type PanelBodyProps = {
     activeTab: PanelTabId;
     /** разобранный снимок скоупа: панель считает его один раз на кадр и раздаёт вниз */
     scopes: ShareScope[];
+    /** origin провайдеров из снимка - кандидаты на подмену */
+    providerOrigins: string[];
     expandedLoads: ReadonlySet<string>;
     onToggleLoad(loadId: string): void;
     loadsQuery: string;
