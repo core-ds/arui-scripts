@@ -1,4 +1,6 @@
-import satisfies from 'semver/functions/satisfies';
+// именно default-импорт пакета целиком: semver — CommonJS без exports-карты, и Node ESM не умеет
+// ни глубокий путь без расширения, ни именованные импорты из него
+import semver from 'semver';
 import shell from 'shelljs';
 
 import { type ResolvedArtifactsConfig } from '../config/types';
@@ -25,8 +27,8 @@ export function dockerVersionSatisfies(request: string) {
     });
 
     return (
-        satisfies(dockerServerVersion.toString(), request) &&
-        satisfies(dockerClientVersion.toString(), request)
+        semver.satisfies(dockerServerVersion.toString(), request) &&
+        semver.satisfies(dockerClientVersion.toString(), request)
     );
 }
 

@@ -1,10 +1,19 @@
 {
     "name": "@alfalab/arui-scripts-artifacts",
     "version": "1.0.0",
-    "description": "Максимально кастомизируемые скрипты и шаблоны для сборки артефактов поставки (docker-образ, tar-архив) приложений, основанных на arui-scripts",
-    "main": "./build/index.js",
-    "typings": "./build/index.d.ts",
-    "bin": "./build/bin/index.js",
+    "description": "CLI и библиотека для сборки артефактов поставки приложений на arui-scripts: docker-образ и tar-архив с генерируемыми Dockerfile, nginx-конфигом и start-скриптом",
+    "main": "./build/cjs/index.js",
+    "module": "./build/index.js",
+    "types": "./build/index.d.ts",
+    "exports": {
+        ".": {
+            "require": "./build/cjs/index.js",
+            "default": "./build/index.js",
+            "types": "./build/index.d.ts"
+        },
+        "./package.json": "./package.json"
+    },
+    "bin": "./build/cjs/bin/index.js",
     "license": "MPL-2.0",
     "repository": {
         "type": "git",
@@ -15,7 +24,7 @@
     },
     "homepage": "https://github.com/core-ds/arui-scripts/tree/master/packages/arui-scripts-artifacts#readme",
     "scripts": {
-        "build": "tsc --project tsconfig.json",
+        "build": "rm -rf build && tsc --project tsconfig.json && tsc --project tsconfig.cjs.json",
         "test": "jest",
         "lint:scripts": "arui-presets-lint scripts",
         "format": "arui-presets-lint format",

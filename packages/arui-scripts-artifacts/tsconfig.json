@@ -1,14 +1,22 @@
 {
     "extends": "../arui-scripts/tsconfig.json",
     "compilerOptions": {
-        "target": "ES2016",
-        "module": "commonjs",
+        "target": "ES2022",
+        // без incremental: два конфига на одни исходники, а устаревший tsbuildinfo
+        // переживает удаление build и заставляет tsc эмитить не всё
+        "incremental": false,
+        // сборка по умолчанию — ESM, как в остальных пакетах-библиотеках:
+        // ее забирают бандлеры и jiti, которым расширения в специфаерах не нужны
+        "module": "esnext",
+        "moduleResolution": "bundler",
         "skipLibCheck": true,
         "outDir": "./build",
         "declaration": true,
         "rootDir": "./src",
         "types": ["jest", "node"]
     },
-    "include": ["src/**/*.ts"],
-    "exclude": ["build", "src/__tests__"]
+    // bin исполняется голым Node, а он extensionless-импорты в ESM не резолвит,
+    // поэтому CLI собирается только в CommonJS — см. tsconfig.cjs.json
+    "exclude": ["build", "src/__tests__", "src/bin"],
+    "include": ["src/**/*.ts"]
 }

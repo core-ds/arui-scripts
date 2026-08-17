@@ -13,7 +13,7 @@ import { buildArtifact } from '../pipeline/build-artifact';
 import { START_SCRIPT_FILENAME } from '../start-script/constants';
 
 // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
-const { version } = require('../../package.json');
+const { version } = require('../../../package.json');
 
 /**
  * Локальные файлы проекта, замещающие сгенерированные шаблоны, если они лежат в корне проекта.

@@ -44,7 +44,9 @@ export function findConfigFile(cwd: string, explicitPath?: string): string | nul
  * дополнительных загрузчиков в проекте.
  */
 export async function loadConfigFile(configPath: string): Promise<ArtifactsConfigFile> {
-    const jiti = createJiti(__filename, { interopDefault: true });
+    // База резолва — сам конфиг: его импорты должны разрешаться относительно проекта, а не либы.
+    // Заодно не зависим от __filename/import.meta, которых нет то в одной, то в другой сборке.
+    const jiti = createJiti(configPath, { interopDefault: true });
 
     const configModule = await jiti.import<ArtifactsConfigFileExport>(configPath, {
         default: true,

@@ -1,0 +1,13 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "module": "commonjs",
+        // единственный резолвер, совместимый с module=commonjs; в TS 6 помечен deprecated,
+        // но живой — до TS 7 CJS-сборку надо будет переводить на что-то другое
+        "moduleResolution": "node10",
+        "ignoreDeprecations": "6.0",
+        "outDir": "./build/cjs"
+    },
+    // здесь, в отличие от ESM-сборки, собирается и bin: именно он ставится как исполняемый файл
+    "exclude": ["build", "src/__tests__"]
+}
