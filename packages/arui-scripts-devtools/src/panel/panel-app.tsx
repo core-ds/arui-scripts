@@ -1,9 +1,9 @@
 import { Fragment, useMemo, useState } from 'react';
 
 import { PANEL_TABS } from '../constants';
-import { countShareProblems, readShareScopes } from '../share-scope';
 import { type PanelAppProps, type PanelBodyProps, type PanelTabId } from '../types';
 import { readPanelState, writePanelState } from '../utils/panel-state';
+import { analyzeShareScopes, countShareProblems } from '../utils/share-scope';
 
 import { PanelErrorBoundary } from './error-boundary';
 import { EventsView } from './events-view';
@@ -81,19 +81,20 @@ function PanelBody({
  * Состояние вкладок и фильтров живёт здесь, а не во вкладках: оно должно переживать
  * и переключение вкладок, и повторную попытку отрисовки после ошибки.
  */
-export function PanelApp({ onClose }: PanelAppProps) {
-    const state = useModulesStore();
+export function PanelApp({ source, onClose }: PanelAppProps) {
+    const state = useModulesStore(source);
     const [activeTab, setActiveTab] = useState<PanelTabId>(restoreActiveTab);
     const [expandedLoads, setExpandedLoads] = useState<ReadonlySet<string>>(() => new Set());
     const [eventsQuery, setEventsQuery] = useState('');
     const [eventsOnlyErrors, setEventsOnlyErrors] = useState(false);
 
-    // Снимок скоупа пересобирается на каждую нотификацию стора и на переключение вкладки:
-    // скоуп меняется по ходу загрузки модулей, а подписаться на него не на что - зависимости
-    // здесь и есть расписание пересборки, хоть колбэк их и не читает.
-    // Считается всегда, даже с закрытой вкладкой: про проблемы надо знать до её открытия.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    const scopes = useMemo(() => readShareScopes(), [state, activeTab]);
+    // Скоуп приезжает в снимке: сам `__webpack_share_scopes__` панели не виден - его снимает
+    // загрузчик. Разбираем на каждый снимок, даже с закрытой вкладкой: число проблем
+    // показывается в её заголовке, то есть нужно до открытия.
+    const scopes = useMemo(
+        () => analyzeShareScopes(state.status === 'ready' ? state.snapshot.shareScopes : undefined),
+        [state],
+    );
     const problems = countShareProblems(scopes);
 
     const selectTab = (tab: PanelTabId) => {
@@ -122,15 +123,18 @@ export function PanelApp({ onClose }: PanelAppProps) {
         <div className='panel' role='complementary' aria-label='arui devtools'>
             <div className='header'>
                 <div className='title'>arui devtools</div>
-                <button
-                    type='button'
-                    className='button button_icon close'
-                    title='Закрыть (Esc)'
-                    aria-label='Закрыть панель'
-                    onClick={onClose}
-                >
-                    ✕
-                </button>
+                {/* у расширения крестика нет: панель занимает вкладку целиком */}
+                {onClose && (
+                    <button
+                        type='button'
+                        className='button button_icon close'
+                        title='Закрыть (Esc)'
+                        aria-label='Закрыть панель'
+                        onClick={onClose}
+                    >
+                        ✕
+                    </button>
+                )}
             </div>
             <div className='tabs' role='tablist'>
                 {PANEL_TABS.map((tab) => {

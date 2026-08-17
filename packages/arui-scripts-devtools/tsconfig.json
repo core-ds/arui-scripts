@@ -15,5 +15,7 @@
         "types": ["jest", "node"]
     },
     "include": ["src/**/*.ts", "src/**/*.tsx"],
-    "exclude": ["build", "src/**/__tests__/**"]
+    // src/extension - само расширение, а не публичный код пакета: его собирает
+    // scripts/bundle-extension.js, а tsc-эмит только мешал бы, занимая тот же build/extension
+    "exclude": ["build", "src/**/__tests__/**", "src/extension/**"]
 }

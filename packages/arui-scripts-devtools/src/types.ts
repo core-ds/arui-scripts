@@ -25,6 +25,25 @@ export type DevtoolsSnapshot = {
     version: number;
     loads: ModuleLoadRecord[];
     events: DevtoolsEvent[];
+    /**
+     * Содержимое share scope, снятое загрузчиком. Достать его иначе нельзя:
+     * `__webpack_share_scopes__` - свободная переменная бандлера, её не видно ни из консоли,
+     * ни из расширения браузера. Старый загрузчик поля не кладёт - читаем защитно.
+     */
+    shareScopes?: DevtoolsShareScope[];
+};
+
+/* Сырые данные скоупа - ровно то, что кладёт в контракт загрузчик. Разбор проблем поверх них
+   делает панель: контракт возит данные, интерпретация остаётся читателю. */
+
+export type DevtoolsShareScope = {
+    name: string;
+    packages: DevtoolsSharedPackage[];
+};
+
+export type DevtoolsSharedPackage = {
+    name: string;
+    versions: SharedVersion[];
 };
 
 export type DevtoolsStage =
@@ -126,20 +145,6 @@ export type ShareScope = {
     packages: SharedPackage[];
 };
 
-export type RawShareConfig = {
-    singleton?: boolean;
-    requiredVersion?: string | false;
-    strictVersion?: boolean;
-    eager?: boolean;
-};
-
-export type RawSharedItem = {
-    loaded?: unknown;
-    eager?: unknown;
-    from?: unknown;
-    shareConfig?: RawShareConfig;
-};
-
 /* ------------------------------ состояние стора ----------------------------- */
 
 export type ModulesStoreState =
@@ -183,14 +188,33 @@ export type PanelTabDefinition = {
     title: string;
 };
 
+/**
+ * Откуда панель берёт данные.
+ *
+ * Инжектнутая в страницу панель читает глобал напрямую, расширение браузера - через
+ * `chrome.devtools.inspectedWindow.eval`. Больше между ними ничего не различается,
+ * поэтому источник и оказался единственным швом.
+ */
+export type PanelSource = {
+    /** состояние на первый кадр: подписка может доехать позже, а рисовать надо сразу */
+    getInitialState(): ModulesStoreState;
+    /** подписка на изменения; зовёт listener и в момент подписки, если данные уже есть */
+    subscribe(listener: (state: ModulesStoreState) => void): () => void;
+};
+
 export type PanelAppProps = {
-    /** вызывается крестиком; Esc обрабатывает mount - он живёт на document за пределами дерева */
-    onClose(): void;
+    source: PanelSource;
+    /**
+     * Вызывается крестиком; Esc обрабатывает mount - он живёт на document за пределами дерева.
+     * У расширения крестика нет: панель занимает вкладку целиком и закрывается вместе с ней.
+     */
+    onClose?(): void;
 };
 
 export type PanelBodyProps = {
     state: ModulesStoreState;
     activeTab: PanelTabId;
+    /** разобранный снимок скоупа: панель считает его один раз на кадр и раздаёт вниз */
     scopes: ShareScope[];
     expandedLoads: ReadonlySet<string>;
     onToggleLoad(loadId: string): void;

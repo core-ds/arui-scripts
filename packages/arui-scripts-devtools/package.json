@@ -30,7 +30,7 @@
     "scripts": {
         "build:commonjs": "tsc --project tsconfig.json",
         "build:esm": "tsc --project tsconfig.esm.json",
-        "build": "yarn clean && yarn build:commonjs && yarn build:esm && node scripts/bundle-mount.js",
+        "build": "yarn clean && yarn build:commonjs && yarn build:esm && node scripts/bundle-mount.js && yarn build:extension",
         "clean": "rm -rf build tsconfig.tsbuildinfo",
         "test": "jest",
         "lint:scripts": "arui-presets-lint scripts",
@@ -38,7 +38,8 @@
         "format:check": "arui-presets-lint format:check",
         "lint": "yarn lint:scripts && yarn format:check",
         "lint:fix": "yarn lint:scripts --fix && yarn format",
-        "audit": "yarn npm audit --severity high --environment production"
+        "audit": "yarn npm audit --severity high --environment production",
+        "build:extension": "node scripts/bundle-extension.js"
     },
     "devDependencies": {
         "@rspack/core": "2.0.0",

@@ -12,12 +12,11 @@
  *
  * Собираем тем же стеком, каким arui-scripts собирает приложения: @rspack/core + swc.
  *
- * Два инварианта, которые охраняют ассерты ниже:
+ * Инварианты, которые охраняют ассерты ниже:
  *
- * 1. `./share-scope` НЕ бандлится (externals): rspack на нашей сборке подменил бы свободную
- *    переменную `__webpack_share_scopes__` на собственный — пустой — скоуп бандла, и вкладка
- *    Share scope показывала бы не то приложение. Модуль остаётся tsc-эмиттом рядом с бандлом,
- *    а переменную в нём подставит rspack приложения-потребителя.
+ * 1. Панель не читает `__webpack_share_scopes__`: скоуп ей приезжает в контракте, снятый
+ *    загрузчиком. Появись это обращение здесь - rspack нашей сборки подменил бы переменную
+ *    собственным (пустым) скоупом бандла, и вкладка показывала бы не то приложение.
  *
  * 2. React инлайнится production-сборкой с зафиксированным NODE_ENV: в dev-сборке потребителя
  *    `process.env.NODE_ENV` может быть буквально `undefined`, и решать это на его стороне нельзя.
@@ -40,22 +39,6 @@ const ENTRY = fs.existsSync(path.join(SRC, 'mount.tsx'))
 const SIZE_LIMIT = 400 * 1024;
 const SIZE_WARN = 300 * 1024;
 
-/**
- * `./share-scope` и `../share-scope` — один и тот же src/share-scope.ts, запрошенный
- * с разной глубины. В выводе оба превращаются в импорт соседнего tsc-файла.
- */
-function shareScopeExternals(externalPrefix) {
-    return [
-        ({ request }, callback) => {
-            if (request === './share-scope' || request === '../share-scope') {
-                return callback(null, `${externalPrefix} ./share-scope.js`);
-            }
-
-            return callback();
-        },
-    ];
-}
-
 function createConfig({ outDir, esm }) {
     return {
         context: PKG,
@@ -71,8 +54,6 @@ function createConfig({ outDir, esm }) {
             chunkFormat: esm ? 'module' : 'commonjs',
         },
         experiments: { outputModule: esm },
-        externalsType: esm ? 'module' : 'commonjs',
-        externals: shareScopeExternals(esm ? 'module' : 'commonjs'),
         resolve: { extensions: ['.tsx', '.ts', '.js'] },
         module: {
             rules: [
@@ -136,13 +117,9 @@ function assertBundle(file) {
     const content = fs.readFileSync(file, 'utf8');
     const relative = path.relative(PKG, file);
 
-    if (!content.includes('./share-scope.js')) {
-        fail(`${relative}: пропал external-импорт ./share-scope.js — share-scope заинлайнился`);
-    }
-
     if (content.includes('__webpack_share_scopes__')) {
         fail(
-            `${relative}: __webpack_share_scopes__ попал в бандл — на этой сборке rspack подменил бы его пустым скоупом`,
+            `${relative}: панель обратилась к __webpack_share_scopes__ — на этой сборке rspack подменит его пустым скоупом бандла. Скоуп приезжает в контракте от загрузчика`,
         );
     }
 
@@ -165,18 +142,6 @@ function assertBundle(file) {
     }
 
     console.log(`[bundle-mount] ${relative}: ${Math.round(size / 1024)} КБ`);
-}
-
-function assertShareScopeEmit(file) {
-    const relative = path.relative(PKG, file);
-
-    if (!fs.existsSync(file)) {
-        fail(`${relative}: tsc-эмит share-scope пропал, бандлу не к чему обращаться`);
-    }
-
-    if (!fs.readFileSync(file, 'utf8').includes('__webpack_share_scopes__')) {
-        fail(`${relative}: в tsc-эмите нет __webpack_share_scopes__ голым идентификатором`);
-    }
 }
 
 /** мёртвый tsc-эмит React-кода: его содержимое уже внутри бандла, а import 'react' в npm нельзя */
@@ -231,8 +196,6 @@ async function main() {
 
     assertBundle(path.join(BUILD, 'mount.js'));
     assertBundle(path.join(BUILD, 'esm', 'mount.js'));
-    assertShareScopeEmit(path.join(BUILD, 'share-scope.js'));
-    assertShareScopeEmit(path.join(BUILD, 'esm', 'share-scope.js'));
     assertNoReactOutsideBundle();
     smokeRequire();
 }

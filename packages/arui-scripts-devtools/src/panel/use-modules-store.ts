@@ -1,19 +1,17 @@
 import { useEffect, useState } from 'react';
 
-import { readStoreState, watchModulesStore } from '../store-client';
-import { type ModulesStoreState } from '../types';
+import { type ModulesStoreState, type PanelSource } from '../types';
 
 /**
- * Состояние стора загрузчика для React-дерева панели.
+ * Состояние стора для React-дерева панели.
  *
- * Вся сложность — поллинг до появления стора, разбор версий, отписка — уже решена
- * в `watchModulesStore`, хук только заводит её результат в состояние. Первый кадр
- * приходит синхронно при подписке, поэтому initial-значение почти сразу перезаписывается.
+ * Откуда данные - решает источник: инжектнутая панель читает глобал напрямую, расширение
+ * браузера ходит через `chrome.devtools.inspectedWindow.eval`. Панель об этом не знает.
  */
-export function useModulesStore(): ModulesStoreState {
-    const [state, setState] = useState<ModulesStoreState>(readStoreState);
+export function useModulesStore(source: PanelSource): ModulesStoreState {
+    const [state, setState] = useState<ModulesStoreState>(source.getInitialState);
 
-    useEffect(() => watchModulesStore(setState), []);
+    useEffect(() => source.subscribe(setState), [source]);
 
     return state;
 }

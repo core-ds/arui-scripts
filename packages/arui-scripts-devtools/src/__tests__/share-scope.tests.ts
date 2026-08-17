@@ -1,151 +1,175 @@
-import { countShareProblems, readShareScopes } from '../share-scope';
+import { type DevtoolsShareScope } from '../types';
+import { analyzeShareScopes, countShareProblems } from '../utils/share-scope';
 
-type Scopes = Record<string, Record<string, Record<string, unknown>>>;
-
-const globalWithScopes = globalThis as typeof globalThis & { __webpack_share_scopes__?: Scopes };
-
-function putScopes(scopes: Scopes) {
-    globalWithScopes.__webpack_share_scopes__ = scopes;
+function scope(packages: DevtoolsShareScope['packages']): DevtoolsShareScope[] {
+    return [{ name: 'default', packages }];
 }
 
-describe('readShareScopes', () => {
-    afterEach(() => {
-        delete globalWithScopes.__webpack_share_scopes__;
+describe('analyzeShareScopes', () => {
+    it('should return nothing when the loader put no snapshot', () => {
+        // старый загрузчик поля не кладёт вовсе - это не повод падать
+        expect(analyzeShareScopes(undefined)).toEqual([]);
     });
 
-    it('should return an empty list when module federation is not used', () => {
-        expect(readShareScopes()).toEqual([]);
+    it('should return nothing for anything that is not a list', () => {
+        expect(analyzeShareScopes({} as unknown as DevtoolsShareScope[])).toEqual([]);
     });
 
-    it('should read package versions with their share config', () => {
-        putScopes({
-            default: {
-                react: {
-                    '18.3.1': {
-                        from: 'example',
-                        loaded: 1,
-                        shareConfig: {
-                            singleton: true,
-                            requiredVersion: '^18.0.0',
-                            strictVersion: true,
-                            eager: true,
-                        },
-                    },
+    it('should keep scopes and packages as they came', () => {
+        const result = analyzeShareScopes(
+            scope([{ name: 'react', versions: [{ version: '18.3.1', loaded: true }] }]),
+        );
+
+        expect(result).toHaveLength(1);
+        expect(result[0].name).toBe('default');
+        expect(result[0].packages[0].name).toBe('react');
+        expect(result[0].packages[0].versions[0].version).toBe('18.3.1');
+    });
+
+    it('should sort versions numerically', () => {
+        // при строковом сравнении 10.0.0 встаёт перед 9.0.0, и список выглядит
+        // откатившимся на мажор назад
+        const result = analyzeShareScopes(
+            scope([
+                {
+                    name: 'react',
+                    versions: [
+                        { version: '10.0.0', loaded: false },
+                        { version: '9.0.0', loaded: false },
+                    ],
                 },
-            },
-        });
+            ]),
+        );
 
-        expect(readShareScopes()).toEqual([
+        expect(result[0].packages[0].versions.map((item) => item.version)).toEqual([
+            '9.0.0',
+            '10.0.0',
+        ]);
+    });
+
+    it('should not mutate the snapshot it was given', () => {
+        const versions = [
+            { version: '10.0.0', loaded: false },
+            { version: '9.0.0', loaded: false },
+        ];
+
+        analyzeShareScopes(scope([{ name: 'react', versions }]));
+
+        expect(versions.map((item) => item.version)).toEqual(['10.0.0', '9.0.0']);
+    });
+
+    it('should report several versions of one package', () => {
+        const result = analyzeShareScopes(
+            scope([
+                {
+                    name: 'react',
+                    versions: [
+                        { version: '17.0.2', loaded: false },
+                        { version: '18.3.1', loaded: false },
+                    ],
+                },
+            ]),
+        );
+
+        expect(result[0].packages[0].problems).toEqual([
+            {
+                type: 'multiple-versions',
+                message: expect.stringContaining('17.0.2, 18.3.1'),
+            },
+        ]);
+    });
+
+    it('should report singletons whose majors diverge', () => {
+        const result = analyzeShareScopes(
+            scope([
+                {
+                    name: 'react',
+                    versions: [
+                        { version: '17.0.2', loaded: false, singleton: true },
+                        { version: '18.3.1', loaded: false, singleton: true },
+                    ],
+                },
+            ]),
+        );
+
+        expect(result[0].packages[0].problems.map((problem) => problem.type)).toEqual([
+            'multiple-versions',
+            'singleton-major-mismatch',
+        ]);
+    });
+
+    it('should not report a singleton with several patch versions', () => {
+        const result = analyzeShareScopes(
+            scope([
+                {
+                    name: 'react',
+                    versions: [
+                        { version: '18.3.0', loaded: false, singleton: true },
+                        { version: '18.3.1', loaded: false, singleton: true },
+                    ],
+                },
+            ]),
+        );
+
+        expect(result[0].packages[0].problems.map((problem) => problem.type)).toEqual([
+            'multiple-versions',
+        ]);
+    });
+
+    it('should see no problem in a single version', () => {
+        const result = analyzeShareScopes(
+            scope([
+                { name: 'react', versions: [{ version: '18.3.1', loaded: true, singleton: true }] },
+            ]),
+        );
+
+        expect(result[0].packages[0].problems).toEqual([]);
+    });
+
+    it('should survive a package without versions', () => {
+        const result = analyzeShareScopes(
+            scope([{ name: 'react' } as unknown as DevtoolsShareScope['packages'][number]]),
+        );
+
+        expect(result[0].packages[0].versions).toEqual([]);
+        expect(result[0].packages[0].problems).toEqual([]);
+    });
+});
+
+describe('countShareProblems', () => {
+    it('should count nothing in an empty snapshot', () => {
+        expect(countShareProblems([])).toBe(0);
+    });
+
+    it('should count problems across every scope and package', () => {
+        const scopes = analyzeShareScopes([
             {
                 name: 'default',
                 packages: [
                     {
                         name: 'react',
                         versions: [
-                            {
-                                version: '18.3.1',
-                                from: 'example',
-                                loaded: true,
-                                eager: true,
-                                singleton: true,
-                                requiredVersion: '^18.0.0',
-                                strictVersion: true,
-                            },
+                            { version: '17.0.2', loaded: false, singleton: true },
+                            { version: '18.3.1', loaded: false, singleton: true },
                         ],
-                        problems: [],
+                    },
+                ],
+            },
+            {
+                name: 'custom',
+                packages: [
+                    {
+                        name: 'lodash',
+                        versions: [
+                            { version: '4.17.20', loaded: false },
+                            { version: '4.17.21', loaded: false },
+                        ],
                     },
                 ],
             },
         ]);
-    });
 
-    it('should never execute a shared module', () => {
-        const get = jest.fn();
-
-        putScopes({ default: { react: { '18.3.1': { get, loaded: 0 } } } });
-
-        readShareScopes();
-
-        // вызов get() исполнил бы шаренный модуль - панель не имеет права менять поведение приложения
-        expect(get).not.toHaveBeenCalled();
-    });
-
-    it('should report several versions of the same package', () => {
-        putScopes({
-            default: {
-                react: {
-                    '17.0.2': { from: 'example-modules' },
-                    '18.3.1': { from: 'example' },
-                },
-            },
-        });
-
-        const [scope] = readShareScopes();
-        const { problems } = scope.packages[0];
-
-        expect(problems).toHaveLength(1);
-        expect(problems[0].type).toBe('multiple-versions');
-        expect(problems[0].message).toContain('17.0.2, 18.3.1');
-    });
-
-    it('should report a singleton with mismatching majors', () => {
-        putScopes({
-            default: {
-                react: {
-                    '17.0.2': { shareConfig: { singleton: true } },
-                    '18.3.1': { shareConfig: { singleton: true } },
-                },
-            },
-        });
-
-        const [scope] = readShareScopes();
-
-        expect(scope.packages[0].problems.map((problem) => problem.type)).toEqual([
-            'multiple-versions',
-            'singleton-major-mismatch',
-        ]);
-    });
-
-    it('should not report a singleton with several patch versions as a major mismatch', () => {
-        putScopes({
-            default: {
-                react: {
-                    '18.2.0': { shareConfig: { singleton: true } },
-                    '18.3.1': { shareConfig: { singleton: true } },
-                },
-            },
-        });
-
-        const [scope] = readShareScopes();
-
-        expect(scope.packages[0].problems.map((problem) => problem.type)).toEqual([
-            'multiple-versions',
-        ]);
-    });
-
-    it('should sort versions as numbers, not as text', () => {
-        putScopes({ default: { lodash: { '9.0.0': {}, '10.0.0': {} } } });
-
-        const [scope] = readShareScopes();
-
-        // лексикографически «10.0.0» меньше «9.0.0», и в списке версий пакет выглядел бы
-        // откатившимся на мажор назад
-        expect(scope.packages[0].versions.map((item) => item.version)).toEqual(['9.0.0', '10.0.0']);
-        expect(scope.packages[0].problems[0].message).toContain('9.0.0, 10.0.0');
-    });
-
-    it('should survive a broken scope', () => {
-        putScopes({ default: null as unknown as Record<string, Record<string, unknown>> });
-
-        expect(readShareScopes()).toEqual([{ name: 'default', packages: [] }]);
-    });
-
-    it('should count problems across scopes', () => {
-        putScopes({
-            default: { react: { '17.0.2': {}, '18.3.1': {} } },
-            other: { lodash: { '4.17.21': {} } },
-        });
-
-        expect(countShareProblems(readShareScopes())).toBe(1);
+        // две у react (версии + мажоры singleton) и одна у lodash
+        expect(countShareProblems(scopes)).toBe(3);
     });
 });

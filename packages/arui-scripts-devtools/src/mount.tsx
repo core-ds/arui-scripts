@@ -5,6 +5,7 @@ import { PanelApp } from './panel/panel-app';
 import { isEscapeFromFilledInput } from './utils/escape-from-input';
 import { scopeStyles } from './utils/scope-styles';
 import { DEVTOOLS_ROOT_ID } from './constants';
+import { pageSource } from './page-source';
 import { type MountDevtoolsOptions } from './types';
 
 // css приезжает строкой: правило asset/source в пре-бандле, трансформер в jest
@@ -121,7 +122,7 @@ export function mountDevtools(options: MountDevtoolsOptions = {}): () => void {
         flushSync(() => {
             // mountDevtools - не render-функция, ссылка на close создаётся один раз за монтирование
             // eslint-disable-next-line react/jsx-no-bind
-            reactRoot?.render(<PanelApp onClose={close} />);
+            reactRoot?.render(<PanelApp source={pageSource} onClose={close} />);
         });
     } catch (error) {
         // внутри дерева ошибки ловит PanelErrorBoundary; сюда долетает только поломка самого

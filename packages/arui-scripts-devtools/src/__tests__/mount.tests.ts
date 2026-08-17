@@ -16,9 +16,14 @@ const globalWithDevtools = globalThis as GlobalWithDevtools;
 // внутри панели React: без этого флага его дев-сборка ругается на обновления вне act
 (globalThis as GlobalWithAct).IS_REACT_ACT_ENVIRONMENT = true;
 
-function createSnapshot(loadsCount: number, eventsCount = 0): DevtoolsSnapshot {
+function createSnapshot(
+    loadsCount: number,
+    eventsCount = 0,
+    shareScopes: DevtoolsSnapshot['shareScopes'] = [],
+): DevtoolsSnapshot {
     return {
         version: 1,
+        shareScopes,
         loads: Array.from({ length: loadsCount }, (_, index) => ({
             loadId: `load-${index}`,
             moduleId: `module-${index}`,
@@ -401,10 +406,21 @@ describe('mountDevtools', () => {
     });
 
     it('should switch to the share scope tab', () => {
-        (globalThis as GlobalWithScopes).__webpack_share_scopes__ = {
-            default: { react: { '18.3.1': { from: 'example', shareConfig: { singleton: true } } } },
-        };
-        putStore(createSnapshot(1));
+        // скоуп приезжает в снимке: сама переменная бандлера расширению и панели не видна,
+        // её снимает загрузчик
+        putStore(
+            createSnapshot(1, 0, [
+                {
+                    name: 'default',
+                    packages: [
+                        {
+                            name: 'react',
+                            versions: [{ version: '18.3.1', from: 'example', loaded: true }],
+                        },
+                    ],
+                },
+            ]),
+        );
         mountPanel();
 
         const shadow = getHost()?.shadowRoot;
@@ -423,11 +439,7 @@ describe('mountDevtools', () => {
     });
 
     it('should refresh the share scope tab while it stays open', () => {
-        const scopes = globalThis as GlobalWithScopes;
-
-        scopes.__webpack_share_scopes__ = { default: {} };
-
-        const store = putStore(createSnapshot(0));
+        const store = putStore(createSnapshot(0, 0, [{ name: 'default', packages: [] }]));
 
         mountPanel();
 
@@ -440,11 +452,20 @@ describe('mountDevtools', () => {
 
         expect(shadow?.querySelector('.share-scope')?.textContent).not.toContain('react');
 
-        // модуль догрузился и положил react в скоуп уже при открытой вкладке
-        scopes.__webpack_share_scopes__ = {
-            default: { react: { '18.3.1': { from: 'example', shareConfig: { singleton: true } } } },
-        };
-        store.emit(createSnapshot(1));
+        // модуль догрузился, и загрузчик положил в снимок обновлённый скоуп
+        store.emit(
+            createSnapshot(1, 0, [
+                {
+                    name: 'default',
+                    packages: [
+                        {
+                            name: 'react',
+                            versions: [{ version: '18.3.1', from: 'example', loaded: true }],
+                        },
+                    ],
+                },
+            ]),
+        );
 
         // без обновления в теле навсегда остался бы снимок на момент открытия
         expect(shadow?.querySelector('.share-scope')?.textContent).toContain('react');
@@ -495,10 +516,22 @@ describe('mountDevtools', () => {
     });
 
     it('should count share scope problems in the tab title', () => {
-        (globalThis as GlobalWithScopes).__webpack_share_scopes__ = {
-            default: { react: { '17.0.2': {}, '18.3.1': {} } },
-        };
-        putStore(createSnapshot(1));
+        putStore(
+            createSnapshot(1, 0, [
+                {
+                    name: 'default',
+                    packages: [
+                        {
+                            name: 'react',
+                            versions: [
+                                { version: '17.0.2', loaded: false },
+                                { version: '18.3.1', loaded: false },
+                            ],
+                        },
+                    ],
+                },
+            ]),
+        );
         mountPanel();
 
         const titles = Array.from(getHost()?.shadowRoot?.querySelectorAll('.tab') ?? []).map(

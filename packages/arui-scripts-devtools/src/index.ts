@@ -1,7 +1,8 @@
 export { mountDevtools, unmountDevtools, isDevtoolsMounted } from './mount';
 export { installDevtools, isDevtoolsEnabled, isToggleHotkey } from './install';
 export { readModulesStore, readStoreState, watchModulesStore } from './store-client';
-export { readShareScopes, countShareProblems } from './share-scope';
+export { analyzeShareScopes, countShareProblems } from './utils/share-scope';
+export { pageSource } from './page-source';
 export { readResourceTiming, isFromPreviousPageLoad } from './utils/resource-timing';
 export { readPanelState, writePanelState } from './utils/panel-state';
 export {
@@ -30,6 +31,9 @@ export type {
     MountDevtoolsOptions,
     PanelState,
     ResourceTiming,
+    DevtoolsShareScope,
+    DevtoolsSharedPackage,
+    PanelSource,
     SharedPackage,
     SharedVersion,
     ShareProblem,
