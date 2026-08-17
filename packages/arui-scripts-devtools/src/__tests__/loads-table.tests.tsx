@@ -23,10 +23,13 @@ function createRecord(overrides: Partial<ModuleLoadRecord> = {}): ModuleLoadReco
 /** раскрытые строки контролирует панель - в тестах её роль играет эта обёртка */
 function TableHarness({ loads }: { loads: ModuleLoadRecord[] }) {
     const [expanded, setExpanded] = useState<ReadonlySet<string>>(() => new Set());
+    const [query, setQuery] = useState('');
 
     return (
         <LoadsTable
             loads={loads}
+            query={query}
+            onQueryChange={setQuery}
             expanded={expanded}
             onToggle={(loadId) =>
                 setExpanded((previous) => {
@@ -267,6 +270,45 @@ describe('LoadsTable', () => {
         // в строке не поменялось ничего: у незавершённой загрузки нет ни времени, ни нового
         // статуса. Но в раскрытых подробностях появилась стадия, и водопад обязан её показать
         expect(container.querySelector('.waterfall')?.textContent).toContain('fetch-manifest');
+    });
+
+    it('should filter rows by the query', () => {
+        const { container } = render(
+            <TableHarness
+                loads={[
+                    createRecord({ loadId: 'a', moduleId: 'header' }),
+                    createRecord({ loadId: 'b', moduleId: 'footer' }),
+                ]}
+            />,
+        );
+
+        fireEvent.change(container.querySelector('.search') as HTMLInputElement, {
+            target: { value: 'foot' },
+        });
+
+        const rows = getRows(container);
+
+        expect(rows).toHaveLength(1);
+        expect(rows[0].textContent).toContain('footer');
+        expect(container.querySelector('.toolbar__counter')?.textContent).toBe('показано 1 из 2');
+    });
+
+    it('should tell when the filter found nothing', () => {
+        const { container } = render(<TableHarness loads={[createRecord()]} />);
+
+        fireEvent.change(container.querySelector('.search') as HTMLInputElement, {
+            target: { value: 'ничего такого' },
+        });
+
+        expect(container.textContent).toContain('Ничего не нашлось');
+    });
+
+    it('should not show the filter until there is something to filter', () => {
+        // пустой таблице панель говорит «модули ещё не загружались», и поле поиска
+        // над этим сообщением только мешает
+        const { container } = render(<TableHarness loads={[]} />);
+
+        expect(container.querySelector('.search')).toBeNull();
     });
 
     it('should forget rows evicted from the ring buffer', () => {

@@ -3,6 +3,7 @@ import { Fragment } from 'react';
 import { EMPTY, LOADS_TABLE_COLUMNS, STATUS_LABELS } from '../constants';
 import { type LoadsTableProps, type ModuleLoadRecord } from '../types';
 import { formatDuration, getTotalDuration } from '../utils/format';
+import { matchesLoad } from '../utils/load-matches';
 import { isFromPreviousPageLoad } from '../utils/resource-timing';
 
 import { LoadDetails } from './load-details';
@@ -53,17 +54,43 @@ function Row({
  * DOM-узлы по ключу `loadId`, поэтому выделение текста и позиция скролла переживают
  * нотификации стора сами собой.
  */
-export function LoadsTable({ loads, expanded, onToggle }: LoadsTableProps) {
-    if (!loads.length) {
+export function LoadsTable({ loads, query, onQueryChange, expanded, onToggle }: LoadsTableProps) {
+    const normalized = query.trim().toLowerCase();
+    const filtered = loads.filter((record) => matchesLoad(record, normalized));
+
+    const toolbar = (
+        <div className='toolbar'>
+            <input
+                className='search'
+                type='search'
+                placeholder='Фильтр по модулю, контейнеру, адресу или статусу'
+                value={query}
+                onChange={(event) => onQueryChange(event.target.value)}
+            />
+            <span className='toolbar__counter'>
+                {filtered.length === loads.length
+                    ? `загрузок: ${loads.length}`
+                    : `показано ${filtered.length} из ${loads.length}`}
+            </span>
+        </div>
+    );
+
+    if (!filtered.length) {
         return (
             <div className='table'>
-                <div className='placeholder'>Модули ещё не загружались на этой странице.</div>
+                {loads.length > 0 && toolbar}
+                <div className='placeholder'>
+                    {loads.length
+                        ? 'Ничего не нашлось.'
+                        : 'Модули ещё не загружались на этой странице.'}
+                </div>
             </div>
         );
     }
 
     return (
         <div className='table'>
+            {toolbar}
             <div className='grid'>
                 <div className='row row_header'>
                     {LOADS_TABLE_COLUMNS.map((title) => (
@@ -73,7 +100,7 @@ export function LoadsTable({ loads, expanded, onToggle }: LoadsTableProps) {
                     ))}
                 </div>
                 {/* свежие сверху: разбираться обычно надо с последней загрузкой */}
-                {loads
+                {filtered
                     .slice()
                     .reverse()
                     .map((record) => {

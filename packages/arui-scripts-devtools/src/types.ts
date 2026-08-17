@@ -218,6 +218,8 @@ export type PanelBodyProps = {
     scopes: ShareScope[];
     expandedLoads: ReadonlySet<string>;
     onToggleLoad(loadId: string): void;
+    loadsQuery: string;
+    onLoadsQueryChange(query: string): void;
     eventsQuery: string;
     onEventsQueryChange(query: string): void;
     eventsOnlyErrors: boolean;
@@ -238,8 +240,18 @@ export type PanelErrorBoundaryState = {
     resetKey: unknown;
 };
 
+/** строка стека ошибки; url и line есть только у тех, что можно открыть в Sources */
+export type StackFrame = {
+    text: string;
+    url?: string;
+    line?: number;
+};
+
 export type LoadsTableProps = {
     loads: ModuleLoadRecord[];
+    /** текстовый фильтр таблицы: модуль, контейнер, адрес или статус */
+    query: string;
+    onQueryChange(query: string): void;
     /** loadId раскрытых строк. Состояние держит панель, чтобы оно переживало переключение вкладок */
     expanded: ReadonlySet<string>;
     onToggle(loadId: string): void;

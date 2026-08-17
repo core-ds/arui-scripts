@@ -35,6 +35,8 @@ export type ChromeApi = {
                 pagePath: string,
                 callback?: (panel: unknown) => void,
             ): void;
+            /** открывает файл во вкладке Sources; строки считаются с нуля */
+            openResource?(url: string, lineNumber: number, callback?: () => void): void;
         };
     };
 };

@@ -32,6 +32,8 @@ function PanelBody({
     scopes,
     expandedLoads,
     onToggleLoad,
+    loadsQuery,
+    onLoadsQueryChange,
     eventsQuery,
     onEventsQueryChange,
     eventsOnlyErrors,
@@ -49,7 +51,15 @@ function PanelBody({
         statusText = 'Ждём загрузчик модулей: ни один модуль ещё не загружался.';
     }
 
-    let content = <LoadsTable loads={loads} expanded={expandedLoads} onToggle={onToggleLoad} />;
+    let content = (
+        <LoadsTable
+            loads={loads}
+            query={loadsQuery}
+            onQueryChange={onLoadsQueryChange}
+            expanded={expandedLoads}
+            onToggle={onToggleLoad}
+        />
+    );
 
     if (activeTab === 'events') {
         content = (
@@ -85,6 +95,7 @@ export function PanelApp({ source, onClose }: PanelAppProps) {
     const state = useModulesStore(source);
     const [activeTab, setActiveTab] = useState<PanelTabId>(restoreActiveTab);
     const [expandedLoads, setExpandedLoads] = useState<ReadonlySet<string>>(() => new Set());
+    const [loadsQuery, setLoadsQuery] = useState('');
     const [eventsQuery, setEventsQuery] = useState('');
     const [eventsOnlyErrors, setEventsOnlyErrors] = useState(false);
 
@@ -161,6 +172,8 @@ export function PanelApp({ source, onClose }: PanelAppProps) {
                     scopes={scopes}
                     expandedLoads={expandedLoads}
                     onToggleLoad={toggleLoad}
+                    loadsQuery={loadsQuery}
+                    onLoadsQueryChange={setLoadsQuery}
                     eventsQuery={eventsQuery}
                     onEventsQueryChange={setEventsQuery}
                     eventsOnlyErrors={eventsOnlyErrors}

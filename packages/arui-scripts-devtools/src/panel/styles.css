@@ -424,6 +424,26 @@
     white-space: pre-wrap;
 }
 
+/* кадр стека, который можно открыть в Sources: выглядит как текст, ведёт себя как ссылка */
+.error__frame {
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--arui-devtools-link);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.error__frame:hover {
+    text-decoration: underline;
+}
+
+.error__frame:focus-visible {
+    outline: 2px solid var(--arui-devtools-border-focus);
+    outline-offset: 1px;
+}
+
 .resources {
     margin-top: 12px;
 }
