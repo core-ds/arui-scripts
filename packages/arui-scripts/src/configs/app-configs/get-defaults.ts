@@ -99,9 +99,6 @@ export function getDefaultAppConfig(): AppConfigs {
         nodeExternals: {
             modulesFromFile: true,
         },
-
-        // Devtools
-        devtools: 'dev',
     };
 }
 

@@ -1,23 +1,7 @@
 {
     "name": "@alfalab/scripts-devtools",
     "version": "0.0.0",
-    "description": "Панель отладки модулей arui-scripts",
-    "main": "./build/index.js",
-    "module": "./build/esm/index.js",
-    "types": "./build/index.d.ts",
-    "exports": {
-        ".": {
-            "types": "./build/index.d.ts",
-            "import": "./build/esm/index.js",
-            "require": "./build/index.js"
-        },
-        "./auto": {
-            "types": "./build/auto.d.ts",
-            "import": "./build/esm/auto.js",
-            "require": "./build/auto.js"
-        },
-        "./package.json": "./package.json"
-    },
+    "description": "Расширение Chrome для отладки модулей arui-scripts",
     "license": "MPL-2.0",
     "repository": {
         "type": "git",
@@ -28,18 +12,14 @@
     },
     "homepage": "https://github.com/core-ds/arui-scripts/tree/master/packages/arui-scripts-devtools#readme",
     "scripts": {
-        "build:commonjs": "tsc --project tsconfig.json",
-        "build:esm": "tsc --project tsconfig.esm.json",
-        "build": "yarn clean && yarn build:commonjs && yarn build:esm && node scripts/bundle-mount.js && yarn build:extension",
+        "build": "yarn clean && node scripts/bundle-extension.js",
         "clean": "rm -rf build tsconfig.tsbuildinfo",
         "test": "jest",
         "lint:scripts": "arui-presets-lint scripts",
         "format": "arui-presets-lint format",
         "format:check": "arui-presets-lint format:check",
         "lint": "yarn lint:scripts && yarn format:check",
-        "lint:fix": "yarn lint:scripts --fix && yarn format",
-        "audit": "yarn npm audit --severity high --environment production",
-        "build:extension": "node scripts/bundle-extension.js"
+        "lint:fix": "yarn lint:scripts --fix && yarn format"
     },
     "devDependencies": {
         "@rspack/core": "2.0.0",
@@ -55,5 +35,6 @@
         "react-dom": "^19.0.0",
         "ts-jest": "28.0.8",
         "typescript": "6.0.2"
-    }
+    },
+    "private": true
 }

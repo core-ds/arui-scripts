@@ -1,5 +1,5 @@
 import { EMPTY } from '../constants';
-import { type ModuleLoadRecord } from '../contract';
+import { type ModuleLoadRecord } from '../types';
 import { formatBytes, formatDuration, getTotalDuration } from '../utils/format';
 
 function createRecord(timings: ModuleLoadRecord['timings']): ModuleLoadRecord {

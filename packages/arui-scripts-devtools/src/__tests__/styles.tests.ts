@@ -1,5 +1,3 @@
-import { BADGE_STYLES } from '../ui/badge';
-
 import PANEL_STYLES from '../panel/styles.css';
 
 /** объявления токенов живут в одном блоке в начале листа, всё остальное - правила */
@@ -10,10 +8,7 @@ function getRules(css: string) {
 /** цвет, вписанный руками мимо токенов */
 const LITERAL_COLOR = /#[0-9a-f]{3,8}\b|\brgba?\(/i;
 
-describe.each([
-    ['PANEL_STYLES', PANEL_STYLES],
-    ['BADGE_STYLES', BADGE_STYLES],
-])('%s', (_name, css) => {
+describe.each([['PANEL_STYLES', PANEL_STYLES]])('%s', (_name, css) => {
     it('should take every colour from a token, not from a literal', () => {
         // цвет мимо токена не поменяется вместе с палитрой приложения и разъедется
         // с остальным интерфейсом - такие правки надо ловить сразу

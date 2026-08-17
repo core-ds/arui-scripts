@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { fireEvent, render } from '@testing-library/react';
 
-import { type DevtoolsEvent } from '../contract';
 import { EventsView } from '../panel/events-view';
+import { type DevtoolsEvent } from '../types';
 
 function createEvent(overrides: Partial<DevtoolsEvent> = {}): DevtoolsEvent {
     return {

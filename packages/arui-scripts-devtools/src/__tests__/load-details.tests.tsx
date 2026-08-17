@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 
-import { type ModuleLoadRecord } from '../contract';
 import { LoadDetails } from '../panel/load-details';
+import { type ModuleLoadRecord } from '../types';
 
 // eslint-disable-next-line no-script-url -- это и есть предмет теста
 const SCRIPT_URL = 'javascript:alert(document.cookie)';

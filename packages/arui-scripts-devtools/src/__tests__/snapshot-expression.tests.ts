@@ -15,7 +15,9 @@ function evaluate(pageWindow: Record<string, unknown>): ModulesStoreState {
     // предмет теста - именно строка, которую исполнит чужая страница, поэтому тут
     // без Function не обойтись: проверять надо ровно то, что уедет в eval
     // eslint-disable-next-line no-new-func, @typescript-eslint/no-implied-eval
-    return new Function('window', `return ${SNAPSHOT_EXPRESSION};`)(pageWindow) as ModulesStoreState;
+    return new Function('window', `return ${SNAPSHOT_EXPRESSION};`)(
+        pageWindow,
+    ) as ModulesStoreState;
 }
 
 const SNAPSHOT = { version: 1, loads: [], events: [], shareScopes: [] };

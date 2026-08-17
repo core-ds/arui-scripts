@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { fireEvent, render } from '@testing-library/react';
 
-import { type ModuleLoadRecord } from '../contract';
 import { LoadsTable } from '../panel/loads-table';
+import { type ModuleLoadRecord } from '../types';
 
 function createRecord(overrides: Partial<ModuleLoadRecord> = {}): ModuleLoadRecord {
     return {

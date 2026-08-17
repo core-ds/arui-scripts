@@ -31,7 +31,6 @@ import { getImageMinLoader } from './config-extras/minimizers';
 import { checkNodeVersion } from './util/check-node-version';
 import { compressionPluginsForDictionaries } from './util/compression-plugins-for-dictionaries';
 import { createWatchIgnoreRegex } from './util/create-watch-ignore-regex';
-import { getDevtoolsEntry } from './util/get-devtools-entry';
 import { type Entry, getEntry } from './util/get-entry';
 import { configs } from './app-configs';
 import { babelClientConfig as babelConf } from './babel-client';
@@ -48,62 +47,12 @@ import { swcClientConfig } from './swc';
 
 const noopPath = require.resolve('./util/noop');
 
-/**
- * Энтрипоинт панели отладки модулей, если её надо подмешать в этот конфиг.
- *
- * Панель нужна только в основном клиентском конфиге: в отдельной сборке модулей и в конфигурациях
- * compat-модулей нет самого приложения, и вешать на них панель незачем. Единственный конфиг
- * без имени - основной, по этому и отличаем.
- *
- * По конфигу нельзя понять, грузит ли приложение модули: хосту-потребителю ключ `modules`
- * не нужен, он подключает их в рантайме. Поэтому на этапе сборки отсекаем только тех, кто
- * явно отказался от поддержки модулей, а решение «показывать ли бейдж» принимается уже
- * в браузере - по факту появления стора.
- */
-function getDevtoolsEntries(mode: 'dev' | 'prod', configName?: string): string[] {
-    if (configName !== undefined) {
-        return [];
-    }
-
-    // проект сам разбирается с module federation, загрузчик модулей в игре не участвует,
-    // и показывать панели нечего
-    if (configs.disableModulesSupport) {
-        return [];
-    }
-
-    // Разрешающий список, а не запрещающий: незнакомое значение не должно уезжать
-    // в прод-бандл. `validateConfig` такие значения отсекает раньше, но он тут
-    // единственная преграда, а добавить в `DevtoolsMode` режим и забыть про этот
-    // гейт слишком легко - цена ошибки в этом направлении несопоставима.
-    const shouldInject =
-        configs.devtools === 'always' || (configs.devtools === 'dev' && mode === 'dev');
-
-    if (!shouldInject) {
-        return [];
-    }
-
-    const entry = getDevtoolsEntry();
-
-    if (!entry) {
-        // eslint-disable-next-line no-console
-        console.warn(
-            '[arui-scripts] настройка `devtools` включена, но пакет `@alfalab/scripts-devtools` ' +
-                'не найден или не собран - панель отладки в сборку не попадёт.',
-        );
-
-        return [];
-    }
-
-    return [entry];
-}
-
-function getSingleEntry(entryPoint: string[], mode: 'dev' | 'prod', configName?: string) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function getSingleEntry(entryPoint: string[], mode: 'dev' | 'prod') {
     return [
         ...(Array.isArray(configs.clientPolyfillsEntry)
             ? configs.clientPolyfillsEntry
             : [configs.clientPolyfillsEntry]),
-        // до кода приложения: если приложение упадёт на старте, панель всё равно откроется
-        ...getDevtoolsEntries(mode, configName),
         ...entryPoint,
     ].filter(Boolean) as string[];
 }
@@ -169,7 +118,7 @@ export const createSingleClientWebpackConfig = (
     target: 'browserslist',
     mode: mode === 'dev' ? 'development' : 'production',
     devtool: mode === 'dev' ? configs.devSourceMaps : 'source-map',
-    entry: getEntry(entry, getSingleEntry, mode, configName),
+    entry: getEntry(entry, getSingleEntry, mode),
     // in production mode we need to fail on first error
     bail: mode === 'prod',
     context: configs.cwd,
