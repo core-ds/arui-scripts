@@ -3,7 +3,7 @@ import { Fragment, useMemo, useState } from 'react';
 import { PANEL_TABS } from '../constants';
 import { type PanelAppProps, type PanelBodyProps, type PanelTabId } from '../types';
 import { readPanelState, writePanelState } from '../utils/panel-state';
-import { analyzeShareScopes } from '../utils/share-scope';
+import { analyzeShareScopes, countShareProblems } from '../utils/share-scope';
 
 import { PanelErrorBoundary } from './error-boundary';
 import { EventBusView } from './event-bus-view';
@@ -153,6 +153,10 @@ export function PanelApp({ source, onClose }: PanelAppProps) {
 
         return Array.from(found).sort();
     }, [state]);
+    // маркер вместо счётчика в заголовке: привлечь внимание нужно, а превращать полоску
+    // вкладок в бегущую строку - нет. Сколько именно проблем, видно внутри вкладки
+    const hasShareProblems = countShareProblems(scopes) > 0;
+
     const selectTab = (tab: PanelTabId) => {
         setActiveTab(tab);
         writePanelState({ tab });
@@ -193,8 +197,6 @@ export function PanelApp({ source, onClose }: PanelAppProps) {
                 )}
             </div>
             <div className='tabs' role='tablist'>
-                {/* только название: счётчик проблем живёт внутри вкладки, рядом с самими
-                    проблемами, а в полоске он превращал заголовок в бегущую строку */}
                 {PANEL_TABS.map((tab) => (
                     <button
                         type='button'
@@ -205,6 +207,15 @@ export function PanelApp({ source, onClose }: PanelAppProps) {
                         onClick={() => selectTab(tab.id)}
                     >
                         {tab.title}
+                        {tab.id === 'share-scope' && hasShareProblems && (
+                            <span
+                                className='tab__alert'
+                                title='В share scope есть проблемы'
+                                aria-label='есть проблемы'
+                            >
+                                !
+                            </span>
+                        )}
                     </button>
                 ))}
             </div>

@@ -218,6 +218,24 @@
     color: var(--arui-devtools-text);
 }
 
+/* Маркер внимания у вкладки. Кружок с восклицательным знаком - Badge дизайн-системы
+   в варианте attention: заметен боковым зрением и не растягивает заголовок */
+.tab__alert {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    margin-left: 6px;
+    border-radius: 50%;
+    background: var(--arui-devtools-negative);
+    color: var(--arui-devtools-text);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 16px;
+    vertical-align: middle;
+}
+
 .tab:focus-visible {
     outline: 2px solid var(--arui-devtools-border-focus);
     outline-offset: -2px;

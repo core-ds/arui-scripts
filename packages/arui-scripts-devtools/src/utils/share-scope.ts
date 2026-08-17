@@ -120,3 +120,13 @@ export function analyzeShareScopes(
         }),
     }));
 }
+
+/** есть ли в снимке хоть одна проблема - по этому вкладка получает маркер внимания */
+export function countShareProblems(scopes: ShareScope[]): number {
+    return scopes.reduce(
+        (total, scope) =>
+            total +
+            scope.packages.reduce((scopeTotal, item) => scopeTotal + item.problems.length, 0),
+        0,
+    );
+}
