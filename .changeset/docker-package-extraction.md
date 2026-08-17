@@ -21,6 +21,12 @@ dev-зависимостей) у них общий.
 Попутно починен `archive-build`: он падал с `TypeError: Cannot read properties of undefined
 (reading 'c')`, потому что в `tar@7` нет default-экспорта, а код использовал `import tar from 'tar'`.
 
+Команды `arui-scripts docker-build`, `docker-build:compiled` и `archive-build` теперь запускают CLI
+`@alfalab/arui-scripts-artifacts` с конфигом, который arui-scripts возит с собой. Благодаря этому
+`arui-scripts-artifacts.ts` в корне проекта работает и через команды arui-scripts: он находится по
+обычным правилам и кладется поверх настроек из конфига arui-scripts. Заводить его по-прежнему не
+обязательно.
+
 Настройки сборки артефактов в конфиге arui-scripts (`dockerRegistry`, `baseDockerImage`,
 `nginxRootPath`, `nginx`, `runFromNonRootUser`, `removeDevDependenciesDuringDockerBuild`,
 `archiveName`, `additionalBuildPath`) и оверрайды `Dockerfile`, `DockerfileCompiled`, `nginx`,

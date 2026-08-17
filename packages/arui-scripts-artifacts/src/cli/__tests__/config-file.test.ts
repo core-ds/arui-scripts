@@ -1,4 +1,4 @@
-import { getAvailableCommands, resolveCommandOptions } from '../config-file';
+import { getAvailableCommands, mergeConfigFiles, resolveCommandOptions } from '../config-file';
 
 describe('resolveCommandOptions', () => {
     it('should return null for an unknown command', () => {
@@ -114,6 +114,55 @@ describe('resolveCommandOptions', () => {
         });
 
         expect(options).not.toHaveProperty('commands');
+    });
+});
+
+describe('mergeConfigFiles', () => {
+    it('should merge sections by field, not replace them', () => {
+        const merged = mergeConfigFiles(
+            { docker: { registry: 'registry.example', baseImage: 'base:1.0.0' } },
+            { docker: { baseImage: 'base:2.0.0' } },
+        );
+
+        expect(merged).toEqual({
+            docker: { registry: 'registry.example', baseImage: 'base:2.0.0' },
+        });
+    });
+
+    it('should merge commands by name and keep the ones declared only once', () => {
+        const merged = mergeConfigFiles(
+            {
+                commands: {
+                    'archive-build': { build: { removeDevDependencies: true } },
+                    'docker-build': { serverPort: 3000 },
+                },
+            },
+            {
+                commands: {
+                    'archive-build': { archive: { name: 'app.tar' } },
+                    'docker-build:server': { artifact: 'docker' },
+                },
+            },
+        );
+
+        expect(merged.commands).toEqual({
+            'archive-build': {
+                build: { removeDevDependencies: true },
+                archive: { name: 'app.tar' },
+            },
+            'docker-build': { serverPort: 3000 },
+            'docker-build:server': { artifact: 'docker' },
+        });
+    });
+
+    it('should not add an empty commands section', () => {
+        expect(mergeConfigFiles({ serverPort: 3000 }, {})).not.toHaveProperty('commands');
+    });
+
+    it('should let the last config win for scalar options', () => {
+        expect(mergeConfigFiles({ serverPort: 3000 }, { serverPort: 4000 })).toEqual({
+            serverPort: 4000,
+        });
     });
 });
 

@@ -8,6 +8,7 @@ export {
     BUILT_IN_COMMANDS,
     defineConfig,
     getAvailableCommands,
+    mergeConfigFiles,
     resolveCommandOptions,
     type ArtifactsConfigFile,
     type ArtifactsConfigFileExport,

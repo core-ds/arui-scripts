@@ -1,18 +1,5 @@
-import { buildArchive } from '@alfalab/arui-scripts-artifacts';
-
-import { getArtifactsOptions } from '../util/artifacts-options';
+import { runArtifactsCli } from '../util/run-artifacts-cli';
 
 (async () => {
-    try {
-        await buildArchive(
-            getArtifactsOptions({
-                // archive-build исторически всегда удаляет dev-зависимости, независимо от
-                // removeDevDependenciesDuringDockerBuild
-                build: { removeDevDependencies: true },
-            }),
-        );
-    } catch {
-        // buildArchive уже напечатал ошибку (и стек, если включен debug)
-        process.exit(1);
-    }
+    await runArtifactsCli('archive-build');
 })();
