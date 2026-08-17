@@ -50,6 +50,11 @@ function PanelBody({
     const loads = snapshot?.loads ?? [];
     const events = snapshot?.events ?? [];
 
+    // строка состояния описывает данные загрузчика: на вкладках, которые их не показывают,
+    // она только путает - «событий» там означало бы совсем другие события
+    const showsModules =
+        activeTab === 'modules' || activeTab === 'events' || activeTab === 'timeline';
+
     let statusText = `Загрузок: ${loads.length} · событий: ${events.length}`;
 
     if (state.status === 'unsupported') {
@@ -92,9 +97,11 @@ function PanelBody({
 
     return (
         <Fragment>
-            <div className={`status${state.status === 'unsupported' ? ' status_error' : ''}`}>
-                {statusText}
-            </div>
+            {showsModules && (
+                <div className={`status${state.status === 'unsupported' ? ' status_error' : ''}`}>
+                    {statusText}
+                </div>
+            )}
             <div className='body'>{content}</div>
         </Fragment>
     );

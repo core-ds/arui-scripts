@@ -8,4 +8,4 @@ import { getChromeApi } from './chrome-api';
  */
 const panels = getChromeApi()?.devtools?.panels;
 
-panels?.create('ARUI', '', 'panel.html');
+panels?.create('ARUI', 'icons/icon-32.png', 'panel.html');

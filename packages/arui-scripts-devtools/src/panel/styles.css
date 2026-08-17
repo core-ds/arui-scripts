@@ -189,8 +189,17 @@
     flex: none;
     gap: 24px;
     padding: 0 16px;
+    overflow-x: auto;
     border-bottom: 1px solid var(--arui-devtools-border);
     background: var(--arui-devtools-bg-secondary);
+
+    /* вкладок шесть, а панель DevTools бывает и узкой: полоска прокручивается,
+       как в самих DevTools, вместо того чтобы обрезать последнюю вкладку */
+    scrollbar-width: none;
+}
+
+.tabs::-webkit-scrollbar {
+    display: none;
 }
 
 .tab {

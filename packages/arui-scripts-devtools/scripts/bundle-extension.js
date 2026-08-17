@@ -19,7 +19,10 @@ const SRC = path.join(PKG, 'src', 'extension');
 const OUT = path.join(PKG, 'build', 'extension');
 
 /** статика расширения: копируется как есть */
-const ASSETS = ['manifest.json', 'devtools.html', 'panel.html'];
+const ASSETS = ['devtools.html', 'panel.html'];
+
+/** иконки: Chrome принимает только растр, поэтому они лежат готовыми (scripts/generate-icons.js) */
+const ICONS_DIR = 'icons';
 
 function createConfig() {
     return {
@@ -99,15 +102,53 @@ function copyAssets() {
     for (const asset of ASSETS) {
         fs.copyFileSync(path.join(SRC, asset), path.join(OUT, asset));
     }
+
+    fs.cpSync(path.join(SRC, ICONS_DIR), path.join(OUT, ICONS_DIR), { recursive: true });
+}
+
+/**
+ * Кладёт манифест, подставив версию пакета.
+ *
+ * Версия расширения обязана совпадать с версией пакета: иначе по номеру в chrome://extensions
+ * нельзя понять, что именно установлено, а обновлять расширение приходится вручную.
+ */
+function writeManifest() {
+    const manifest = JSON.parse(fs.readFileSync(path.join(SRC, 'manifest.json'), 'utf8'));
+    const { version } = JSON.parse(fs.readFileSync(path.join(PKG, 'package.json'), 'utf8'));
+
+    // Chrome принимает только числовые версии вида 1.2.3 - префиксы и суффиксы npm ему чужие
+    const numeric = /^\d+(\.\d+){0,3}$/.test(version) ? version : manifest.version;
+
+    fs.writeFileSync(
+        path.join(OUT, 'manifest.json'),
+        `${JSON.stringify({ ...manifest, version: numeric }, null, 4)}\n`,
+    );
+
+    return numeric;
 }
 
 function assertBundle() {
-    for (const file of ['devtools.js', 'panel.js', ...ASSETS]) {
+    for (const file of ['devtools.js', 'panel.js', 'manifest.json', ...ASSETS]) {
         const full = path.join(OUT, file);
 
         if (!fs.existsSync(full)) {
             fail(`${file}: не оказалось в сборке`);
         }
+    }
+
+    const manifest = JSON.parse(fs.readFileSync(path.join(OUT, 'manifest.json'), 'utf8'));
+
+    // иконки объявлены - значит должны быть на месте, иначе Chrome ругается при установке
+    Object.values(manifest.icons ?? {}).forEach((icon) => {
+        if (!fs.existsSync(path.join(OUT, icon))) {
+            fail(`${icon}: иконка объявлена в манифесте, но её нет в сборке`);
+        }
+    });
+
+    // host-права остаются опциональными: до включения подмены расширение не имеет прав
+    // ни на одну страницу, и это его главное свойство с точки зрения согласования
+    if (manifest.host_permissions) {
+        fail('манифест просит host_permissions на старте - они должны оставаться опциональными');
     }
 
     const panel = fs.readFileSync(path.join(OUT, 'panel.js'), 'utf8');
@@ -132,8 +173,13 @@ function assertBundle() {
 async function main() {
     await runRspack(createConfig());
     copyAssets();
+
+    const version = writeManifest();
+
     assertBundle();
-    console.log(`[bundle-extension] готово: ${path.relative(process.cwd(), OUT)}`);
+    console.log(
+        `[bundle-extension] готово: ${path.relative(process.cwd(), OUT)}, версия ${version}`,
+    );
 }
 
 main().catch((error) => {
