@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
 
-import { type ModulesStoreState, type PanelSource } from '../types';
+import { type DevtoolsState, type PanelSource } from '../types';
 
 /**
- * Состояние стора для React-дерева панели.
+ * Состояние всех неймспейсов контракта для React-дерева панели.
  *
- * Откуда данные - решает источник: инжектнутая панель читает глобал напрямую, расширение
- * браузера ходит через `chrome.devtools.inspectedWindow.eval`. Панель об этом не знает.
+ * Откуда данные - решает источник: расширение спрашивает страницу через
+ * `chrome.devtools.inspectedWindow.eval`. Панель об этом не знает.
  */
-export function useModulesStore(source: PanelSource): ModulesStoreState {
-    const [state, setState] = useState<ModulesStoreState>(source.getInitialState);
+export function useModulesStore(source: PanelSource): DevtoolsState {
+    const [state, setState] = useState<DevtoolsState>(source.getInitialState);
 
     useEffect(() => source.subscribe(setState), [source]);
 

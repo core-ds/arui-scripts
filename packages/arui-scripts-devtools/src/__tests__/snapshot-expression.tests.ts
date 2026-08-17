@@ -1,34 +1,41 @@
 import {
+    DEVTOOLS_EVENT_BUS_NAMESPACE,
     DEVTOOLS_GLOBAL_KEY,
     DEVTOOLS_MODULES_NAMESPACE,
     SUPPORTED_DEVTOOLS_VERSION,
+    SUPPORTED_EVENT_BUS_VERSION,
     SUPPORTED_MODULES_VERSION,
 } from '../constants';
 import { SNAPSHOT_EXPRESSION } from '../extension/snapshot-expression';
-import { type ModulesStoreState } from '../types';
+import { type DevtoolsState } from '../types';
 
 /**
  * Выражение выполняется на инспектируемой странице, а не у нас, поэтому и проверяем его так:
  * исполняем в функции со своим `window` - ровно то, что делает eval расширения.
  */
-function evaluate(pageWindow: Record<string, unknown>): ModulesStoreState {
+function evaluate(pageWindow: Record<string, unknown>): DevtoolsState {
     // предмет теста - именно строка, которую исполнит чужая страница, поэтому тут
     // без Function не обойтись: проверять надо ровно то, что уедет в eval
     // eslint-disable-next-line no-new-func, @typescript-eslint/no-implied-eval
-    return new Function('window', `return ${SNAPSHOT_EXPRESSION};`)(
-        pageWindow,
-    ) as ModulesStoreState;
+    return new Function('window', `return ${SNAPSHOT_EXPRESSION};`)(pageWindow) as DevtoolsState;
 }
 
-const SNAPSHOT = { version: 1, loads: [], events: [], shareScopes: [] };
+const SNAPSHOT = { version: 1, loads: [], events: [], shareScopes: [], sharedRequirements: {} };
+const BUS_SNAPSHOT = { version: 1, events: [], listeners: [] };
 
 describe('SNAPSHOT_EXPRESSION', () => {
     it('should wait when the page has no devtools global at all', () => {
-        expect(evaluate({})).toEqual({ status: 'waiting' });
+        expect(evaluate({})).toEqual({
+            modules: { status: 'waiting' },
+            eventBus: { status: 'waiting' },
+        });
     });
 
-    it('should wait when the loader is there but no module was loaded yet', () => {
-        expect(evaluate({ [DEVTOOLS_GLOBAL_KEY]: { version: 1 } })).toEqual({ status: 'waiting' });
+    it('should wait when the shell is there but no namespace filled it', () => {
+        expect(evaluate({ [DEVTOOLS_GLOBAL_KEY]: { version: 1 } })).toEqual({
+            modules: { status: 'waiting' },
+            eventBus: { status: 'waiting' },
+        });
     });
 
     it('should return the snapshot', () => {
@@ -42,13 +49,19 @@ describe('SNAPSHOT_EXPRESSION', () => {
             },
         });
 
-        expect(state).toEqual({ status: 'ready', snapshot: SNAPSHOT });
+        expect(state.modules).toEqual({ status: 'ready', snapshot: SNAPSHOT });
     });
 
     it('should report an unsupported root version', () => {
         const state = evaluate({ [DEVTOOLS_GLOBAL_KEY]: { version: 42 } });
 
-        expect(state).toEqual({
+        // оболочка одна на все неймспейсы: незнакомая версия обесценивает оба
+        expect(state.modules).toEqual({
+            status: 'unsupported',
+            found: 42,
+            supported: SUPPORTED_DEVTOOLS_VERSION,
+        });
+        expect(state.eventBus).toEqual({
             status: 'unsupported',
             found: 42,
             supported: SUPPORTED_DEVTOOLS_VERSION,
@@ -63,7 +76,7 @@ describe('SNAPSHOT_EXPRESSION', () => {
             },
         });
 
-        expect(state).toEqual({
+        expect(state.modules).toEqual({
             status: 'unsupported',
             found: 7,
             supported: SUPPORTED_MODULES_VERSION,
@@ -78,7 +91,44 @@ describe('SNAPSHOT_EXPRESSION', () => {
             },
         });
 
-        expect(state).toEqual({ status: 'waiting' });
+        expect(state.modules).toEqual({ status: 'waiting' });
+    });
+
+    it('should read the event bus namespace too', () => {
+        // неймспейсы независимы: их наполняют разные пакеты, каждый со своей версией
+        const state = evaluate({
+            [DEVTOOLS_GLOBAL_KEY]: {
+                version: SUPPORTED_DEVTOOLS_VERSION,
+                [DEVTOOLS_EVENT_BUS_NAMESPACE]: {
+                    version: SUPPORTED_EVENT_BUS_VERSION,
+                    getSnapshot: () => BUS_SNAPSHOT,
+                },
+            },
+        });
+
+        expect(state.eventBus).toEqual({ status: 'ready', snapshot: BUS_SNAPSHOT });
+        expect(state.modules).toEqual({ status: 'waiting' });
+    });
+
+    it('should report an unsupported event bus version on its own', () => {
+        const state = evaluate({
+            [DEVTOOLS_GLOBAL_KEY]: {
+                version: SUPPORTED_DEVTOOLS_VERSION,
+                [DEVTOOLS_MODULES_NAMESPACE]: {
+                    version: SUPPORTED_MODULES_VERSION,
+                    getSnapshot: () => SNAPSHOT,
+                },
+                [DEVTOOLS_EVENT_BUS_NAMESPACE]: { version: 9, getSnapshot: () => BUS_SNAPSHOT },
+            },
+        });
+
+        // сломанная шина не должна лишать данных загрузчик модулей
+        expect(state.modules.status).toBe('ready');
+        expect(state.eventBus).toEqual({
+            status: 'unsupported',
+            found: 9,
+            supported: SUPPORTED_EVENT_BUS_VERSION,
+        });
     });
 
     it('should wait instead of throwing into the inspected page', () => {
@@ -95,7 +145,7 @@ describe('SNAPSHOT_EXPRESSION', () => {
             },
         });
 
-        expect(state).toEqual({ status: 'waiting' });
+        expect(state.modules).toEqual({ status: 'waiting' });
     });
 
     it('should not use syntax the inspected page may not understand', () => {

@@ -1,22 +1,35 @@
+import { reportDispatch, reportListenerAdded, reportListenerRemoved } from './devtools/report';
 import { type AbstractAppEventBus, type AbstractKnownEventTypes } from './types/abstract-types';
 import { CustomEvent } from './custom-event';
 
 export type EventBusParams = {
     targetNode?: EventTarget;
     debugMode?: boolean;
+    /**
+     * Ключ шины для диагностики: на странице их может быть несколько, и в расширении
+     * отладки события нужно различать. Проставляется в `createBus`.
+     */
+    devtoolsKey?: string;
 };
 
 export class EventBus<KnownEventTypes extends AbstractKnownEventTypes>
     implements AbstractAppEventBus<KnownEventTypes>
 {
-    constructor({ targetNode = document, debugMode = false }: EventBusParams = {}) {
+    constructor({
+        targetNode = document,
+        debugMode = false,
+        devtoolsKey = 'default',
+    }: EventBusParams = {}) {
         this.debugMode = debugMode;
         this.targetNode = targetNode;
+        this.devtoolsKey = devtoolsKey;
     }
 
     private targetNode: EventTarget;
 
     private debugMode: boolean;
+
+    private devtoolsKey: string;
 
     private lastEventValues = {} as Record<keyof KnownEventTypes, unknown>;
 
@@ -25,6 +38,8 @@ export class EventBus<KnownEventTypes extends AbstractKnownEventTypes>
         PayloadType extends KnownEventTypes[EventName],
     >(eventName: EventName, detail?: PayloadType): void {
         this.lastEventValues[eventName] = detail;
+        // до самой отправки: если слушатель бросит, событие всё равно должно остаться в логе
+        reportDispatch(this.devtoolsKey, eventName as string, detail);
         this.targetNode.dispatchEvent(new CustomEvent(eventName as string, { detail }));
 
         if (this.debugMode) {
@@ -53,6 +68,7 @@ export class EventBus<KnownEventTypes extends AbstractKnownEventTypes>
             eventHandler as EventListener,
             options,
         );
+        reportListenerAdded(this.devtoolsKey, eventName as string);
     }
 
     addEventListenerAndGetLast<
@@ -81,6 +97,7 @@ export class EventBus<KnownEventTypes extends AbstractKnownEventTypes>
             eventHandler as unknown as EventListener,
             options,
         );
+        reportListenerRemoved(this.devtoolsKey, eventName as string);
     }
 }
 
@@ -97,7 +114,7 @@ export function createBus(
         window.__alfa_event_buses = {};
     }
     if (!window.__alfa_event_buses[key]) {
-        window.__alfa_event_buses[key] = new EventBus(params);
+        window.__alfa_event_buses[key] = new EventBus({ devtoolsKey: key, ...params });
     }
 
     return window.__alfa_event_buses[key] as EventBus<AbstractKnownEventTypes>;

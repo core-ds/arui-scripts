@@ -21,6 +21,12 @@ export const DEVTOOLS_GLOBAL_KEY = '__ARUI_DEVTOOLS__';
 /** имя неймспейса загрузчика модулей внутри оболочки */
 export const DEVTOOLS_MODULES_NAMESPACE = 'modules';
 
+/** имя неймспейса событийной шины внутри оболочки */
+export const DEVTOOLS_EVENT_BUS_NAMESPACE = 'eventBus';
+
+/** версия контракта неймспейса eventBus, которую понимает расширение */
+export const SUPPORTED_EVENT_BUS_VERSION = 1;
+
 /** версия оболочки, которую понимает эта панель */
 export const SUPPORTED_DEVTOOLS_VERSION = 1;
 
@@ -83,6 +89,7 @@ export const PANEL_TABS: readonly PanelTabDefinition[] = [
     { id: 'modules', title: 'Модули' },
     { id: 'events', title: 'События' },
     { id: 'timeline', title: 'Таймлайн' },
+    { id: 'event-bus', title: 'Event bus' },
     { id: 'overrides', title: 'Подмена' },
     { id: 'share-scope', title: 'Share scope' },
 ];
@@ -110,6 +117,8 @@ export const LOADS_TABLE_COLUMNS = [
 ];
 
 export const EVENTS_COLUMNS = ['Время', 'Событие', 'Модуль', 'Стадия', 'Сообщение'];
+
+export const EVENT_BUS_COLUMNS = ['Время', 'Шина', 'Событие', 'Слушателей', 'Нагрузка'];
 
 /** отступ подсказки от края экрана и от самой иконки, px */
 export const HINT_GAP = 8;

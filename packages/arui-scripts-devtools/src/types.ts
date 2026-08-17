@@ -13,6 +13,7 @@ import { type ReactNode } from 'react';
 export type AruiDevtools = {
     readonly version: number;
     modules?: AruiModulesDevtools;
+    eventBus?: AruiEventBusDevtools;
 };
 
 export type AruiModulesDevtools = {
@@ -163,6 +164,51 @@ export type ShareScope = {
     packages: SharedPackage[];
 };
 
+/* --------------------------------- event bus -------------------------------- */
+
+export type AruiEventBusDevtools = {
+    readonly version: number;
+    getSnapshot(): EventBusSnapshot;
+    subscribe(listener: () => void): () => void;
+};
+
+export type EventBusSnapshot = {
+    version: number;
+    events: EventBusEventRecord[];
+    listeners: EventBusListenerCount[];
+};
+
+export type EventBusEventRecord = {
+    id: number;
+    /** ключ шины: их на странице может быть несколько */
+    bus: string;
+    eventName: string;
+    payload: unknown;
+    /** нагрузку не удалось сериализовать; в payload лежит описание вместо значения */
+    payloadOmitted?: boolean;
+    /** сколько слушателей получили событие в момент отправки */
+    listeners: number;
+    timestamp: number;
+    time: number;
+};
+
+export type EventBusListenerCount = {
+    bus: string;
+    eventName: string;
+    count: number;
+};
+
+export type EventBusStoreState =
+    | { status: 'ready'; snapshot: EventBusSnapshot }
+    | { status: 'waiting' }
+    | { status: 'unsupported'; found: number; supported: number };
+
+export type EventBusViewProps = {
+    state: EventBusStoreState;
+    query: string;
+    onQueryChange(query: string): void;
+};
+
 /* ------------------------------ состояние стора ----------------------------- */
 
 export type ModulesStoreState =
@@ -225,7 +271,13 @@ export type OverridesViewProps = {
     origins: string[];
 };
 
-export type PanelTabId = 'modules' | 'events' | 'timeline' | 'overrides' | 'share-scope';
+export type PanelTabId =
+    | 'modules'
+    | 'events'
+    | 'timeline'
+    | 'event-bus'
+    | 'overrides'
+    | 'share-scope';
 
 export type PanelTabDefinition = {
     id: PanelTabId;
@@ -239,11 +291,22 @@ export type PanelTabDefinition = {
  * `chrome.devtools.inspectedWindow.eval`. Больше между ними ничего не различается,
  * поэтому источник и оказался единственным швом.
  */
+/**
+ * Состояние всех неймспейсов контракта разом.
+ *
+ * Неймспейсы независимы: загрузчик модулей и шина - разные пакеты, каждый со своей версией
+ * контракта, и любой из них может отсутствовать.
+ */
+export type DevtoolsState = {
+    modules: ModulesStoreState;
+    eventBus: EventBusStoreState;
+};
+
 export type PanelSource = {
     /** состояние на первый кадр: подписка может доехать позже, а рисовать надо сразу */
-    getInitialState(): ModulesStoreState;
+    getInitialState(): DevtoolsState;
     /** подписка на изменения; зовёт listener и в момент подписки, если данные уже есть */
-    subscribe(listener: (state: ModulesStoreState) => void): () => void;
+    subscribe(listener: (state: DevtoolsState) => void): () => void;
 };
 
 export type PanelAppProps = {
@@ -257,6 +320,7 @@ export type PanelAppProps = {
 
 export type PanelBodyProps = {
     state: ModulesStoreState;
+    eventBusState: EventBusStoreState;
     activeTab: PanelTabId;
     /** разобранный снимок скоупа: панель считает его один раз на кадр и раздаёт вниз */
     scopes: ShareScope[];
@@ -270,6 +334,8 @@ export type PanelBodyProps = {
     onEventsQueryChange(query: string): void;
     eventsOnlyErrors: boolean;
     onEventsOnlyErrorsChange(onlyErrors: boolean): void;
+    busQuery: string;
+    onBusQueryChange(query: string): void;
 };
 
 export type PanelErrorBoundaryProps = {

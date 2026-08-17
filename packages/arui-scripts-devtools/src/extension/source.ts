@@ -1,13 +1,13 @@
 import { STORE_POLL_INTERVAL } from '../constants';
-import { type ModulesStoreState, type PanelSource } from '../types';
+import { type DevtoolsState, type PanelSource } from '../types';
 
 import { type ChromeApi, getChromeApi } from './chrome-api';
 import { SNAPSHOT_EXPRESSION } from './snapshot-expression';
 
-const WAITING: ModulesStoreState = { status: 'waiting' };
+const WAITING: DevtoolsState = { modules: { status: 'waiting' }, eventBus: { status: 'waiting' } };
 
-/** похоже ли то, что вернула страница, на состояние стора */
-function isStoreState(value: unknown): value is ModulesStoreState {
+/** похоже ли то, что вернул неймспейс, на состояние стора */
+function isNamespaceState(value: unknown): boolean {
     if (typeof value !== 'object' || value === null) {
         return false;
     }
@@ -15,6 +15,24 @@ function isStoreState(value: unknown): value is ModulesStoreState {
     const { status } = value as { status?: unknown };
 
     return status === 'ready' || status === 'waiting' || status === 'unsupported';
+}
+
+/** ответ страницы: оба неймспейса разом. Незнакомое приводим к «ждём» */
+function toDevtoolsState(value: unknown): DevtoolsState {
+    if (typeof value !== 'object' || value === null) {
+        return WAITING;
+    }
+
+    const { modules, eventBus } = value as { modules?: unknown; eventBus?: unknown };
+
+    return {
+        modules: isNamespaceState(modules)
+            ? (modules as DevtoolsState['modules'])
+            : { status: 'waiting' },
+        eventBus: isNamespaceState(eventBus)
+            ? (eventBus as DevtoolsState['eventBus'])
+            : { status: 'waiting' },
+    };
 }
 
 /**
@@ -43,7 +61,7 @@ export function createExtensionSource(api: ChromeApi | undefined = getChromeApi(
             let stopped = false;
             let lastSignature: string | undefined;
 
-            function emit(state: ModulesStoreState) {
+            function emit(state: DevtoolsState) {
                 if (stopped) {
                     return;
                 }
@@ -74,7 +92,7 @@ export function createExtensionSource(api: ChromeApi | undefined = getChromeApi(
                         return;
                     }
 
-                    emit(isStoreState(result) ? result : WAITING);
+                    emit(toDevtoolsState(result));
                 });
             }
 

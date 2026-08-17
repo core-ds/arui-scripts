@@ -2,12 +2,13 @@ import { STORE_POLL_INTERVAL } from '../constants';
 import { type ChromeApi, type EvalExceptionInfo } from '../extension/chrome-api';
 import { SNAPSHOT_EXPRESSION } from '../extension/snapshot-expression';
 import { createExtensionSource } from '../extension/source';
-import { type DevtoolsSnapshot, type ModulesStoreState } from '../types';
+import { type DevtoolsSnapshot, type DevtoolsState } from '../types';
 
 function createSnapshot(loadsCount: number): DevtoolsSnapshot {
     return {
         version: 1,
         shareScopes: [],
+        sharedRequirements: {},
         loads: Array.from({ length: loadsCount }, (_, index) => ({
             loadId: `load-${index}`,
             moduleId: `module-${index}`,
@@ -67,6 +68,13 @@ function createChrome() {
     };
 }
 
+/** ответ страницы: оба неймспейса разом - ровно то, что возвращает выражение */
+function answer(modules: unknown, eventBus: unknown = { status: 'waiting' }) {
+    return { modules, eventBus };
+}
+
+const WAITING: DevtoolsState = { modules: { status: 'waiting' }, eventBus: { status: 'waiting' } };
+
 describe('createExtensionSource', () => {
     beforeEach(() => {
         jest.useFakeTimers();
@@ -77,20 +85,18 @@ describe('createExtensionSource', () => {
     });
 
     it('should start from waiting: the page has not answered yet', () => {
-        expect(createExtensionSource(createChrome().api).getInitialState()).toEqual({
-            status: 'waiting',
-        });
+        expect(createExtensionSource(createChrome().api).getInitialState()).toEqual(WAITING);
     });
 
     it('should ask the page right away, not only by timer', () => {
         const chrome = createChrome();
-        const states: ModulesStoreState[] = [];
+        const states: DevtoolsState[] = [];
 
-        chrome.answerWith({ status: 'ready', snapshot: createSnapshot(1) });
+        chrome.answerWith(answer({ status: 'ready', snapshot: createSnapshot(1) }));
         createExtensionSource(chrome.api).subscribe((state) => states.push(state));
 
         expect(chrome.evalCalls).toBe(1);
-        expect(states).toEqual([{ status: 'ready', snapshot: createSnapshot(1) }]);
+        expect(states[0].modules).toEqual({ status: 'ready', snapshot: createSnapshot(1) });
     });
 
     it('should keep asking the page while subscribed', () => {
@@ -108,7 +114,7 @@ describe('createExtensionSource', () => {
         const chrome = createChrome();
         const listener = jest.fn();
 
-        chrome.answerWith({ status: 'ready', snapshot: createSnapshot(1) });
+        chrome.answerWith(answer({ status: 'ready', snapshot: createSnapshot(1) }));
         createExtensionSource(chrome.api).subscribe(listener);
         jest.advanceTimersByTime(STORE_POLL_INTERVAL * 3);
 
@@ -119,16 +125,16 @@ describe('createExtensionSource', () => {
         const chrome = createChrome();
         const listener = jest.fn();
 
-        chrome.answerWith({ status: 'ready', snapshot: createSnapshot(1) });
+        chrome.answerWith(answer({ status: 'ready', snapshot: createSnapshot(1) }));
         createExtensionSource(chrome.api).subscribe(listener);
 
-        chrome.answerWith({ status: 'ready', snapshot: createSnapshot(2) });
+        chrome.answerWith(answer({ status: 'ready', snapshot: createSnapshot(2) }));
         jest.advanceTimersByTime(STORE_POLL_INTERVAL);
 
         expect(listener).toHaveBeenCalledTimes(2);
         expect(listener).toHaveBeenLastCalledWith({
-            status: 'ready',
-            snapshot: createSnapshot(2),
+            modules: { status: 'ready', snapshot: createSnapshot(2) },
+            eventBus: { status: 'waiting' },
         });
     });
 
@@ -136,10 +142,13 @@ describe('createExtensionSource', () => {
         const chrome = createChrome();
         const listener = jest.fn();
 
-        chrome.answerWith({ status: 'unsupported', found: 5, supported: 1 });
+        chrome.answerWith(answer({ status: 'unsupported', found: 5, supported: 1 }));
         createExtensionSource(chrome.api).subscribe(listener);
 
-        expect(listener).toHaveBeenCalledWith({ status: 'unsupported', found: 5, supported: 1 });
+        expect(listener).toHaveBeenCalledWith({
+            modules: { status: 'unsupported', found: 5, supported: 1 },
+            eventBus: { status: 'waiting' },
+        });
     });
 
     it('should wait when the page throws on eval', () => {
@@ -150,7 +159,7 @@ describe('createExtensionSource', () => {
         chrome.answerWith(undefined, { isError: true, description: 'no window' });
         createExtensionSource(chrome.api).subscribe(listener);
 
-        expect(listener).toHaveBeenCalledWith({ status: 'waiting' });
+        expect(listener).toHaveBeenCalledWith(WAITING);
     });
 
     it('should wait when the page answers with nonsense', () => {
@@ -160,14 +169,14 @@ describe('createExtensionSource', () => {
         chrome.answerWith('и что мне с этим делать');
         createExtensionSource(chrome.api).subscribe(listener);
 
-        expect(listener).toHaveBeenCalledWith({ status: 'waiting' });
+        expect(listener).toHaveBeenCalledWith(WAITING);
     });
 
     it('should re-ask after a navigation even when the answer looks the same', () => {
         const chrome = createChrome();
         const listener = jest.fn();
 
-        chrome.answerWith({ status: 'waiting' });
+        chrome.answerWith(answer({ status: 'waiting' }));
         createExtensionSource(chrome.api).subscribe(listener);
 
         expect(listener).toHaveBeenCalledTimes(1);
@@ -208,9 +217,28 @@ describe('createExtensionSource', () => {
         const unsubscribe = createExtensionSource(api).subscribe(listener);
 
         unsubscribe();
-        deferred?.({ status: 'ready', snapshot: createSnapshot(1) });
+        deferred?.(answer({ status: 'ready', snapshot: createSnapshot(1) }));
 
         expect(listener).not.toHaveBeenCalled();
+    });
+
+    it('should carry both namespaces of the contract', () => {
+        // неймспейсы независимы: шину наполняет другой пакет, и любого из них может не быть
+        const chrome = createChrome();
+        const listener = jest.fn();
+
+        chrome.answerWith(
+            answer(
+                { status: 'waiting' },
+                { status: 'ready', snapshot: { version: 1, events: [], listeners: [] } },
+            ),
+        );
+        createExtensionSource(chrome.api).subscribe(listener);
+
+        expect(listener).toHaveBeenCalledWith({
+            modules: { status: 'waiting' },
+            eventBus: { status: 'ready', snapshot: { version: 1, events: [], listeners: [] } },
+        });
     });
 
     it('should degrade outside of an extension', () => {
@@ -218,7 +246,7 @@ describe('createExtensionSource', () => {
         const listener = jest.fn();
 
         expect(() => createExtensionSource(undefined).subscribe(listener)).not.toThrow();
-        expect(listener).toHaveBeenCalledWith({ status: 'waiting' });
+        expect(listener).toHaveBeenCalledWith(WAITING);
     });
 
     it('should survive an extension without the navigation API', () => {

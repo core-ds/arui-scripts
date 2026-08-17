@@ -6,3 +6,4 @@ export type { EventBusParams } from './implementation';
 export { useEventBusValue } from './use-event-bus-value';
 
 export type { AbstractAppEventBus, AbstractKnownEventTypes } from './types/abstract-types';
+export * from './devtools';

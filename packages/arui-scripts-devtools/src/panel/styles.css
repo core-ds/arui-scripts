@@ -444,6 +444,28 @@
     outline-offset: 1px;
 }
 
+/* Вкладка событийной шины: колонки под время, шину, событие, слушателей и нагрузку */
+.grid_bus {
+    min-width: 720px;
+}
+
+.row_bus {
+    grid-template-columns: 72px 112px minmax(160px, 1fr) 96px minmax(200px, 2fr);
+}
+
+/* событие ушло, а подписчиков не было - самая частая причина «ничего не произошло» */
+.row_bus_unheard {
+    color: var(--arui-devtools-text-tertiary);
+}
+
+.bus-listeners {
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--arui-devtools-border-subtle);
+    color: var(--arui-devtools-text-secondary);
+    font-size: 12px;
+    line-height: 16px;
+}
+
 /* Вкладка подмены: строка на каждый origin провайдера */
 .overrides {
     padding: 12px 16px;

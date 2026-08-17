@@ -6,6 +6,7 @@ import { readPanelState, writePanelState } from '../utils/panel-state';
 import { analyzeShareScopes, countShareProblems } from '../utils/share-scope';
 
 import { PanelErrorBoundary } from './error-boundary';
+import { EventBusView } from './event-bus-view';
 import { EventsView } from './events-view';
 import { LoadsTable } from './loads-table';
 import { OverridesView, toOrigin } from './overrides-view';
@@ -30,6 +31,7 @@ function restoreActiveTab(): PanelTabId {
  */
 function PanelBody({
     state,
+    eventBusState,
     activeTab,
     scopes,
     providerOrigins,
@@ -41,6 +43,8 @@ function PanelBody({
     onEventsQueryChange,
     eventsOnlyErrors,
     onEventsOnlyErrorsChange,
+    busQuery,
+    onBusQueryChange,
 }: PanelBodyProps) {
     const snapshot = state.status === 'ready' ? state.snapshot : undefined;
     const loads = snapshot?.loads ?? [];
@@ -76,6 +80,10 @@ function PanelBody({
         );
     } else if (activeTab === 'timeline') {
         content = <TimelineView loads={loads} />;
+    } else if (activeTab === 'event-bus') {
+        content = (
+            <EventBusView state={eventBusState} query={busQuery} onQueryChange={onBusQueryChange} />
+        );
     } else if (activeTab === 'overrides') {
         content = <OverridesView origins={providerOrigins} />;
     } else if (activeTab === 'share-scope') {
@@ -99,12 +107,14 @@ function PanelBody({
  * и переключение вкладок, и повторную попытку отрисовки после ошибки.
  */
 export function PanelApp({ source, onClose }: PanelAppProps) {
-    const state = useModulesStore(source);
+    const devtoolsState = useModulesStore(source);
+    const state = devtoolsState.modules;
     const [activeTab, setActiveTab] = useState<PanelTabId>(restoreActiveTab);
     const [expandedLoads, setExpandedLoads] = useState<ReadonlySet<string>>(() => new Set());
     const [loadsQuery, setLoadsQuery] = useState('');
     const [eventsQuery, setEventsQuery] = useState('');
     const [eventsOnlyErrors, setEventsOnlyErrors] = useState(false);
+    const [busQuery, setBusQuery] = useState('');
 
     // Скоуп приезжает в снимке: сам `__webpack_share_scopes__` панели не виден - его снимает
     // загрузчик. Разбираем на каждый снимок, даже с закрытой вкладкой: число проблем
@@ -195,9 +205,10 @@ export function PanelApp({ source, onClose }: PanelAppProps) {
                     );
                 })}
             </div>
-            <PanelErrorBoundary resetKey={state}>
+            <PanelErrorBoundary resetKey={devtoolsState}>
                 <PanelBody
                     state={state}
+                    eventBusState={devtoolsState.eventBus}
                     activeTab={activeTab}
                     scopes={scopes}
                     providerOrigins={providerOrigins}
@@ -209,6 +220,8 @@ export function PanelApp({ source, onClose }: PanelAppProps) {
                     onEventsQueryChange={setEventsQuery}
                     eventsOnlyErrors={eventsOnlyErrors}
                     onEventsOnlyErrorsChange={setEventsOnlyErrors}
+                    busQuery={busQuery}
+                    onBusQueryChange={setBusQuery}
                 />
             </PanelErrorBoundary>
         </div>
