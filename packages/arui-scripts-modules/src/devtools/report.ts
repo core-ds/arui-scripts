@@ -72,6 +72,20 @@ function serializeError(stage: DevtoolsStage, error: unknown): DevtoolsError {
     }
 }
 
+/**
+ * Пересобирает снимок share scope.
+ *
+ * Зовём в начале и в конце загрузки: скоуп меняется именно там - хост кладёт свои библиотеки
+ * на init-sharing, провайдер добавляет свои на container-init. Держать снимок в актуальном
+ * состоянии постоянно нельзя: на одну загрузку приходится больше тридцати обновлений стора,
+ * и перечитывать скоуп на каждое - это работа на пустом месте.
+ */
+function refreshShareScopes() {
+    safe(() => {
+        getDevtoolsModulesStore()?.writer.refreshShareScopes();
+    });
+}
+
 function pushEvent(
     loadId: string,
     type: DevtoolsEventType,
@@ -129,6 +143,7 @@ export function reportLoadStart(info: ModuleLoadStartInfo): string | undefined {
         });
 
         pushEvent(loadId, 'load-start');
+        refreshShareScopes();
 
         return loadId;
     });
@@ -211,6 +226,7 @@ export function reportLoadError(loadId: string | undefined, stage: DevtoolsStage
         });
 
         pushEvent(loadId, 'error', { stage, message: serialized.message });
+        refreshShareScopes();
     });
 }
 
@@ -234,6 +250,7 @@ export function reportLoadSuccess(loadId: string | undefined) {
         }));
 
         pushEvent(loadId, 'load-end');
+        refreshShareScopes();
     });
 }
 

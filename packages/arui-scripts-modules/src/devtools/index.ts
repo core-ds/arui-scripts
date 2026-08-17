@@ -1,5 +1,6 @@
 export * from './types';
 export { DEVTOOLS_READY_EVENT } from './announce';
+export { readShareScopes } from './share-scope';
 export { DEVTOOLS_ENABLED_KEY, isCollectingEnabled } from './enabled';
 export {
     DEVTOOLS_GLOBAL_KEY,

@@ -36,6 +36,41 @@ export type DevtoolsSnapshot = {
     loads: ModuleLoadRecord[];
     /** лог событий, кольцевой буфер */
     events: DevtoolsEvent[];
+    /**
+     * Содержимое share scope на момент последнего события загрузки.
+     *
+     * Лежит в контракте, потому что достать его снаружи невозможно: `__webpack_share_scopes__` -
+     * свободная переменная бандлера, её не видно ни из консоли, ни из расширения браузера.
+     * Пересобирается на старте и на завершении каждой загрузки: скоуп меняется именно тогда.
+     *
+     * Здесь только данные - разбор проблем (несколько версий, разъехавшиеся мажоры singleton)
+     * остаётся читателю.
+     */
+    shareScopes: DevtoolsShareScope[];
+};
+
+export type DevtoolsShareScope = {
+    /** имя скоупа, обычно `default` */
+    name: string;
+    packages: DevtoolsSharedPackage[];
+};
+
+export type DevtoolsSharedPackage = {
+    name: string;
+    versions: DevtoolsSharedVersion[];
+};
+
+export type DevtoolsSharedVersion = {
+    version: string;
+    /** имя контейнера, который положил эту версию в скоуп */
+    from?: string;
+    /** модуль уже исполнен и отдан потребителю */
+    loaded: boolean;
+    eager?: boolean;
+    singleton?: boolean;
+    /** диапазон, который потребовал тот, кто положил запись. Требования остальных сюда не попадают */
+    requiredVersion?: string;
+    strictVersion?: boolean;
 };
 
 /**

@@ -17,8 +17,11 @@ import {
 } from '../store';
 import { type DevtoolsSnapshot, type ModuleLoadRecord } from '../types';
 
+type GlobalWithScopes = typeof globalThis & { __webpack_share_scopes__?: unknown };
+
 function resetGlobal() {
     delete (globalThis as Record<string, unknown>)[DEVTOOLS_GLOBAL_KEY];
+    delete (globalThis as GlobalWithScopes).__webpack_share_scopes__;
     sessionStorage.clear();
 }
 
@@ -173,6 +176,63 @@ describe('devtools report', () => {
         reportLoadSuccess(loadId);
 
         expect(getRecord(loadId).status).toBe('unmounted');
+    });
+
+    it('should snapshot the share scope at both ends of a load', () => {
+        // скоуп меняется по ходу загрузки: хост кладёт свои библиотеки на init-sharing,
+        // провайдер добавляет свои на container-init
+        (globalThis as GlobalWithScopes).__webpack_share_scopes__ = {
+            default: { react: { '18.3.1': { from: 'host', loaded: 1 } } },
+        };
+
+        const loadId = startLoad();
+
+        expect(getSnapshot().shareScopes).toEqual([
+            {
+                name: 'default',
+                packages: [
+                    {
+                        name: 'react',
+                        versions: [{ version: '18.3.1', from: 'host', loaded: true }],
+                    },
+                ],
+            },
+        ]);
+
+        (globalThis as GlobalWithScopes).__webpack_share_scopes__ = {
+            default: {
+                react: { '18.3.1': { from: 'host', loaded: 1 } },
+                lodash: { '4.17.21': { from: 'provider', loaded: 0 } },
+            },
+        };
+        reportLoadSuccess(loadId);
+
+        expect(getSnapshot().shareScopes[0].packages.map((item) => item.name)).toEqual([
+            'react',
+            'lodash',
+        ]);
+    });
+
+    it('should snapshot the share scope when a load fails', () => {
+        (globalThis as GlobalWithScopes).__webpack_share_scopes__ = {
+            default: { react: { '18.3.1': {} } },
+        };
+
+        const loadId = startLoad();
+
+        (globalThis as GlobalWithScopes).__webpack_share_scopes__ = {
+            default: { react: { '18.3.1': {} }, 'react-dom': { '18.3.1': {} } },
+        };
+        reportLoadError(loadId, 'container-init', new Error('boom'));
+
+        // разбираться с ошибкой share scope помогает не меньше таймингов
+        expect(getSnapshot().shareScopes[0].packages).toHaveLength(2);
+    });
+
+    it('should keep the share scope empty when module federation is not used', () => {
+        startLoad();
+
+        expect(getSnapshot().shareScopes).toEqual([]);
     });
 
     it('should mark record as unmounted', () => {

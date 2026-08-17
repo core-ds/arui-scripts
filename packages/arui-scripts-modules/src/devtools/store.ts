@@ -1,10 +1,12 @@
 import { announceStoreCreated } from './announce';
 import { isCollectingEnabled } from './enabled';
+import { readShareScopes } from './share-scope';
 import { EVENTS_LIMIT, LOADS_LIMIT, persistSnapshot, restoreSnapshot } from './snapshot-storage';
 import {
     type AruiDevtools,
     type AruiModulesDevtools,
     type DevtoolsEvent,
+    type DevtoolsShareScope,
     type DevtoolsSnapshot,
     type ModuleLoadRecord,
 } from './types';
@@ -31,6 +33,7 @@ export type DevtoolsWriter = {
     getLoad(loadId: string): ModuleLoadRecord | undefined;
     updateLoad(loadId: string, updater: (record: ModuleLoadRecord) => ModuleLoadRecord): void;
     addEvent(event: Omit<DevtoolsEvent, 'id'>): void;
+    refreshShareScopes(): void;
 };
 
 export type DevtoolsModulesStore = AruiModulesDevtools & {
@@ -51,10 +54,14 @@ function createModulesStore(): DevtoolsModulesStore {
 
     let { loads } = restored;
     let { events } = restored;
+    // на старте скоуп ещё пуст: его наполняет первая же загрузка модуля. Восстановленный
+    // из sessionStorage снимок сюда не тащим - он относится к прошлой странице
+    let shareScopes: DevtoolsShareScope[] = [];
     let snapshot: DevtoolsSnapshot = {
         version: DEVTOOLS_MODULES_VERSION,
         loads,
         events,
+        shareScopes,
     };
 
     const listeners = new Set<() => void>();
@@ -95,6 +102,7 @@ function createModulesStore(): DevtoolsModulesStore {
             version: DEVTOOLS_MODULES_VERSION,
             loads,
             events,
+            shareScopes,
         };
 
         listeners.forEach((listener) => {
@@ -153,6 +161,11 @@ function createModulesStore(): DevtoolsModulesStore {
             events = events.concat({ ...event, id: eventCounter }).slice(-EVENTS_LIMIT);
             commit();
         },
+
+        refreshShareScopes() {
+            shareScopes = readShareScopes();
+            commit();
+        },
     };
 
     return {
@@ -186,7 +199,8 @@ function isCompatibleStore(store: AruiModulesDevtools | undefined): store is Dev
             typeof writer?.addLoad === 'function' &&
             typeof writer?.getLoad === 'function' &&
             typeof writer?.updateLoad === 'function' &&
-            typeof writer?.addEvent === 'function',
+            typeof writer?.addEvent === 'function' &&
+            typeof writer?.refreshShareScopes === 'function',
     );
 }
 

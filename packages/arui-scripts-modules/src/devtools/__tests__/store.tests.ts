@@ -11,8 +11,11 @@ import {
 } from '../store';
 import { type AruiDevtools, type ModuleLoadRecord } from '../types';
 
+type GlobalWithScopes = typeof globalThis & { __webpack_share_scopes__?: unknown };
+
 function resetGlobal() {
     delete (globalThis as Record<string, unknown>)[DEVTOOLS_GLOBAL_KEY];
+    delete (globalThis as GlobalWithScopes).__webpack_share_scopes__;
     sessionStorage.clear();
 }
 
@@ -127,6 +130,70 @@ describe('devtools store', () => {
         });
 
         expect(getDevtoolsModulesStore()).toBeUndefined();
+    });
+
+    it('should return undefined when writer cannot refresh share scopes', () => {
+        // writer старой копии пакета не умеет снимать скоуп: писать в него - терять данные
+        setRoot({
+            version: DEVTOOLS_VERSION,
+            [DEVTOOLS_MODULES_NAMESPACE]: {
+                version: DEVTOOLS_MODULES_VERSION,
+                getSnapshot: () => ({}),
+                subscribe: () => () => undefined,
+                writer: {
+                    nextLoadId: () => '1',
+                    addLoad: () => undefined,
+                    getLoad: () => undefined,
+                    updateLoad: () => undefined,
+                    addEvent: () => undefined,
+                },
+            },
+        });
+
+        expect(getDevtoolsModulesStore()).toBeUndefined();
+    });
+
+    it('should start with an empty share scope and fill it on refresh', () => {
+        const store = getStore();
+
+        // до первой загрузки модуля скоуп пуст, и снимок обязан быть пустым массивом,
+        // а не отсутствующим полем: читателю обещан полный контракт
+        expect(store.getSnapshot().shareScopes).toEqual([]);
+
+        (globalThis as GlobalWithScopes).__webpack_share_scopes__ = {
+            default: { react: { '18.3.1': { from: 'host', loaded: 1 } } },
+        };
+        store.writer.refreshShareScopes();
+
+        expect(store.getSnapshot().shareScopes).toHaveLength(1);
+    });
+
+    it('should notify subscribers when the share scope changes', () => {
+        const store = getStore();
+        const listener = jest.fn();
+
+        store.subscribe(listener);
+        store.writer.refreshShareScopes();
+
+        expect(listener).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not restore the share scope of the previous page load', async () => {
+        (globalThis as GlobalWithScopes).__webpack_share_scopes__ = {
+            default: { react: { '18.3.1': {} } },
+        };
+
+        const store = getStore();
+
+        store.writer.addLoad(createRecord('1'));
+        store.writer.refreshShareScopes();
+        await flushPersist();
+
+        delete (globalThis as Record<string, unknown>)[DEVTOOLS_GLOBAL_KEY];
+        delete (globalThis as GlobalWithScopes).__webpack_share_scopes__;
+
+        // скоуп прошлой страницы к новой не относится: он пересоберётся с первой загрузкой
+        expect(getStore().getSnapshot().shareScopes).toEqual([]);
     });
 
     it('should keep snapshot reference stable until data changes', () => {

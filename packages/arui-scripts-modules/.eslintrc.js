@@ -5,6 +5,13 @@ module.exports = {
         tsconfigRootDir: __dirname,
         project: ['./tsconfig.eslint.json'],
     },
+    rules: {
+        // имена свободных переменных задаёт бандлер, переименовать их мы не можем
+        'no-underscore-dangle': [
+            'error',
+            { allow: ['__webpack_share_scopes__', '__webpack_init_sharing__'] },
+        ],
+    },
     overrides: [
         {
             files: ['**/__tests__/**/*.{ts,tsx}'],
