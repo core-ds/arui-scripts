@@ -9,6 +9,7 @@ import { PanelErrorBoundary } from './error-boundary';
 import { EventsView } from './events-view';
 import { LoadsTable } from './loads-table';
 import { ShareScopeView } from './share-scope-view';
+import { TimelineView } from './timeline-view';
 import { useModulesStore } from './use-modules-store';
 
 function restoreActiveTab(): PanelTabId {
@@ -71,6 +72,8 @@ function PanelBody({
                 onOnlyErrorsChange={onEventsOnlyErrorsChange}
             />
         );
+    } else if (activeTab === 'timeline') {
+        content = <TimelineView loads={loads} />;
     } else if (activeTab === 'share-scope') {
         content = <ShareScopeView scopes={scopes} />;
     }

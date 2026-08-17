@@ -74,6 +74,7 @@ export const DEFAULT_PANEL_STATE: PanelState = { open: false };
 export const PANEL_TABS: readonly PanelTabDefinition[] = [
     { id: 'modules', title: 'Модули' },
     { id: 'events', title: 'События' },
+    { id: 'timeline', title: 'Таймлайн' },
     { id: 'share-scope', title: 'Share scope' },
 ];
 

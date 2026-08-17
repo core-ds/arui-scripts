@@ -181,7 +181,28 @@ export type MountDevtoolsOptions = {
     onClose?(): void;
 };
 
-export type PanelTabId = 'modules' | 'events' | 'share-scope';
+/** строка таймлайна: одна загрузка, разложенная по общей оси в процентах */
+export type TimelineRow = {
+    record: ModuleLoadRecord;
+    /** незавершённая загрузка: полоска тянется до «сейчас» */
+    pending: boolean;
+    offset: number;
+    width: number;
+    duration: number;
+};
+
+export type TimelineScale = {
+    from: number;
+    to: number;
+    duration: number;
+    rows: TimelineRow[];
+};
+
+export type TimelineViewProps = {
+    loads: ModuleLoadRecord[];
+};
+
+export type PanelTabId = 'modules' | 'events' | 'timeline' | 'share-scope';
 
 export type PanelTabDefinition = {
     id: PanelTabId;
