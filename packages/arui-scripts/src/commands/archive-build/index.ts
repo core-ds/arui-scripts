@@ -1,4 +1,4 @@
-import { buildArchive } from '@alfalab/scripts-artifacts';
+import { buildArchive } from '@alfalab/arui-scripts-artifacts';
 
 import { getArtifactsOptions } from '../util/artifacts-options';
 

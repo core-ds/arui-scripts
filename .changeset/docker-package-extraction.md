@@ -1,9 +1,9 @@
 ---
-'@alfalab/scripts-artifacts': minor
+'@alfalab/arui-scripts-artifacts': minor
 'arui-scripts': patch
 ---
 
-Сборка артефактов поставки вынесена в отдельный пакет `@alfalab/scripts-artifacts`.
+Сборка артефактов поставки вынесена в отдельный пакет `@alfalab/arui-scripts-artifacts`.
 
 Пакет устроен как набор чистых функций и настраивается одним файлом `arui-scripts-artifacts.ts` в
 корне проекта (путь можно задать через `--c`/`--config`). Конфиг может быть на TypeScript, ESM или
@@ -27,7 +27,7 @@ dev-зависимостей) у них общий.
 `nginxConf`, `start.sh` объявлены устаревшими: они продолжают работать, но команды сборки печатают
 предупреждение со ссылкой на замену, а в следующей мажорной версии будут удалены.
 
-Настройки в конфиге @alfalab/scripts-artifacts сгруппированы по доменам: `docker`, `nginx`, `archive`, `build`,
+Настройки в конфиге @alfalab/arui-scripts-artifacts сгруппированы по доменам: `docker`, `nginx`, `archive`, `build`,
 `packageManager`, `localFiles`. Так же разложен и код пакета — по папке на домен.
 
 Единственное отличие в поведении: `archive-build` теперь подхватывает локальный `start.sh` из корня

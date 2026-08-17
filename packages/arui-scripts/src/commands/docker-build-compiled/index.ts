@@ -1,4 +1,4 @@
-import { buildDockerImage } from '@alfalab/scripts-artifacts';
+import { buildDockerImage } from '@alfalab/arui-scripts-artifacts';
 
 import { getArtifactsOptions } from '../util/artifacts-options';
 

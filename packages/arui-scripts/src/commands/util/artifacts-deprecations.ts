@@ -5,7 +5,7 @@ import { hasOverride } from '../../configs/util/apply-overrides';
  * Настройки сборки артефактов, которые остались в arui-scripts только ради обратной совместимости.
  * В следующей мажорной версии они будут удалены — их место в конфиге `arui-scripts-artifacts.ts`.
  *
- * Значение — путь до той же настройки в @alfalab/scripts-artifacts.
+ * Значение — путь до той же настройки в @alfalab/arui-scripts-artifacts.
  */
 const DEPRECATED_SETTINGS = {
     dockerRegistry: 'docker.registry',
@@ -22,7 +22,7 @@ const DEPRECATED_SETTINGS = {
  * Ключи оверрайдов шаблонов из `arui-scripts.overrides.ts` и их замена в конфиге артефактов.
  *
  * Напоминание: в arui-scripts `nginx` — это server-блок, а `nginxConf` — базовый http-блок; в
- * @alfalab/scripts-artifacts они названы по смыслу, поэтому имена не совпадают.
+ * @alfalab/arui-scripts-artifacts они названы по смыслу, поэтому имена не совпадают.
  */
 const DEPRECATED_OVERRIDES = {
     Dockerfile: 'overrides.dockerfile',
@@ -39,7 +39,7 @@ let warned = false;
  * команд сборки (docker-build, docker-build:compiled, archive-build), поэтому при обычной разработке
  * в консоль ничего не сыпется.
  *
- * Дефолты этих настроек живут в @alfalab/scripts-artifacts, а в конфиге arui-scripts они
+ * Дефолты этих настроек живут в @alfalab/arui-scripts-artifacts, а в конфиге arui-scripts они
  * `undefined` — так что «настройка задана» здесь означает именно «проект ее переопределил».
  */
 export function warnAboutArtifactsDeprecations() {
@@ -67,7 +67,7 @@ export function warnAboutArtifactsDeprecations() {
     console.warn(
         [
             'Настройки сборки артефактов в arui-scripts объявлены устаревшими и будут удалены в следующей мажорной версии.',
-            'Перенесите их в конфиг @alfalab/scripts-artifacts (arui-scripts-artifacts.ts в корне проекта):',
+            'Перенесите их в конфиг @alfalab/arui-scripts-artifacts (arui-scripts-artifacts.ts в корне проекта):',
             ...usedSettings,
             ...usedOverrides,
             'Подробнее: https://github.com/core-ds/arui-scripts/tree/master/packages/arui-scripts-artifacts#миграция-с-arui-scripts-docker-build',

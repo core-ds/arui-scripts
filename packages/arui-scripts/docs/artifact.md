@@ -1,7 +1,7 @@
 Настройки сборки артефакта
 ===
 
-> ⚠️ Сборка артефактов живет в отдельном пакете [@alfalab/scripts-artifacts](../../arui-scripts-artifacts/README.md).
+> ⚠️ Сборка артефактов живет в отдельном пакете [@alfalab/arui-scripts-artifacts](../../arui-scripts-artifacts/README.md).
 > Настройки и оверрайды артефакта в конфиге arui-scripts объявлены устаревшими и будут удалены в
 > следующей мажорной версии — новые проекты настраивают сборку через `arui-scripts-artifacts.ts`.
 

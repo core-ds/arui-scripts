@@ -1,4 +1,4 @@
-# @alfalab/scripts-artifacts
+# @alfalab/arui-scripts-artifacts
 
 Сборка артефактов поставки — docker-образа и tar-архива — для приложений, основанных на `arui-scripts`.
 
@@ -10,13 +10,13 @@
 ## Быстрый старт
 
 ```bash
-yarn add -D @alfalab/scripts-artifacts
+yarn add -D @alfalab/arui-scripts-artifacts
 ```
 
 `arui-scripts-artifacts.ts` в корне проекта:
 
 ```ts
-import { defineConfig } from '@alfalab/scripts-artifacts';
+import { defineConfig } from '@alfalab/arui-scripts-artifacts';
 
 export default defineConfig({
     docker: {
@@ -103,7 +103,7 @@ CLI сам подхватывает лежащие в корне `Dockerfile`, `
 ней описывается только то, чем она отличается:
 
 ```ts
-import { defineConfig } from '@alfalab/scripts-artifacts';
+import { defineConfig } from '@alfalab/arui-scripts-artifacts';
 
 export default defineConfig({
     docker: { baseImage: 'registry.example.com/base:2.0.0' },
@@ -157,7 +157,7 @@ arui-scripts-artifacts docker-build:server
 (http-блок), `startScript`.
 
 ```ts
-import { defineConfig } from '@alfalab/scripts-artifacts';
+import { defineConfig } from '@alfalab/arui-scripts-artifacts';
 
 export default defineConfig({
     // целиком свой server-блок nginx
@@ -190,7 +190,7 @@ server {
 по полю `artifact`):
 
 ```ts
-import { buildArtifact } from '@alfalab/scripts-artifacts';
+import { buildArtifact } from '@alfalab/arui-scripts-artifacts';
 
 await buildArtifact({
     name: 'my-app',
@@ -213,7 +213,7 @@ import {
     prepareFilesForDocker,
     renderTemplates,
     resolveArtifactsConfig,
-} from '@alfalab/scripts-artifacts';
+} from '@alfalab/arui-scripts-artifacts';
 
 const config = resolveArtifactsConfig({
     serverOutput: 'server/index.js',
@@ -235,7 +235,7 @@ import {
     extractConfigPath,
     resolveCommandOptions,
     resolveConfigFile,
-} from '@alfalab/scripts-artifacts';
+} from '@alfalab/arui-scripts-artifacts';
 
 const argv = process.argv.slice(2);
 const configFile = await resolveConfigFile(process.cwd(), extractConfigPath(argv));
@@ -263,7 +263,7 @@ const options = resolveCommandOptions('docker-build:server', configFile);
 
 Поведение и шаблоны совпадают, отличаются имена и расположение настроек:
 
-| arui-scripts                                                 | @alfalab/scripts-artifacts             |
+| arui-scripts                                                 | @alfalab/arui-scripts-artifacts             |
 | ------------------------------------------------------------ | -------------------------------------- |
 | `configs.dockerRegistry`                                     | `docker.registry`                      |
 | `configs.baseDockerImage`                                    | `docker.baseImage`                     |

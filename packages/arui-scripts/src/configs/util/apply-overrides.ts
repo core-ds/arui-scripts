@@ -44,15 +44,15 @@ type Overrides = {
      * Оверрайды файлов артефакта поставки. Объявлены устаревшими и будут удалены в следующей
      * мажорной версии — их место в секции `overrides` конфига `arui-scripts-artifacts.ts`.
      */
-    /** @deprecated Используйте `overrides.dockerfile` в конфиге @alfalab/scripts-artifacts. */
+    /** @deprecated Используйте `overrides.dockerfile` в конфиге @alfalab/arui-scripts-artifacts. */
     Dockerfile: string;
-    /** @deprecated Используйте `overrides.dockerfileCompiled` в конфиге @alfalab/scripts-artifacts. */
+    /** @deprecated Используйте `overrides.dockerfileCompiled` в конфиге @alfalab/arui-scripts-artifacts. */
     DockerfileCompiled: string;
-    /** @deprecated Используйте `overrides.nginxConf` в конфиге @alfalab/scripts-artifacts. */
+    /** @deprecated Используйте `overrides.nginxConf` в конфиге @alfalab/arui-scripts-artifacts. */
     nginx: string;
-    /** @deprecated Используйте `overrides.baseNginxConf` в конфиге @alfalab/scripts-artifacts. */
+    /** @deprecated Используйте `overrides.baseNginxConf` в конфиге @alfalab/arui-scripts-artifacts. */
     nginxConf: string;
-    /** @deprecated Используйте `overrides.startScript` в конфиге @alfalab/scripts-artifacts. */
+    /** @deprecated Используйте `overrides.startScript` в конфиге @alfalab/arui-scripts-artifacts. */
     'start.sh': string;
     serverExternalsExemptions: Array<string | RegExp>;
 

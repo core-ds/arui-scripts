@@ -1,12 +1,10 @@
 {
-    "name": "@alfalab/scripts-artifacts",
+    "name": "@alfalab/arui-scripts-artifacts",
     "version": "1.0.0",
     "description": "Максимально кастомизируемые скрипты и шаблоны для сборки артефактов поставки (docker-образ, tar-архив) приложений, основанных на arui-scripts",
     "main": "./build/index.js",
     "typings": "./build/index.d.ts",
-    "bin": {
-        "arui-scripts-artifacts": "./build/bin/index.js"
-    },
+    "bin": "./build/bin/index.js",
     "license": "MPL-2.0",
     "repository": {
         "type": "git",

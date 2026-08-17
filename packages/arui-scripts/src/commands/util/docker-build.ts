@@ -7,17 +7,17 @@ import {
     getBuildParamsFromArgs as artifactsGetBuildParamsFromArgs,
     getDockerBuildCommand as artifactsGetBuildCommand,
     prepareFilesForDocker as artifactsPrepareFilesForDocker,
-} from '@alfalab/scripts-artifacts';
+} from '@alfalab/arui-scripts-artifacts';
 
 import { getResolvedArtifactsConfig } from './artifacts-options';
 
 export { dockerVersionSatisfies };
 
 /**
- * Совместимый слой поверх @alfalab/scripts-artifacts: сохраняет исторические сигнатуры, которыми
+ * Совместимый слой поверх @alfalab/arui-scripts-artifacts: сохраняет исторические сигнатуры, которыми
  * пользуются сторонние сборки и реэкспорт из `arui-scripts`.
  *
- * @deprecated Используйте одноименные функции из `@alfalab/scripts-artifacts` — они принимают явный
+ * @deprecated Используйте одноименные функции из `@alfalab/arui-scripts-artifacts` — они принимают явный
  * конфиг и не зависят от глобального `configs`. В следующей мажорной версии реэкспорт будет удален.
  */
 export function getBuildParamsFromArgs(): BuildParams {
@@ -26,7 +26,7 @@ export function getBuildParamsFromArgs(): BuildParams {
 
 /**
  * Разбирает `registry/name:version` обратно на имя и версию, чтобы собрать конфиг, из которого
- * @alfalab/scripts-artifacts соберет ровно ту же строку.
+ * @alfalab/arui-scripts-artifacts соберет ровно ту же строку.
  */
 function splitImageFullName(imageFullName: string) {
     const lastColon = imageFullName.lastIndexOf(':');
@@ -54,7 +54,7 @@ type PrepareFilesForDockerParams = {
 };
 
 /**
- * @deprecated Используйте `prepareFilesForDocker` из `@alfalab/scripts-artifacts`. В следующей
+ * @deprecated Используйте `prepareFilesForDocker` из `@alfalab/arui-scripts-artifacts`. В следующей
  * мажорной версии реэкспорт будет удален.
  */
 export async function prepareFilesForDocker({
@@ -99,7 +99,7 @@ type DockerBuildCommandParams = {
 };
 
 /**
- * @deprecated Используйте `getDockerBuildCommand` из `@alfalab/scripts-artifacts`. В следующей
+ * @deprecated Используйте `getDockerBuildCommand` из `@alfalab/arui-scripts-artifacts`. В следующей
  * мажорной версии реэкспорт будет удален.
  */
 export function getDockerBuildCommand({ tempDirName, imageFullName }: DockerBuildCommandParams) {

@@ -38,7 +38,7 @@ export function getDefaultAppConfig(): AppConfigs {
         clientEntry: path.resolve(absoluteSrcPath, 'index'),
 
         // docker/archive compilation configs
-        // Дефолты этих настроек живут в @alfalab/scripts-artifacts (resolveArtifactsConfig).
+        // Дефолты этих настроек живут в @alfalab/arui-scripts-artifacts (resolveArtifactsConfig).
         // Здесь ключи объявлены без значений, чтобы настройка из package.json/конфига не считалась
         // неизвестной, а `undefined` доехал до scripts-artifacts и был заполнен там.
         dockerRegistry: undefined,

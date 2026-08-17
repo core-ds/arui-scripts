@@ -1,1 +1,1 @@
-# @alfalab/scripts-artifacts
+# @alfalab/arui-scripts-artifacts

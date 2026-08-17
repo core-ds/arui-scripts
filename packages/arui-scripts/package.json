@@ -21,8 +21,8 @@
     "homepage": "https://github.com/core-ds/arui-scripts#readme",
     "bin": "./build/bin/index.js",
     "dependencies": {
+        "@alfalab/arui-scripts-artifacts": "workspace:^",
         "@alfalab/postcss-custom-properties": "^9.1.2",
-        "@alfalab/scripts-artifacts": "workspace:^",
         "@babel/core": "7.22.10",
         "@babel/plugin-proposal-decorators": "^7.23.7",
         "@babel/plugin-proposal-export-default-from": "^7.23.3",

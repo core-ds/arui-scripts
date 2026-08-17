@@ -1,1 +1,1 @@
-export { exec, ExecError } from '@alfalab/scripts-artifacts';
+export { exec, ExecError } from '@alfalab/arui-scripts-artifacts';

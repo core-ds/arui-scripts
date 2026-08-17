@@ -3,7 +3,7 @@ import {
     type ArtifactTemplateOverrides,
     resolveArtifactsConfig,
     type ResolvedArtifactsConfig,
-} from '@alfalab/scripts-artifacts';
+} from '@alfalab/arui-scripts-artifacts';
 
 import { configs } from '../../configs/app-configs';
 import { applyOverrides } from '../../configs/util/apply-overrides';
@@ -11,11 +11,11 @@ import { applyOverrides } from '../../configs/util/apply-overrides';
 import { warnAboutArtifactsDeprecations } from './artifacts-deprecations';
 
 /**
- * Оверрайды шаблонов из `arui-scripts.overrides.ts`. Ключи в @alfalab/scripts-artifacts переименованы,
+ * Оверрайды шаблонов из `arui-scripts.overrides.ts`. Ключи в @alfalab/arui-scripts-artifacts переименованы,
  * поэтому здесь мы явно транслируем их в исторические имена arui-scripts.
  *
  * @deprecated Слой обратной совместимости: в следующей мажорной версии оверрайды шаблонов останутся
- * только в конфиге @alfalab/scripts-artifacts (`overrides`).
+ * только в конфиге @alfalab/arui-scripts-artifacts (`overrides`).
  *
  * Обратите внимание: в arui-scripts `nginx` — это server-блок (`nginx.conf`), а `nginxConf` —
  * базовый http-блок (`base-nginx.conf`). Имена исторически перепутаны, и эта таблица — единственное
@@ -31,17 +31,17 @@ const legacyTemplateOverrides: ArtifactTemplateOverrides = {
 
 /**
  * Транслирует плоский конфиг arui-scripts в сгруппированные по доменам опции
- * @alfalab/scripts-artifacts.
+ * @alfalab/arui-scripts-artifacts.
  *
  * Это единственная точка связи между двумя пакетами: сами шаблоны и утилиты сборки живут в
- * @alfalab/scripts-artifacts и ничего не знают про `configs`.
+ * @alfalab/arui-scripts-artifacts и ничего не знают про `configs`.
  *
  * Здесь происходит только маппинг значений. Дефолты docker/nginx/archive-настроек не дублируются:
  * если пользователь ничего не задал, сюда приезжает `undefined` и значение подставит
  * `resolveArtifactsConfig`.
  *
  * @deprecated Сам маппинг — слой обратной совместимости. В следующей мажорной версии настройки
- * сборки артефактов будут жить только в конфиге @alfalab/scripts-artifacts.
+ * сборки артефактов будут жить только в конфиге @alfalab/arui-scripts-artifacts.
  */
 export function getArtifactsOptions(extraOptions: ArtifactsOptions = {}): ArtifactsOptions {
     warnAboutArtifactsDeprecations();
