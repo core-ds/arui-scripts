@@ -535,6 +535,14 @@
     text-align: center;
 }
 
+/* подмена уже работает: в списке origin'ов должно быть видно, какие перехватываются */
+.badge_active {
+    margin-left: 8px;
+    border-color: var(--arui-devtools-positive);
+    background: var(--arui-devtools-positive-muted);
+    color: var(--arui-devtools-positive);
+}
+
 .overrides__to_invalid {
     border-color: var(--arui-devtools-border-accent);
 }

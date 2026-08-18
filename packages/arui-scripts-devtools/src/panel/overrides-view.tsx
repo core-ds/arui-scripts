@@ -36,23 +36,33 @@ function toOrigin(url: string | undefined): string | undefined {
 export function OverridesView({ origins }: OverridesViewProps) {
     const [overrides, setOverrides] = useState<Override[]>(readOverrides);
     const [note, setNote] = useState<string>();
+    // Набранное в поле - это ещё не подмена. Пока правило не включили кнопкой, трафик
+    // идти не должен: иначе адрес начинает перехватываться по мере набора, на середине
+    // слова, и пользователь узнаёт об этом по сломавшейся странице.
+    const [drafts, setDrafts] = useState<Record<string, string>>({});
 
-    // правила ставятся заново на каждое изменение: набор подмен - это состояние,
+    // правила ставятся заново на каждое изменение набора: подмены - это состояние,
     // и держать его в одном месте проще, чем сводить дельты
     useEffect(() => {
         writeOverrides(overrides);
         applyOverrides(overrides);
     }, [overrides]);
 
-    const setTarget = (from: string, to: string) => {
-        setOverrides((previous) => {
-            const rest = previous.filter((item) => item.from !== from);
+    const getTarget = (from: string) =>
+        drafts[from] ?? overrides.find((item) => item.from === from)?.to ?? '';
 
-            return to ? [...rest, { from, to }] : rest;
-        });
+    const setDraft = (from: string, to: string) => {
+        setDrafts((previous) => ({ ...previous, [from]: to }));
+    };
+
+    const remove = (from: string) => {
+        setDrafts((previous) => ({ ...previous, [from]: '' }));
+        setOverrides((previous) => previous.filter((item) => item.from !== from));
     };
 
     const enable = async (from: string, to: string) => {
+        // доступ к origin просим ровно в этот момент и только к нему: до включения подмены
+        // расширение не имеет прав ни на одну страницу
         const granted = (await hasOriginPermission(from)) || (await requestOriginPermission(from));
 
         if (!granted) {
@@ -64,7 +74,10 @@ export function OverridesView({ origins }: OverridesViewProps) {
         }
 
         setNote(undefined);
-        setTarget(from, to);
+        setOverrides((previous) => [
+            ...previous.filter((item) => item.from !== from),
+            { from, to },
+        ]);
     };
 
     if (!origins.length) {
@@ -87,13 +100,19 @@ export function OverridesView({ origins }: OverridesViewProps) {
             {note && <div className='overrides__note'>{note}</div>}
             {origins.map((origin) => {
                 const current = overrides.find((item) => item.from === origin);
-                const value = current?.to ?? '';
+                const value = getTarget(origin);
                 const invalid = Boolean(value) && !isValidOverride({ from: origin, to: value });
+                const active = Boolean(current) && current?.to === value;
 
                 return (
                     <div className='overrides__row' key={origin}>
                         <span className='overrides__from' title={origin}>
                             {origin}
+                            {current && (
+                                <span className='badge badge_active' title='Подмена включена'>
+                                    включена
+                                </span>
+                            )}
                         </span>
                         <span className='overrides__arrow'>→</span>
                         <input
@@ -103,12 +122,12 @@ export function OverridesView({ origins }: OverridesViewProps) {
                             type='url'
                             placeholder='http://localhost:8082'
                             value={value}
-                            onChange={(event) => setTarget(origin, event.target.value)}
+                            onChange={(event) => setDraft(origin, event.target.value)}
                         />
                         <button
                             type='button'
                             className='button'
-                            disabled={!value || invalid}
+                            disabled={!value || invalid || active}
                             onClick={() => enable(origin, value)}
                         >
                             {current ? 'Обновить' : 'Включить'}
@@ -119,7 +138,7 @@ export function OverridesView({ origins }: OverridesViewProps) {
                             title='Убрать подмену'
                             aria-label={`Убрать подмену ${origin}`}
                             disabled={!current}
-                            onClick={() => setTarget(origin, '')}
+                            onClick={() => remove(origin)}
                         >
                             ✕
                         </button>

@@ -3,16 +3,37 @@ import { type ModuleLoadRecord, type TimelineRow, type TimelineScale } from '../
 import { isFromPreviousPageLoad } from './resource-timing';
 import { getScaleEnd } from './waterfall-scale';
 
-/** границы одной загрузки по её стадиям: от первой засечки до последней */
-function getBounds(record: ModuleLoadRecord): { from: number; to: number; pending: boolean } {
-    const timings = Object.values(record.timings ?? {}).filter(Boolean);
+/**
+ * Границы одной загрузки по её стадиям: от первой засечки до последней.
+ *
+ * Снимок приходит со страницы - его мог положить загрузчик другой версии или подправить
+ * человек в sessionStorage, - поэтому засечки проверяем на число. Одна запись со сломанными
+ * таймингами не должна ломать общую шкалу: без этого NaN расползается по ней и полоски
+ * здоровых загрузок уезжают на тысячи процентов.
+ *
+ * @returns границы или undefined, если мерить нечего
+ */
+function getBounds(
+    record: ModuleLoadRecord,
+): { from: number; to: number; pending: boolean } | undefined {
+    const timings = Object.values(record.timings ?? {}).filter(
+        (timing) => timing && Number.isFinite(timing.start),
+    );
+
+    if (!timings.length) {
+        return undefined;
+    }
+
     const starts = timings.map((timing) => timing.start);
-    const ends = timings.map((timing) => timing.end ?? timing.start);
-    const pending = timings.some((timing) => timing.end === undefined);
+    const ends = timings.map((timing) =>
+        Number.isFinite(timing.end) ? (timing.end as number) : timing.start,
+    );
+    const pending = timings.some((timing) => !Number.isFinite(timing.end));
+    const to = getScaleEnd(record, Math.max(...ends), pending);
 
     return {
         from: Math.min(...starts),
-        to: getScaleEnd(record, Math.max(...ends), pending),
+        to: Number.isFinite(to) ? to : Math.max(...ends),
         pending,
     };
 }
@@ -28,17 +49,24 @@ function getBounds(record: ModuleLoadRecord): { from: number; to: number; pendin
  * шкале с текущими они оказались бы где угодно.
  */
 export function buildTimeline(loads: ModuleLoadRecord[]): TimelineScale {
-    const current = loads.filter(
-        (record) =>
-            !isFromPreviousPageLoad(record.startedAt) &&
-            Object.keys(record.timings ?? {}).length > 0,
-    );
+    const bounds = loads
+        .filter((record) => !isFromPreviousPageLoad(record.startedAt))
+        .map((record) => {
+            const measured = getBounds(record);
 
-    if (!current.length) {
+            return measured ? { record, ...measured } : undefined;
+        })
+        .filter(
+            (
+                item,
+            ): item is { record: ModuleLoadRecord; from: number; to: number; pending: boolean } =>
+                item !== undefined,
+        );
+
+    if (!bounds.length) {
         return { from: 0, to: 0, duration: 0, rows: [] };
     }
 
-    const bounds = current.map((record) => ({ record, ...getBounds(record) }));
     const from = Math.min(...bounds.map((item) => item.from));
     const to = Math.max(...bounds.map((item) => item.to));
     // всё уложилось в один тик - шкалу делаем не нулевой, иначе делить не на что
@@ -47,13 +75,13 @@ export function buildTimeline(loads: ModuleLoadRecord[]): TimelineScale {
     const rows: TimelineRow[] = bounds
         // по времени старта, а не по порядку в буфере: ось читают сверху вниз
         .sort((left, right) => left.from - right.from)
-        .map(({ record, from: start, to: end, pending }) => ({
-            record,
-            pending,
-            offset: ((start - from) / duration) * 100,
-            width: Math.max(((end - start) / duration) * 100, 1),
-            duration: end - start,
-        }));
+        .map(({ record, from: start, to: end, pending }) => {
+            const offset = Math.min(Math.max(((start - from) / duration) * 100, 0), 100);
+            // полоска не имеет права вылезти за трек, даже если засечки записи противоречивы
+            const width = Math.min(Math.max(((end - start) / duration) * 100, 1), 100 - offset);
+
+            return { record, pending, offset, width, duration: Math.max(end - start, 0) };
+        });
 
     return { from, to, duration, rows };
 }

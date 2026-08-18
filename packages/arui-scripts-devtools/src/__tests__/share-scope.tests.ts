@@ -291,4 +291,22 @@ describe('countShareProblems', () => {
         // две у react (версии + мажоры singleton) и одна у lodash
         expect(countShareProblems(scopes)).toBe(3);
     });
+
+    it('should survive a version that is not a string', () => {
+        // снимок приходит со страницы, а не из нашего кода: на нечисловой версии
+        // сортировка раньше падала и уносила с собой всю вкладку
+        const analyzed = analyzeShareScopes(
+            scope([
+                {
+                    name: 'react',
+                    versions: [
+                        { version: 17 as unknown as string, loaded: true },
+                        { version: undefined as unknown as string, loaded: false },
+                    ],
+                },
+            ]),
+        );
+
+        expect(analyzed[0].packages[0].versions.map((item) => item.version)).toEqual(['', '17']);
+    });
 });

@@ -102,6 +102,56 @@ describe('buildTimeline', () => {
         expect(timeline.rows[0].duration).toBe(400);
     });
 
+    it('should skip a record whose stages carry no numbers', () => {
+        // так выглядит снимок, восстановленный из sessionStorage другой версией загрузчика:
+        // ключи стадий на месте, значений нет
+        const broken = createRecord('a', {
+            mount: undefined,
+            factory: null,
+        } as unknown as ModuleLoadRecord['timings']);
+
+        expect(buildTimeline([broken]).rows).toEqual([]);
+    });
+
+    it('should not let one broken record wreck the whole scale', () => {
+        // до починки NaN расползался по общей шкале, и полоска здоровой загрузки
+        // получала ширину в тысячи процентов
+        const broken = createRecord('broken', {
+            mount: { start: 'скоро' },
+        } as unknown as ModuleLoadRecord['timings']);
+        const healthy = createRecord('ok', { 'fetch-manifest': { start: 0, end: 50 } });
+
+        const timeline = buildTimeline([broken, healthy]);
+
+        expect(timeline.rows).toHaveLength(1);
+        expect(timeline.rows[0].record.loadId).toBe('ok');
+        expect(timeline.rows[0].width).toBe(100);
+    });
+
+    it('should keep every bar inside the track', () => {
+        const timeline = buildTimeline([
+            createRecord('a', { 'fetch-manifest': { start: 0, end: 100 } }),
+            createRecord('b', { 'fetch-manifest': { start: 40, end: 60 } }),
+        ]);
+
+        timeline.rows.forEach((row) => {
+            expect(row.offset).toBeGreaterThanOrEqual(0);
+            expect(row.offset + row.width).toBeLessThanOrEqual(100);
+        });
+    });
+
+    it('should ignore a stage whose end is not a number', () => {
+        const timeline = buildTimeline([
+            createRecord('a', {
+                'fetch-manifest': { start: 0, end: 50 },
+                mount: { start: 60, end: 'потом' },
+            } as unknown as ModuleLoadRecord['timings']),
+        ]);
+
+        // стадия с нечисловым концом считается незавершённой, а не выбрасывается целиком
+        expect(timeline.rows[0].pending).toBe(true);
+    });
+
     it('should keep a zero-length load visible', () => {
         const timeline = buildTimeline([
             createRecord('a', { 'fetch-manifest': { start: 100, end: 100 } }),

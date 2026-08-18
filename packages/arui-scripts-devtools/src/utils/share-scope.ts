@@ -109,6 +109,9 @@ export function analyzeShareScopes(
         packages: (scope.packages ?? []).map((item) => {
             const versions = (item.versions ?? [])
                 .slice()
+                // снимок приходит со страницы: версия обязана быть строкой по контракту,
+                // но проверить дешевле, чем уронить вкладку на чужих данных
+                .map((version) => ({ ...version, version: String(version?.version ?? '') }))
                 // numeric: иначе сравниваются строки, и 10.0.0 встаёт перед 9.0.0 -
                 // список версий выглядит откатившимся на мажор назад
                 .sort((left, right) =>

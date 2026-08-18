@@ -59,8 +59,13 @@ export function EventBusView({ state, query, onQueryChange }: EventBusViewProps)
     const { events, listeners } = state.snapshot;
     const normalized = query.trim().toLowerCase();
     const filtered = events.filter((record) => matches(record, normalized));
+    // шину сравниваем тоже: на странице их несколько, и одноимённое событие в соседней
+    // шине ничего не говорит про подписку в этой
     const silent = listeners.filter(
-        (listener) => !events.some((record) => record.eventName === listener.eventName),
+        (listener) =>
+            !events.some(
+                (record) => record.eventName === listener.eventName && record.bus === listener.bus,
+            ),
     );
 
     return (
@@ -83,7 +88,10 @@ export function EventBusView({ state, query, onQueryChange }: EventBusViewProps)
                 {silent.length > 0 && (
                     <div className='bus-listeners'>
                         {`Подписки без единого события: ${silent
-                            .map((listener) => `${listener.eventName} (${listener.count})`)
+                            .map(
+                                (listener) =>
+                                    `${listener.bus} · ${listener.eventName} (${listener.count})`,
+                            )
                             .join(', ')}`}
                     </div>
                 )}
