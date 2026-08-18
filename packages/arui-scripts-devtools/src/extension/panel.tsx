@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { PanelApp } from '../panel/panel-app';
 
 import { createExtensionSource } from './source';
+import { panelVisibility } from './visibility';
 
 import PANEL_STYLES from '../panel/styles.css';
 import EXTENSION_STYLES from './panel-styles.css';
@@ -13,7 +14,12 @@ import EXTENSION_STYLES from './panel-styles.css';
  * Панель монтируется в shadow root, хотя изолировать её тут не от чего: документ наш целиком.
  * Так у стилей остаётся один путь на оба применения - `:host` с токенами работает как есть,
  * и расширению достаётся ровно та же панель, что и странице.
+ *
+ * Мост видимости открываем первым делом: страница devtools зовёт его из `panel.onShown`,
+ * а тот может прийти сразу за созданием документа.
  */
+panelVisibility.install();
+
 const host = document.createElement('div');
 const shadow = host.attachShadow({ mode: 'open' });
 const style = document.createElement('style');

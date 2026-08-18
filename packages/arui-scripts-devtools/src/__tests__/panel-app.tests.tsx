@@ -1,8 +1,15 @@
-import { fireEvent, render } from '@testing-library/react';
+import { act, fireEvent, render } from '@testing-library/react';
 
-import { PANEL_STATE_KEY } from '../constants';
+import { OVERRIDES_STORAGE_KEY, PANEL_STATE_KEY } from '../constants';
+import { readActiveOverrides } from '../extension/overrides';
 import { PanelApp } from '../panel/panel-app';
 import { type DevtoolsSnapshot, type DevtoolsState, type ModuleLoadRecord } from '../types';
+
+jest.mock('../extension/overrides', () => ({
+    ...jest.requireActual('../extension/overrides'),
+    applyOverrides: jest.fn(() => Promise.resolve()),
+    readActiveOverrides: jest.fn(() => Promise.resolve(undefined)),
+}));
 
 /** начало отсчёта инспектируемой страницы: панель узнаёт его из снимка, своего у неё нет */
 const PAGE_ORIGIN = 1_700_000_000_000;
@@ -56,6 +63,9 @@ function getHistoryToggle(container: HTMLElement) {
 describe('PanelApp', () => {
     beforeEach(() => {
         sessionStorage.clear();
+        localStorage.clear();
+        jest.clearAllMocks();
+        jest.mocked(readActiveOverrides).mockResolvedValue(undefined);
     });
 
     it('should show the history of previous page loads by default', () => {
@@ -99,5 +109,29 @@ describe('PanelApp', () => {
         );
 
         expect(getHistoryToggle(container)).toBeNull();
+    });
+
+    it('should mark the overrides tab while a redirect is on', async () => {
+        // забытая подмена живёт до перезапуска браузера и ловится потом как призрак:
+        // «почему модуль грузится не оттуда»
+        jest.mocked(readActiveOverrides).mockResolvedValue([
+            { from: 'http://localhost:8082', to: 'http://localhost:8085' },
+        ]);
+
+        const { container, findByLabelText } = renderPanel();
+        const mark = await findByLabelText('подмена включена');
+
+        expect(mark.closest('.tab')?.textContent).toContain('Подмена');
+        expect(container.querySelectorAll('.tab__mark')).toHaveLength(1);
+    });
+
+    it('should keep the overrides tab clean while nothing is redirected', async () => {
+        localStorage.setItem(OVERRIDES_STORAGE_KEY, JSON.stringify([]));
+
+        const { container } = renderPanel();
+
+        await act(async () => undefined);
+
+        expect(container.querySelector('.tab__mark')).toBeNull();
     });
 });

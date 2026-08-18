@@ -162,6 +162,18 @@ function assertBundle() {
         fail('panel.js: расширение пытается читать share scope напрямую - его там не видно');
     }
 
+    // мост видимости: страница devtools зовёт панель по этому ключу, панель по нему же себя
+    // и объявляет. Разъедутся - панель молча продолжит опрашивать страницу из-под спуда
+    const devtools = fs.readFileSync(path.join(OUT, 'devtools.js'), 'utf8');
+
+    ['devtools.js', 'panel.js'].forEach((file, index) => {
+        if (!(index === 0 ? devtools : panel).includes('__ARUI_DEVTOOLS_PANEL__')) {
+            fail(
+                `${file}: пропал ключ моста видимости - опрос страницы перестанет вставать на паузу`,
+            );
+        }
+    });
+
     const size = ['devtools.js', 'panel.js'].reduce(
         (total, file) => total + fs.statSync(path.join(OUT, file)).size,
         0,

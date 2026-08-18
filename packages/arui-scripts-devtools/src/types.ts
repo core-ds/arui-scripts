@@ -1,5 +1,7 @@
 import { type ReactNode } from 'react';
 
+import { type Override } from './extension/overrides';
+
 /*
  * Все типы пакета в одном файле. Первая половина - копия публичного контракта
  * `globalThis.__ARUI_DEVTOOLS__`, объявленного в `@alfalab/scripts-modules`.
@@ -281,6 +283,10 @@ export type TimelineScaleProps = {
 export type OverridesViewProps = {
     /** origin провайдеров, встреченные в диагностике: подменять есть смысл только их */
     origins: string[];
+    /** включённые подмены; состояние держит панель - по нему рисуется метка на вкладке */
+    overrides: Override[];
+    /** весь набор целиком: подмены - это состояние, а не поток изменений */
+    onChange(next: Override[]): void;
 };
 
 export type PanelTabId =
@@ -345,6 +351,18 @@ export type PageLoadGroup = {
     current: boolean;
 };
 
+/**
+ * Показана ли вкладка панели прямо сейчас.
+ *
+ * Отдельный шов ради источника данных: спрятанная панель не должна опрашивать страницу -
+ * это `eval` в чужой документ дважды в секунду за данными, которых никто не видит.
+ */
+export type PanelVisibility = {
+    isVisible(): boolean;
+    /** подписка на изменения; возвращает функцию отписки */
+    subscribe(listener: (visible: boolean) => void): () => void;
+};
+
 export type PanelSource = {
     /** состояние на первый кадр: подписка может доехать позже, а рисовать надо сразу */
     getInitialState(): DevtoolsState;
@@ -369,6 +387,9 @@ export type PanelBodyProps = {
     scopes: ShareScope[];
     /** origin провайдеров из снимка - кандидаты на подмену */
     providerOrigins: string[];
+    /** включённые подмены адресов */
+    overrides: Override[];
+    onOverridesChange(next: Override[]): void;
     /** начало отсчёта времени страницы: по нему видно, какие записи из прошлой загрузки */
     pageTimeOrigin?: number;
     /** показывать записи предыдущих загрузок страницы */
@@ -383,6 +404,18 @@ export type PanelBodyProps = {
     onEventsOnlyErrorsChange(onlyErrors: boolean): void;
     busQuery: string;
     onBusQueryChange(query: string): void;
+};
+
+export type PanelTabsProps = {
+    activeTab: PanelTabId;
+    onSelect(tab: PanelTabId): void;
+    /** в share scope есть проблемы: вкладка получает метку внимания */
+    hasShareProblems: boolean;
+    /**
+     * сколько адресов подменяется прямо сейчас. Забытая подмена живёт до перезапуска браузера
+     * и ловится потом как призрак - «почему модуль грузится не оттуда»
+     */
+    overridesCount: number;
 };
 
 export type PanelErrorBoundaryProps = {

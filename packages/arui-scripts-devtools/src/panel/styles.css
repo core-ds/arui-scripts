@@ -236,6 +236,18 @@
     vertical-align: middle;
 }
 
+/* Включённая подмена - не проблема, а состояние, о котором нельзя забыть: точка,
+   а не восклицательный знак */
+.tab__mark {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    margin-left: 6px;
+    border-radius: 50%;
+    background: var(--arui-devtools-attention);
+    vertical-align: middle;
+}
+
 .tab:focus-visible {
     outline: 2px solid var(--arui-devtools-border-focus);
     outline-offset: -2px;

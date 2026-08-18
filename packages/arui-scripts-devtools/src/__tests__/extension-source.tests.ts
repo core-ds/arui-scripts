@@ -68,6 +68,30 @@ function createChrome() {
     };
 }
 
+/** видимость вкладки панели: в тестах ею управляем руками */
+function createVisibility(initial = true) {
+    const listeners = new Set<(visible: boolean) => void>();
+    let visible = initial;
+
+    return {
+        api: {
+            isVisible: () => visible,
+            subscribe(listener: (next: boolean) => void) {
+                listeners.add(listener);
+
+                return () => listeners.delete(listener);
+            },
+        },
+        set(next: boolean) {
+            visible = next;
+            listeners.forEach((listener) => listener(next));
+        },
+        get listenersCount() {
+            return listeners.size;
+        },
+    };
+}
+
 /** ответ страницы: оба неймспейса разом - ровно то, что возвращает выражение */
 function answer(modules: unknown, eventBus: unknown = { status: 'waiting' }, page?: unknown) {
     return { modules, eventBus, page };
@@ -279,5 +303,72 @@ describe('createExtensionSource', () => {
         createExtensionSource(chrome.api).subscribe((state) => states.push(state));
 
         expect(states[0].page).toBeUndefined();
+    });
+
+    it('should not ask the page while the panel is hidden', () => {
+        // `eval` в чужой документ дважды в секунду ради данных, на которые никто
+        // не смотрит, - работа вхолостую
+        const chrome = createChrome();
+        const visibility = createVisibility(false);
+
+        createExtensionSource(chrome.api, visibility.api).subscribe(() => undefined);
+        jest.advanceTimersByTime(STORE_POLL_INTERVAL * 4);
+
+        expect(chrome.evalCalls).toBe(0);
+    });
+
+    it('should ask right away when the panel comes back', () => {
+        const chrome = createChrome();
+        const visibility = createVisibility(false);
+
+        createExtensionSource(chrome.api, visibility.api).subscribe(() => undefined);
+        visibility.set(true);
+
+        // пока вкладку не смотрели, страница успела прожить свою жизнь: ждать тик незачем
+        expect(chrome.evalCalls).toBe(1);
+
+        jest.advanceTimersByTime(STORE_POLL_INTERVAL);
+
+        expect(chrome.evalCalls).toBe(2);
+    });
+
+    it('should stop the polling when the panel is hidden', () => {
+        const chrome = createChrome();
+        const visibility = createVisibility();
+
+        createExtensionSource(chrome.api, visibility.api).subscribe(() => undefined);
+        jest.advanceTimersByTime(STORE_POLL_INTERVAL);
+
+        const asked = chrome.evalCalls;
+
+        visibility.set(false);
+        jest.advanceTimersByTime(STORE_POLL_INTERVAL * 4);
+
+        expect(chrome.evalCalls).toBe(asked);
+    });
+
+    it('should not ask on navigation while the panel is hidden', () => {
+        const chrome = createChrome();
+        const visibility = createVisibility(false);
+
+        createExtensionSource(chrome.api, visibility.api).subscribe(() => undefined);
+        chrome.navigate();
+
+        expect(chrome.evalCalls).toBe(0);
+    });
+
+    it('should let go of the visibility on unsubscribe', () => {
+        const chrome = createChrome();
+        const visibility = createVisibility();
+
+        const unsubscribe = createExtensionSource(chrome.api, visibility.api).subscribe(
+            () => undefined,
+        );
+
+        expect(visibility.listenersCount).toBe(1);
+
+        unsubscribe();
+
+        expect(visibility.listenersCount).toBe(0);
     });
 });

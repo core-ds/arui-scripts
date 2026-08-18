@@ -1,8 +1,14 @@
 import { STORE_POLL_INTERVAL } from '../constants';
-import { type DevtoolsState, type PageClock, type PanelSource } from '../types';
+import {
+    type DevtoolsState,
+    type PageClock,
+    type PanelSource,
+    type PanelVisibility,
+} from '../types';
 
 import { type ChromeApi, getChromeApi } from './chrome-api';
 import { SNAPSHOT_EXPRESSION } from './snapshot-expression';
+import { panelVisibility } from './visibility';
 
 const WAITING: DevtoolsState = { modules: { status: 'waiting' }, eventBus: { status: 'waiting' } };
 
@@ -65,8 +71,15 @@ function toDevtoolsState(value: unknown): DevtoolsState {
  * Из часов страницы забираем одно начало отсчёта, а не текущее время: `timeOrigin` не меняется,
  * пока страница та же, поэтому отпечаток ответа остаётся стабильным. Живое «сейчас» панель
  * считает сама - `Date.now()` у неё и у страницы общий.
+ *
+ * Пока вкладку панели не видно, опрос молчит: `eval` в чужой документ дважды в секунду ради
+ * данных, на которые никто не смотрит, - чистая работа вхолостую. На возвращении спрашиваем
+ * сразу, не дожидаясь тика.
  */
-export function createExtensionSource(api: ChromeApi | undefined = getChromeApi()): PanelSource {
+export function createExtensionSource(
+    api: ChromeApi | undefined = getChromeApi(),
+    visibility: PanelVisibility = panelVisibility,
+): PanelSource {
     return {
         getInitialState: () => WAITING,
 
@@ -118,7 +131,20 @@ export function createExtensionSource(api: ChromeApi | undefined = getChromeApi(
                 });
             }
 
-            const timer = setInterval(poll, STORE_POLL_INTERVAL);
+            let timer: ReturnType<typeof setInterval> | undefined;
+
+            function startPolling() {
+                if (timer === undefined) {
+                    timer = setInterval(poll, STORE_POLL_INTERVAL);
+                }
+            }
+
+            function stopPolling() {
+                if (timer !== undefined) {
+                    clearInterval(timer);
+                    timer = undefined;
+                }
+            }
 
             /**
              * После перехода на другую страницу стор в ней новый - и, скорее всего, пустой.
@@ -127,17 +153,38 @@ export function createExtensionSource(api: ChromeApi | undefined = getChromeApi(
              */
             function handleNavigated() {
                 lastSignature = undefined;
-                poll();
+
+                if (visibility.isVisible()) {
+                    poll();
+                }
             }
 
             const onNavigated = api?.devtools?.network?.onNavigated;
 
             onNavigated?.addListener(handleNavigated);
-            poll();
+
+            const unsubscribeVisibility = visibility.subscribe((visible) => {
+                if (!visible) {
+                    stopPolling();
+
+                    return;
+                }
+
+                // пока вкладку не смотрели, страница успела прожить свою жизнь:
+                // спрашиваем сразу, а не через полсекунды
+                poll();
+                startPolling();
+            });
+
+            if (visibility.isVisible()) {
+                poll();
+                startPolling();
+            }
 
             return () => {
                 stopped = true;
-                clearInterval(timer);
+                stopPolling();
+                unsubscribeVisibility();
                 onNavigated?.removeListener(handleNavigated);
             };
         },

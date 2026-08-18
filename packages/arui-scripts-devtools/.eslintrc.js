@@ -14,7 +14,10 @@ module.exports = {
     },
     rules: {
         // имя свободной переменной задаёт webpack, переименовать её мы не можем
-        'no-underscore-dangle': ['error', { allow: ['__webpack_share_scopes__'] }],
+        'no-underscore-dangle': [
+            'error',
+            { allow: ['__webpack_share_scopes__', '__ARUI_DEVTOOLS_PANEL__'] },
+        ],
     },
     overrides: [
         {

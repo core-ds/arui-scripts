@@ -32,6 +32,22 @@ export type DeclarativeNetRequestRule = {
     condition: { urlFilter: string; resourceTypes: string[] };
 };
 
+/** документ панели глазами страницы devtools: мост видимости и больше ничего */
+export type PanelWindow = {
+    __ARUI_DEVTOOLS_PANEL__?: { setVisible(visible: boolean): void };
+};
+
+/**
+ * Вкладка DevTools, какой её отдаёт `panels.create`.
+ *
+ * `onShown` приносит `window` документа панели - другого способа до него дотянуться нет.
+ * `onHidden` приходит пустым, поэтому окно запоминаем с первого показа.
+ */
+export type ExtensionPanel = {
+    onShown?: { addListener(listener: (panelWindow: PanelWindow) => void): void };
+    onHidden?: { addListener(listener: () => void): void };
+};
+
 export type ChromeApi = {
     /** просим доступ к origin только когда подмену включают: до этого он не нужен */
     permissions?: {
@@ -67,7 +83,7 @@ export type ChromeApi = {
                 title: string,
                 iconPath: string,
                 pagePath: string,
-                callback?: (panel: unknown) => void,
+                callback?: (panel: ExtensionPanel) => void,
             ): void;
             /** открывает файл во вкладке Sources; строки считаются с нуля */
             openResource?(url: string, lineNumber: number, callback?: () => void): void;

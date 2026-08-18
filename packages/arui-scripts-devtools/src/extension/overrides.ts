@@ -75,6 +75,28 @@ export function toRule(override: Override, index: number): DeclarativeNetRequest
     };
 }
 
+/**
+ * Возвращает подмену обратно из правила браузера.
+ *
+ * Обратная сторона `toRule`: список подмен панель помнит в своём localStorage, но живут они
+ * в сессии браузера. После перезапуска Chrome правил уже нет, а список остался - и без сверки
+ * панель показывала бы включённой подмену, которой давно нет.
+ */
+export function toOverride(rule: DeclarativeNetRequestRule): Override | undefined {
+    const { transform } = rule.action?.redirect ?? {};
+    // urlFilter выглядит как `|http://host:port/`: `|` - это «начало адреса», а не часть origin
+    const from = rule.condition?.urlFilter?.replace(/^\|/, '').replace(/\/$/, '');
+
+    if (!from || !transform?.scheme || !transform.host) {
+        return undefined;
+    }
+
+    const port = transform.port ? `:${transform.port}` : '';
+    const override = { from, to: `${transform.scheme}://${transform.host}${port}` };
+
+    return isValidOverride(override) ? override : undefined;
+}
+
 function callbackToPromise<T>(run: (resolve: (value: T) => void) => void): Promise<T> {
     return new Promise((resolve) => {
         try {
@@ -118,6 +140,34 @@ export function requestOriginPermission(
     return callbackToPromise<boolean>((resolve) =>
         permissions.request({ origins: [`${origin}/*`] }, (granted) => resolve(Boolean(granted))),
     );
+}
+
+/**
+ * Подмены, которые браузер действительно перехватывает прямо сейчас.
+ *
+ * @returns undefined, если спросить некого - вне расширения. «Не знаю» и «ни одной»
+ * тут разные ответы: на первом список из localStorage надо оставить, а не стереть.
+ */
+export function readActiveOverrides(
+    api: ChromeApi | undefined = getChromeApi(),
+): Promise<Override[] | undefined> {
+    const dnr = api?.declarativeNetRequest;
+
+    if (!dnr?.getSessionRules) {
+        return Promise.resolve(undefined);
+    }
+
+    return callbackToPromise<Override[] | undefined>((resolve) => {
+        dnr.getSessionRules((existing) => {
+            resolve(
+                (existing ?? [])
+                    // чужие правила не наши: сюда мог положить своё любое другое расширение
+                    .filter((rule) => rule.id >= RULE_ID_BASE && rule.id < RULE_ID_BASE + 1000)
+                    .map(toOverride)
+                    .filter((override): override is Override => override !== undefined),
+            );
+        });
+    });
 }
 
 /**

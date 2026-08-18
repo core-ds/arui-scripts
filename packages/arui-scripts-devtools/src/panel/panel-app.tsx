@@ -13,8 +13,10 @@ import { LoadsTable } from './loads-table';
 import { OverridesView, toOrigin } from './overrides-view';
 import { PageClockContext } from './page-clock';
 import { ShareScopeView } from './share-scope-view';
+import { PanelTabs } from './tabs';
 import { TimelineView } from './timeline-view';
 import { useModulesStore } from './use-modules-store';
+import { useOverrides } from './use-overrides';
 
 const HISTORY_HINT =
     'Показывать записи предыдущих загрузок страницы: стор переживает перезагрузку через sessionStorage';
@@ -42,6 +44,8 @@ function PanelBody({
     providerOrigins,
     pageTimeOrigin,
     showHistory,
+    overrides,
+    onOverridesChange,
     expandedLoads,
     onToggleLoad,
     loadsQuery,
@@ -101,7 +105,13 @@ function PanelBody({
             <EventBusView state={eventBusState} query={busQuery} onQueryChange={onBusQueryChange} />
         );
     } else if (activeTab === 'overrides') {
-        content = <OverridesView origins={providerOrigins} />;
+        content = (
+            <OverridesView
+                origins={providerOrigins}
+                overrides={overrides}
+                onChange={onOverridesChange}
+            />
+        );
     } else if (activeTab === 'share-scope') {
         content = <ShareScopeView scopes={scopes} />;
     }
@@ -136,6 +146,9 @@ export function PanelApp({ source, onClose }: PanelAppProps) {
     // историю показываем по умолчанию: модуль, упавший на старте, ищут уже после F5,
     // и без неё от записи о падении остаётся только память
     const [showHistory, setShowHistory] = useState(() => readPanelState().history !== false);
+    // набор подмен держит панель, а не вкладка: по нему рисуется метка в заголовке,
+    // а её надо видеть, не открывая вкладку
+    const [overrides, setOverrides] = useOverrides();
 
     // Скоуп приезжает в снимке: сам `__webpack_share_scopes__` панели не виден - его снимает
     // загрузчик. Разбираем на каждый снимок, даже с закрытой вкладкой: число проблем
@@ -230,29 +243,12 @@ export function PanelApp({ source, onClose }: PanelAppProps) {
                         </button>
                     )}
                 </div>
-                <div className='tabs' role='tablist'>
-                    {PANEL_TABS.map((tab) => (
-                        <button
-                            type='button'
-                            role='tab'
-                            key={tab.id}
-                            className={`tab${tab.id === activeTab ? ' tab_active' : ''}`}
-                            aria-selected={tab.id === activeTab}
-                            onClick={() => selectTab(tab.id)}
-                        >
-                            {tab.title}
-                            {tab.id === 'share-scope' && hasShareProblems && (
-                                <span
-                                    className='tab__alert'
-                                    title='В share scope есть проблемы'
-                                    aria-label='есть проблемы'
-                                >
-                                    !
-                                </span>
-                            )}
-                        </button>
-                    ))}
-                </div>
+                <PanelTabs
+                    activeTab={activeTab}
+                    onSelect={selectTab}
+                    hasShareProblems={hasShareProblems}
+                    overridesCount={overrides.length}
+                />
                 <PanelErrorBoundary resetKey={devtoolsState}>
                     <PanelBody
                         state={state}
@@ -262,6 +258,8 @@ export function PanelApp({ source, onClose }: PanelAppProps) {
                         providerOrigins={providerOrigins}
                         pageTimeOrigin={devtoolsState.page?.timeOrigin}
                         showHistory={showHistory}
+                        overrides={overrides}
+                        onOverridesChange={setOverrides}
                         expandedLoads={expandedLoads}
                         onToggleLoad={toggleLoad}
                         loadsQuery={loadsQuery}

@@ -1,14 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import {
-    applyOverrides,
     hasOriginPermission,
     isValidOverride,
-    type Override,
     requestOriginPermission,
 } from '../extension/overrides';
 import { type OverridesViewProps } from '../types';
-import { readOverrides, writeOverrides } from '../utils/overrides-storage';
 
 /** origin провайдера из адреса, который загрузчик записал в диагностику */
 function toOrigin(url: string | undefined): string | undefined {
@@ -32,21 +29,16 @@ function toOrigin(url: string | undefined): string | undefined {
  *
  * Правила живут в сессии браузера: перезапуск Chrome их снимает, и забытая подмена
  * не переживёт день.
+ *
+ * Сам набор подмен держит панель: по нему она рисует метку в заголовке вкладки, а метку
+ * надо видеть, не открывая вкладку.
  */
-export function OverridesView({ origins }: OverridesViewProps) {
-    const [overrides, setOverrides] = useState<Override[]>(readOverrides);
+export function OverridesView({ origins, overrides, onChange }: OverridesViewProps) {
     const [note, setNote] = useState<string>();
     // Набранное в поле - это ещё не подмена. Пока правило не включили кнопкой, трафик
     // идти не должен: иначе адрес начинает перехватываться по мере набора, на середине
     // слова, и пользователь узнаёт об этом по сломавшейся странице.
     const [drafts, setDrafts] = useState<Record<string, string>>({});
-
-    // правила ставятся заново на каждое изменение набора: подмены - это состояние,
-    // и держать его в одном месте проще, чем сводить дельты
-    useEffect(() => {
-        writeOverrides(overrides);
-        applyOverrides(overrides);
-    }, [overrides]);
 
     const getTarget = (from: string) =>
         drafts[from] ?? overrides.find((item) => item.from === from)?.to ?? '';
@@ -57,7 +49,7 @@ export function OverridesView({ origins }: OverridesViewProps) {
 
     const remove = (from: string) => {
         setDrafts((previous) => ({ ...previous, [from]: '' }));
-        setOverrides((previous) => previous.filter((item) => item.from !== from));
+        onChange(overrides.filter((item) => item.from !== from));
     };
 
     const enable = async (from: string, to: string) => {
@@ -74,10 +66,9 @@ export function OverridesView({ origins }: OverridesViewProps) {
         }
 
         setNote(undefined);
-        setOverrides((previous) => [
-            ...previous.filter((item) => item.from !== from),
-            { from, to },
-        ]);
+        // весь набор целиком, а не дельта: подмены - это состояние, и держать его
+        // в одном месте проще, чем сводить изменения
+        onChange([...overrides.filter((item) => item.from !== from), { from, to }]);
     };
 
     if (!origins.length) {
