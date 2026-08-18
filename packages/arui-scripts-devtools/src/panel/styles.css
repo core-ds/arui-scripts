@@ -3,14 +3,21 @@
  * Шрифты только системные: панель не имеет права тянуть внешние ресурсы.
  *
  * Внешний вид собран по дизайн-системе core-components: цвета - тёмная палитра
- * ('--color-dark-*'), кнопки, вкладки и статусы повторяют геометрию соответствующих компонентов.
- * Импортировать '@alfalab/core-components/vars' нельзя: у пакета ноль зависимостей. Поэтому
- * переменные дизайн-системы названы по именам с запасными значениями: подключило приложение
- * вары - панель возьмёт его палитру, не подключило - свою копию. Размеры мимо 'var()' намеренно:
- * имена вроде '--gap-s' слишком общие, и чужое значение из приложения развалило бы вёрстку.
+ * ('--color-dark-*'), кнопки, вкладки, чипы и подсказки повторяют геометрию соответствующих
+ * компонентов, а размеры взяты со шкалы '--gap-*' и '--border-radius-*'.
  *
- * В бандл файл попадает строкой (asset/source в scripts/bundle-mount.js) и вставляется
- * в <style> внутри shadow root - см. mount.tsx.
+ * Импортировать '@alfalab/core-components/vars' нельзя: расширение живёт в документе DevTools,
+ * где нет ни приложения, ни его палитры, и обязано быть самодостаточным. Поэтому переменные
+ * дизайн-системы названы по именам с запасными значениями (подключило приложение вары - панель
+ * возьмёт его палитру, не подключило - свою копию), а размеры написаны числами: имена вроде
+ * '--gap-s' слишком общие, и чужое значение из приложения развалило бы вёрстку.
+ *
+ * Что копия не разошлась с оригиналом, следит 'design-tokens.tests.ts': он читает настоящие
+ * файлы core-components из node_modules и сверяет с ними и запасные значения, и каждое число.
+ * Размеры мимо шкалы перечислены там же в SCALE_EXCEPTIONS - у каждого причина записана рядом.
+ *
+ * В бандл файл попадает строкой (asset/source в scripts/bundle-extension.js) и вставляется
+ * в <style> внутри shadow root - см. extension/panel.tsx.
  *
  * Отключённые ниже правила stylelint написаны для приложений с установленной дизайн-системой:
  * они требуют её переменные и миксины, которые панели недоступны по построению.
@@ -140,6 +147,8 @@
     align-items: center;
     justify-content: center;
     min-height: 32px;
+
+    /* 15, а не 16: у Button дизайн-системы отступ учитывает рамку в 1px */
     padding: 0 15px;
     border: none;
     border-radius: 6px;
@@ -204,7 +213,7 @@
 
 .tab {
     position: relative;
-    padding: 10px 0;
+    padding: 12px 0;
     border: none;
     background: transparent;
     color: var(--arui-devtools-text-secondary);
@@ -226,7 +235,7 @@
     justify-content: center;
     width: 16px;
     height: 16px;
-    margin-left: 6px;
+    margin-left: 4px;
     border-radius: 50%;
     background: var(--arui-devtools-negative);
     color: var(--arui-devtools-text);
@@ -242,7 +251,7 @@
     display: inline-block;
     width: 6px;
     height: 6px;
-    margin-left: 6px;
+    margin-left: 4px;
     border-radius: 50%;
     background: var(--arui-devtools-attention);
     vertical-align: middle;
@@ -327,7 +336,7 @@
    «упало, перезагрузил, упало снова» читается как два падения подряд */
 .row_separator {
     display: block;
-    padding: 6px 16px;
+    padding: 8px 16px;
     background: var(--arui-devtools-bg-secondary);
     cursor: default;
 }
@@ -335,7 +344,7 @@
 .page-load {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
     color: var(--arui-devtools-text-tertiary);
     font-size: 11px;
     font-weight: 700;
@@ -429,7 +438,7 @@
     align-items: center;
     height: 20px;
     margin-left: 8px;
-    padding: 0 6px;
+    padding: 0 8px;
     border-radius: 4px;
     background: var(--arui-devtools-bg-tertiary);
     color: var(--arui-devtools-text-secondary);
@@ -440,6 +449,7 @@
 }
 
 .details {
+    /* левый отступ выравнивает подробности с названием модуля в строке таблицы */
     padding: 12px 16px 16px 44px;
     border-bottom: 1px solid var(--arui-devtools-border-subtle);
     background: var(--arui-devtools-bg-secondary);
@@ -556,7 +566,7 @@
     grid-template-columns: minmax(140px, 1fr) 16px minmax(140px, 1fr) auto auto;
     gap: 8px;
     align-items: center;
-    padding: 6px 0;
+    padding: 8px 0;
 }
 
 .overrides__from {
@@ -605,6 +615,8 @@
     display: flex;
     justify-content: space-between;
     margin-bottom: 8px;
+
+    /* шкала начинается там же, где полоски: колонка названий плюс отступ сетки */
     padding-left: 176px;
     color: var(--arui-devtools-text-tertiary);
     font-family: var(--arui-devtools-font-mono);
@@ -617,7 +629,7 @@
     grid-template-columns: 168px 1fr 72px;
     gap: 8px;
     align-items: center;
-    padding: 3px 0;
+    padding: 4px 0;
 }
 
 .timeline__label {
@@ -730,7 +742,7 @@ a.resource__url:hover {
 
 .waterfall__stage {
     display: inline-flex;
-    gap: 6px;
+    gap: 4px;
     align-items: center;
     color: var(--arui-devtools-text-secondary);
 }
@@ -748,15 +760,15 @@ a.resource__url:hover {
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
-    width: 14px;
-    height: 14px;
+    width: 16px;
+    height: 16px;
     padding: 0;
     border: 1px solid currentColor;
     border-radius: 50%;
     background: transparent;
     color: var(--arui-devtools-text-tertiary);
     font-family: var(--arui-devtools-font);
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 700;
     line-height: 1;
     cursor: help;
