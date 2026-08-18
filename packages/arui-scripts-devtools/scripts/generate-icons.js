@@ -14,6 +14,8 @@ const path = require('path');
 const zlib = require('zlib');
 
 const OUT = path.join(__dirname, '..', 'src', 'extension', 'icons');
+/** иконка для карточки Chrome Web Store: тот же знак, но с полями по краям */
+const STORE = path.join(__dirname, '..', 'docs', 'store');
 
 /** цвета дизайн-системы core-components, тёмная тема */
 const BACKGROUND = [11, 31, 53]; // --color-dark-bg-primary
@@ -95,12 +97,17 @@ function blend(background, foreground, alpha) {
     );
 }
 
-function drawIcon(size) {
+/**
+ * @param size размер холста
+ * @param art размер самого знака: в сторе холст показывают на своём фоне и обрезают
+ * по своим правилам, поэтому там знак рисуется с полями
+ */
+function drawIcon(size, art = size) {
     const center = (size - 1) / 2;
-    const radius = size * 0.5;
-    const cornerRadius = size * 0.22;
-    const ringOuter = size * 0.32;
-    const ringInner = size * 0.18;
+    const radius = art * 0.5;
+    const cornerRadius = art * 0.22;
+    const ringOuter = art * 0.32;
+    const ringInner = art * 0.18;
 
     return (x, y) => {
         // плашка со скруглением: расстояние до ближайшего угла скругления
@@ -130,3 +137,11 @@ SIZES.forEach((size) => {
     fs.writeFileSync(file, encodePng(size, drawIcon(size)));
     console.log(`[generate-icons] ${path.relative(process.cwd(), file)}`);
 });
+
+// 96px знака внутри 128px холста: так стор не срежет край на своих скруглениях
+fs.mkdirSync(STORE, { recursive: true });
+
+const storeIcon = path.join(STORE, 'icon-128.png');
+
+fs.writeFileSync(storeIcon, encodePng(128, drawIcon(128, 96)));
+console.log(`[generate-icons] ${path.relative(process.cwd(), storeIcon)}`);

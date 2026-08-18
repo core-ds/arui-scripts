@@ -1,8 +1,8 @@
 {
     "manifest_version": 3,
-    "name": "arui devtools",
+    "name": "ARUI DevTools",
     "version": "0.1.0",
-    "description": "Отладка модулей arui-scripts: загрузки, стадии, события шины, share scope и подмена на localhost",
+    "description": "Отладка микрофронтендов arui-scripts: загрузки модулей, стадии, share scope, события шины и подмена провайдера на localhost",
     "devtools_page": "devtools.html",
     "minimum_chrome_version": "96",
     "permissions": ["declarativeNetRequest"],

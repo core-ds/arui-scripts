@@ -1,3 +1,7 @@
 node_modules
 build
 coverage
+
+# промежуточная разметка снимков: png собираются из неё, а сама она одноразовая
+docs/*.html
+docs/store/*.html

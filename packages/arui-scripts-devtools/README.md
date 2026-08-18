@@ -56,6 +56,16 @@ yarn workspace @alfalab/scripts-devtools build
 После пересборки жмите «Обновить» на карточке расширения и перезапускайте DevTools: вкладки
 заводятся в момент их открытия.
 
+## Публикация
+
+```bash
+yarn workspace @alfalab/scripts-devtools pack:store
+```
+
+Собирает `build/arui-devtools-<версия>.zip` для Chrome Web Store: манифест в корне архива,
+без карт исходников, байт в байт воспроизводимо. Картинки карточки — `scripts/store-assets.js`,
+готовые тексты формы, ответы про приватность и чеклист — [docs/publishing.md](docs/publishing.md).
+
 ## Разработка
 
 ```bash

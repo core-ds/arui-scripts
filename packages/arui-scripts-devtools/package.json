@@ -1,6 +1,6 @@
 {
     "name": "@alfalab/scripts-devtools",
-    "version": "0.1.0",
+    "version": "1.0.0",
     "description": "Расширение Chrome для отладки модулей arui-scripts",
     "license": "MPL-2.0",
     "repository": {
@@ -13,6 +13,7 @@
     "homepage": "https://github.com/core-ds/arui-scripts/tree/master/packages/arui-scripts-devtools#readme",
     "scripts": {
         "build": "yarn clean && node scripts/bundle-extension.js",
+        "pack:store": "yarn build && node scripts/pack-extension.js",
         "clean": "rm -rf build tsconfig.tsbuildinfo",
         "test": "jest",
         "lint:scripts": "arui-presets-lint scripts",

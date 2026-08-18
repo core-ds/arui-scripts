@@ -174,6 +174,16 @@ function assertBundle() {
         }
     });
 
+    // расширение ничего никуда не отправляет - это обещано и в карточке стора, и в политике
+    // конфиденциальности. Обещание должно оставаться проверяемым, а не только написанным
+    const NETWORK_APIS = ['XMLHttpRequest', 'WebSocket', 'sendBeacon', 'importScripts', 'fetch('];
+
+    NETWORK_APIS.forEach((api) => {
+        if (panel.includes(api) || devtools.includes(api)) {
+            fail(`в сборке появился сетевой вызов ${api} - расширение обязано молчать в сеть`);
+        }
+    });
+
     const size = ['devtools.js', 'panel.js'].reduce(
         (total, file) => total + fs.statSync(path.join(OUT, file)).size,
         0,
