@@ -3,6 +3,7 @@ import {
     type ModuleLoadRecord,
     type PanelState,
     type PanelTabDefinition,
+    type PanelTabId,
 } from './types';
 
 /*
@@ -94,10 +95,23 @@ export const PANEL_TABS: readonly PanelTabDefinition[] = [
     { id: 'share-scope', title: 'Share scope' },
 ];
 
+/**
+ * Вкладки, которые показывают данные загрузчика.
+ *
+ * Строка состояния и переключатель истории относятся только к ним: на вкладке шины «события»
+ * означали бы совсем другие события, а подмену адресов история загрузок не касается вовсе.
+ */
+export const MODULES_TABS: readonly PanelTabId[] = ['modules', 'events', 'timeline'];
+
 /* ------------------------------- отображение -------------------------------- */
 
 /** прочерк вместо пустого места: так видно, что данных нет, а не что колонка съехала */
 export const EMPTY = '—';
+
+export const PAGE_LOAD_LABELS = {
+    current: 'текущая загрузка страницы',
+    previous: 'предыдущая загрузка страницы',
+};
 
 export const STATUS_LABELS: Record<ModuleLoadRecord['status'], string> = {
     pending: 'грузится',

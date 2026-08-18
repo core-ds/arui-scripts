@@ -229,6 +229,11 @@ export type PanelState = {
     open: boolean;
     /** id последней активной вкладки */
     tab?: string;
+    /**
+     * Показывать записи предыдущих загрузок страницы.
+     * Отсутствует - значит показывать: историю просят чаще, чем от неё отказываются.
+     */
+    history?: boolean;
 };
 
 export type ResourceTiming = {
@@ -269,6 +274,10 @@ export type TimelineViewProps = {
     loads: ModuleLoadRecord[];
 };
 
+export type TimelineScaleProps = {
+    scale: TimelineScale;
+};
+
 export type OverridesViewProps = {
     /** origin провайдеров, встреченные в диагностике: подменять есть смысл только их */
     origins: string[];
@@ -303,6 +312,37 @@ export type PanelTabDefinition = {
 export type DevtoolsState = {
     modules: ModulesStoreState;
     eventBus: EventBusStoreState;
+    /** отсчёт времени инспектируемой страницы; отсутствует, пока страница не ответила */
+    page?: PageClock;
+};
+
+/**
+ * Начало отсчёта времени инспектируемой страницы.
+ *
+ * Панель живёт в отдельном документе DevTools, и её собственный `performance` считает время
+ * от момента открытия вкладки - к таймингам страницы он не относится вообще. Всё, что панель
+ * знает о часах страницы, приезжает отсюда: и «эта запись из прошлой загрузки», и «сейчас»
+ * на шкале незавершённой стадии.
+ */
+export type PageClock = {
+    /** `performance.timeOrigin` страницы: `Date.now()` на момент начала её загрузки */
+    timeOrigin: number;
+};
+
+/**
+ * Записи одной загрузки страницы.
+ *
+ * Стор переживает перезагрузку через sessionStorage, поэтому в снимке лежат записи сразу
+ * нескольких загрузок страницы. Смешивать их нельзя: `performance.now()` у каждой свой.
+ */
+export type PageLoadGroup = {
+    /** префикс `loadId`, общий у всех записей одной загрузки страницы */
+    key: string;
+    records: ModuleLoadRecord[];
+    /** `Date.now()` первой записи группы */
+    startedAt: number;
+    /** это текущая загрузка страницы, а не восстановленная из sessionStorage */
+    current: boolean;
 };
 
 export type PanelSource = {
@@ -329,6 +369,10 @@ export type PanelBodyProps = {
     scopes: ShareScope[];
     /** origin провайдеров из снимка - кандидаты на подмену */
     providerOrigins: string[];
+    /** начало отсчёта времени страницы: по нему видно, какие записи из прошлой загрузки */
+    pageTimeOrigin?: number;
+    /** показывать записи предыдущих загрузок страницы */
+    showHistory: boolean;
     expandedLoads: ReadonlySet<string>;
     onToggleLoad(loadId: string): void;
     loadsQuery: string;
@@ -382,11 +426,17 @@ export type WaterfallProps = {
 
 export type EventsViewProps = {
     events: DevtoolsEvent[];
+    /** записи о загрузках: по ним лог узнаёт границы загрузок страницы */
+    loads: ModuleLoadRecord[];
     /** фильтры контролирует панель: значения должны переживать переключение вкладок */
     query: string;
     onQueryChange(query: string): void;
     onlyErrors: boolean;
     onOnlyErrorsChange(onlyErrors: boolean): void;
+};
+
+export type PageLoadSeparatorProps = {
+    group: PageLoadGroup;
 };
 
 export type ShareScopeViewProps = {

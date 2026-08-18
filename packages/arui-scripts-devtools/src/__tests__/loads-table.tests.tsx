@@ -2,11 +2,15 @@ import { useState } from 'react';
 import { fireEvent, render } from '@testing-library/react';
 
 import { LoadsTable } from '../panel/loads-table';
+import { PageClockContext } from '../panel/page-clock';
 import { type ModuleLoadRecord } from '../types';
+
+/** начало отсчёта инспектируемой страницы: панель узнаёт его из снимка, своего у неё нет */
+const PAGE_ORIGIN = 1_700_000_000_000;
 
 function createRecord(overrides: Partial<ModuleLoadRecord> = {}): ModuleLoadRecord {
     return {
-        loadId: 'load-1',
+        loadId: 'page1-1',
         moduleId: 'module',
         hostAppId: 'host',
         status: 'loaded',
@@ -15,36 +19,38 @@ function createRecord(overrides: Partial<ModuleLoadRecord> = {}): ModuleLoadReco
         scripts: [],
         styles: [],
         timings: {},
-        startedAt: performance.timeOrigin + 1,
+        startedAt: PAGE_ORIGIN + 1,
         ...overrides,
     };
 }
 
-/** раскрытые строки контролирует панель - в тестах её роль играет эта обёртка */
+/** раскрытые строки и часы страницы контролирует панель - в тестах её роль играет эта обёртка */
 function TableHarness({ loads }: { loads: ModuleLoadRecord[] }) {
     const [expanded, setExpanded] = useState<ReadonlySet<string>>(() => new Set());
     const [query, setQuery] = useState('');
 
     return (
-        <LoadsTable
-            loads={loads}
-            query={query}
-            onQueryChange={setQuery}
-            expanded={expanded}
-            onToggle={(loadId) =>
-                setExpanded((previous) => {
-                    const next = new Set(previous);
+        <PageClockContext.Provider value={PAGE_ORIGIN}>
+            <LoadsTable
+                loads={loads}
+                query={query}
+                onQueryChange={setQuery}
+                expanded={expanded}
+                onToggle={(loadId) =>
+                    setExpanded((previous) => {
+                        const next = new Set(previous);
 
-                    if (next.has(loadId)) {
-                        next.delete(loadId);
-                    } else {
-                        next.add(loadId);
-                    }
+                        if (next.has(loadId)) {
+                            next.delete(loadId);
+                        } else {
+                            next.add(loadId);
+                        }
 
-                    return next;
-                })
-            }
-        />
+                        return next;
+                    })
+                }
+            />
+        </PageClockContext.Provider>
     );
 }
 
@@ -130,12 +136,39 @@ describe('LoadsTable', () => {
         expect(getRows(container)[0].textContent).toContain('—');
     });
 
-    it('should mark records restored from the previous page load', () => {
+    it('should separate the records of different page loads', () => {
+        // стор переживает перезагрузку через sessionStorage: без границы «упало,
+        // перезагрузил, упало снова» читается как два падения подряд
         const { container } = render(
-            <TableHarness loads={[createRecord({ startedAt: performance.timeOrigin - 1000 })]} />,
+            <TableHarness
+                loads={[
+                    createRecord({
+                        loadId: 'page0-1',
+                        moduleId: 'before-reload',
+                        startedAt: PAGE_ORIGIN - 1000,
+                    }),
+                    createRecord({ moduleId: 'after-reload' }),
+                ]}
+            />,
         );
 
-        expect(container.querySelector('.badge')?.textContent).toBe('прошлая загрузка');
+        const separators = Array.from(container.querySelectorAll('.row_separator')).map(
+            (row) => row.textContent,
+        );
+
+        expect(separators).toHaveLength(2);
+        expect(separators[0]).toContain('текущая загрузка страницы');
+        expect(separators[1]).toContain('предыдущая загрузка страницы');
+    });
+
+    it('should not separate anything when there was no reload', () => {
+        const { container } = render(
+            <TableHarness
+                loads={[createRecord({ loadId: 'page1-1' }), createRecord({ loadId: 'page1-2' })]}
+            />,
+        );
+
+        expect(container.querySelector('.row_separator')).toBeNull();
     });
 
     it('should expand and collapse a row', () => {

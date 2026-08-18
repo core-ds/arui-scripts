@@ -3,10 +3,11 @@ import { useEffect, useState } from 'react';
 import { MIN_BAR_WIDTH, PENDING_TICK_INTERVAL, STAGE_HINTS, STAGE_ORDER } from '../constants';
 import { type WaterfallProps } from '../types';
 import { formatDuration } from '../utils/format';
-import { isFromPreviousPageLoad } from '../utils/resource-timing';
+import { getPageNow, isFromPreviousPageLoad } from '../utils/page-loads';
 import { getScaleEnd } from '../utils/waterfall-scale';
 
 import { Hint } from './hint';
+import { usePageTimeOrigin } from './page-clock';
 
 /**
  * Водопад стадий одной загрузки: видно и длительность каждой стадии, и паузы между ними.
@@ -16,13 +17,19 @@ import { Hint } from './hint';
  * и без собственного таймера картинка замирала бы на моменте последнего события.
  */
 export function Waterfall({ record }: WaterfallProps) {
+    const pageTimeOrigin = usePageTimeOrigin();
     const stages = STAGE_ORDER.filter((stage) => record.timings[stage]).map((stage) => ({
         stage,
         timing: record.timings[stage]!,
     }));
 
     const hasPending = stages.some((item) => item.timing.end === undefined);
-    const ticking = hasPending && !isFromPreviousPageLoad(record.startedAt);
+    // у записи прошлой загрузки страницы «сейчас» нет: её стадии мерялись другим отсчётом,
+    // и дорисовывать им хвост до текущего момента значило бы врать
+    const now = isFromPreviousPageLoad(record.startedAt, pageTimeOrigin)
+        ? undefined
+        : getPageNow(pageTimeOrigin);
+    const ticking = hasPending && now !== undefined;
     const [, setTick] = useState(0);
 
     useEffect(() => {
@@ -48,7 +55,7 @@ export function Waterfall({ record }: WaterfallProps) {
     const ends = stages.map((item) => item.timing.end ?? item.timing.start);
     const from = Math.min(...starts);
     const lastMark = Math.max(...ends);
-    const to = getScaleEnd(record, lastMark, hasPending);
+    const to = getScaleEnd(lastMark, hasPending, now);
     // всё уложилось в один тик - шкалу делаем не нулевой, иначе делить не на что
     const total = to - from || 1;
 

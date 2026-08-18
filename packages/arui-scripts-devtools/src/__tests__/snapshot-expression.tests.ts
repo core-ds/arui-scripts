@@ -25,16 +25,28 @@ const BUS_SNAPSHOT = { version: 1, events: [], listeners: [] };
 
 describe('SNAPSHOT_EXPRESSION', () => {
     it('should wait when the page has no devtools global at all', () => {
-        expect(evaluate({})).toEqual({
+        expect(evaluate({})).toMatchObject({
             modules: { status: 'waiting' },
             eventBus: { status: 'waiting' },
         });
     });
 
     it('should wait when the shell is there but no namespace filled it', () => {
-        expect(evaluate({ [DEVTOOLS_GLOBAL_KEY]: { version: 1 } })).toEqual({
+        expect(evaluate({ [DEVTOOLS_GLOBAL_KEY]: { version: 1 } })).toMatchObject({
             modules: { status: 'waiting' },
             eventBus: { status: 'waiting' },
+        });
+    });
+
+    it('should send the page clock along with the data', () => {
+        // без него панель считает время по своему документу, а он открылся когда угодно
+        expect(evaluate({}).page).toEqual({ timeOrigin: performance.timeOrigin });
+    });
+
+    it('should send the page clock even when the shell version is unknown', () => {
+        // вкладки останутся пустыми, но время незавершённых стадий показывать всё равно нечем
+        expect(evaluate({ [DEVTOOLS_GLOBAL_KEY]: { version: 42 } }).page).toEqual({
+            timeOrigin: performance.timeOrigin,
         });
     });
 

@@ -1,7 +1,8 @@
 import { Fragment, useMemo, useState } from 'react';
 
-import { PANEL_TABS } from '../constants';
+import { MODULES_TABS, PANEL_TABS } from '../constants';
 import { type PanelAppProps, type PanelBodyProps, type PanelTabId } from '../types';
+import { isFromPreviousPageLoad } from '../utils/page-loads';
 import { readPanelState, writePanelState } from '../utils/panel-state';
 import { analyzeShareScopes, countShareProblems } from '../utils/share-scope';
 
@@ -10,9 +11,13 @@ import { EventBusView } from './event-bus-view';
 import { EventsView } from './events-view';
 import { LoadsTable } from './loads-table';
 import { OverridesView, toOrigin } from './overrides-view';
+import { PageClockContext } from './page-clock';
 import { ShareScopeView } from './share-scope-view';
 import { TimelineView } from './timeline-view';
 import { useModulesStore } from './use-modules-store';
+
+const HISTORY_HINT =
+    'Показывать записи предыдущих загрузок страницы: стор переживает перезагрузку через sessionStorage';
 
 function restoreActiveTab(): PanelTabId {
     const stored = readPanelState().tab;
@@ -35,6 +40,8 @@ function PanelBody({
     activeTab,
     scopes,
     providerOrigins,
+    pageTimeOrigin,
+    showHistory,
     expandedLoads,
     onToggleLoad,
     loadsQuery,
@@ -47,13 +54,16 @@ function PanelBody({
     onBusQueryChange,
 }: PanelBodyProps) {
     const snapshot = state.status === 'ready' ? state.snapshot : undefined;
-    const loads = snapshot?.loads ?? [];
-    const events = snapshot?.events ?? [];
+    // историю прошлых загрузок страницы отсекаем здесь, одним местом на все вкладки:
+    // вкладкам остаётся показать то, что дали, и расставить границы групп
+    const isVisible = (startedAt: number) =>
+        showHistory || !isFromPreviousPageLoad(startedAt, pageTimeOrigin);
+    const loads = (snapshot?.loads ?? []).filter((record) => isVisible(record.startedAt));
+    const events = (snapshot?.events ?? []).filter((event) => isVisible(event.timestamp));
 
     // строка состояния описывает данные загрузчика: на вкладках, которые их не показывают,
     // она только путает - «событий» там означало бы совсем другие события
-    const showsModules =
-        activeTab === 'modules' || activeTab === 'events' || activeTab === 'timeline';
+    const showsModules = MODULES_TABS.includes(activeTab);
 
     let statusText = `Загрузок: ${loads.length} · событий: ${events.length}`;
 
@@ -77,6 +87,7 @@ function PanelBody({
         content = (
             <EventsView
                 events={events}
+                loads={loads}
                 query={eventsQuery}
                 onQueryChange={onEventsQueryChange}
                 onlyErrors={eventsOnlyErrors}
@@ -122,6 +133,9 @@ export function PanelApp({ source, onClose }: PanelAppProps) {
     const [eventsQuery, setEventsQuery] = useState('');
     const [eventsOnlyErrors, setEventsOnlyErrors] = useState(false);
     const [busQuery, setBusQuery] = useState('');
+    // историю показываем по умолчанию: модуль, упавший на старте, ищут уже после F5,
+    // и без неё от записи о падении остаётся только память
+    const [showHistory, setShowHistory] = useState(() => readPanelState().history !== false);
 
     // Скоуп приезжает в снимке: сам `__webpack_share_scopes__` панели не виден - его снимает
     // загрузчик. Разбираем на каждый снимок, даже с закрытой вкладкой: число проблем
@@ -162,6 +176,11 @@ export function PanelApp({ source, onClose }: PanelAppProps) {
         writePanelState({ tab });
     };
 
+    const toggleHistory = (next: boolean) => {
+        setShowHistory(next);
+        writePanelState({ history: next });
+    };
+
     const toggleLoad = (loadId: string) => {
         setExpandedLoads((previous) => {
             const next = new Set(previous);
@@ -180,64 +199,82 @@ export function PanelApp({ source, onClose }: PanelAppProps) {
     };
 
     return (
-        <div className='panel' role='complementary' aria-label='arui devtools'>
-            <div className='header'>
-                <div className='title'>arui devtools</div>
-                {/* у расширения крестика нет: панель занимает вкладку целиком */}
-                {onClose && (
-                    <button
-                        type='button'
-                        className='button button_icon close'
-                        title='Закрыть (Esc)'
-                        aria-label='Закрыть панель'
-                        onClick={onClose}
-                    >
-                        ✕
-                    </button>
-                )}
+        <PageClockContext.Provider value={devtoolsState.page?.timeOrigin}>
+            <div className='panel' role='complementary' aria-label='arui devtools'>
+                <div className='header'>
+                    <div className='title'>arui devtools</div>
+                    {/* переключатель живёт там же, где данные, которых он касается: на вкладке
+                    подмены или шины история загрузок не значит ничего */}
+                    {MODULES_TABS.includes(activeTab) && (
+                        <label className='checkbox' title={HISTORY_HINT}>
+                            <input
+                                className='checkbox__input'
+                                type='checkbox'
+                                checked={showHistory}
+                                onChange={(event) => toggleHistory(event.target.checked)}
+                            />
+                            <span className='checkbox__box' />
+                            <span className='checkbox__label'>История</span>
+                        </label>
+                    )}
+                    {/* у расширения крестика нет: панель занимает вкладку целиком */}
+                    {onClose && (
+                        <button
+                            type='button'
+                            className='button button_icon close'
+                            title='Закрыть (Esc)'
+                            aria-label='Закрыть панель'
+                            onClick={onClose}
+                        >
+                            ✕
+                        </button>
+                    )}
+                </div>
+                <div className='tabs' role='tablist'>
+                    {PANEL_TABS.map((tab) => (
+                        <button
+                            type='button'
+                            role='tab'
+                            key={tab.id}
+                            className={`tab${tab.id === activeTab ? ' tab_active' : ''}`}
+                            aria-selected={tab.id === activeTab}
+                            onClick={() => selectTab(tab.id)}
+                        >
+                            {tab.title}
+                            {tab.id === 'share-scope' && hasShareProblems && (
+                                <span
+                                    className='tab__alert'
+                                    title='В share scope есть проблемы'
+                                    aria-label='есть проблемы'
+                                >
+                                    !
+                                </span>
+                            )}
+                        </button>
+                    ))}
+                </div>
+                <PanelErrorBoundary resetKey={devtoolsState}>
+                    <PanelBody
+                        state={state}
+                        eventBusState={devtoolsState.eventBus}
+                        activeTab={activeTab}
+                        scopes={scopes}
+                        providerOrigins={providerOrigins}
+                        pageTimeOrigin={devtoolsState.page?.timeOrigin}
+                        showHistory={showHistory}
+                        expandedLoads={expandedLoads}
+                        onToggleLoad={toggleLoad}
+                        loadsQuery={loadsQuery}
+                        onLoadsQueryChange={setLoadsQuery}
+                        eventsQuery={eventsQuery}
+                        onEventsQueryChange={setEventsQuery}
+                        eventsOnlyErrors={eventsOnlyErrors}
+                        onEventsOnlyErrorsChange={setEventsOnlyErrors}
+                        busQuery={busQuery}
+                        onBusQueryChange={setBusQuery}
+                    />
+                </PanelErrorBoundary>
             </div>
-            <div className='tabs' role='tablist'>
-                {PANEL_TABS.map((tab) => (
-                    <button
-                        type='button'
-                        role='tab'
-                        key={tab.id}
-                        className={`tab${tab.id === activeTab ? ' tab_active' : ''}`}
-                        aria-selected={tab.id === activeTab}
-                        onClick={() => selectTab(tab.id)}
-                    >
-                        {tab.title}
-                        {tab.id === 'share-scope' && hasShareProblems && (
-                            <span
-                                className='tab__alert'
-                                title='В share scope есть проблемы'
-                                aria-label='есть проблемы'
-                            >
-                                !
-                            </span>
-                        )}
-                    </button>
-                ))}
-            </div>
-            <PanelErrorBoundary resetKey={devtoolsState}>
-                <PanelBody
-                    state={state}
-                    eventBusState={devtoolsState.eventBus}
-                    activeTab={activeTab}
-                    scopes={scopes}
-                    providerOrigins={providerOrigins}
-                    expandedLoads={expandedLoads}
-                    onToggleLoad={toggleLoad}
-                    loadsQuery={loadsQuery}
-                    onLoadsQueryChange={setLoadsQuery}
-                    eventsQuery={eventsQuery}
-                    onEventsQueryChange={setEventsQuery}
-                    eventsOnlyErrors={eventsOnlyErrors}
-                    onEventsOnlyErrorsChange={setEventsOnlyErrors}
-                    busQuery={busQuery}
-                    onBusQueryChange={setBusQuery}
-                />
-            </PanelErrorBoundary>
-        </div>
+        </PageClockContext.Provider>
     );
 }

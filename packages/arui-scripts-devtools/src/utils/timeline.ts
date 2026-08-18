@@ -1,7 +1,8 @@
 import { type ModuleLoadRecord, type TimelineRow, type TimelineScale } from '../types';
 
-import { isFromPreviousPageLoad } from './resource-timing';
 import { getScaleEnd } from './waterfall-scale';
+
+type Bounds = { record: ModuleLoadRecord; from: number; to: number; pending: boolean };
 
 /**
  * Границы одной загрузки по её стадиям: от первой засечки до последней.
@@ -15,6 +16,7 @@ import { getScaleEnd } from './waterfall-scale';
  */
 function getBounds(
     record: ModuleLoadRecord,
+    now: number | undefined,
 ): { from: number; to: number; pending: boolean } | undefined {
     const timings = Object.values(record.timings ?? {}).filter(
         (timing) => timing && Number.isFinite(timing.start),
@@ -29,7 +31,7 @@ function getBounds(
         Number.isFinite(timing.end) ? (timing.end as number) : timing.start,
     );
     const pending = timings.some((timing) => !Number.isFinite(timing.end));
-    const to = getScaleEnd(record, Math.max(...ends), pending);
+    const to = getScaleEnd(Math.max(...ends), pending, now);
 
     return {
         from: Math.min(...starts),
@@ -45,23 +47,23 @@ function getBounds(
  * межмодульный: что грузилось параллельно, а что выстроилось в очередь. Из лога событий это
  * тоже видно, но глазами по числам.
  *
- * Записи предыдущей загрузки страницы сюда не попадают: у них своё начало отсчёта, и на одной
- * шкале с текущими они оказались бы где угодно.
+ * Ось строится на одну загрузку страницы: `performance.now()` у каждой свой, и записи разных
+ * загрузок на общей шкале оказались бы где угодно. Делит их по группам вызывающий.
+ *
+ * @param now «сейчас» по часам страницы; без него незавершённые полоски встают по последней
+ * засечке - именно так и надо для записей прошлых загрузок страницы
  */
-export function buildTimeline(loads: ModuleLoadRecord[]): TimelineScale {
+export function buildTimeline(
+    loads: ModuleLoadRecord[],
+    now: number | undefined = undefined,
+): TimelineScale {
     const bounds = loads
-        .filter((record) => !isFromPreviousPageLoad(record.startedAt))
         .map((record) => {
-            const measured = getBounds(record);
+            const measured = getBounds(record, now);
 
             return measured ? { record, ...measured } : undefined;
         })
-        .filter(
-            (
-                item,
-            ): item is { record: ModuleLoadRecord; from: number; to: number; pending: boolean } =>
-                item !== undefined,
-        );
+        .filter((item): item is Bounds => item !== undefined);
 
     if (!bounds.length) {
         return { from: 0, to: 0, duration: 0, rows: [] };

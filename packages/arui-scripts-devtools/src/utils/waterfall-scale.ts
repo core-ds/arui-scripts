@@ -1,7 +1,3 @@
-import { type ModuleLoadRecord } from '../types';
-
-import { isFromPreviousPageLoad } from './resource-timing';
-
 /**
  * Правый край шкалы водопада.
  *
@@ -9,25 +5,18 @@ import { isFromPreviousPageLoad } from './resource-timing';
  * стадии: её полоска получает нулевую ширину у самого края трека, и водопад молчит ровно про то,
  * ради чего его открывают, - на чём модуль висит и как долго.
  *
- * Стадии меряются в `performance.now()`, поэтому к записям предыдущей загрузки страницы «сейчас»
- * не относится: у них своё начало отсчёта, и край им считаем по последней засечке.
+ * «Сейчас» приходит снаружи и считается по часам страницы: стадии меряются её `performance.now()`,
+ * а у документа панели своё начало отсчёта. Для записей прошлой загрузки страницы «сейчас»
+ * не существует вовсе - им край считаем по последней засечке.
  */
 export function getScaleEnd(
-    record: ModuleLoadRecord,
     lastMark: number,
     hasPending: boolean,
+    now: number | undefined,
 ): number {
-    if (!hasPending || isFromPreviousPageLoad(record.startedAt)) {
+    if (!hasPending || now === undefined || !Number.isFinite(now)) {
         return lastMark;
     }
 
-    try {
-        if (typeof performance === 'undefined' || typeof performance.now !== 'function') {
-            return lastMark;
-        }
-
-        return Math.max(lastMark, performance.now());
-    } catch {
-        return lastMark;
-    }
+    return Math.max(lastMark, now);
 }

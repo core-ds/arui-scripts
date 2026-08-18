@@ -1,5 +1,5 @@
 import { STORE_POLL_INTERVAL } from '../constants';
-import { type DevtoolsState, type PanelSource } from '../types';
+import { type DevtoolsState, type PageClock, type PanelSource } from '../types';
 
 import { type ChromeApi, getChromeApi } from './chrome-api';
 import { SNAPSHOT_EXPRESSION } from './snapshot-expression';
@@ -17,13 +17,30 @@ function isNamespaceState(value: unknown): boolean {
     return status === 'ready' || status === 'waiting' || status === 'unsupported';
 }
 
+/** часы страницы: без конечного числа они бесполезны, а врать про время хуже, чем молчать */
+function toPageClock(value: unknown): PageClock | undefined {
+    if (typeof value !== 'object' || value === null) {
+        return undefined;
+    }
+
+    const { timeOrigin } = value as { timeOrigin?: unknown };
+
+    return typeof timeOrigin === 'number' && Number.isFinite(timeOrigin)
+        ? { timeOrigin }
+        : undefined;
+}
+
 /** ответ страницы: оба неймспейса разом. Незнакомое приводим к «ждём» */
 function toDevtoolsState(value: unknown): DevtoolsState {
     if (typeof value !== 'object' || value === null) {
         return WAITING;
     }
 
-    const { modules, eventBus } = value as { modules?: unknown; eventBus?: unknown };
+    const { modules, eventBus, page } = value as {
+        modules?: unknown;
+        eventBus?: unknown;
+        page?: unknown;
+    };
 
     return {
         modules: isNamespaceState(modules)
@@ -32,6 +49,7 @@ function toDevtoolsState(value: unknown): DevtoolsState {
         eventBus: isNamespaceState(eventBus)
             ? (eventBus as DevtoolsState['eventBus'])
             : { status: 'waiting' },
+        page: toPageClock(page),
     };
 }
 
@@ -43,6 +61,10 @@ function toDevtoolsState(value: unknown): DevtoolsState {
  * не изменился, - иначе панель перерисовывалась бы дважды в секунду на ровном месте.
  *
  * Ответ приезжает структурным клоном: функций и ссылок в нём нет и быть не может, только данные.
+ *
+ * Из часов страницы забираем одно начало отсчёта, а не текущее время: `timeOrigin` не меняется,
+ * пока страница та же, поэтому отпечаток ответа остаётся стабильным. Живое «сейчас» панель
+ * считает сама - `Date.now()` у неё и у страницы общий.
  */
 export function createExtensionSource(api: ChromeApi | undefined = getChromeApi()): PanelSource {
     return {

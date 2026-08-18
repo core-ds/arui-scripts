@@ -302,13 +302,38 @@
     cursor: pointer;
 }
 
-.row:hover:not(.row_header) {
+.row:hover:not(.row_header):not(.row_separator) {
     background: var(--arui-devtools-bg-hover);
 }
 
 .row:focus-visible {
     outline: 2px solid var(--arui-devtools-border-focus);
     outline-offset: -2px;
+}
+
+/* Граница между загрузками страницы: в буфере они лежат одним списком, и без неё
+   «упало, перезагрузил, упало снова» читается как два падения подряд */
+.row_separator {
+    display: block;
+    padding: 6px 16px;
+    background: var(--arui-devtools-bg-secondary);
+    cursor: default;
+}
+
+.page-load {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--arui-devtools-text-tertiary);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    line-height: 16px;
+    text-transform: uppercase;
+}
+
+.page-load__icon {
+    font-size: 12px;
 }
 
 /* accent_caps, уменьшенный до плотности таблицы */
@@ -551,6 +576,17 @@
    но строка здесь - целая загрузка, а не стадия */
 .timeline {
     padding: 12px 16px;
+}
+
+/* У каждой загрузки страницы своя ось: отсчёт performance.now() у них разный */
+.timeline__page-load + .timeline__page-load {
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--arui-devtools-border);
+}
+
+.page-load_header {
+    margin: 0 0 8px;
 }
 
 .timeline__scale {

@@ -1,6 +1,9 @@
 import { type ModuleLoadRecord } from '../types';
 import { buildTimeline } from '../utils/timeline';
 
+/** начало отсчёта инспектируемой страницы: панель узнаёт его из снимка, своего у неё нет */
+const PAGE_ORIGIN = 1_700_000_000_000;
+
 function createRecord(
     loadId: string,
     timings: ModuleLoadRecord['timings'],
@@ -16,35 +19,18 @@ function createRecord(
         scripts: [],
         styles: [],
         timings,
-        startedAt: performance.timeOrigin + 1,
+        startedAt: PAGE_ORIGIN + 1,
         ...overrides,
     };
 }
 
 describe('buildTimeline', () => {
-    const originalNow = performance.now;
-
-    afterEach(() => {
-        performance.now = originalNow;
-    });
-
     it('should return an empty scale when there is nothing measured', () => {
         expect(buildTimeline([])).toEqual({ from: 0, to: 0, duration: 0, rows: [] });
     });
 
     it('should skip records without timings', () => {
         expect(buildTimeline([createRecord('a', {})]).rows).toEqual([]);
-    });
-
-    it('should skip records of the previous page load', () => {
-        // у них своё начало отсчёта: на одной шкале с текущими они окажутся где угодно
-        const previous = createRecord(
-            'a',
-            { 'fetch-manifest': { start: 0, end: 10 } },
-            { startedAt: performance.timeOrigin - 1000 },
-        );
-
-        expect(buildTimeline([previous]).rows).toEqual([]);
     });
 
     it('should lay loads out on a shared axis', () => {
@@ -92,14 +78,24 @@ describe('buildTimeline', () => {
     });
 
     it('should stretch a pending load to the current moment', () => {
-        performance.now = (() => 500) as typeof performance.now;
+        const timeline = buildTimeline(
+            [createRecord('a', { 'fetch-resources': { start: 100 } }, { status: 'pending' })],
+            500,
+        );
 
+        expect(timeline.rows[0].pending).toBe(true);
+        expect(timeline.rows[0].duration).toBe(400);
+    });
+
+    it('should leave a pending load at its last mark without a current moment', () => {
+        // «сейчас» есть только у текущей загрузки страницы: у восстановленной из sessionStorage
+        // свой отсчёт, и дорисовывать ей хвост до текущего момента значило бы врать
         const timeline = buildTimeline([
             createRecord('a', { 'fetch-resources': { start: 100 } }, { status: 'pending' }),
         ]);
 
         expect(timeline.rows[0].pending).toBe(true);
-        expect(timeline.rows[0].duration).toBe(400);
+        expect(timeline.rows[0].duration).toBe(0);
     });
 
     it('should skip a record whose stages carry no numbers', () => {

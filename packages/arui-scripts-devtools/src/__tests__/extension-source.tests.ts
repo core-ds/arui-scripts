@@ -69,8 +69,8 @@ function createChrome() {
 }
 
 /** ответ страницы: оба неймспейса разом - ровно то, что возвращает выражение */
-function answer(modules: unknown, eventBus: unknown = { status: 'waiting' }) {
-    return { modules, eventBus };
+function answer(modules: unknown, eventBus: unknown = { status: 'waiting' }, page?: unknown) {
+    return { modules, eventBus, page };
 }
 
 const WAITING: DevtoolsState = { modules: { status: 'waiting' }, eventBus: { status: 'waiting' } };
@@ -255,5 +255,29 @@ describe('createExtensionSource', () => {
         };
 
         expect(() => createExtensionSource(api).subscribe(() => undefined)).not.toThrow();
+    });
+
+    it('should carry the page clock through', () => {
+        // без начала отсчёта страницы панель не отличит записи прошлой загрузки от текущих:
+        // её собственный `performance` считает время от открытия DevTools
+        const chrome = createChrome();
+        const states: DevtoolsState[] = [];
+
+        chrome.answerWith(answer({ status: 'waiting' }, { status: 'waiting' }, { timeOrigin: 42 }));
+        createExtensionSource(chrome.api).subscribe((state) => states.push(state));
+
+        expect(states[0].page).toEqual({ timeOrigin: 42 });
+    });
+
+    it('should ignore a page clock that is not a number', () => {
+        const chrome = createChrome();
+        const states: DevtoolsState[] = [];
+
+        chrome.answerWith(
+            answer({ status: 'waiting' }, { status: 'waiting' }, { timeOrigin: 'давно' }),
+        );
+        createExtensionSource(chrome.api).subscribe((state) => states.push(state));
+
+        expect(states[0].page).toBeUndefined();
     });
 });

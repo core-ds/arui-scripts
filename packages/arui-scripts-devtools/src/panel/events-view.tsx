@@ -1,8 +1,13 @@
+import { Fragment } from 'react';
+
 import { EMPTY, EVENTS_COLUMNS } from '../constants';
 import { type EventsViewProps } from '../types';
 import { matchesEvent } from '../utils/event-matches';
-import { formatDuration } from '../utils/format';
-import { isFromPreviousPageLoad } from '../utils/resource-timing';
+import { formatClock, formatDuration } from '../utils/format';
+import { getPageLoadKey, groupByPageLoad, isFromPreviousPageLoad } from '../utils/page-loads';
+
+import { usePageTimeOrigin } from './page-clock';
+import { PageLoadSeparator } from './page-load-separator';
 
 /**
  * Лог событий загрузчика: то, чего не видно в таблице модулей - порядок событий между модулями.
@@ -11,14 +16,21 @@ import { isFromPreviousPageLoad } from '../utils/resource-timing';
  */
 export function EventsView({
     events,
+    loads,
     query,
     onQueryChange,
     onlyErrors,
     onOnlyErrorsChange,
 }: EventsViewProps) {
+    const pageTimeOrigin = usePageTimeOrigin();
     const normalized = query.trim().toLowerCase();
     const filtered = events.filter(
         (event) => (!onlyErrors || event.type === 'error') && matchesEvent(event, normalized),
+    );
+    // группы берём из записей о загрузках: у события есть loadId, но нет собственного
+    // признака «из какой это загрузки страницы»
+    const pageLoads = new Map(
+        groupByPageLoad(loads, pageTimeOrigin).map((group) => [group.key, group]),
     );
 
     let list = (
@@ -40,24 +52,46 @@ export function EventsView({
                 {filtered
                     .slice()
                     .reverse()
-                    .map((event) => (
-                        <div
-                            className={`row row_event${event.type === 'error' ? ' row_error' : ''}`}
-                            key={event.id}
-                        >
-                            <span className='cell cell_mono'>
-                                {/* время от начала загрузки страницы; у записей прошлой
-                                    загрузки своё начало отсчёта */}
-                                {isFromPreviousPageLoad(event.timestamp)
-                                    ? EMPTY
-                                    : formatDuration(event.time)}
-                            </span>
-                            <span className='cell cell_type'>{event.type}</span>
-                            <span className='cell'>{event.moduleId}</span>
-                            <span className='cell'>{event.stage || EMPTY}</span>
-                            <span className='cell cell_message'>{event.message || EMPTY}</span>
-                        </div>
-                    ))}
+                    .map((event, index, rows) => {
+                        const key = getPageLoadKey(event.loadId);
+                        const group = pageLoads.get(key);
+                        const startsGroup =
+                            pageLoads.size > 1 &&
+                            (index === 0 || getPageLoadKey(rows[index - 1].loadId) !== key);
+                        const previous = isFromPreviousPageLoad(event.timestamp, pageTimeOrigin);
+
+                        return (
+                            <Fragment key={event.id}>
+                                {startsGroup && group && <PageLoadSeparator group={group} />}
+                                <div
+                                    className={`row row_event${
+                                        event.type === 'error' ? ' row_error' : ''
+                                    }`}
+                                >
+                                    <span
+                                        className='cell cell_mono'
+                                        title={
+                                            previous
+                                                ? 'Время по часам: у прошлой загрузки страницы своё начало отсчёта'
+                                                : undefined
+                                        }
+                                    >
+                                        {/* от начала загрузки страницы - но только своей:
+                                            у записей прошлой загрузки другой отсчёт */}
+                                        {previous
+                                            ? formatClock(event.timestamp)
+                                            : formatDuration(event.time)}
+                                    </span>
+                                    <span className='cell cell_type'>{event.type}</span>
+                                    <span className='cell'>{event.moduleId}</span>
+                                    <span className='cell'>{event.stage || EMPTY}</span>
+                                    <span className='cell cell_message'>
+                                        {event.message || EMPTY}
+                                    </span>
+                                </div>
+                            </Fragment>
+                        );
+                    })}
             </div>
         );
     }

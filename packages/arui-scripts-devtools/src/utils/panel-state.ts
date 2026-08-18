@@ -29,6 +29,7 @@ export function readPanelState(): PanelState {
         return {
             open: parsed?.open === true,
             tab: typeof parsed?.tab === 'string' ? parsed.tab : undefined,
+            history: typeof parsed?.history === 'boolean' ? parsed.history : undefined,
         };
     } catch {
         // мусор в хранилище не должен мешать панели открыться

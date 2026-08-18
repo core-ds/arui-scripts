@@ -34,15 +34,3 @@ export function readResourceTiming(url: string): ResourceTiming | undefined {
         return undefined;
     }
 }
-
-/**
- * Запись относится к предыдущей загрузке страницы: её восстановили из sessionStorage.
- * Отдельного поля в контракте для этого нет и не нужно - хватает сравнения с началом отсчёта.
- */
-export function isFromPreviousPageLoad(startedAt: number): boolean {
-    try {
-        return typeof performance !== 'undefined' && startedAt < performance.timeOrigin;
-    } catch {
-        return false;
-    }
-}

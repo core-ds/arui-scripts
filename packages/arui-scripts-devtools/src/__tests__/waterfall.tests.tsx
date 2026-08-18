@@ -2,8 +2,25 @@ import { act } from 'react';
 import { render } from '@testing-library/react';
 
 import { PENDING_TICK_INTERVAL } from '../constants';
+import { PageClockContext } from '../panel/page-clock';
 import { Waterfall } from '../panel/waterfall';
 import { type ModuleLoadRecord } from '../types';
+
+/** начало отсчёта инспектируемой страницы: панель узнаёт его из снимка, своего у неё нет */
+const PAGE_ORIGIN = 1_700_000_000_000;
+
+/** «сейчас» на часах страницы панель считает как `Date.now()` минус её начало отсчёта */
+function setPageNow(now: number) {
+    jest.spyOn(Date, 'now').mockReturnValue(PAGE_ORIGIN + now);
+}
+
+function renderWaterfall(record: ModuleLoadRecord) {
+    return render(
+        <PageClockContext.Provider value={PAGE_ORIGIN}>
+            <Waterfall record={record} />
+        </PageClockContext.Provider>,
+    );
+}
 
 function createRecord(
     timings: ModuleLoadRecord['timings'],
@@ -32,10 +49,8 @@ function getGeometry(container: HTMLElement) {
 }
 
 describe('Waterfall', () => {
-    const originalNow = performance.now;
-
     afterEach(() => {
-        performance.now = originalNow;
+        jest.restoreAllMocks();
         jest.useRealTimers();
     });
 
@@ -94,18 +109,16 @@ describe('Waterfall', () => {
     });
 
     it('should stretch the scale to the current moment while a stage is still running', () => {
-        performance.now = (() => 150) as typeof performance.now;
+        setPageNow(150);
 
-        const { container } = render(
-            <Waterfall
-                record={createRecord(
-                    {
-                        'fetch-manifest': { start: 0, end: 50 },
-                        'fetch-resources': { start: 50 },
-                    },
-                    { status: 'pending', startedAt: performance.timeOrigin + 1 },
-                )}
-            />,
+        const { container } = renderWaterfall(
+            createRecord(
+                {
+                    'fetch-manifest': { start: 0, end: 50 },
+                    'fetch-resources': { start: 50 },
+                },
+                { status: 'pending', startedAt: PAGE_ORIGIN + 1 },
+            ),
         );
         const [manifest, resources] = getGeometry(container);
 
@@ -118,15 +131,18 @@ describe('Waterfall', () => {
     });
 
     it('should keep every bar inside the track', () => {
-        // у записи прошлой загрузки страницы своё начало отсчёта, и performance.now() к её
-        // шкале не относится - незавершённая стадия всё равно должна остаться видимой
-        const { container } = render(
-            <Waterfall
-                record={createRecord({
+        // у записи прошлой загрузки страницы своё начало отсчёта, и «сейчас» к её шкале
+        // не относится - незавершённая стадия всё равно должна остаться видимой
+        setPageNow(10_000);
+
+        const { container } = renderWaterfall(
+            createRecord(
+                {
                     'fetch-manifest': { start: 0, end: 50 },
                     'fetch-resources': { start: 50 },
-                })}
-            />,
+                },
+                { startedAt: PAGE_ORIGIN - 1000 },
+            ),
         );
 
         getGeometry(container).forEach(({ left, width }) => {
@@ -136,18 +152,16 @@ describe('Waterfall', () => {
     });
 
     it('should not stretch the scale of a finished load', () => {
-        performance.now = (() => 100000) as typeof performance.now;
+        setPageNow(100_000);
 
-        const { container } = render(
-            <Waterfall
-                record={createRecord(
-                    {
-                        'fetch-manifest': { start: 0, end: 50 },
-                        factory: { start: 50, end: 100 },
-                    },
-                    { startedAt: performance.timeOrigin + 1 },
-                )}
-            />,
+        const { container } = renderWaterfall(
+            createRecord(
+                {
+                    'fetch-manifest': { start: 0, end: 50 },
+                    factory: { start: 50, end: 100 },
+                },
+                { startedAt: PAGE_ORIGIN + 1 },
+            ),
         );
         const [manifest] = getGeometry(container);
 
@@ -190,28 +204,22 @@ describe('Waterfall', () => {
     });
 
     it('should keep stretching a pending stage while it stays on screen', () => {
-        // performance не фейкаем: от его timeOrigin зависит распознавание «прошлой загрузки»
-        jest.useFakeTimers({ doNotFake: ['performance'] });
+        jest.useFakeTimers();
+        setPageNow(150);
 
-        let now = 150;
-
-        performance.now = (() => now) as typeof performance.now;
-
-        const { container } = render(
-            <Waterfall
-                record={createRecord(
-                    {
-                        'fetch-manifest': { start: 0, end: 50 },
-                        'fetch-resources': { start: 50 },
-                    },
-                    { status: 'pending', startedAt: performance.timeOrigin + 1 },
-                )}
-            />,
+        const { container } = renderWaterfall(
+            createRecord(
+                {
+                    'fetch-manifest': { start: 0, end: 50 },
+                    'fetch-resources': { start: 50 },
+                },
+                { status: 'pending', startedAt: PAGE_ORIGIN + 1 },
+            ),
         );
 
         expect(container.textContent).toContain('100 мс');
 
-        now = 450;
+        setPageNow(450);
         act(() => {
             jest.advanceTimersByTime(PENDING_TICK_INTERVAL);
         });
@@ -222,16 +230,14 @@ describe('Waterfall', () => {
     });
 
     it('should stop ticking once the waterfall is unmounted', () => {
-        jest.useFakeTimers({ doNotFake: ['performance'] });
-        performance.now = (() => 100) as typeof performance.now;
+        jest.useFakeTimers();
+        setPageNow(100);
 
-        const { unmount } = render(
-            <Waterfall
-                record={createRecord(
-                    { 'fetch-manifest': { start: 0 } },
-                    { status: 'pending', startedAt: performance.timeOrigin + 1 },
-                )}
-            />,
+        const { unmount } = renderWaterfall(
+            createRecord(
+                { 'fetch-manifest': { start: 0 } },
+                { status: 'pending', startedAt: PAGE_ORIGIN + 1 },
+            ),
         );
 
         unmount();
@@ -241,9 +247,27 @@ describe('Waterfall', () => {
 
     it('should not tick for records of a previous page load', () => {
         // у записи из sessionStorage своё начало отсчёта, «сейчас» к её шкале не относится
-        jest.useFakeTimers({ doNotFake: ['performance'] });
+        jest.useFakeTimers();
 
-        render(<Waterfall record={createRecord({ 'fetch-manifest': { start: 0 } })} />);
+        renderWaterfall(
+            createRecord({ 'fetch-manifest': { start: 0 } }, { startedAt: PAGE_ORIGIN - 1000 }),
+        );
+
+        expect(jest.getTimerCount()).toBe(0);
+    });
+
+    it('should not tick while the page clock is unknown', () => {
+        // страница ещё не ответила: показывать нечего, но и дорисовывать нечего тоже
+        jest.useFakeTimers();
+
+        render(
+            <Waterfall
+                record={createRecord(
+                    { 'fetch-manifest': { start: 0 } },
+                    { status: 'pending', startedAt: PAGE_ORIGIN + 1 },
+                )}
+            />,
+        );
 
         expect(jest.getTimerCount()).toBe(0);
     });

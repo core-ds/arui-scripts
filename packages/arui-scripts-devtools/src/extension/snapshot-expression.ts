@@ -17,6 +17,10 @@ import {
  * Оба неймспейса читаются одним запросом: они независимы (загрузчик модулей и шина - разные
  * пакеты), но спрашивать страницу дважды за то же самое незачем.
  *
+ * Вместе с данными уезжает начало отсчёта времени страницы: у документа панели свой
+ * `performance`, и без этой засечки панель не может ни отличить записи прошлой загрузки
+ * страницы, ни сказать, сколько уже висит незавершённая стадия.
+ *
  * Собрано из тех же констант, что и остальной пакет: разъехаться версиям и ключам неоткуда.
  * Внутри - ES5 без стрелок и опциональных цепочек: выражение исполняется в контексте страницы,
  * а её движок нам не подконтролен.
@@ -48,7 +52,20 @@ export const SNAPSHOT_EXPRESSION = `(function () {
         }
     }
 
+    function readPageClock() {
+        try {
+            return typeof performance !== 'undefined' &&
+                typeof performance.timeOrigin === 'number' &&
+                isFinite(performance.timeOrigin)
+                ? { timeOrigin: performance.timeOrigin }
+                : undefined;
+        } catch (error) {
+            return undefined;
+        }
+    }
+
     try {
+        var page = readPageClock();
         var root = window[${JSON.stringify(DEVTOOLS_GLOBAL_KEY)}];
 
         if (root && root.version !== ${SUPPORTED_DEVTOOLS_VERSION}) {
@@ -58,7 +75,7 @@ export const SNAPSHOT_EXPRESSION = `(function () {
                 supported: ${SUPPORTED_DEVTOOLS_VERSION},
             };
 
-            return { modules: unsupported, eventBus: unsupported };
+            return { modules: unsupported, eventBus: unsupported, page: page };
         }
 
         return {
@@ -72,6 +89,7 @@ export const SNAPSHOT_EXPRESSION = `(function () {
                 ${JSON.stringify(DEVTOOLS_EVENT_BUS_NAMESPACE)},
                 ${SUPPORTED_EVENT_BUS_VERSION},
             ),
+            page: page,
         };
     } catch (error) {
         return { modules: { status: 'waiting' }, eventBus: { status: 'waiting' } };

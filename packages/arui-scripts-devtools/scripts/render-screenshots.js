@@ -29,9 +29,16 @@ if (!fs.existsSync(BUNDLE)) {
 
 fs.mkdirSync(OUT, { recursive: true });
 
+// часовой пояс фиксируем: время прошлой загрузки страницы панель показывает по часам,
+// и без этого html зависел бы от настроек машины, на которой его собрали
+process.env.TZ = 'Europe/Moscow';
+
 const NOW = 512;
 const TIME_ORIGIN = 1700000000000;
 const started = TIME_ORIGIN + 1;
+// прошлая загрузка страницы: стор восстановил её из sessionStorage. Ради этого история
+// и нужна - модуль упал на старте, страницу перезагрузили, а запись о падении осталась
+const beforeReload = TIME_ORIGIN - 42000;
 
 const RESOURCE_TIMINGS = {
     'http://localhost:8082/assets/remoteEntry.js': { duration: 18, transferSize: 4821 },
@@ -55,6 +62,10 @@ global.Event = dom.window.Event;
 global.MouseEvent = dom.window.MouseEvent;
 global.localStorage = dom.window.localStorage;
 global.sessionStorage = dom.window.sessionStorage;
+// «сейчас» панель считает по часам страницы: Date.now() минус её начало отсчёта. Без фиксации
+// незавершённая стадия дорастала бы до реального текущего времени - и до «87091965 с» на шкале
+Date.now = () => TIME_ORIGIN + NOW;
+
 global.performance = {
     now: () => NOW,
     timeOrigin: TIME_ORIGIN,
@@ -64,6 +75,26 @@ global.performance = {
 const modulesSnapshot = {
     version: 1,
     loads: [
+        {
+            loadId: 'before-1',
+            moduleId: 'Module',
+            hostAppId: 'example',
+            status: 'error',
+            containerId: 'example_modules',
+            shareScope: 'default',
+            baseUrl: 'http://localhost:8082',
+            manifestUrl: 'http://localhost:8082/assets/webpack-assets.json',
+            fromCache: false,
+            scripts: [],
+            styles: [],
+            timings: { 'fetch-manifest': { start: 9, end: 4021 } },
+            error: {
+                stage: 'fetch-manifest',
+                message: 'Failed to fetch http://localhost:8082/assets/webpack-assets.json',
+            },
+            startedAt: beforeReload,
+            finishedAt: beforeReload + 4021,
+        },
         {
             loadId: 'load-1',
             moduleId: 'Module',
@@ -162,6 +193,15 @@ const modulesSnapshot = {
         },
     ],
     events: [
+        {
+            type: 'error',
+            loadId: 'before-1',
+            moduleId: 'Module',
+            stage: 'fetch-manifest',
+            message: 'Failed to fetch http://localhost:8082/assets/webpack-assets.json',
+            timestamp: beforeReload + 4021,
+            time: 4030,
+        },
         { type: 'load-start', loadId: 'load-1', moduleId: 'Module', time: 12 },
         {
             type: 'stage-start',
@@ -225,7 +265,12 @@ const modulesSnapshot = {
             message: 'Не удалось загрузить манифест: Failed to fetch',
             time: 428,
         },
-    ].map((event, index) => ({ ...event, id: index + 1, timestamp: started + event.time })),
+    ].map((event, index) => ({
+        // у события прошлой загрузки страницы свой момент: его отсчёт с текущим не связан
+        timestamp: started + event.time,
+        ...event,
+        id: index + 1,
+    })),
     // хост и провайдер просят разные мажоры - расхождение, невидимое из самого скоупа
     sharedRequirements: {
         react: [
@@ -429,11 +474,11 @@ async function main() {
 
     activateTab('События');
     await frame();
-    shots.push(write('panel-events', 540));
+    shots.push(write('panel-events', 580));
 
     activateTab('Таймлайн');
     await frame();
-    shots.push(write('panel-timeline', 320));
+    shots.push(write('panel-timeline', 460));
 
     activateTab('Event bus');
     await frame();

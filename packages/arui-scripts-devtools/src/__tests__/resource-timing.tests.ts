@@ -1,4 +1,4 @@
-import { isFromPreviousPageLoad, readResourceTiming } from '../utils/resource-timing';
+import { readResourceTiming } from '../utils/resource-timing';
 
 describe('resource-timing', () => {
     const originalGetEntriesByName = performance.getEntriesByName;
@@ -48,15 +48,5 @@ describe('resource-timing', () => {
         }) as unknown as typeof performance.getEntriesByName;
 
         expect(readResourceTiming('https://cdn.test/module.js')).toBeUndefined();
-    });
-
-    describe('isFromPreviousPageLoad', () => {
-        it('should detect a record restored from the previous page load', () => {
-            expect(isFromPreviousPageLoad(performance.timeOrigin - 1000)).toBe(true);
-        });
-
-        it('should not mark records of the current page load', () => {
-            expect(isFromPreviousPageLoad(performance.timeOrigin + 1000)).toBe(false);
-        });
     });
 });

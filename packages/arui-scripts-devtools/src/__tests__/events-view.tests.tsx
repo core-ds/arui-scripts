@@ -2,18 +2,51 @@ import { useState } from 'react';
 import { fireEvent, render } from '@testing-library/react';
 
 import { EventsView } from '../panel/events-view';
-import { type DevtoolsEvent } from '../types';
+import { PageClockContext } from '../panel/page-clock';
+import { type DevtoolsEvent, type ModuleLoadRecord } from '../types';
+
+/** начало отсчёта инспектируемой страницы: панель узнаёт его из снимка, своего у неё нет */
+const PAGE_ORIGIN = 1_700_000_000_000;
 
 function createEvent(overrides: Partial<DevtoolsEvent> = {}): DevtoolsEvent {
     return {
         id: 1,
         type: 'load-start',
-        loadId: 'load-1',
+        loadId: 'page1-1',
         moduleId: 'module',
-        timestamp: performance.timeOrigin + 1,
+        timestamp: PAGE_ORIGIN + 1,
         time: 100,
         ...overrides,
     };
+}
+
+/**
+ * Записи о загрузках лог получает от панели: по ним он узнаёт границы загрузок страницы.
+ * В тестах достраиваем их по самим событиям - у каждого события есть loadId.
+ */
+function toLoads(events: DevtoolsEvent[]): ModuleLoadRecord[] {
+    const byLoadId = new Map<string, ModuleLoadRecord>();
+
+    events.forEach((event) => {
+        if (byLoadId.has(event.loadId)) {
+            return;
+        }
+
+        byLoadId.set(event.loadId, {
+            loadId: event.loadId,
+            moduleId: event.moduleId,
+            hostAppId: 'host',
+            status: 'loaded',
+            shareScope: 'default',
+            fromCache: false,
+            scripts: [],
+            styles: [],
+            timings: {},
+            startedAt: event.timestamp,
+        });
+    });
+
+    return Array.from(byLoadId.values());
 }
 
 /** фильтры контролирует панель - в тестах её роль играет эта обёртка */
@@ -22,13 +55,16 @@ function EventsHarness({ events }: { events: DevtoolsEvent[] }) {
     const [onlyErrors, setOnlyErrors] = useState(false);
 
     return (
-        <EventsView
-            events={events}
-            query={query}
-            onQueryChange={setQuery}
-            onlyErrors={onlyErrors}
-            onOnlyErrorsChange={setOnlyErrors}
-        />
+        <PageClockContext.Provider value={PAGE_ORIGIN}>
+            <EventsView
+                events={events}
+                loads={toLoads(events)}
+                query={query}
+                onQueryChange={setQuery}
+                onlyErrors={onlyErrors}
+                onOnlyErrorsChange={setOnlyErrors}
+            />
+        </PageClockContext.Provider>
     );
 }
 
@@ -90,15 +126,37 @@ describe('EventsView', () => {
         expect(row.textContent).toContain('что-то случилось');
     });
 
-    it('should not show a page-relative time for events of the previous page load', () => {
+    it('should show the wall clock time for events of the previous page load', () => {
+        const timestamp = PAGE_ORIGIN - 1000;
+        const { container } = render(
+            <EventsHarness events={[createEvent({ loadId: 'page0-1', timestamp, time: 300 })]} />,
+        );
+
+        // время считается от начала загрузки страницы, а у прошлой загрузки было своё начало:
+        // «300 мс» тут означало бы совсем другой момент, а часы - ровно тот
+        const row = getRows(container)[0].textContent;
+
+        expect(row).not.toContain('300 мс');
+        expect(row).toContain(new Date(timestamp).toTimeString().slice(0, 8));
+    });
+
+    it('should separate the events of different page loads', () => {
         const { container } = render(
             <EventsHarness
-                events={[createEvent({ timestamp: performance.timeOrigin - 1000, time: 300 })]}
+                events={[
+                    createEvent({ id: 1, loadId: 'page0-1', timestamp: PAGE_ORIGIN - 1000 }),
+                    createEvent({ id: 2, loadId: 'page1-1' }),
+                ]}
             />,
         );
 
-        // время считается от начала загрузки страницы, а у прошлой загрузки было своё начало
-        expect(getRows(container)[0].textContent).not.toContain('300 мс');
+        const separators = Array.from(container.querySelectorAll('.row_separator')).map(
+            (row) => row.textContent,
+        );
+
+        expect(separators).toHaveLength(2);
+        expect(separators[0]).toContain('текущая загрузка страницы');
+        expect(separators[1]).toContain('предыдущая загрузка страницы');
     });
 
     it('should mark error events', () => {

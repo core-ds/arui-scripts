@@ -30,6 +30,24 @@ export function formatBytes(bytes: number | undefined): string | undefined {
 }
 
 /**
+ * Время по часам, ЧЧ:ММ:СС.
+ *
+ * Так показываем моменты, которые не с чем соотнести на шкале текущей страницы: у записей
+ * прошлых загрузок своё начало отсчёта, и «120 мс» у них означало бы совсем другой момент.
+ */
+export function formatClock(timestamp: number | undefined): string {
+    if (timestamp === undefined || !Number.isFinite(timestamp)) {
+        return EMPTY;
+    }
+
+    const date = new Date(timestamp);
+
+    return [date.getHours(), date.getMinutes(), date.getSeconds()]
+        .map((part) => String(part).padStart(2, '0'))
+        .join(':');
+}
+
+/**
  * Полное время загрузки модуля.
  *
  * Считаем по стадиям, а не по `finishedAt - startedAt`: между стадиями модуль может ждать
