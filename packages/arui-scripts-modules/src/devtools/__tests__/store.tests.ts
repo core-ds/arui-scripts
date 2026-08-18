@@ -196,6 +196,53 @@ describe('devtools store', () => {
         expect(getStore().getSnapshot().shareScopes).toEqual([]);
     });
 
+    it('should merge requirements that arrive from provider manifests', () => {
+        // требования провайдера иначе не узнать: сам он кода диагностики не выполняет
+        const store = getStore();
+
+        store.writer.addSharedRequirements({
+            react: [{ from: 'example_modules', requiredVersion: '^17.0.0' }],
+        });
+
+        expect(store.getSnapshot().sharedRequirements.react).toEqual([
+            { from: 'example_modules', requiredVersion: '^17.0.0' },
+        ]);
+    });
+
+    it('should keep requirements of every party for one package', () => {
+        const store = getStore();
+
+        store.writer.addSharedRequirements({
+            react: [{ from: 'host', requiredVersion: '^18.0.0' }],
+        });
+        store.writer.addSharedRequirements({
+            react: [{ from: 'provider', requiredVersion: '^17.0.0' }],
+        });
+
+        expect(store.getSnapshot().sharedRequirements.react.map((item) => item.from)).toEqual([
+            'host',
+            'provider',
+        ]);
+    });
+
+    it('should not duplicate a requirement of the same party', () => {
+        // манифест скачивается на каждую загрузку, а объявляет провайдер пакет один раз
+        const store = getStore();
+        const listener = jest.fn();
+
+        store.writer.addSharedRequirements({
+            react: [{ from: 'provider', requiredVersion: '^17.0.0' }],
+        });
+        store.subscribe(listener);
+        store.writer.addSharedRequirements({
+            react: [{ from: 'provider', requiredVersion: '^17.0.0' }],
+        });
+
+        expect(store.getSnapshot().sharedRequirements.react).toHaveLength(1);
+        // и не дёргаем подписчиков на пустом месте
+        expect(listener).not.toHaveBeenCalled();
+    });
+
     it('should keep snapshot reference stable until data changes', () => {
         const store = getStore();
         const snapshot = store.getSnapshot();

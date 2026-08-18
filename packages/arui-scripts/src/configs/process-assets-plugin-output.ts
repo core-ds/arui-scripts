@@ -3,7 +3,7 @@ import path from 'path';
 import { type Assets } from 'assets-webpack-plugin';
 
 import { configs } from './app-configs';
-import { MODULES_ENTRY_NAME } from './modules';
+import { getSharedRequirements, MODULES_ENTRY_NAME } from './modules';
 
 export function processAssetsPluginOutput(assets: Assets) {
     const adjustedAssets = assets;
@@ -34,6 +34,18 @@ export function processAssetsPluginOutput(assets: Assets) {
         __metadata__: {
             version: configs.version,
             name: configs.normalizedName,
+            /**
+             * Требования провайдера к общим библиотекам.
+             *
+             * В рантайме их не достать: они запечены в consume-shared код провайдера,
+             * а сам провайдер никакого кода диагностики не выполняет - его модули грузит
+             * загрузчик хоста. Манифест же хост скачивает и так, поэтому требования едут
+             * вместе с ним: без них расхождение «хост просит ^18, провайдер просит ^17»
+             * не видно ничем, а провайдер тем временем молча получает свою копию.
+             */
+            sharedRequirements: getSharedRequirements(
+                configs.modules?.options?.separateBuildShared || configs.modules?.shared,
+            ),
         },
     };
 

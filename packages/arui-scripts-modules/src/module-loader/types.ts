@@ -29,6 +29,11 @@ export type AruiAppManifest = {
 } & {
     // мы делаем так, поскольку typescript не позволяет определить доп поля другого типа
     __metadata__: {
+        /**
+         * Что провайдер объявил в `modules.shared`. Появилось не сразу - у манифестов,
+         * собранных старым arui-scripts, поля нет.
+         */
+        sharedRequirements?: Record<string, ManifestSharedRequirement>;
         version: string;
         name: string;
     };
@@ -52,6 +57,13 @@ export type BaseModuleState<T = unknown> = {
 /**
  * Ресурсы, которые нужны модулю для запуска
  */
+export type ManifestSharedRequirement = {
+    requiredVersion?: string;
+    singleton?: boolean;
+    strictVersion?: boolean;
+    eager?: boolean;
+};
+
 export type ModuleResources<ModuleState extends BaseModuleState = BaseModuleState> = {
     /** пути до js скриптов модуля */
     scripts: string[];
@@ -65,6 +77,8 @@ export type ModuleResources<ModuleState extends BaseModuleState = BaseModuleStat
     mountMode: MountMode;
     /** адрес, по которому были получены эти ресурсы. Используется только для диагностики */
     manifestUrl?: string;
+    /** требования провайдера к общим библиотекам из его манифеста. Только для диагностики */
+    sharedRequirements?: Record<string, ManifestSharedRequirement>;
     /** предподготовленное "состояние" модуля, которое он получит при монтировании на страницу */
     moduleState: ModuleState;
 };

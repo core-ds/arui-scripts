@@ -33,14 +33,17 @@ export type DevtoolsSnapshot = {
      */
     shareScopes?: DevtoolsShareScope[];
     /**
-     * Что приложение объявило в `modules.shared`. Подставляется на сборке: в рантайме
-     * требований нет нигде, и без них расхождение «хост просит ^18, провайдер просит ^17»
-     * не видно ничем. Старый загрузчик поля не кладёт - читаем защитно.
+     * Кто и что объявил в `modules.shared`, по пакетам. Требования хоста подставляются
+     * на сборке, требования провайдеров приезжают в их манифестах: в рантайме этих данных
+     * нет нигде, и без них расхождение «хост просит ^18, провайдер просит ^17» не видно
+     * ничем. Старый загрузчик поля не кладёт - читаем защитно.
      */
-    sharedRequirements?: Record<string, DevtoolsSharedRequirement>;
+    sharedRequirements?: Record<string, DevtoolsSharedRequirement[]>;
 };
 
 export type DevtoolsSharedRequirement = {
+    /** кто объявил: приложение-хост или контейнер провайдера */
+    from: string;
     requiredVersion?: string;
     singleton?: boolean;
     strictVersion?: boolean;
@@ -155,8 +158,8 @@ export type SharedPackage = {
     name: string;
     versions: SharedVersion[];
     problems: ShareProblem[];
-    /** что приложение просило у этого пакета; из сборки, а не из скоупа */
-    requirement?: DevtoolsSharedRequirement;
+    /** кто что просил у этого пакета; из сборки и манифестов, а не из скоупа */
+    requirements: DevtoolsSharedRequirement[];
 };
 
 export type ShareScope = {

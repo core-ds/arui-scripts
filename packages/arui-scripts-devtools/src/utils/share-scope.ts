@@ -37,7 +37,7 @@ function getMajor(version: string): string {
 function findProblems(
     name: string,
     versions: SharedVersion[],
-    requirement?: DevtoolsSharedRequirement,
+    requirements: DevtoolsSharedRequirement[],
 ): ShareProblem[] {
     const problems: ShareProblem[] = [];
 
@@ -63,20 +63,26 @@ function findProblems(
         });
     }
 
-    const required = requirement?.requiredVersion;
+    // Каждое требование проверяем отдельно: хост и провайдер могут просить разное,
+    // и удовлетворённость одного ничего не говорит про другое. Именно так выглядит
+    // самый неприятный случай - в скоупе одна версия, хосту она подходит,
+    // а провайдер тихо получает собственную копию.
+    requirements.forEach((requirement) => {
+        const required = requirement.requiredVersion;
 
-    if (
-        required &&
-        versions.length > 0 &&
-        !versions.some((item) => satisfiesRange(item.version, required))
-    ) {
-        problems.push({
-            type: 'requirement-unsatisfied',
-            message: `Приложение просит ${name} ${required}, а в скоупе ${versions
-                .map((item) => item.version)
-                .join(', ')}. Кто-то получит не ту версию, на которую рассчитывал.`,
-        });
-    }
+        if (
+            required &&
+            versions.length > 0 &&
+            !versions.some((item) => satisfiesRange(item.version, required))
+        ) {
+            problems.push({
+                type: 'requirement-unsatisfied',
+                message: `${requirement.from} просит ${name} ${required}, а в скоупе ${versions
+                    .map((item) => item.version)
+                    .join(', ')}. Получит не ту версию, на которую рассчитывал.`,
+            });
+        }
+    });
 
     return problems;
 }
@@ -92,7 +98,7 @@ function findProblems(
  */
 export function analyzeShareScopes(
     scopes: DevtoolsShareScope[] | undefined,
-    requirements: Record<string, DevtoolsSharedRequirement> = {},
+    requirements: Record<string, DevtoolsSharedRequirement[]> = {},
 ): ShareScope[] {
     if (!Array.isArray(scopes)) {
         return [];
@@ -109,13 +115,13 @@ export function analyzeShareScopes(
                     left.version.localeCompare(right.version, undefined, { numeric: true }),
                 );
 
-            const requirement = requirements?.[item.name];
+            const packageRequirements = requirements?.[item.name] ?? [];
 
             return {
                 name: item.name,
                 versions,
-                requirement,
-                problems: findProblems(item.name, versions, requirement),
+                requirements: packageRequirements,
+                problems: findProblems(item.name, versions, packageRequirements),
             };
         }),
     }));

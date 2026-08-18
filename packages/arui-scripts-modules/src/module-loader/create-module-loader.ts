@@ -4,6 +4,7 @@ import {
     reportLoadStart,
     reportLoadSuccess,
     reportLoadUpdate,
+    reportSharedRequirements,
     reportStageEnd,
     reportStageStart,
     reportUnmount,
@@ -382,6 +383,9 @@ function toAbsoluteUrl(url: string): string {
  */
 function reportModuleResources(loadId: string | undefined, moduleResources: ModuleResources) {
     const baseUrl = moduleResources.moduleState?.baseUrl ?? '';
+
+    // требования провайдера приезжают в его манифесте - другого способа их узнать нет
+    reportSharedRequirements(moduleResources.appName, moduleResources.sharedRequirements);
 
     reportLoadUpdate(loadId, {
         containerId: moduleResources.appName,

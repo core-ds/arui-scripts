@@ -9,7 +9,13 @@ module.exports = {
         // имена свободных переменных задаёт бандлер, переименовать их мы не можем
         'no-underscore-dangle': [
             'error',
-            { allow: ['__webpack_share_scopes__', '__webpack_init_sharing__'] },
+            {
+                allow: [
+                    '__webpack_share_scopes__',
+                    '__webpack_init_sharing__',
+                    '__ARUI_MODULES_SHARED_REQUIREMENTS__',
+                ],
+            },
         ],
     },
     overrides: [

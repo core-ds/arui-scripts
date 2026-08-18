@@ -6,8 +6,8 @@ import {
     type AruiDevtools,
     type AruiModulesDevtools,
     type DevtoolsEvent,
-    type DevtoolsShareScope,
     type DevtoolsSharedRequirement,
+    type DevtoolsShareScope,
     type DevtoolsSnapshot,
     type ModuleLoadRecord,
 } from './types';
@@ -20,6 +20,9 @@ export const DEVTOOLS_MODULES_NAMESPACE = 'modules';
 export const DEVTOOLS_VERSION = 1;
 /** версия контракта неймспейса modules */
 export const DEVTOOLS_MODULES_VERSION = 1;
+
+/** под этим именем в контракте лежат требования самого приложения-хоста */
+export const HOST_REQUIREMENTS_SOURCE = 'приложение';
 
 export { DEVTOOLS_STORAGE_KEY, EVENTS_LIMIT, LOADS_LIMIT } from './snapshot-storage';
 
@@ -35,6 +38,7 @@ export type DevtoolsWriter = {
     updateLoad(loadId: string, updater: (record: ModuleLoadRecord) => ModuleLoadRecord): void;
     addEvent(event: Omit<DevtoolsEvent, 'id'>): void;
     refreshShareScopes(): void;
+    addSharedRequirements(requirements: Record<string, DevtoolsSharedRequirement[]>): void;
 };
 
 export type DevtoolsModulesStore = AruiModulesDevtools & {
@@ -58,8 +62,11 @@ function createModulesStore(): DevtoolsModulesStore {
     // на старте скоуп ещё пуст: его наполняет первая же загрузка модуля. Восстановленный
     // из sessionStorage снимок сюда не тащим - он относится к прошлой странице
     let shareScopes: DevtoolsShareScope[] = [];
-    // требования подставлены на сборке и за время жизни страницы не меняются - читаем один раз
-    const sharedRequirements: Record<string, DevtoolsSharedRequirement> = readSharedRequirements();
+    // Свои требования подставлены на сборке и не меняются - читаем один раз. Требования
+    // провайдеров добавляются позже: они приезжают в манифестах, когда те скачиваются.
+    // `hostAppId` тут неоткуда взять, поэтому автор своих требований - само приложение
+    let sharedRequirements: Record<string, DevtoolsSharedRequirement[]> =
+        readSharedRequirements(HOST_REQUIREMENTS_SOURCE);
     let snapshot: DevtoolsSnapshot = {
         version: DEVTOOLS_MODULES_VERSION,
         loads,
@@ -171,6 +178,31 @@ function createModulesStore(): DevtoolsModulesStore {
             shareScopes = readShareScopes();
             commit();
         },
+
+        addSharedRequirements(requirements) {
+            let changed = false;
+            const next = { ...sharedRequirements };
+
+            Object.keys(requirements).forEach((name) => {
+                requirements[name].forEach((requirement) => {
+                    const existing = next[name] ?? [];
+
+                    // один провайдер объявляет пакет один раз, а манифест скачивается
+                    // на каждую загрузку - дубли тут были бы только шумом
+                    if (existing.some((item) => item.from === requirement.from)) {
+                        return;
+                    }
+
+                    next[name] = existing.concat(requirement);
+                    changed = true;
+                });
+            });
+
+            if (changed) {
+                sharedRequirements = next;
+                commit();
+            }
+        },
     };
 
     return {
@@ -205,7 +237,8 @@ function isCompatibleStore(store: AruiModulesDevtools | undefined): store is Dev
             typeof writer?.getLoad === 'function' &&
             typeof writer?.updateLoad === 'function' &&
             typeof writer?.addEvent === 'function' &&
-            typeof writer?.refreshShareScopes === 'function',
+            typeof writer?.refreshShareScopes === 'function' &&
+            typeof writer?.addSharedRequirements === 'function',
     );
 }
 

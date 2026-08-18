@@ -1,7 +1,7 @@
 import {
-    type DevtoolsShareScope,
     type DevtoolsSharedRequirement,
     type DevtoolsSharedVersion,
+    type DevtoolsShareScope,
 } from './types';
 
 /**
@@ -11,7 +11,10 @@ import {
  * сгенерированного кода consume-shared модулей.
  */
 // eslint-disable-next-line @typescript-eslint/naming-convention
-declare const __ARUI_MODULES_SHARED_REQUIREMENTS__: Record<string, DevtoolsSharedRequirement>;
+declare const __ARUI_MODULES_SHARED_REQUIREMENTS__: Record<
+    string,
+    Omit<DevtoolsSharedRequirement, 'from'>
+>;
 
 type RawShareConfig = {
     singleton?: boolean;
@@ -28,12 +31,14 @@ type RawSharedItem = {
 };
 
 /**
- * Объявленные требования приложения к общим библиотекам.
+ * Объявленные требования самого приложения к общим библиотекам.
  *
  * Пустой объект, если приложение собрано без module federation или старой версией
  * arui-scripts, которая переменную ещё не подставляла.
+ *
+ * @param from чьи это требования - попадёт в контракт рядом с диапазоном
  */
-export function readSharedRequirements(): Record<string, DevtoolsSharedRequirement> {
+export function readSharedRequirements(from: string): Record<string, DevtoolsSharedRequirement[]> {
     try {
         // typeof на необъявленном идентификаторе не бросает - единственный безопасный способ
         // спросить про свободную переменную, которой может не быть
@@ -43,10 +48,35 @@ export function readSharedRequirements(): Record<string, DevtoolsSharedRequireme
 
         const raw = __ARUI_MODULES_SHARED_REQUIREMENTS__;
 
-        return typeof raw === 'object' && raw !== null ? raw : {};
+        if (typeof raw !== 'object' || raw === null) {
+            return {};
+        }
+
+        return toRequirementList(
+            raw,
+            from,
+        );
     } catch {
         return {};
     }
+}
+
+/** приводит `{ пакет: требование }` к форме контракта: `{ пакет: [требование с автором] }` */
+export function toRequirementList(
+    raw: Record<string, Omit<DevtoolsSharedRequirement, 'from'>>,
+    from: string,
+): Record<string, DevtoolsSharedRequirement[]> {
+    const result: Record<string, DevtoolsSharedRequirement[]> = {};
+
+    Object.keys(raw ?? {}).forEach((name) => {
+        const requirement = raw[name];
+
+        if (typeof requirement === 'object' && requirement !== null) {
+            result[name] = [{ ...requirement, from }];
+        }
+    });
+
+    return result;
 }
 
 /**

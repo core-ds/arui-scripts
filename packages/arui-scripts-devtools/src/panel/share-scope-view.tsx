@@ -25,12 +25,18 @@ function PackageBlock({ item }: { item: SharedPackage }) {
         <div className='package'>
             <div className='package__title'>
                 <span className='module-id'>{item.name}</span>
-                {item.requirement?.requiredVersion && (
-                    // требование приложения приходит из сборки: в самом скоупе его нет
-                    <span className='badge' title='Объявлено в modules.shared приложения'>
-                        просит {item.requirement.requiredVersion}
-                    </span>
-                )}
+                {/* требования приходят из сборки и манифестов провайдеров: в скоупе их нет */}
+                {item.requirements
+                    .filter((requirement) => requirement.requiredVersion)
+                    .map((requirement) => (
+                        <span
+                            className='badge'
+                            key={requirement.from}
+                            title={`Объявлено в modules.shared: ${requirement.from}`}
+                        >
+                            {`${requirement.from} просит ${requirement.requiredVersion}`}
+                        </span>
+                    ))}
                 {item.problems.length > 0 && <span className='badge badge_problem'>проблема</span>}
             </div>
             {item.problems.map((problem) => (

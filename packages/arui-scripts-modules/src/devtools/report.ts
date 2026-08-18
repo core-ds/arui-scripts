@@ -1,7 +1,9 @@
+import { toRequirementList } from './share-scope';
 import { getDevtoolsModulesStore } from './store';
 import {
     type DevtoolsError,
     type DevtoolsEventType,
+    type DevtoolsSharedRequirement,
     type DevtoolsStage,
     type DevtoolsStageTrace,
     type ModuleLoadRecord,
@@ -83,6 +85,29 @@ function serializeError(stage: DevtoolsStage, error: unknown): DevtoolsError {
 function refreshShareScopes() {
     safe(() => {
         getDevtoolsModulesStore()?.writer.refreshShareScopes();
+    });
+}
+
+/**
+ * Требования провайдера к общим библиотекам, приехавшие в его манифесте.
+ *
+ * Сам провайдер никакого кода диагностики не выполняет - его модули грузит загрузчик хоста, -
+ * поэтому рассказать о своих требованиях он может только манифестом. Без этого расхождение
+ * «хост просит ^18, провайдер просит ^17» не видно ничем: в скоупе лежит одна версия,
+ * и она устраивает хоста.
+ */
+export function reportSharedRequirements(
+    from: string | undefined,
+    requirements: Record<string, Omit<DevtoolsSharedRequirement, 'from'>> | undefined,
+) {
+    if (!from || !requirements) {
+        return;
+    }
+
+    safe(() => {
+        getDevtoolsModulesStore()?.writer.addSharedRequirements(
+            toRequirementList(requirements, from),
+        );
     });
 }
 

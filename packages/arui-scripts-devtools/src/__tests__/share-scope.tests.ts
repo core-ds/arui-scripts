@@ -141,20 +141,19 @@ describe('analyzeShareScopes with declared requirements', () => {
         // требования приходят из сборки: в самом скоупе их нет и быть не может
         const result = analyzeShareScopes(
             scope([{ name: 'react', versions: [{ version: '18.3.1', loaded: true }] }]),
-            { react: { requiredVersion: '^18.0.0', singleton: true } },
+            { react: [{ from: 'приложение', requiredVersion: '^18.0.0', singleton: true }] },
         );
 
-        expect(result[0].packages[0].requirement).toEqual({
-            requiredVersion: '^18.0.0',
-            singleton: true,
-        });
+        expect(result[0].packages[0].requirements).toEqual([
+            { from: 'приложение', requiredVersion: '^18.0.0', singleton: true },
+        ]);
     });
 
     it('should report a requirement nothing in the scope satisfies', () => {
         // ровно тот случай, который из скоупа не виден: хост просит одно, лежит другое
         const result = analyzeShareScopes(
             scope([{ name: 'react', versions: [{ version: '17.0.2', loaded: true }] }]),
-            { react: { requiredVersion: '^18.0.0' } },
+            { react: [{ from: 'приложение', requiredVersion: '^18.0.0' }] },
         );
 
         expect(result[0].packages[0].problems.map((problem) => problem.type)).toEqual([
@@ -165,7 +164,7 @@ describe('analyzeShareScopes with declared requirements', () => {
     it('should stay quiet when a version satisfies the range', () => {
         const result = analyzeShareScopes(
             scope([{ name: 'react', versions: [{ version: '18.3.1', loaded: true }] }]),
-            { react: { requiredVersion: '^18.0.0' } },
+            { react: [{ from: 'приложение', requiredVersion: '^18.0.0' }] },
         );
 
         expect(result[0].packages[0].problems).toEqual([]);
@@ -182,7 +181,7 @@ describe('analyzeShareScopes with declared requirements', () => {
                     ],
                 },
             ]),
-            { react: { requiredVersion: '^18.0.0' } },
+            { react: [{ from: 'приложение', requiredVersion: '^18.0.0' }] },
         );
 
         expect(result[0].packages[0].problems.map((problem) => problem.type)).toEqual([
@@ -194,7 +193,7 @@ describe('analyzeShareScopes with declared requirements', () => {
         // ложная тревога хуже молчания: полноценный semver пакету не по средствам
         const result = analyzeShareScopes(
             scope([{ name: 'react', versions: [{ version: '18.3.1', loaded: true }] }]),
-            { react: { requiredVersion: '*' } },
+            { react: [{ from: 'приложение', requiredVersion: '*' }] },
         );
 
         expect(result[0].packages[0].problems).toEqual([]);
@@ -203,11 +202,47 @@ describe('analyzeShareScopes with declared requirements', () => {
     it('should not invent a problem for a package nobody declared', () => {
         const result = analyzeShareScopes(
             scope([{ name: 'lodash', versions: [{ version: '4.17.21', loaded: true }] }]),
-            { react: { requiredVersion: '^18.0.0' } },
+            { react: [{ from: 'приложение', requiredVersion: '^18.0.0' }] },
         );
 
         expect(result[0].packages[0].problems).toEqual([]);
-        expect(result[0].packages[0].requirement).toBeUndefined();
+        expect(result[0].packages[0].requirements).toEqual([]);
+    });
+
+    it('should report a provider whose requirement the scope does not satisfy', () => {
+        // ровно тот случай, ради которого требования и возят: в скоупе одна версия,
+        // хосту она подходит, а провайдер тихо получает собственную копию
+        const result = analyzeShareScopes(
+            scope([{ name: 'react', versions: [{ version: '18.3.1', loaded: true }] }]),
+            {
+                react: [
+                    { from: 'приложение', requiredVersion: '^18.0.0' },
+                    { from: 'example_modules', requiredVersion: '^17.0.0' },
+                ],
+            },
+        );
+
+        const { problems } = result[0].packages[0];
+
+        expect(problems.map((problem) => problem.type)).toEqual(['requirement-unsatisfied']);
+        expect(problems[0].message).toContain('example_modules просит react ^17.0.0');
+    });
+
+    it('should name every party that asked for a package', () => {
+        const result = analyzeShareScopes(
+            scope([{ name: 'react', versions: [{ version: '18.3.1', loaded: true }] }]),
+            {
+                react: [
+                    { from: 'приложение', requiredVersion: '^18.0.0' },
+                    { from: 'example_modules', requiredVersion: '^18.0.0' },
+                ],
+            },
+        );
+
+        expect(result[0].packages[0].requirements.map((item) => item.from)).toEqual([
+            'приложение',
+            'example_modules',
+        ]);
     });
 
     it('should work without requirements at all', () => {

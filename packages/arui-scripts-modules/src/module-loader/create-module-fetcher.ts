@@ -47,6 +47,7 @@ export function createModuleFetcher({
             /* eslint-disable no-underscore-dangle */
             moduleVersion: manifest.__metadata__.version || 'unknown',
             appName: manifest.__metadata__.name,
+            sharedRequirements: manifest.__metadata__.sharedRequirements,
             /* eslint-enable no-underscore-dangle */
             mountMode: mode,
             manifestUrl,
