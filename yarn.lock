@@ -12,7 +12,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@alfalab/client-event-bus@workspace:packages/client-event-bus":
+"@alfalab/client-event-bus@workspace:*, @alfalab/client-event-bus@workspace:packages/client-event-bus":
   version: 0.0.0-use.local
   resolution: "@alfalab/client-event-bus@workspace:packages/client-event-bus"
   dependencies:
@@ -12332,6 +12332,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "example@workspace:packages/example"
   dependencies:
+    "@alfalab/client-event-bus": "workspace:*"
     "@alfalab/core-components": "npm:^42.1.0"
     "@alfalab/scripts-modules": "workspace:*"
     "@alfalab/scripts-server": "workspace:*"

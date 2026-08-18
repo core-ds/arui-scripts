@@ -4,8 +4,9 @@ import express from 'express';
 
 import { readAssetsManifest } from '@alfalab/scripts-server';
 
-import icon from './server.png';
 import svgIcon from '../clock.svg';
+
+import icon from './server.png';
 
 const app = express();
 
@@ -34,7 +35,11 @@ ${assets.js.map((c) => `<script type='text/javascript' src='/${c}'></script>`).j
     res.send(response);
 });
 
-app.listen(3000, () => {
+// порт настраивается: 3000 бывает занят соседним проектом, а поднимать пример
+// ради этого на другой машине - перебор
+const port = Number(process.env.SERVER_PORT) || 3000;
+
+app.listen(port, () => {
     // eslint-disable-next-line no-console
-    console.log('Test server is listening on :3000');
+    console.log(`Test server is listening on :${port}`);
 });

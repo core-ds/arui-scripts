@@ -9,6 +9,7 @@ import { ModulesTabs } from '#/components/modules-tabs';
 import { isSmaller } from '../utils';
 
 import clientIcon from './client.png';
+import { EventBusDemo } from './event-bus-demo';
 import { PostcssFeatures } from './postcss-features';
 
 import './style.css';
@@ -61,6 +62,9 @@ export class App extends React.Component<object, AppState> {
                 >
                     Up!
                 </Button>
+
+                <Gap size='m' />
+                <EventBusDemo />
 
                 <Typography.Title tag='h2' defaultMargins={true}>
                     Примеры разных способов подключения модулей

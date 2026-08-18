@@ -24,6 +24,7 @@
         ]
     },
     "dependencies": {
+        "@alfalab/client-event-bus": "workspace:*",
         "@alfalab/core-components": "^42.1.0",
         "@alfalab/scripts-modules": "workspace:*",
         "@alfalab/scripts-server": "workspace:*",
