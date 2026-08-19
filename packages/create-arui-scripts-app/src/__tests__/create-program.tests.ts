@@ -97,4 +97,9 @@ describe('createProgram', () => {
         });
         await expect(parseFlags(['--modules', 'none'])).resolves.toEqual({ moduleRole: 'none' });
     });
+
+    it('--mobile-desktop и --no-mobile-desktop управляют dualEntries', async () => {
+        await expect(parseFlags(['--mobile-desktop'])).resolves.toEqual({ dualEntries: true });
+        await expect(parseFlags(['--no-mobile-desktop'])).resolves.toEqual({ dualEntries: false });
+    });
 });

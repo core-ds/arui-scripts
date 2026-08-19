@@ -12,6 +12,7 @@ export type CliFlags = {
     name?: string;
     useRtk?: boolean;
     clientOnly?: boolean;
+    dualEntries?: boolean;
     codeLoader?: CodeLoader;
     testRunner?: TestRunner;
     e2eFramework?: E2eFramework;
@@ -35,6 +36,7 @@ export function defaultAnswers(name: string): InitAnswers {
         name,
         useRtk: false,
         clientOnly: false,
+        dualEntries: false,
         codeLoader: 'swc',
         testRunner: 'jest',
         e2eFramework: 'none',
@@ -56,6 +58,7 @@ const ANSWER_FLAG_KEYS: Array<keyof CliFlags> = [
     'name',
     'useRtk',
     'clientOnly',
+    'dualEntries',
     'codeLoader',
     'testRunner',
     'e2eFramework',
@@ -84,6 +87,7 @@ export function answersFromFlags(defaultName: string, flags: CliFlags): InitAnsw
         ...base,
         ...(flags.useRtk === undefined ? {} : { useRtk: flags.useRtk }),
         ...(flags.clientOnly === undefined ? {} : { clientOnly: flags.clientOnly }),
+        ...(flags.dualEntries === undefined ? {} : { dualEntries: flags.dualEntries }),
         ...(flags.codeLoader === undefined ? {} : { codeLoader: flags.codeLoader }),
         ...(flags.testRunner === undefined ? {} : { testRunner: flags.testRunner }),
         ...(flags.e2eFramework === undefined ? {} : { e2eFramework: flags.e2eFramework }),

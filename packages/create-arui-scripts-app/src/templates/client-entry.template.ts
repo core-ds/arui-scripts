@@ -1,20 +1,28 @@
 import { type TemplateContext } from '../types';
 
-const HMR_BLOCK = `if (process.env.NODE_ENV !== 'production' && module.hot) {
-    module.hot.accept('./components/app', () => {
-        const mod = require('./components/app') as { App: typeof App };
-
-        render(mod.App);
-    });
-}
-`;
-
 function wrapWithRouter(jsx: string, ctx: TemplateContext): string {
     if (!ctx.useRouter) {
         return jsx;
     }
 
     return `<BrowserRouter>${jsx}</BrowserRouter>`;
+}
+
+function fromEntry(ctx: TemplateContext, target: string): string {
+    return ctx.dualEntries ? `../${target}` : `./${target}`;
+}
+
+function hmrBlock(ctx: TemplateContext): string {
+    const appPath = fromEntry(ctx, 'components/app');
+
+    return `if (process.env.NODE_ENV !== 'production' && module.hot) {
+    module.hot.accept('${appPath}', () => {
+        const mod = require('${appPath}') as { App: typeof App };
+
+        render(mod.App);
+    });
+}
+`;
 }
 
 export function clientEntryTemplate(ctx: TemplateContext): string {
@@ -26,6 +34,9 @@ function routerImport(ctx: TemplateContext): string {
 }
 
 function ssrEntryTemplate(ctx: TemplateContext): string {
+    const appImport = fromEntry(ctx, 'components/app');
+    const storeImport = fromEntry(ctx, 'store');
+
     if (ctx.useRtk) {
         const appTree = wrapWithRouter(
             `
@@ -39,8 +50,8 @@ function ssrEntryTemplate(ctx: TemplateContext): string {
 import { hydrateRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';${routerImport(ctx)}
 
-import { App } from './components/app';
-import { makeStore, type RootState } from './store';
+import { App } from '${appImport}';
+import { makeStore, type RootState } from '${storeImport}';
 
 declare global {
     interface Window {
@@ -66,7 +77,7 @@ function render(AppComponent: typeof App) {
     );
 }
 
-${HMR_BLOCK}`;
+${hmrBlock(ctx)}`;
     }
 
     const appTree = wrapWithRouter('<App />', ctx);
@@ -74,7 +85,7 @@ ${HMR_BLOCK}`;
     return `import React from 'react';
 import { hydrateRoot } from 'react-dom/client';${routerImport(ctx)}
 
-import { App } from './components/app';
+import { App } from '${appImport}';
 
 const targetElement = document.getElementById('react-app');
 const root = hydrateRoot(targetElement!, ${appTree});
@@ -83,17 +94,20 @@ function render(AppComponent: typeof App) {
     root.render(${wrapWithRouter('<AppComponent />', ctx)});
 }
 
-${HMR_BLOCK}`;
+${hmrBlock(ctx)}`;
 }
 
 function clientOnlyEntryTemplate(ctx: TemplateContext): string {
+    const appImport = fromEntry(ctx, 'components/app');
+    const storeImport = fromEntry(ctx, 'store');
+
     if (ctx.useRtk) {
         return `import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';${routerImport(ctx)}
 
-import { App } from './components/app';
-import { makeStore } from './store';
+import { App } from '${appImport}';
+import { makeStore } from '${storeImport}';
 
 const store = makeStore();
 const targetElement = document.getElementById('react-app');
@@ -112,13 +126,13 @@ function render(AppComponent: typeof App) {
 
 render(App);
 
-${HMR_BLOCK}`;
+${hmrBlock(ctx)}`;
     }
 
     return `import React from 'react';
 import { createRoot } from 'react-dom/client';${routerImport(ctx)}
 
-import { App } from './components/app';
+import { App } from '${appImport}';
 
 const targetElement = document.getElementById('react-app');
 const root = createRoot(targetElement!);
@@ -129,5 +143,5 @@ function render(AppComponent: typeof App) {
 
 render(App);
 
-${HMR_BLOCK}`;
+${hmrBlock(ctx)}`;
 }

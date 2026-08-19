@@ -97,6 +97,7 @@ export function buildContext(answers: InitAnswers, aruiScriptsVersion: string): 
         name: answers.name,
         useRtk: answers.useRtk,
         clientOnly: answers.clientOnly,
+        dualEntries: answers.dualEntries,
         codeLoader: answers.codeLoader,
         testRunner: answers.testRunner,
         e2eFramework: answers.e2eFramework,

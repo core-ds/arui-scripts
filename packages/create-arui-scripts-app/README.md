@@ -30,6 +30,7 @@ npx create-arui-scripts-app my-app --yes
 - `--name <name>` - имя npm-пакета
 - `--rtk` / `--no-rtk` - React + RTK или только React
 - `--ssr` / `--client-only` - SSR или только клиент
+- `--mobile-desktop` / `--no-mobile-desktop` - отдельные точки входа mobile и desktop
 - `--code-loader <swc|babel|tsc>` - транспилятор
 - `--test-runner <jest|vitest>` - тест-раннер
 - `--e2e-framework <cypress|playwright|none>` - e2e фреймворк
@@ -45,6 +46,7 @@ npx create-arui-scripts-app my-app --yes
 
 - **React 19** из коробки, опционально **React + RTK** (Redux Toolkit)
 - режим **SSR** (клиент + сервер, клиент в `src/client/`) или **clientOnly** (статика)
+- опционально отдельные точки входа **mobile / desktop** (`clientEntry: { mobile, desktop }`)
 - SSR-сервер на **Hapi** с рендерингом приложения (`renderToString`) и гидрацией на клиенте
 - транспилятор (**swc** / babel / tsc) и тест-раннер (**Jest** / Vitest)
 - опционально **e2e** (**Cypress** / Playwright) с конфигом и хелперами

@@ -25,6 +25,8 @@ export function createProgram(onInit: InitHandler = defaultInitHandler): Command
         .option('--no-rtk', 'Только React, без RTK')
         .addOption(new Option('--client-only', 'Только клиент').conflicts('ssr'))
         .addOption(new Option('--ssr', 'Клиент + сервер').conflicts('clientOnly'))
+        .option('--mobile-desktop', 'Отдельные точки входа mobile и desktop')
+        .option('--no-mobile-desktop', 'Одна клиентская точка входа')
         .addOption(
             new Option('--code-loader <loader>', 'Транспилятор').choices(['swc', 'babel', 'tsc']),
         )
@@ -91,6 +93,10 @@ export function mapOptsToFlags(opts: Record<string, unknown>): CliFlags {
 
     if (opts.ssr === true) {
         flags.clientOnly = false;
+    }
+
+    if (typeof opts.mobileDesktop === 'boolean') {
+        flags.dualEntries = opts.mobileDesktop;
     }
 
     if (typeof opts.codeLoader === 'string') {

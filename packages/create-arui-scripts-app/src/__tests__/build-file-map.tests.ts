@@ -11,6 +11,7 @@ const base: InitAnswers = {
     e2eFramework: 'none',
     useRouter: false,
     moduleRole: 'none',
+    dualEntries: false,
     cssModules: true,
     clientServerPort: 8080,
     serverPort: 3000,
@@ -382,5 +383,30 @@ describe('buildFileMap', () => {
         expect(files['src/modules/example/index.tsx']).toContain('ModuleMountFunction');
         expect(files['arui-scripts.config.ts']).toContain('ExampleModule');
         expect(files['src/client/components/remote-module.tsx']).toBeUndefined();
+    });
+
+    it('dualEntries для SSR создает mobile/desktop entry и общий App', () => {
+        const files = map({ dualEntries: true, clientOnly: false });
+
+        expect(files['src/client/desktop/index.tsx']).toContain("from '../components/app'");
+        expect(files['src/client/mobile/index.tsx']).toContain("from '../components/app'");
+        expect(files['src/client/desktop/index.tsx']).toContain('../components/app');
+        expect(files['src/client/index.tsx']).toBeUndefined();
+        expect(files['src/client/components/app.tsx']).toBeDefined();
+        expect(files['arui-scripts.config.ts']).toContain("mobile: './src/client/mobile'");
+        expect(files['arui-scripts.config.ts']).toContain("desktop: './src/client/desktop'");
+        expect(files['README.md']).toContain('src/client/mobile');
+    });
+
+    it('dualEntries для clientOnly кладёт entry в src/mobile и src/desktop', () => {
+        const files = map({ dualEntries: true, clientOnly: true });
+
+        expect(files['src/desktop/index.tsx']).toContain("from '../components/app'");
+        expect(files['src/mobile/index.tsx']).toBeDefined();
+        expect(files['src/index.tsx']).toBeUndefined();
+        expect(files['src/components/app.tsx']).toBeDefined();
+        expect(files['arui-scripts.config.ts']).toContain('clientOnly: true');
+        expect(files['arui-scripts.config.ts']).toContain("mobile: './src/mobile'");
+        expect(files['arui-scripts.config.ts']).toContain("desktop: './src/desktop'");
     });
 });

@@ -45,8 +45,18 @@ import { tsconfigTemplate } from './templates/tsconfig.template';
 import { vitestConfigTemplate } from './templates/vitest-config.template';
 import { type TemplateContext } from './types';
 
-export function clientBaseDir(ctx: TemplateContext): string {
+export function clientBaseDir(ctx: { clientOnly: boolean }): string {
     return ctx.clientOnly ? 'src' : 'src/client';
+}
+
+export function clientEntryPaths(ctx: { clientOnly: boolean; dualEntries: boolean }): string[] {
+    const client = clientBaseDir(ctx);
+
+    if (ctx.dualEntries) {
+        return [`${client}/desktop/index.tsx`, `${client}/mobile/index.tsx`];
+    }
+
+    return [`${client}/index.tsx`];
 }
 
 export function buildFileMap(ctx: TemplateContext): Record<string, string> {
@@ -60,11 +70,14 @@ export function buildFileMap(ctx: TemplateContext): Record<string, string> {
         '.yarnrc.yml': yarnrcTemplate(),
         'global-definitions.d.ts': globalDefinitionsTemplate(),
         'README.md': readmeTemplate(ctx),
-        [`${client}/index.tsx`]: clientEntryTemplate(ctx),
         [`${client}/components/app.tsx`]: appComponentTemplate(ctx),
         [`${client}/components/${appStylesFileName(ctx)}`]: appStylesTemplate(ctx),
         [`${client}/components/__tests__/app.test.ts`]: appTestTemplate(ctx),
     };
+
+    clientEntryPaths(ctx).forEach((entryPath) => {
+        files[entryPath] = clientEntryTemplate(ctx);
+    });
 
     if (!ctx.clientOnly) {
         files['src/server/index.tsx'] = serverEntryTemplate(ctx);

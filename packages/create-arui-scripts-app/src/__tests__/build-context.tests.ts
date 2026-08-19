@@ -10,6 +10,7 @@ const base: InitAnswers = {
     e2eFramework: 'none',
     useRouter: false,
     moduleRole: 'none',
+    dualEntries: false,
     cssModules: true,
     clientServerPort: 8080,
     serverPort: 3000,

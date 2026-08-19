@@ -237,6 +237,10 @@ function mergePromptAnswers(base: InitAnswers, answers: prompts.Answers<string>)
         merged.clientOnly = Boolean(answers.clientOnly);
     }
 
+    if (answers.dualEntries !== undefined) {
+        merged.dualEntries = Boolean(answers.dualEntries);
+    }
+
     if (answers.codeLoader !== undefined) {
         merged.codeLoader = answers.codeLoader;
     }
@@ -308,6 +312,7 @@ function printSuccess(context: TemplateContext, targetDir: string, fileCount: nu
     const stack = [
         chalk.cyan(context.useRtk ? 'React + RTK' : 'React'),
         chalk.dim(context.clientOnly ? 'clientOnly' : 'SSR'),
+        ...(context.dualEntries ? [chalk.dim('mobile/desktop')] : []),
         chalk.dim(context.codeLoader),
         chalk.dim(context.testRunner),
         ...(context.e2eFramework !== 'none' ? [chalk.dim(context.e2eFramework)] : []),

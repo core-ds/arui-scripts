@@ -9,6 +9,8 @@ export type InitAnswers = {
     useRtk: boolean;
     // Только клиентская часть (без серверного бандла)
     clientOnly: boolean;
+    // Отдельные точки входа mobile и desktop
+    dualEntries: boolean;
     codeLoader: CodeLoader;
     testRunner: TestRunner;
     // e2e фреймворк (cypress / playwright / без e2e фреймворка)
@@ -38,6 +40,7 @@ export type TemplateContext = {
     name: string;
     useRtk: boolean;
     clientOnly: boolean;
+    dualEntries: boolean;
     codeLoader: CodeLoader;
     testRunner: TestRunner;
     e2eFramework: E2eFramework;

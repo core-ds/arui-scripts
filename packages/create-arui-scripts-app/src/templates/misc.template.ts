@@ -110,6 +110,19 @@ Dev-сервер поднимается автоматически через we
 `;
     }
 
+    const dualEntriesSection = ctx.dualEntries
+        ? `
+## Точки входа
+
+Приложение собирается с двумя клиентскими бандлами:
+
+    ${ctx.clientOnly ? 'src/mobile' : 'src/client/mobile'}    - mobile
+    ${ctx.clientOnly ? 'src/desktop' : 'src/client/desktop'}  - desktop
+
+Общий код лежит в \`${ctx.clientOnly ? 'src/components' : 'src/client/components'}\`.
+`
+        : '';
+
     const routerSection = ctx.useRouter
         ? `
 ## Маршруты
@@ -135,5 +148,5 @@ Dev-сервер поднимается автоматически через we
 ## Установка
 
     yarn install
-${routerSection}${e2eSection}`;
+${dualEntriesSection}${routerSection}${e2eSection}`;
 }

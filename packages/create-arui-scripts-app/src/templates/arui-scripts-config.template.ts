@@ -12,7 +12,14 @@ export function aruiScriptsConfigTemplate(ctx: TemplateContext): string {
 
     if (ctx.clientOnly) {
         lines.push('    clientOnly: true,');
-    } else {
+    }
+
+    if (ctx.dualEntries) {
+        lines.push(`    clientEntry: {
+        mobile: ${tsString(`${clientBase}/mobile`)},
+        desktop: ${tsString(`${clientBase}/desktop`)},
+    },`);
+    } else if (!ctx.clientOnly) {
         lines.push(`    clientEntry: ${tsString(clientBase)},`);
     }
 

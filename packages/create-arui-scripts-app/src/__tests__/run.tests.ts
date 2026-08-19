@@ -136,6 +136,7 @@ describe('runInit', () => {
             // name и clientOnly заданы флагами — их вопросы (и serverPort) пропускаются.
             prompts.inject([
                 false, // useRtk
+                false, // dualEntries
                 'babel', // codeLoader
                 'vitest', // testRunner
                 'none', // e2eFramework

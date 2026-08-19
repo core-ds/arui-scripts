@@ -42,6 +42,14 @@ export function getQuestions(defaultName: string, prefill: CliFlags = {}): promp
             ],
         },
         {
+            type: unlessAnswered('dualEntries', 'toggle'),
+            name: 'dualEntries',
+            message: 'Отдельные точки входа mobile и desktop',
+            initial: false,
+            active: 'да',
+            inactive: 'нет',
+        },
+        {
             type: unlessAnswered('codeLoader', 'select'),
             name: 'codeLoader',
             message: 'Транспилятор кода',

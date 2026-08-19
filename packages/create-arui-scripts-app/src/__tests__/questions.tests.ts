@@ -9,6 +9,7 @@ describe('getQuestions', () => {
             'app', // name
             false, // useRtk
             true, // clientOnly
+            false, // dualEntries
             'swc', // codeLoader
             'jest', // testRunner
             'none', // e2eFramework
@@ -36,6 +37,7 @@ describe('getQuestions', () => {
             'app', // name
             false, // useRtk
             false, // clientOnly
+            false, // dualEntries
             'swc', // codeLoader
             'jest', // testRunner
             'none', // e2eFramework
@@ -64,6 +66,7 @@ describe('getQuestions', () => {
         prompts.inject([
             'app', // name
             false, // useRtk
+            false, // dualEntries
             'none', // e2eFramework
             false, // useRouter
             'none', // moduleRole
@@ -94,6 +97,7 @@ describe('getQuestions', () => {
             'app', // name
             false, // useRtk
             true, // clientOnly
+            false, // dualEntries
             'swc', // codeLoader
             'jest', // testRunner
             // e2eFramework задан флагом
@@ -119,6 +123,7 @@ describe('getQuestions', () => {
             'app', // name
             false, // useRtk
             false, // clientOnly (SSR)
+            false, // dualEntries
             'swc', // codeLoader
             'jest', // testRunner
             'cypress', // e2eFramework
