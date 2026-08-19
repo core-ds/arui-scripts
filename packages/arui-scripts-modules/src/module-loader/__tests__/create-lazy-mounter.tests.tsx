@@ -13,9 +13,12 @@ const mockUnwrapDefaultExport = unwrapDefaultExport as jest.Mock;
 
 describe('createLazyMounter', () => {
     const mockMount = jest.fn();
+    const mockModuleUnmount = jest.fn();
+    const mockResourceUnmount = jest.fn();
     const mockLoader = jest.fn().mockResolvedValue({
-        module: { mount: mockMount },
+        module: { mount: mockMount, unmount: mockModuleUnmount },
         moduleResources: { moduleState: { testState: 'mockState' } },
+        unmount: mockResourceUnmount,
     });
 
     beforeEach(() => {
@@ -53,10 +56,11 @@ describe('createLazyMounter', () => {
     });
 
     it('should handle default exports correctly', async () => {
-        const moduleWithDefault = { default: { mount: mockMount } };
+        const moduleWithDefault = { default: { mount: mockMount, unmount: mockModuleUnmount } };
         const specialLoader = jest.fn().mockResolvedValue({
             module: moduleWithDefault,
             moduleResources: { moduleState: {} },
+            unmount: mockResourceUnmount,
         });
 
         mockUnwrapDefaultExport.mockImplementation(
@@ -107,8 +111,9 @@ describe('createLazyMounter', () => {
     it('should call update instead of re-mount on runParams change when supported', async () => {
         const mockUpdate = jest.fn();
         const updatableLoader = jest.fn().mockResolvedValue({
-            module: { mount: mockMount, update: mockUpdate },
+            module: { mount: mockMount, unmount: mockModuleUnmount, update: mockUpdate },
             moduleResources: { moduleState: { testState: 'mockState' } },
+            unmount: mockResourceUnmount,
         });
 
         const mounter = createLazyMounter({ loader: updatableLoader });
@@ -147,5 +152,58 @@ describe('createLazyMounter', () => {
         await waitFor(() => {
             expect(mockMount).toHaveBeenCalledTimes(2);
         });
+    });
+
+    it('unmounts the module and loader resources when the component unmounts', async () => {
+        const moduleUnmount = jest.fn();
+        const resourceUnmount = jest.fn();
+        const loader = jest.fn().mockResolvedValue({
+            module: { mount: mockMount, unmount: moduleUnmount },
+            moduleResources: { moduleState: { testState: 'mockState' } },
+            unmount: resourceUnmount,
+        });
+        const mounter = createLazyMounter({ loader });
+        const { default: Component } = await mounter();
+
+        const { unmount } = render(<Component value='a' />);
+
+        await waitFor(() => {
+            expect(mockMount).toHaveBeenCalledTimes(1);
+        });
+
+        unmount();
+
+        expect(moduleUnmount).toHaveBeenCalledWith(expect.any(HTMLDivElement));
+        await waitFor(() => {
+            expect(resourceUnmount).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    it('unmounts before re-mounting when update is unavailable', async () => {
+        const moduleUnmount = jest.fn();
+        const loader = jest.fn().mockResolvedValue({
+            module: { mount: mockMount, unmount: moduleUnmount },
+            moduleResources: { moduleState: { testState: 'mockState' } },
+            unmount: jest.fn(),
+        });
+        const mounter = createLazyMounter({ loader });
+        const { default: Component } = await mounter();
+
+        const { rerender } = render(<Component value='a' />);
+
+        await waitFor(() => {
+            expect(mockMount).toHaveBeenCalledTimes(1);
+        });
+
+        rerender(<Component value='b' />);
+
+        await waitFor(() => {
+            expect(mockMount).toHaveBeenCalledTimes(2);
+        });
+
+        expect(moduleUnmount).toHaveBeenCalledWith(expect.any(HTMLDivElement));
+        expect(moduleUnmount.mock.invocationCallOrder[0]).toBeLessThan(
+            mockMount.mock.invocationCallOrder[1],
+        );
     });
 });

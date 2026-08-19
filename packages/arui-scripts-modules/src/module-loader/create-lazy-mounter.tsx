@@ -45,10 +45,34 @@ export function createLazyMounter<
             useShadowDom: false,
         });
         const module = unwrapDefaultExport(result.module);
+        let activeInstances = 0;
+        let resourceCleanupScheduled = false;
+
+        function releaseResources() {
+            activeInstances -= 1;
+
+            if (activeInstances !== 0 || resourceCleanupScheduled) {
+                return;
+            }
+
+            resourceCleanupScheduled = true;
+
+            // В StrictMode React выполняет cleanup effect-а перед его повторным запуском.
+            // Откладываем освобождение ресурсов, чтобы повторный mount успел увеличить счётчик.
+            Promise.resolve().then(() => {
+                resourceCleanupScheduled = false;
+
+                if (activeInstances === 0) {
+                    result.unmount();
+                }
+            });
+        }
 
         function LazyComponent(runParams: RunParams) {
             const { mountTargetNode, afterTargetMountCallback } = useModuleMountTarget({});
+            const mountedTargetRef = useRef<HTMLElement | null>(null);
             const isMountedRef = useRef(false);
+            const hasActiveInstanceRef = useRef(false);
 
             useEffect(() => {
                 if (!mountTargetNode) {
@@ -66,9 +90,36 @@ export function createLazyMounter<
                     return;
                 }
 
+                if (isMountedRef.current) {
+                    module.unmount(mountedTargetRef.current as HTMLElement);
+                }
+
                 module.mount(mountTargetNode, runParams, serverState);
+                mountedTargetRef.current = mountTargetNode;
                 isMountedRef.current = true;
+                if (!hasActiveInstanceRef.current) {
+                    activeInstances += 1;
+                    hasActiveInstanceRef.current = true;
+                }
             }, [runParams, mountTargetNode]);
+
+            useEffect(
+                () => () => {
+                    if (!isMountedRef.current || !mountedTargetRef.current) {
+                        return;
+                    }
+
+                    module.unmount(mountedTargetRef.current);
+                    mountedTargetRef.current = null;
+                    isMountedRef.current = false;
+
+                    if (hasActiveInstanceRef.current) {
+                        hasActiveInstanceRef.current = false;
+                        releaseResources();
+                    }
+                },
+                [],
+            );
 
             return <div ref={afterTargetMountCallback} />;
         }
