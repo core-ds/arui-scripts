@@ -133,12 +133,27 @@ describe('buildFileMap', () => {
             dependencies: Record<string, string>;
             devDependencies: Record<string, string>;
             engines: { node: string };
+            scripts: Record<string, string>;
         };
 
         expect(pkg.dependencies).toHaveProperty('react');
         expect(pkg.dependencies).not.toHaveProperty('arui-scripts');
         expect(pkg.devDependencies['arui-scripts']).toBe('^23.0.1');
         expect(pkg.engines.node).toBe('>=24.11.1');
+        expect(pkg.scripts['start:prod']).toBe('arui-scripts start:prod');
+        expect(pkg.scripts['bundle-analyze']).toBe('arui-scripts bundle-analyze');
+        expect(pkg.scripts['archive-build']).toBe('arui-scripts archive-build');
+        expect(pkg.scripts['docker-build:compiled']).toBe('arui-scripts docker-build:compiled');
+        expect(pkg.scripts['docker-build']).toBeUndefined();
+    });
+
+    it('при dockerRegistry добавляет docker-build рядом с docker-build:compiled', () => {
+        const pkg = JSON.parse(map({ dockerRegistry: 'reg.example' })['package.json']) as {
+            scripts: Record<string, string>;
+        };
+
+        expect(pkg.scripts['docker-build']).toBe('arui-scripts docker-build');
+        expect(pkg.scripts['docker-build:compiled']).toBe('arui-scripts docker-build:compiled');
     });
 
     it('экранирует dockerRegistry и presets в конфиге', () => {

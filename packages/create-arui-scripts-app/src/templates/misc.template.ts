@@ -125,9 +125,13 @@ Dev-сервер поднимается автоматически через we
 
 ## Команды
 
-    arui-scripts start - запуск dev-сервера
-    arui-scripts build - production-сборка
-    ${testCommand}${' '.repeat(Math.max(1, 20 - testCommand.length))}- запуск тестов${lintSection}
+    arui-scripts start              - запуск dev-сервера
+    arui-scripts start:prod         - dev-сервер с production-конфигом
+    arui-scripts build              - production-сборка
+    ${testCommand}${' '.repeat(Math.max(1, 32 - testCommand.length))}- запуск тестов
+    arui-scripts bundle-analyze     - анализ клиентского бандла
+    arui-scripts archive-build      - архив production-сборки
+    arui-scripts docker-build:compiled - docker-образ из уже собранного .build${lintSection}
 ## Установка
 
     yarn install

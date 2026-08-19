@@ -13,8 +13,12 @@ function sortKeys(record: Record<string, string>): Record<string, string> {
 export function packageJsonTemplate(ctx: TemplateContext): string {
     const scripts: Record<string, string> = {
         start: 'arui-scripts start',
+        'start:prod': 'arui-scripts start:prod',
         build: 'arui-scripts build',
         test: ctx.testRunner === 'jest' ? 'arui-scripts test' : 'arui-scripts test:vitest',
+        'bundle-analyze': 'arui-scripts bundle-analyze',
+        'archive-build': 'arui-scripts archive-build',
+        'docker-build:compiled': 'arui-scripts docker-build:compiled',
     };
 
     if (ctx.dockerRegistry) {
