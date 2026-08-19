@@ -51,6 +51,7 @@ export function createProgram(onInit: InitHandler = defaultInitHandler): Command
         .option('--lint', 'Подключить arui-presets-lint')
         .option('--no-lint', 'Без arui-presets-lint')
         .option('--install', 'Установить зависимости после генерации')
+        .option('--dry-run', 'Показать файлы, ничего не записывать')
         .option('--no-install', 'Не устанавливать зависимости')
         .option('--git', 'git init и первый коммит')
         .option('--no-git', 'Не делать git init')
@@ -142,6 +143,10 @@ export function mapOptsToFlags(opts: Record<string, unknown>): CliFlags {
 
     if (typeof opts.git === 'boolean') {
         flags.git = opts.git;
+    }
+
+    if (opts.dryRun === true) {
+        flags.dryRun = true;
     }
 
     return flags;

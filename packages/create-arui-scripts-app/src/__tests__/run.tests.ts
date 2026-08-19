@@ -106,6 +106,20 @@ describe('runInit', () => {
         ).rejects.toThrow(/URL-friendly|capital letters/i);
     });
 
+    it('с --dry-run ничего не записывает', async () => {
+        const target = path.join(tempDir, 'app');
+
+        await runInit({
+            cwd: tempDir,
+            targetDirArg: 'app',
+            flags: { yes: true, dryRun: true },
+            aruiScriptsVersion: '23.0.1',
+        });
+
+        expect(await fs.pathExists(path.join(target, 'package.json'))).toBe(false);
+        expect(await fs.pathExists(target)).toBe(false);
+    });
+
     describe('частичные флаги (prefill)', () => {
         const originalIsTTY = process.stdin.isTTY;
 

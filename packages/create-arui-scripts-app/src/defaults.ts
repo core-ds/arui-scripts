@@ -20,6 +20,7 @@ export type CliFlags = {
     useLint?: boolean;
     install?: boolean;
     git?: boolean;
+    dryRun?: boolean;
 };
 
 export function defaultAnswers(name: string): InitAnswers {

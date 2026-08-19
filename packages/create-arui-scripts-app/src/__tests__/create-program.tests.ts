@@ -85,4 +85,8 @@ describe('createProgram', () => {
         await expect(parseFlags(['--git'])).resolves.toEqual({ git: true });
         await expect(parseFlags(['--no-git'])).resolves.toEqual({ git: false });
     });
+
+    it('--dry-run фиксирует dryRun', async () => {
+        await expect(parseFlags(['--dry-run'])).resolves.toEqual({ dryRun: true });
+    });
 });

@@ -38,6 +38,7 @@ npx create-arui-scripts-app my-app --yes
 - `--docker-registry` / `--presets` - docker registry и preset
 - `--polyfills` / `--react-compiler` / `--lint` / `--install` - и соответствующие `--no-*`
 - `--git` / `--no-git` - `git init` и первый коммит (по умолчанию включено)
+`--dry-run` - показать список файлов, ничего не записывать
 
 ## Что настраивает мастер
 
