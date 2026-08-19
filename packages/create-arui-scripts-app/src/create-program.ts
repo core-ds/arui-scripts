@@ -52,6 +52,8 @@ export function createProgram(onInit: InitHandler = defaultInitHandler): Command
         .option('--no-lint', 'Без arui-presets-lint')
         .option('--install', 'Установить зависимости после генерации')
         .option('--no-install', 'Не устанавливать зависимости')
+        .option('--git', 'git init и первый коммит')
+        .option('--no-git', 'Не делать git init')
         .showHelpAfterError('(используйте --help для справки)')
         .action(async (dir: string | undefined, opts: Record<string, unknown>) => {
             await onInit(dir, mapOptsToFlags(opts));
@@ -136,6 +138,10 @@ export function mapOptsToFlags(opts: Record<string, unknown>): CliFlags {
 
     if (typeof opts.install === 'boolean') {
         flags.install = opts.install;
+    }
+
+    if (typeof opts.git === 'boolean') {
+        flags.git = opts.git;
     }
 
     return flags;

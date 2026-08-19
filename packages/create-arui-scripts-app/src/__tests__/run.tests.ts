@@ -33,6 +33,20 @@ describe('runInit', () => {
         expect(pkg.devDependencies['arui-scripts']).toBe('^23.0.1');
         expect(await fs.pathExists(path.join(target, 'src/client/index.tsx'))).toBe(true);
         expect(await fs.pathExists(path.join(target, '.yarn/releases/yarn-4.9.1.cjs'))).toBe(true);
+        expect(await fs.pathExists(path.join(target, '.git'))).toBe(true);
+    });
+
+    it('с --no-git не создает git-репозиторий', async () => {
+        const target = path.join(tempDir, 'app');
+
+        await runInit({
+            cwd: tempDir,
+            targetDirArg: 'app',
+            flags: { yes: true, git: false },
+            aruiScriptsVersion: '23.0.1',
+        });
+
+        expect(await fs.pathExists(path.join(target, '.git'))).toBe(false);
     });
 
     it('падает при конфликте файлов без --force', async () => {

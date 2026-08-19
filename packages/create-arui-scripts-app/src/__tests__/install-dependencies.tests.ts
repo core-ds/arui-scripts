@@ -7,7 +7,13 @@ jest.mock('child_process', () => ({
 }));
 
 // eslint-disable-next-line import/first
-import { installDependencies, installLefthook } from '../install-dependencies';
+import {
+    createInitialCommit,
+    initGitRepository,
+    INITIAL_COMMIT_MESSAGE,
+    installDependencies,
+    installLefthook,
+} from '../install-dependencies';
 
 function fakeChild(exitCode: number) {
     const child = new EventEmitter() as EventEmitter & {
@@ -83,6 +89,39 @@ describe('installDependencies', () => {
             'npx',
             ['--no-install', 'lefthook', 'install'],
             expect.objectContaining({ cwd: '/target', shell: false }),
+        );
+    });
+
+    it('initGitRepository вызывает git init', async () => {
+        setPlatform('linux');
+        spawnMock.mockImplementation(() => fakeChild(0));
+
+        await initGitRepository('/target');
+
+        expect(spawnMock).toHaveBeenCalledWith(
+            'git',
+            ['init'],
+            expect.objectContaining({ cwd: '/target', shell: false }),
+        );
+    });
+
+    it('createInitialCommit делает git add и commit', async () => {
+        setPlatform('linux');
+        spawnMock.mockImplementation(() => fakeChild(0));
+
+        await createInitialCommit('/target');
+
+        expect(spawnMock).toHaveBeenNthCalledWith(
+            1,
+            'git',
+            ['add', '-A'],
+            expect.objectContaining({ cwd: '/target' }),
+        );
+        expect(spawnMock).toHaveBeenNthCalledWith(
+            2,
+            'git',
+            expect.arrayContaining(['commit', '--no-verify', '-m', INITIAL_COMMIT_MESSAGE]),
+            expect.objectContaining({ cwd: '/target' }),
         );
     });
 });

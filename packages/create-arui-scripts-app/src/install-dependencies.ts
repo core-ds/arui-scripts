@@ -58,3 +58,31 @@ export function hasGitRepository(targetDir: string): boolean {
 export function installLefthook(targetDir: string): Promise<void> {
     return runCommand('npx', ['--no-install', 'lefthook', 'install'], targetDir);
 }
+
+export function hasGitBinary(): boolean {
+    return Boolean(shell.which('git'));
+}
+
+export const INITIAL_COMMIT_MESSAGE = 'Initial commit from create-arui-scripts-app';
+
+export function initGitRepository(targetDir: string): Promise<void> {
+    return runCommand('git', ['init'], targetDir);
+}
+
+export async function createInitialCommit(targetDir: string): Promise<void> {
+    await runCommand('git', ['add', '-A'], targetDir);
+    await runCommand(
+        'git',
+        [
+            '-c',
+            'user.name=create-arui-scripts-app',
+            '-c',
+            'user.email=create-arui-scripts-app@users.noreply.github.com',
+            'commit',
+            '--no-verify',
+            '-m',
+            INITIAL_COMMIT_MESSAGE,
+        ],
+        targetDir,
+    );
+}

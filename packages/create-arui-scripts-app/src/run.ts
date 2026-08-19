@@ -9,8 +9,11 @@ import { buildContext } from './build-context';
 import { buildFileMap } from './build-file-map';
 import { answersFromFlags, type CliFlags, hasAnswerFlags } from './defaults';
 import {
+    createInitialCommit,
     detectPackageManager,
+    hasGitBinary,
     hasGitRepository,
+    initGitRepository,
     installDependencies,
     installLefthook,
     type PackageManager,
@@ -77,6 +80,7 @@ export async function runInit(options: RunInitOptions = {}): Promise<void> {
     printSuccess(context, targetDir, Object.keys(files).length + assetsCount);
 
     const packageManager = detectPackageManager();
+    const gitCreated = await tryInitGit(targetDir, flags.git !== false);
 
     if (initAnswers.install) {
         const spinner = ora({ text: 'Устанавливаю зависимости…', color: 'cyan' }).start();
@@ -94,7 +98,47 @@ export async function runInit(options: RunInitOptions = {}): Promise<void> {
         }
     }
 
+    if (gitCreated) {
+        await tryInitialCommit(targetDir);
+    }
+
     printNextSteps(targetDir, baseCwd, initAnswers, packageManager);
+}
+
+async function tryInitGit(targetDir: string, enabled: boolean): Promise<boolean> {
+    if (!enabled || hasGitRepository(targetDir) || !hasGitBinary()) {
+        return false;
+    }
+
+    try {
+        await initGitRepository(targetDir);
+        console.log(`  ${chalk.green('✔')} ${chalk.dim('git init')}`);
+
+        return true;
+    } catch (error) {
+        console.log(
+            `  ${chalk.yellow('!')} ${chalk.dim('git init не удался, продолжаем без git')}`,
+        );
+
+        if (error instanceof Error && error.message) {
+            console.log(`  ${chalk.dim(error.message)}`);
+        }
+
+        return false;
+    }
+}
+
+async function tryInitialCommit(targetDir: string): Promise<void> {
+    try {
+        await createInitialCommit(targetDir);
+        console.log(`  ${chalk.green('✔')} ${chalk.dim('Initial commit')}`);
+    } catch (error) {
+        console.log(`  ${chalk.yellow('!')} ${chalk.dim('не удалось создать первый коммит')}`);
+
+        if (error instanceof Error && error.message) {
+            console.log(`  ${chalk.dim(error.message)}`);
+        }
+    }
 }
 
 async function tryInstallLefthook(targetDir: string): Promise<void> {

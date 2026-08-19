@@ -37,6 +37,7 @@ npx create-arui-scripts-app my-app --yes
 - `--client-port` / `--server-port` - порты клиента и сервера
 - `--docker-registry` / `--presets` - docker registry и preset
 - `--polyfills` / `--react-compiler` / `--lint` / `--install` - и соответствующие `--no-*`
+- `--git` / `--no-git` - `git init` и первый коммит (по умолчанию включено)
 
 ## Что настраивает мастер
 

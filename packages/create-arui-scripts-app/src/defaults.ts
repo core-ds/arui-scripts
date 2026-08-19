@@ -19,6 +19,7 @@ export type CliFlags = {
     reactCompiler?: boolean;
     useLint?: boolean;
     install?: boolean;
+    git?: boolean;
 };
 
 export function defaultAnswers(name: string): InitAnswers {

@@ -80,4 +80,9 @@ describe('createProgram', () => {
         await expect(parseFlags(['--router'])).resolves.toEqual({ useRouter: true });
         await expect(parseFlags(['--no-router'])).resolves.toEqual({ useRouter: false });
     });
+
+    it('--git и --no-git управляют git init', async () => {
+        await expect(parseFlags(['--git'])).resolves.toEqual({ git: true });
+        await expect(parseFlags(['--no-git'])).resolves.toEqual({ git: false });
+    });
 });
