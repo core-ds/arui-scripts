@@ -271,6 +271,64 @@ describe('createSsrMounter', () => {
         expect(getModuleResources).toHaveBeenCalledTimes(1);
     });
 
+    it('hydrates each SSR instance with its own embedded payload', async () => {
+        const firstState = { ...moduleState, preloadedState: { name: 'first' } };
+        const secondState = { ...moduleState, preloadedState: { name: 'second' } };
+        const getModuleResources = jest.fn().mockImplementation((request) =>
+            Promise.resolve(
+                buildResources({
+                    moduleState:
+                        request.ssr?.runParams?.name === 'first' ? firstState : secondState,
+                }),
+            ),
+        );
+        const module = {
+            hydrate: jest.fn(),
+            mount: jest.fn(),
+            unmount: jest.fn(),
+        };
+
+        (window as unknown as Record<string, unknown>)[MODULE_ID] = module;
+
+        const { ModuleComponent } = createSsrMounter<RunParams>({
+            moduleId: MODULE_ID,
+            hostAppId: 'host',
+            getModuleResources,
+        });
+
+        const element = (
+            <Suspense fallback={<span>loading</span>}>
+                <ModuleComponent
+                    instanceId='first'
+                    ssrRunParams={{ name: 'first' }}
+                    runParams={{ name: 'first' }}
+                />
+                <ModuleComponent
+                    instanceId='second'
+                    ssrRunParams={{ name: 'second' }}
+                    runParams={{ name: 'second' }}
+                />
+            </Suspense>
+        );
+
+        const html = await renderServerHtml(element);
+
+        container.innerHTML = html;
+
+        await act(async () => {
+            hydrateRoot(container, element);
+        });
+
+        await waitFor(() => {
+            expect(module.hydrate).toHaveBeenCalledTimes(2);
+        });
+
+        expect(module.hydrate.mock.calls.map(([, , state]) => state)).toEqual([
+            firstState,
+            secondState,
+        ]);
+    });
+
     it('falls back to mount (clearing the outlet) when the module has no hydrate', async () => {
         jest.spyOn(console, 'warn').mockImplementation(() => {});
         const getModuleResources = jest.fn().mockResolvedValue(buildResources());

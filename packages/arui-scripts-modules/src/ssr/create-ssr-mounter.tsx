@@ -145,21 +145,25 @@ export function createSsrMounter<
 }: CreateSsrMounterOptions<RunParams, GetResourcesParams, ModuleState>) {
     type ModuleType = MountableModule<RunParams, ModuleState>;
 
-    let clientLoader: Loader<GetResourcesParams, ModuleType> | undefined;
+    const clientLoaders = new Map<string, Loader<GetResourcesParams, ModuleType>>();
 
-    function getClientLoader() {
-        if (!clientLoader) {
-            clientLoader = createModuleLoader<ModuleType, GetResourcesParams, ModuleState>({
+    function getClientLoader(instanceId: string) {
+        let loader = clientLoaders.get(instanceId);
+
+        if (!loader) {
+            loader = createModuleLoader<ModuleType, GetResourcesParams, ModuleState>({
                 moduleId,
                 hostAppId,
                 getModuleResources: createEmbeddedModuleFetcher<GetResourcesParams>({
+                    instanceId,
                     fallback: getModuleResources as ModuleResourcesGetter<GetResourcesParams>,
                 }) as ModuleResourcesGetter<GetResourcesParams, ModuleState>,
                 ...loaderOptions,
             });
+            clientLoaders.set(instanceId, loader);
         }
 
-        return clientLoader;
+        return loader;
     }
 
     function ServerModule({
@@ -303,7 +307,7 @@ export function createSsrMounter<
 
             (async () => {
                 try {
-                    const result = await getClientLoader()({
+                    const result = await getClientLoader(instanceId)({
                         getResourcesParams,
                         abortSignal: abortController.signal,
                     });
