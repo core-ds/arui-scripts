@@ -10,6 +10,7 @@ const base: InitAnswers = {
     testRunner: 'jest',
     e2eFramework: 'none',
     useRouter: false,
+    moduleRole: 'none',
     cssModules: true,
     clientServerPort: 8080,
     serverPort: 3000,
@@ -362,5 +363,24 @@ describe('buildFileMap', () => {
         expect(files['src/client/pages/home.tsx']).toBeUndefined();
         expect(files['src/client/index.tsx']).not.toContain('BrowserRouter');
         expect(files['package.json']).not.toContain('react-router-dom');
+    });
+
+    it('host создает mounter и modules.shared в конфиге', () => {
+        const files = map({ moduleRole: 'host' });
+        const pkg = JSON.parse(files['package.json']) as { dependencies: Record<string, string> };
+
+        expect(files['src/client/components/remote-module.tsx']).toContain('createModuleLoader');
+        expect(files['src/client/components/app.tsx']).toContain('RemoteModule');
+        expect(files['arui-scripts.config.ts']).toContain('eager: true');
+        expect(files['src/modules/example/index.tsx']).toBeUndefined();
+        expect(pkg.dependencies).toHaveProperty('@alfalab/scripts-modules');
+    });
+
+    it('remote создает exposes и точку входа модуля', () => {
+        const files = map({ moduleRole: 'remote' });
+
+        expect(files['src/modules/example/index.tsx']).toContain('ModuleMountFunction');
+        expect(files['arui-scripts.config.ts']).toContain('ExampleModule');
+        expect(files['src/client/components/remote-module.tsx']).toBeUndefined();
     });
 });

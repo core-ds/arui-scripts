@@ -280,6 +280,10 @@ function mergePromptAnswers(base: InitAnswers, answers: prompts.Answers<string>)
         merged.useRouter = Boolean(answers.useRouter);
     }
 
+    if (answers.moduleRole !== undefined) {
+        merged.moduleRole = answers.moduleRole;
+    }
+
     if (answers.useLint !== undefined) {
         merged.useLint = Boolean(answers.useLint);
     }
@@ -308,6 +312,7 @@ function printSuccess(context: TemplateContext, targetDir: string, fileCount: nu
         chalk.dim(context.testRunner),
         ...(context.e2eFramework !== 'none' ? [chalk.dim(context.e2eFramework)] : []),
         ...(context.useRouter ? [chalk.dim('router')] : []),
+        ...(context.moduleRole !== 'none' ? [chalk.dim(context.moduleRole)] : []),
         ...(context.useLint ? [chalk.dim('lint')] : []),
     ].join(chalk.dim(' · '));
 

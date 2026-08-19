@@ -13,6 +13,7 @@ describe('getQuestions', () => {
             'jest', // testRunner
             'none', // e2eFramework
             false, // useRouter
+            'none', // moduleRole
             true, // cssModules
             8080, // clientServerPort
             // serverPort пропущен
@@ -39,6 +40,7 @@ describe('getQuestions', () => {
             'jest', // testRunner
             'none', // e2eFramework
             false, // useRouter
+            'none', // moduleRole
             true, // cssModules
             8080, // clientServerPort
             3001, // serverPort
@@ -64,6 +66,7 @@ describe('getQuestions', () => {
             false, // useRtk
             'none', // e2eFramework
             false, // useRouter
+            'none', // moduleRole
             true, // cssModules
             8080, // clientServerPort
             '', // dockerRegistry
@@ -95,6 +98,7 @@ describe('getQuestions', () => {
             'jest', // testRunner
             // e2eFramework задан флагом
             false, // useRouter
+            'none', // moduleRole
             true, // cssModules
             8080, // clientServerPort
             '', // dockerRegistry
@@ -119,6 +123,7 @@ describe('getQuestions', () => {
             'jest', // testRunner
             'cypress', // e2eFramework
             false, // useRouter
+            'none', // moduleRole
             true, // cssModules
             8080, // clientServerPort
             // serverPort задан флагом — вопрос пропущен

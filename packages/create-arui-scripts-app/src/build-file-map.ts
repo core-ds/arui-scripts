@@ -27,6 +27,7 @@ import {
     readmeTemplate,
     yarnrcTemplate,
 } from './templates/misc.template';
+import { hostModuleMounterTemplate, remoteModuleTemplate } from './templates/modules.template';
 import { packageJsonTemplate } from './templates/package-json.template';
 import {
     aboutPageTemplate,
@@ -106,6 +107,12 @@ export function buildFileMap(ctx: TemplateContext): Record<string, string> {
         files['cypress/support/e2e.ts'] = cypressSupportE2eTemplate();
         files['cypress/support/commands.ts'] = cypressSupportCommandsTemplate();
         files['cypress/e2e/example.cy.ts'] = cypressExampleSpecTemplate();
+    }
+
+    if (ctx.moduleRole === 'host') {
+        files[`${client}/components/remote-module.tsx`] = hostModuleMounterTemplate(ctx);
+    } else if (ctx.moduleRole === 'remote') {
+        files['src/modules/example/index.tsx'] = remoteModuleTemplate();
     }
 
     return files;

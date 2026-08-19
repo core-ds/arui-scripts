@@ -26,6 +26,7 @@ const VERSIONS = {
     cypress: '^15.19.0',
     reactRouterDom: '^7.6.0',
     aruiPresetsLint: '^11.0.0',
+    scriptsModules: '^1.10.3',
 } as const;
 
 export function buildContext(answers: InitAnswers, aruiScriptsVersion: string): TemplateContext {
@@ -62,6 +63,10 @@ export function buildContext(answers: InitAnswers, aruiScriptsVersion: string): 
         dependencies['react-router-dom'] = VERSIONS.reactRouterDom;
     }
 
+    if (answers.moduleRole !== 'none') {
+        dependencies['@alfalab/scripts-modules'] = VERSIONS.scriptsModules;
+    }
+
     if (answers.polyfills) {
         dependencies['core-js'] = VERSIONS.coreJs;
     }
@@ -96,6 +101,7 @@ export function buildContext(answers: InitAnswers, aruiScriptsVersion: string): 
         testRunner: answers.testRunner,
         e2eFramework: answers.e2eFramework,
         useRouter: answers.useRouter,
+        moduleRole: answers.moduleRole,
         cssModules: answers.cssModules,
         clientServerPort: answers.clientServerPort,
         serverPort: answers.serverPort,

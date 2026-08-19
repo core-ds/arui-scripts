@@ -46,11 +46,22 @@ export function homePageTemplate(ctx: TemplateContext): string {
     const coreImports = `import { Button } from '@alfalab/core-components/button';
 import { Gap } from '@alfalab/core-components/gap';
 import { Typography } from '@alfalab/core-components/typography';`;
+    const hostImport =
+        ctx.moduleRole === 'host'
+            ? "\nimport { RemoteModule } from '../components/remote-module';"
+            : '';
+    const hostBlock =
+        ctx.moduleRole === 'host'
+            ? `
+            <Gap size={16} />
+            <RemoteModule />`
+            : '';
 
     if (ctx.useRtk) {
         return `import React from 'react';
 
 ${coreImports}
+${hostImport}
 
 import { decrement, increment } from '../store/counter-slice';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
@@ -76,7 +87,7 @@ export function HomePage() {
             </Button>{' '}
             <Button view='secondary' size={48} onClick={() => dispatch(decrement())}>
                 -1
-            </Button>
+            </Button>${hostBlock}
         </div>
     );
 }
@@ -86,6 +97,7 @@ export function HomePage() {
     return `import React, { useState } from 'react';
 
 ${coreImports}
+${hostImport}
 
 ${styleImport}
 
@@ -107,7 +119,7 @@ export function HomePage() {
             </Button>{' '}
             <Button view='secondary' size={48} onClick={() => setCount((prev) => prev - 1)}>
                 -1
-            </Button>
+            </Button>${hostBlock}
         </div>
     );
 }

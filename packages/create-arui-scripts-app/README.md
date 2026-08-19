@@ -33,6 +33,7 @@ npx create-arui-scripts-app my-app --yes
 - `--code-loader <swc|babel|tsc>` - транспилятор
 - `--test-runner <jest|vitest>` - тест-раннер
 - `--e2e-framework <cypress|playwright|none>` - e2e фреймворк
+- `--modules <none|host|remote>` - шаблон Module Federation: host (подключение remote-модуля) или remote (экспорт модуля)
 - `--css-modules` / `--no-css-modules` - CSS-модули
 - `--client-port` / `--server-port` - порты клиента и сервера
 - `--docker-registry` / `--presets` - docker registry и preset
@@ -48,6 +49,7 @@ npx create-arui-scripts-app my-app --yes
 - транспилятор (**swc** / babel / tsc) и тест-раннер (**Jest** / Vitest)
 - опционально **e2e** (**Cypress** / Playwright) с конфигом и хелперами
 - опционально **React Router**
+- **module federation**: host (потребитель) или remote (отдаёт модуль)
 - CSS-модули, полифилы (`core-js`), `experimentalReactCompiler`, docker registry, preset
 - опционально **arui-presets-lint** (eslint, prettier, stylelint, knip, secretlint, lefthook)
 - опциональная установка зависимостей сразу после генерации

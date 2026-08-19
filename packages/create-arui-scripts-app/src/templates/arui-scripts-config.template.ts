@@ -50,6 +50,25 @@ export function aruiScriptsConfigTemplate(ctx: TemplateContext): string {
         lines.push("    experimentalReactCompiler: { target: '19' },");
     }
 
+    if (ctx.moduleRole === 'host') {
+        lines.push(`    modules: {
+        shared: {
+            react: { eager: true, requiredVersion: '^19.0.0' },
+            'react-dom': { eager: true, requiredVersion: '^19.0.0' },
+        },
+    },`);
+    } else if (ctx.moduleRole === 'remote') {
+        lines.push(`    modules: {
+        shared: {
+            react: '^19.0.0',
+            'react-dom': '^19.0.0',
+        },
+        exposes: {
+            ExampleModule: './src/modules/example/index',
+        },
+    },`);
+    }
+
     const body = lines.length > 0 ? `\n${lines.join('\n')}\n` : '';
 
     return `import { type PackageSettings } from 'arui-scripts';

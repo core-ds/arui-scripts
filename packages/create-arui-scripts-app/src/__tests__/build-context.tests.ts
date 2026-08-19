@@ -9,6 +9,7 @@ const base: InitAnswers = {
     testRunner: 'jest',
     e2eFramework: 'none',
     useRouter: false,
+    moduleRole: 'none',
     cssModules: true,
     clientServerPort: 8080,
     serverPort: 3000,
@@ -117,5 +118,15 @@ describe('buildContext', () => {
         expect(withRouter.dependencies).toHaveProperty('react-router-dom');
         expect(withRouter.dependencies).toHaveProperty('react-router');
         expect(withoutRouter.dependencies).not.toHaveProperty('react-router-dom');
+    });
+
+    it('host и remote добавляют @alfalab/scripts-modules', () => {
+        const host = buildContext({ ...base, moduleRole: 'host' }, '1.0.0');
+        const remote = buildContext({ ...base, moduleRole: 'remote' }, '1.0.0');
+        const none = buildContext({ ...base, moduleRole: 'none' }, '1.0.0');
+
+        expect(host.dependencies).toHaveProperty('@alfalab/scripts-modules');
+        expect(remote.dependencies).toHaveProperty('@alfalab/scripts-modules');
+        expect(none.dependencies).not.toHaveProperty('@alfalab/scripts-modules');
     });
 });

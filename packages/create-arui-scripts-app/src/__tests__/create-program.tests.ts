@@ -89,4 +89,12 @@ describe('createProgram', () => {
     it('--dry-run фиксирует dryRun', async () => {
         await expect(parseFlags(['--dry-run'])).resolves.toEqual({ dryRun: true });
     });
+
+    it('--modules парсит host, remote и none', async () => {
+        await expect(parseFlags(['--modules', 'host'])).resolves.toEqual({ moduleRole: 'host' });
+        await expect(parseFlags(['--modules', 'remote'])).resolves.toEqual({
+            moduleRole: 'remote',
+        });
+        await expect(parseFlags(['--modules', 'none'])).resolves.toEqual({ moduleRole: 'none' });
+    });
 });

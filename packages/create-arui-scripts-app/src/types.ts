@@ -1,6 +1,7 @@
 export type CodeLoader = 'swc' | 'babel' | 'tsc';
 export type TestRunner = 'jest' | 'vitest';
 export type E2eFramework = 'cypress' | 'playwright' | 'none';
+export type ModuleRole = 'none' | 'host' | 'remote';
 
 export type InitAnswers = {
     name: string;
@@ -14,6 +15,8 @@ export type InitAnswers = {
     e2eFramework: E2eFramework;
     // Подключать ли React Router
     useRouter: boolean;
+    // host / remote для module federation, либо без модулей
+    moduleRole: ModuleRole;
     // Подключать ли пример с CSS-модулями
     cssModules: boolean;
     clientServerPort: number;
@@ -39,6 +42,7 @@ export type TemplateContext = {
     testRunner: TestRunner;
     e2eFramework: E2eFramework;
     useRouter: boolean;
+    moduleRole: ModuleRole;
     cssModules: boolean;
     clientServerPort: number;
     serverPort: number;

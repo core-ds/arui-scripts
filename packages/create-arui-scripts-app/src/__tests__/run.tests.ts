@@ -140,6 +140,7 @@ describe('runInit', () => {
                 'vitest', // testRunner
                 'none', // e2eFramework
                 false, // useRouter
+                'none', // moduleRole
                 true, // cssModules
                 8081, // clientServerPort
                 '', // dockerRegistry

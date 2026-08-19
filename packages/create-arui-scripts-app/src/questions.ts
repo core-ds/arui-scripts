@@ -86,6 +86,25 @@ export function getQuestions(defaultName: string, prefill: CliFlags = {}): promp
             inactive: 'нет',
         },
         {
+            type: unlessAnswered('moduleRole', 'select'),
+            name: 'moduleRole',
+            message: 'Module federation',
+            initial: 0,
+            choices: [
+                { title: 'Нет', value: 'none', description: 'Обычное приложение' },
+                {
+                    title: 'Host',
+                    value: 'host',
+                    description: 'Подключает удалённые модули',
+                },
+                {
+                    title: 'Remote',
+                    value: 'remote',
+                    description: 'Отдаёт модуль другим приложениям',
+                },
+            ],
+        },
+        {
             type: unlessAnswered('cssModules', 'toggle'),
             name: 'cssModules',
             message: 'Использовать CSS-модули',

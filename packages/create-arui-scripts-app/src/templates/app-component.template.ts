@@ -27,6 +27,14 @@ export function App() {
     const coreImports = `import { Button } from '@alfalab/core-components/button';
 import { Gap } from '@alfalab/core-components/gap';
 import { Typography } from '@alfalab/core-components/typography';`;
+    const hostImport =
+        ctx.moduleRole === 'host' ? "\nimport { RemoteModule } from './remote-module';" : '';
+    const hostBlock =
+        ctx.moduleRole === 'host'
+            ? `
+            <Gap size={16} />
+            <RemoteModule />`
+            : '';
 
     const view = (count: string) => `        <div className=${rootClass}>
             <Typography.Title view='medium' tag='h1' className=${titleClass}>
@@ -40,6 +48,7 @@ import { Typography } from '@alfalab/core-components/typography';`;
         return `import React from 'react';
 
 ${coreImports}
+${hostImport}
 
 import { decrement, increment } from '../store/counter-slice';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
@@ -59,7 +68,7 @@ ${view('count')}
             </Button>{' '}
             <Button view='secondary' size={48} onClick={() => dispatch(decrement())}>
                 -1
-            </Button>
+            </Button>${hostBlock}
         </div>
     );
 }
@@ -69,6 +78,7 @@ ${view('count')}
     return `import React, { useState } from 'react';
 
 ${coreImports}
+${hostImport}
 
 ${styleImport}
 
@@ -84,7 +94,7 @@ ${view('count')}
             </Button>{' '}
             <Button view='secondary' size={48} onClick={() => setCount((prev) => prev - 1)}>
                 -1
-            </Button>
+            </Button>${hostBlock}
         </div>
     );
 }
