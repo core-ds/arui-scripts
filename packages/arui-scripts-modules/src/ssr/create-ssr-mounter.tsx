@@ -12,6 +12,7 @@ import {
     MODULE_DATA_HREF_ATTRIBUTE,
     MODULE_SSR_HREF_ATTRIBUTE,
     MODULE_SSR_INSTANCE_ATTRIBUTE,
+    MODULE_SSR_MODULE_ATTRIBUTE,
     MODULE_SSR_MOUNT_ID_ATTRIBUTE,
     MODULE_SSR_PAYLOAD_ATTRIBUTE,
     MODULE_SSR_ROOT_ATTRIBUTE,
@@ -209,7 +210,12 @@ export function createSsrMounter<
 
         /* eslint-disable react/no-danger -- мы получаем много разметки не из реакта при работе с модулями */
         return (
-            <div {...{ [MODULE_SSR_ROOT_ATTRIBUTE]: instanceId }}>
+            <div
+                {...{
+                    [MODULE_SSR_ROOT_ATTRIBUTE]: instanceId,
+                    [MODULE_SSR_MODULE_ATTRIBUTE]: moduleId,
+                }}
+            >
                 {stylesMode === 'inline'
                     ? inlineStyles.map((style) => (
                           <style
@@ -275,7 +281,7 @@ export function createSsrMounter<
         const hadServerHtmlRef = useRef(false);
 
         if (snapshotRef.current === null) {
-            const { snapshot, hadServerHtml } = readServerMarkup(instanceId);
+            const { snapshot, hadServerHtml } = readServerMarkup(moduleId, instanceId);
 
             snapshotRef.current = snapshot;
             hadServerHtmlRef.current = hadServerHtml;
@@ -378,7 +384,10 @@ export function createSsrMounter<
             return (
                 <div
                     ref={rootRef}
-                    {...{ [MODULE_SSR_ROOT_ATTRIBUTE]: instanceId }}
+                    {...{
+                        [MODULE_SSR_ROOT_ATTRIBUTE]: instanceId,
+                        [MODULE_SSR_MODULE_ATTRIBUTE]: moduleId,
+                    }}
                     dangerouslySetInnerHTML={{ __html: snapshotRef.current }}
                     suppressHydrationWarning={true}
                 />
@@ -388,7 +397,13 @@ export function createSsrMounter<
         // Нет серверной разметки (например, клиентский SPA-переход) — рендерим пустой outlet
         // для обычного монтирования.
         return (
-            <div ref={rootRef} {...{ [MODULE_SSR_ROOT_ATTRIBUTE]: instanceId }}>
+            <div
+                ref={rootRef}
+                {...{
+                    [MODULE_SSR_ROOT_ATTRIBUTE]: instanceId,
+                    [MODULE_SSR_MODULE_ATTRIBUTE]: moduleId,
+                }}
+            >
                 <div {...{ [MODULE_SSR_MOUNT_ID_ATTRIBUTE]: instanceId }} />
             </div>
         );
@@ -415,13 +430,17 @@ function safeStringify(value: unknown): string {
     }
 }
 
-function readServerMarkup(instanceId: string): { snapshot: string; hadServerHtml: boolean } {
+function readServerMarkup(
+    moduleId: string,
+    instanceId: string,
+): { snapshot: string; hadServerHtml: boolean } {
     if (typeof document === 'undefined') {
         return { snapshot: '', hadServerHtml: false };
     }
 
     const root = document.querySelector(
-        `[${MODULE_SSR_ROOT_ATTRIBUTE}="${cssEscape(instanceId)}"]`,
+        `[${MODULE_SSR_ROOT_ATTRIBUTE}="${cssEscape(instanceId)}"]` +
+            `[${MODULE_SSR_MODULE_ATTRIBUTE}="${cssEscape(moduleId)}"]`,
     );
 
     if (!root) {

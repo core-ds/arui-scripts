@@ -33,6 +33,11 @@ export const MODULE_DATA_HREF_ATTRIBUTE = 'data-href';
  */
 export const MODULE_SSR_ROOT_ATTRIBUTE = 'data-module-ssr-root';
 /**
+ * Атрибут SSR-обёртки, различающий разные модули с одинаковым `instanceId`.
+ * Вместе с `data-module-ssr-root` образует уникальный ключ серверной разметки.
+ */
+export const MODULE_SSR_MODULE_ATTRIBUTE = 'data-module-ssr-module';
+/**
  * Атрибут outlet-элемента (внутри обёртки), в который смонтирован/гидрирован модуль.
  * Значение — `instanceId`.
  */

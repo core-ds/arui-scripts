@@ -329,6 +329,52 @@ describe('createSsrMounter', () => {
         ]);
     });
 
+    it('does not use another module SSR markup when instance ids match', async () => {
+        const firstModuleId = 'FirstModule';
+        const secondModuleId = 'SecondModule';
+        const firstModule = { hydrate: jest.fn(), mount: jest.fn(), unmount: jest.fn() };
+        const secondModule = { hydrate: jest.fn(), mount: jest.fn(), unmount: jest.fn() };
+
+        (window as unknown as Record<string, unknown>)[firstModuleId] = firstModule;
+        (window as unknown as Record<string, unknown>)[secondModuleId] = secondModule;
+
+        const { ModuleComponent: FirstModuleComponent } = createSsrMounter<RunParams>({
+            moduleId: firstModuleId,
+            hostAppId: 'host',
+            getModuleResources: jest
+                .fn()
+                .mockResolvedValue(buildResources({ appName: firstModuleId })),
+        });
+        const { ModuleComponent: SecondModuleComponent } = createSsrMounter<RunParams>({
+            moduleId: secondModuleId,
+            hostAppId: 'host',
+            getModuleResources: jest.fn().mockResolvedValue(
+                buildResources({
+                    appName: secondModuleId,
+                    html: undefined,
+                }),
+            ),
+        });
+        const element = (
+            <Suspense fallback={<span>loading</span>}>
+                <FirstModuleComponent instanceId='shared' />
+                <SecondModuleComponent instanceId='shared' />
+            </Suspense>
+        );
+
+        container.innerHTML = await renderServerHtml(element);
+
+        await act(async () => {
+            hydrateRoot(container, element);
+        });
+
+        await waitFor(() => {
+            expect(secondModule.mount).toHaveBeenCalledTimes(1);
+        });
+
+        expect(secondModule.hydrate).not.toHaveBeenCalled();
+    });
+
     it('falls back to mount (clearing the outlet) when the module has no hydrate', async () => {
         jest.spyOn(console, 'warn').mockImplementation(() => {});
         const getModuleResources = jest.fn().mockResolvedValue(buildResources());
