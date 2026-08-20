@@ -3,4 +3,6 @@
 const babelJest = require('babel-jest');
 const babelPresets = require('../babel-server');
 
-module.exports = babelJest.createTransformer(babelPresets.config);
+const transformer = babelJest.createTransformer(babelPresets.config);
+
+module.exports = /** @type {import('@jest/transform').SyncTransformer} */ (transformer);
