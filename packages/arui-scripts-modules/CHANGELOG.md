@@ -1,5 +1,35 @@
 # @alfalab/scripts-modules
 
+## 1.11.0
+
+### Minor Changes
+
+-   [#532](https://github.com/core-ds/arui-scripts/pull/532) [`b82a10c`](https://github.com/core-ds/arui-scripts/commit/b82a10c4e90e625ff538f47528de0869f798d6d4) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Добавлены API для монтирования модулей в React Suspense и SSR:
+
+    -   `createLazyMounter` для клиентского монтирования модулей через `React.Suspense`;
+    -   `createSsrMounter` из подпути `@alfalab/scripts-modules/ssr` для серверного рендеринга
+        mountable-модулей, передачи ресурсов через встроенный payload и последующей клиентской
+        гидрации без повторного запроса ресурсов;
+    -   опциональные методы модулей `hydrate` и `update`, а также настройка доставки SSR-стилей:
+        inline по умолчанию или `<link>` через `stylesMode: 'link'`.
+
+    Стили module-federation модулей, отрисованные на сервере, переиспользуются на клиенте без
+    повторной загрузки и мигания интерфейса.
+
+    `AruiAppManifest.css` и `createModuleFetcher` теперь принимают `string | string[]`.
+
+    `createServerStateModuleFetcher` теперь использует стандартный `fetch` вместо
+    `XMLHttpRequest`, поэтому рантаймам без глобального `fetch` потребуется полифил.
+
+    Подробнее: [документация `@alfalab/scripts-modules`](../packages/arui-scripts-modules/README.md#createssrmounter)
+    и [SSR-спецификация](../docs/specs/ssr-spec.md).
+
+-   [#532](https://github.com/core-ds/arui-scripts/pull/532) [`4fa8be2`](https://github.com/core-ds/arui-scripts/commit/4fa8be235a824df207b4209201d9ff792f925860) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Серверный кэш ресурсов в `createSsrMounter` стал per-request: теперь он передаётся через
+    React-контекст провайдером `ModuleSsrRequestProvider` (`@alfalab/scripts-modules/ssr`), который
+    хост должен обернуть вокруг дерева на сервере с уникальным `requestId` на каждый HTTP-запрос.
+    Это исключает случайное переиспользование `moduleState` между одновременными запросами и утечку
+    записей кэша от прерванных рендеров. На клиенте провайдер не требуется.
+
 ## 1.10.3
 
 ### Patch Changes
