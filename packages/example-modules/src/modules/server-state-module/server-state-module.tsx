@@ -6,14 +6,14 @@ export const ServerStateModule = (props: {
     runParams: Record<string, unknown>;
     serverState: Record<string, unknown>;
 }) => (
-    <div>
+    <div className='my-prefix'>
         <h1>ServerStateModule</h1>
 
         <p>Данные, полученные из сервера:</p>
 
         <pre>{JSON.stringify(props.serverState, null, 4)}</pre>
 
-        <p className={styles.redText}>Данные, полученные из клиента:</p>
+        <p className={styles['other-order-edit-page_horizontal']}>Данные, полученные из клиента:</p>
 
         <pre>{JSON.stringify(props.runParams, null, 4)}</pre>
     </div>

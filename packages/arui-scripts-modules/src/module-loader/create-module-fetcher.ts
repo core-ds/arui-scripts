@@ -8,6 +8,15 @@ type CreateClientResourcesFetcherParams = {
     assetsUrl?: string;
 };
 
+// js/css в манифесте могут быть строкой или массивом, нормализуем в плоский список.
+function toArray(value: string | string[] | undefined): string[] {
+    if (!value) {
+        return [];
+    }
+
+    return Array.isArray(value) ? value : [value];
+}
+
 /**
  * Функция, которая создает метод для получения ресурсов модуля.
  * Предполагается, что она будет использоваться вместе с createModuleLoader.
@@ -29,8 +38,8 @@ export function createModuleFetcher({
         const moduleVendorFiles = manifest[`vendor-${moduleId}`] || {};
 
         return {
-            scripts: [moduleFiles.js, moduleVendorFiles.js].filter(Boolean) as string[],
-            styles: [moduleFiles.css, moduleVendorFiles.css].filter(Boolean) as string[],
+            scripts: [...toArray(moduleFiles.js), ...toArray(moduleVendorFiles.js)],
+            styles: [...toArray(moduleFiles.css), ...toArray(moduleVendorFiles.css)],
             mode: moduleFiles.mode || 'compat',
         };
     }
