@@ -1,5 +1,17 @@
 # arui-scripts
 
+## 23.6.0
+
+### Minor Changes
+
+-   [#532](https://github.com/core-ds/arui-scripts/pull/532) [`b82a10c`](https://github.com/core-ds/arui-scripts/commit/b82a10c4e90e625ff538f47528de0869f798d6d4) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - CSS module-federation модулей теперь попадает в манифест сборки на уровне каждого модуля.
+    Раньше стили модуля не были привязаны к его записи в манифесте, из-за чего хост-сервер не мог
+    отдать их при серверном рендере, и модуль отрисовывался без стилей до загрузки на клиенте.
+    Теперь стили доступны в записи модуля и могут быть встроены при SSR. Изменение аддитивно: для
+    сборок без модулей и для не-SSR потребления манифест остаётся прежним.
+
+    Подробнее: [SSR-спецификация модулей, раздел 10](../docs/specs/ssr-spec.md#10-addendum-css-delivery-for-module-federation-modules)..
+
 ## 23.5.1
 
 ### Patch Changes
