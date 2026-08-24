@@ -3,10 +3,10 @@ import path from 'path';
 import { exec, shellQuote } from '@alfalab/arui-scripts-artifacts';
 
 /**
- * Конфиг едет вместе с arui-scripts — см. `artifacts-config.ts`. `require.resolve` дает абсолютный
+ * Конфиг едет вместе с arui-scripts — см. `arui-scripts-artifacts.ts`. `require.resolve` дает абсолютный
  * путь до собранного файла и не выполняет его: конфиг исполнит уже CLI, в процессе сборки.
  */
-const ARTIFACTS_CONFIG_PATH = require.resolve('./artifacts-config');
+const ARTIFACTS_CONFIG_PATH = require.resolve('./arui-scripts-artifacts');
 
 /**
  * Абсолютный путь до бинарника CLI @alfalab/arui-scripts-artifacts.

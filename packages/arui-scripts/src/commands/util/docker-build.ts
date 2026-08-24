@@ -9,7 +9,7 @@ import {
     prepareFilesForDocker as artifactsPrepareFilesForDocker,
 } from '@alfalab/arui-scripts-artifacts';
 
-import { getResolvedArtifactsConfig } from './artifacts-options';
+import { getResolvedArtifactsConfig } from './artifacts-config';
 
 export { dockerVersionSatisfies };
 

@@ -17,7 +17,7 @@ export { getDockerBuildCommand } from './commands/util/docker-build';
  * @deprecated Слой обратной совместимости: в следующей мажорной версии настройки сборки артефактов
  * будут жить только в конфиге `arui-scripts-artifacts.ts`.
  */
-export { getArtifactsOptions, getResolvedArtifactsConfig } from './commands/util/artifacts-options';
+export { getArtifactsOptions, getResolvedArtifactsConfig } from './commands/util/artifacts-config';
 
 export {
     buildDockerImage,
