@@ -31,7 +31,7 @@ __metadata:
     ts-jest: "npm:29.1.0"
     typescript: "npm:6.0.2"
   bin:
-    arui-scripts-artifacts: ./build/bin/index.js
+    arui-scripts-artifacts: ./build/cjs/bin/index.js
   languageName: unknown
   linkType: soft
 
