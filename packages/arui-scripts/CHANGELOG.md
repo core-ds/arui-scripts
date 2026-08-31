@@ -1,5 +1,14 @@
 # arui-scripts
 
+## 23.7.0
+
+### Minor Changes
+
+-   [#581](https://github.com/core-ds/arui-scripts/pull/581) [`1df61ec7`](https://github.com/core-ds/arui-scripts/commit/1df61ec77ff6f75077b1d4fa27a86413cc0c3b48) Thanks [@Burzachil](https://github.com/Burzachil)! - Исправлен порядок инструкций в Dockerfile-шаблоне команды `docker-build`: шаг удаления npm
+    (`deleteNpm: true`) выполнялся после переключения на непривилегированного пользователя
+    (`runFromNonRootUser: true`) и падал с ошибкой прав доступа. Теперь npm удаляется до инструкции `USER nginx` — так же, как это уже было
+    сделано в шаблоне для `docker-build-compiled`
+
 ## 23.6.0
 
 ### Minor Changes
