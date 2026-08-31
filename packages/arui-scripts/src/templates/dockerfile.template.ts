@@ -32,17 +32,18 @@ ADD $START_SH_LOCATION /src/start.sh
 ADD $NGINX_CONF_LOCATION ${nginxConfTargetLocation}
 ${nginx ? 'ADD $NGINX_BASE_CONF_LOCATION /etc/nginx/nginx.conf' : ''}
 
+${
+    configs.deleteNpm
+        ? 'RUN rm -rf /usr/local/bin/npm /usr/local/bin/npx /usr/local/lib/node_modules/npm'
+        : ''
+}
+
 ${nginxNonRootPart}
 
 ${
     configs.runFromNonRootUser
         ? `ADD --chown=nginx:nginx ${appPathToAdd} ${appTargetPath}`
         : `ADD ${appPathToAdd} ${appTargetPath}`
-}
-${
-    configs.deleteNpm
-        ? 'RUN rm -rf /usr/local/bin/npm /usr/local/bin/npx /usr/local/lib/node_modules/npm'
-        : ''
 }
 ${configs.clientOnly ? 'COPY env-config.jso[n] /src/' : ''}
 ${configs.clientOnly ? 'CMD ["nginx"]' : ''}

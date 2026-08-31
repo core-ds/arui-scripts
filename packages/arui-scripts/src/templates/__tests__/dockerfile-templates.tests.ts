@@ -1,12 +1,12 @@
 describe('dockerfile.template (normal mode)', () => {
-    function getTemplate(deleteNpm: boolean) {
+    function getTemplate(deleteNpm: boolean, runFromNonRootUser = false) {
         jest.resetModules();
         jest.doMock('../../configs/app-configs', () => ({
             configs: {
                 baseDockerImage: 'test-image',
                 clientOnly: false,
                 nginx: null,
-                runFromNonRootUser: false,
+                runFromNonRootUser,
                 buildPath: '.build',
                 overridesPath: [],
                 deleteNpm,
@@ -29,6 +29,16 @@ describe('dockerfile.template (normal mode)', () => {
         const template = getTemplate(false);
 
         expect(template).not.toContain('rm -rf /usr/local/bin/npm');
+    });
+
+    it('should place the removal step before USER nginx when runFromNonRootUser is enabled', () => {
+        const template = getTemplate(true, true);
+        const rmStep = template.indexOf('rm -rf /usr/local/bin/npm');
+        const userNginx = template.indexOf('USER nginx');
+
+        expect(rmStep).toBeGreaterThan(-1);
+        expect(userNginx).toBeGreaterThan(-1);
+        expect(rmStep).toBeLessThan(userNginx);
     });
 });
 
