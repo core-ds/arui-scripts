@@ -72,7 +72,7 @@ describe('executeModuleFactory', () => {
         expect(result).toBe('result');
     });
 
-    it('should throw an error when module has no default export, factory field or is a function', () => {
+    it('should throw an error when module has no default export, factory field or is a function', async () => {
         const mockModule = {};
 
         const res = executeModuleFactory(
@@ -81,6 +81,6 @@ describe('executeModuleFactory', () => {
             'runParams',
         );
 
-        expect(res).rejects.toThrowError();
+        await expect(res).rejects.toThrow();
     });
 });
