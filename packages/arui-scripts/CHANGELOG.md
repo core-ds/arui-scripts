@@ -1,5 +1,11 @@
 # arui-scripts
 
+## 23.8.0
+
+### Minor Changes
+
+-   [#585](https://github.com/core-ds/arui-scripts/pull/585) [`f17e49d3`](https://github.com/core-ds/arui-scripts/commit/f17e49d32666cd41a978c40c97bef3d3870dfedc) Thanks [@Burzachil](https://github.com/Burzachil)! - Обновлены `@babel/core` и все `@babel/*` пресеты и плагины до 7.29.7. Закрыты известные уязвимости Babel. Все пакеты `@babel/*` теперь одной версии, из lock-файла ушли дублирующиеся копии `@babel/core`. Папка `node_modules/@babel` уменьшилась примерно с 60 МБ до 12 МБ.
+
 ## 23.7.0
 
 ### Minor Changes
