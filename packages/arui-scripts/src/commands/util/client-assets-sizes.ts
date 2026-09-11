@@ -11,7 +11,7 @@ function removeFileNameHash(fileName: string) {
 
     const id = parts[0];
     const isChunk = fileName.includes('.chunk.');
-    const extension = parts.find((p) => ['js', 'css'].includes(p));
+    const extension = parts.find((part) => ['js', 'css'].includes(part));
 
     return `${id}${isChunk ? '.chunk' : ''}.${extension}`;
 }
