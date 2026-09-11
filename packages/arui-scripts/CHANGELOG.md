@@ -1,5 +1,13 @@
 # arui-scripts
 
+## 23.8.1
+
+### Patch Changes
+
+-   [#592](https://github.com/core-ds/arui-scripts/pull/592) [`4a921582`](https://github.com/core-ds/arui-scripts/commit/4a921582c18940dd9a952cfdb0f78e2dabe6564f) Thanks [@VladislavNsk](https://github.com/VladislavNsk)! - Обновлены react-refresh до 0.19.0 и react-refresh-typescript до 2.0.12. Исправлено обновление компонентов после гидрации React 18 через Fast Refresh
+
+    Исправлена передача параметра skipEnvCheck в режиме codeLoader: tsc, чтобы dev-сборка работала с NODE_ENV=localhost и другими именами окружений.
+
 ## 23.8.0
 
 ### Minor Changes
