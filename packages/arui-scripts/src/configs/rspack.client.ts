@@ -545,7 +545,7 @@ function getTsLoaderIfEnabled(mode: 'dev' | 'prod'): RuleSetRule | false {
                     cacheCompression: false,
                     plugins:
                         mode === 'dev'
-                            ? [require.resolve('react-refresh/babel'), { skipEnvCheck: true }]
+                            ? [[require.resolve('react-refresh/babel'), { skipEnvCheck: true }]]
                             : undefined,
                 },
             },

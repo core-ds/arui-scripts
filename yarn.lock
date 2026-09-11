@@ -7281,8 +7281,8 @@ __metadata:
     postcss-remove-root: "npm:^0.0.2"
     postcss-strip-units: "npm:^2.0.0"
     postcss-url: "npm:^10.0.0"
-    react-refresh: "npm:0.10.0"
-    react-refresh-typescript: "npm:2.0.2"
+    react-refresh: "npm:0.19.0"
+    react-refresh-typescript: "npm:2.0.12"
     rimraf: "npm:^2.7.1"
     rspack-manifest-plugin: "npm:5.2.1"
     run-script-webpack-plugin: "npm:0.0.11"
@@ -17825,20 +17825,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-refresh-typescript@npm:2.0.2":
-  version: 2.0.2
-  resolution: "react-refresh-typescript@npm:2.0.2"
+"react-refresh-typescript@npm:2.0.12":
+  version: 2.0.12
+  resolution: "react-refresh-typescript@npm:2.0.12"
   peerDependencies:
-    react-refresh: 0.10.x
-    typescript: ^4
-  checksum: 10/9ce7b80bb0f8115437ef0cca26849d08d33819b31403e743fc52041e1dd620334feec134c07cca2e99345230ff323a106d0ae295dadcf7bc8e23d4fd08131052
+    react-refresh: 0.10.x || 0.11.x || 0.12.x || 0.13.x || 0.14.x || 0.15.x || 0.16.x || 0.17.x || 0.18.x || 0.19.x
+    typescript: ^4.8 || ^5.0 || ^6.0
+  checksum: 10/b94fbce78c45045a46ff5ec1e30af0d7085228da4bf6717aeb91bf2eee1dcb45d04559d7c54976538208fe0cc8dc4a1d0fed454c4da7618ae0d4311bb7ddafdf
   languageName: node
   linkType: hard
 
-"react-refresh@npm:0.10.0":
-  version: 0.10.0
-  resolution: "react-refresh@npm:0.10.0"
-  checksum: 10/0050bb02847477459d879bf3a065b106b18fdeaf80bb5a8820dc40fc8a22264edf118bbb4112242c8d5708cee2dac42d63dad296726bafb5bce9e06598d3fe6e
+"react-refresh@npm:0.19.0":
+  version: 0.19.0
+  resolution: "react-refresh@npm:0.19.0"
+  checksum: 10/ec21ca69561017d555a9a1d194f1372e83b82ed0fb33180f2a082501b64c016a43453b1dde2c04bcacdef5c61133339395b79f072a490d90af48fb86b0cc2913
   languageName: node
   linkType: hard
 
