@@ -25,3 +25,5 @@ export {
     MODULE_SSR_ROOT_ATTRIBUTE,
     MODULE_SSR_MOUNT_ID_ATTRIBUTE,
 } from './utils/get-embedded-module-resources';
+
+export { LOCAL_OVERRIDE_STORAGE_KEY } from './utils/local-override';

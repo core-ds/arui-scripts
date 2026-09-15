@@ -78,8 +78,29 @@ import { createModuleFetcher } from '@alfalab/scripts-modules';
 const getModuleResources = createModuleFetcher({
     baseUrl: '', // Базовый адрес приложения, которое предоставляет модули. Может быть как относительным, так и абсолютным.
     assetsUrl: '/assets/webpack-assets.json', // опциональный параметр для переопределения пути до файла с манифестом
+    allowLocalOverride: false, // опциональный флаг, включающий локальный оверрайд адреса модуля через localStorage (см. ниже)
 });
 ```
+
+#### Локальный оверрайд модулей
+
+При `allowLocalOverride: true` фетчер читает из `localStorage` переопределения базового
+адреса приложения-источника для конкретных модулей. Это удобно для отладки: можно указать
+адрес локального dev-сервера модуля в уже задеплоенном приложении и перезагрузить страницу.
+
+Ключ: `arui-scripts-module-overrides` (константа `LOCAL_OVERRIDE_STORAGE_KEY`).
+Значение — JSON-объект, где ключ — `moduleId`, значение — базовый адрес:
+
+```js
+localStorage.setItem(
+    'arui-scripts-module-overrides',
+    JSON.stringify({ 'module-A': 'http://localhost:8080' }),
+);
+```
+
+С переопределённого адреса загружаются и манифест, и ресурсы модуля. Некорректные
+значения игнорируются. Включайте флаг только на тестовых стендах: в production это
+позволяет подменить код модуля произвольным адресом.
 
 ### `createServerStateModuleFetcher`
 Функция, которая создает функцию `getModuleResources` для загрузки серверных модулей.
