@@ -1,5 +1,15 @@
 # @alfalab/scripts-modules
 
+## 1.12.0
+
+### Minor Changes
+
+-   [#594](https://github.com/core-ds/arui-scripts/pull/594) [`504e279b`](https://github.com/core-ds/arui-scripts/commit/504e279b7578234e0aa6eaeba0d557ee882f2d5b) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - **Что изменилось**
+    В `createModuleFetcher` добавлена опция `allowLocalOverride`, которая включает чтение из `localStorage` переопределений базового адреса приложения-источника модуля (ключ `arui-scripts-module-overrides`, формат `{ moduleId: url }`). При включённой опции манифест и ресурсы модуля загружаются с переопределённого адреса; константа ключа доступна как `LOCAL_OVERRIDE_STORAGE_KEY`.
+
+    **Что делать потребителю**
+    Обязательных действий не требуется: опция по умолчанию выключена. Для отладки модуля на тестовом стенде можно включить `allowLocalOverride: true` и указать адрес локального dev-сервера в `localStorage`.
+
 ## 1.11.0
 
 ### Minor Changes
