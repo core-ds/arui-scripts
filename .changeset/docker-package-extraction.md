@@ -1,5 +1,5 @@
 ---
-'@alfalab/arui-scripts-artifacts': minor
+'@alfalab/arui-scripts-artifacts': major
 'arui-scripts': patch
 ---
 
