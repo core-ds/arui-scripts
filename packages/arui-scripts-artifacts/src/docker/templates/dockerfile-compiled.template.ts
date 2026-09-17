@@ -1,4 +1,5 @@
 import { type ResolvedArtifactsConfig } from '../../config/types';
+import { DELETE_NPM_COMMAND } from '../constants';
 
 /**
  * Dockerfile для compiled-образа: зависимости и сборка приложения происходят внутри образа, что
@@ -6,7 +7,7 @@ import { type ResolvedArtifactsConfig } from '../../config/types';
  */
 export function renderDockerfileCompiled(config: ResolvedArtifactsConfig): string {
     const { docker, nginx, packageManager } = config;
-    const { yarnVersion, installProductionCommand } = packageManager;
+    const { yarnVersion, installProductionCommand, yarnBinSymlinkCommand } = packageManager;
 
     // В зависимости от используемого менеджера зависимостей для их установки нужно копировать разный
     // набор файлов
@@ -36,10 +37,13 @@ ${filesRequiredToInstallDependencies
     .map((file) => `ADD --chown=nginx:nginx ${file} /src/${file}`)
     .join('\n')}
 
-RUN ${installProductionCommand}  && \\
+RUN ${yarnBinSymlinkCommand}${installProductionCommand}  && \\
     ${yarnVersion === 'unavailable' ? 'npm cache clean --force' : 'yarn cache clean --all'}
 
 ADD --chown=nginx:nginx . /src
+
+# При необходимости удаляем npm и связанные библиотеки из образа
+${docker.deleteNpm ? DELETE_NPM_COMMAND : ''}
 
 # Создаем директории для nginx и выставляем правильные права
 RUN mkdir -p /var/lib/nginx && \

@@ -1,5 +1,72 @@
 # @alfalab/scripts-modules
 
+## 1.12.0
+
+### Minor Changes
+
+-   [#594](https://github.com/core-ds/arui-scripts/pull/594) [`504e279b`](https://github.com/core-ds/arui-scripts/commit/504e279b7578234e0aa6eaeba0d557ee882f2d5b) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - **Что изменилось**
+    В `createModuleFetcher` добавлена опция `allowLocalOverride`, которая включает чтение из `localStorage` переопределений базового адреса приложения-источника модуля (ключ `arui-scripts-module-overrides`, формат `{ moduleId: url }`). При включённой опции манифест и ресурсы модуля загружаются с переопределённого адреса; константа ключа доступна как `LOCAL_OVERRIDE_STORAGE_KEY`.
+
+    **Что делать потребителю**
+    Обязательных действий не требуется: опция по умолчанию выключена. Для отладки модуля на тестовом стенде можно включить `allowLocalOverride: true` и указать адрес локального dev-сервера в `localStorage`.
+
+## 1.11.0
+
+### Minor Changes
+
+-   [#532](https://github.com/core-ds/arui-scripts/pull/532) [`b82a10c`](https://github.com/core-ds/arui-scripts/commit/b82a10c4e90e625ff538f47528de0869f798d6d4) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Добавлены API для монтирования модулей в React Suspense и SSR:
+
+    -   `createLazyMounter` для клиентского монтирования модулей через `React.Suspense`;
+    -   `createSsrMounter` из подпути `@alfalab/scripts-modules/ssr` для серверного рендеринга
+        mountable-модулей, передачи ресурсов через встроенный payload и последующей клиентской
+        гидрации без повторного запроса ресурсов;
+    -   опциональные методы модулей `hydrate` и `update`, а также настройка доставки SSR-стилей:
+        inline по умолчанию или `<link>` через `stylesMode: 'link'`.
+
+    Стили module-federation модулей, отрисованные на сервере, переиспользуются на клиенте без
+    повторной загрузки и мигания интерфейса.
+
+    `AruiAppManifest.css` и `createModuleFetcher` теперь принимают `string | string[]`.
+
+    `createServerStateModuleFetcher` теперь использует стандартный `fetch` вместо
+    `XMLHttpRequest`, поэтому рантаймам без глобального `fetch` потребуется полифил.
+
+    Подробнее: [документация `@alfalab/scripts-modules`](../packages/arui-scripts-modules/README.md#createssrmounter)
+    и [SSR-спецификация](../docs/specs/ssr-spec.md).
+
+-   [#532](https://github.com/core-ds/arui-scripts/pull/532) [`4fa8be2`](https://github.com/core-ds/arui-scripts/commit/4fa8be235a824df207b4209201d9ff792f925860) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Серверный кэш ресурсов в `createSsrMounter` стал per-request: теперь он передаётся через
+    React-контекст провайдером `ModuleSsrRequestProvider` (`@alfalab/scripts-modules/ssr`), который
+    хост должен обернуть вокруг дерева на сервере с уникальным `requestId` на каждый HTTP-запрос.
+    Это исключает случайное переиспользование `moduleState` между одновременными запросами и утечку
+    записей кэша от прерванных рендеров. На клиенте провайдер не требуется.
+
+## 1.10.3
+
+### Patch Changes
+
+-   [#561](https://github.com/core-ds/arui-scripts/pull/561) [`8ab5238`](https://github.com/core-ds/arui-scripts/commit/8ab5238e9fa1aee92b3db787c3dd95badf5a36ed) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Убрана зависимость от `uuid`. Пакет публикуется в том числе как CommonJS, а `uuid` начиная с 13 версии
+    поставляется только в формате ESM — из-за этого падали тесты в приложениях-потребителях, использующих jest.
+    `useId` теперь генерирует запасной id (для React < 18) через счётчик; значение используется только как
+    DOM-атрибут `data-module-mount-id`, поэтому формат `arui-module-N` вместо uuid ни на что не влияет.
+
+## 1.10.2
+
+### Patch Changes
+
+-   [#554](https://github.com/core-ds/arui-scripts/pull/554) [`4aab565`](https://github.com/core-ds/arui-scripts/commit/4aab565af93e0e633229287e082fee1d167db812) Thanks [@dmitrbrvsk](https://github.com/dmitrbrvsk)! - Информативные сообщения об ошибках загрузки модулей: в текст ошибки попадают адрес запроса и код статуса. Невалидный JSON в ответе больше не подвешивает промис навсегда, а отклоняет его с понятной ошибкой. Ошибка загрузки script и link тегов теперь тоже `Error` с адресом ресурса
+
+## 1.10.1
+
+### Patch Changes
+
+-   [#534](https://github.com/core-ds/arui-scripts/pull/534) [`37f3c82`](https://github.com/core-ds/arui-scripts/commit/37f3c82c4bdfe7e758f4734b3b05b0e722ede58b) Thanks [@TheDiamondDoge](https://github.com/TheDiamondDoge)! - Добавлен экспорт типа LoadingState
+
+## 1.10.0
+
+### Minor Changes
+
+-   [#529](https://github.com/core-ds/arui-scripts/pull/529) [`b571769`](https://github.com/core-ds/arui-scripts/commit/b571769407c6fcebdd9a7d0ce505947ad6f5ffcb) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Добавлена поддержка абсолютных адресов ресурсов модулей. Если адрес ресурса содержит абсолютный URL он больше не будет префиксироваться адресом из baseUrl
+
 ## 1.9.2
 
 ### Patch Changes

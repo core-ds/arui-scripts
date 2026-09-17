@@ -1,4 +1,4 @@
-import { type Compiler } from 'webpack';
+import { type Compiler } from '@rspack/core';
 
 export class WatchMissingNodeModulesPlugin {
     nodeModulesPath: string;

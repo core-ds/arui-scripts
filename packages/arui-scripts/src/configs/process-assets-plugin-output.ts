@@ -4,6 +4,7 @@ import { type Assets } from 'assets-webpack-plugin';
 
 import { configs } from './app-configs';
 import { MODULES_ENTRY_NAME } from './modules';
+import { modulesCssManifest } from './modules-css-manifest';
 
 export function processAssetsPluginOutput(assets: Assets) {
     const adjustedAssets = assets;
@@ -23,10 +24,20 @@ export function processAssetsPluginOutput(assets: Assets) {
                 `Модуль ${moduleName} определен как module и как compat. Поменяйте название одного из модулей или удалите его`,
             );
         }
+        // css собирает AttributeModuleCssPlugin (обход графа чанков).
+        // Пути в манифесте держим с publicPath, как и remoteEntry.js.
+        const moduleCss = modulesCssManifest.get(moduleName);
+
+        // css здесь массив (per-expose может быть несколько css-чанков), что шире
+        // строкового индекса типа Assets, но манифест сериализуется в json, а читатели
+        // (AruiAppManifest, createGetModulesMethod) уже принимают string | string[].
         adjustedAssets[moduleName] = {
             mode: 'default',
             js: path.join(configs.publicPath, MODULES_ENTRY_NAME),
-        };
+            ...(moduleCss && moduleCss.length > 0
+                ? { css: moduleCss.map((file) => path.join(configs.publicPath, file)) }
+                : {}),
+        } as unknown as Assets[string];
     });
 
     const result = {

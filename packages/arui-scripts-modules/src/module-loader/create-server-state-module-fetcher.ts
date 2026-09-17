@@ -17,27 +17,35 @@ export function createServerStateModuleFetcher<GetResourcesParams = undefined>({
     baseUrl,
     headers = {},
 }: CreateServerResourcesFetcherParams): ModuleResourcesGetter<GetResourcesParams, BaseModuleState> {
-    return async function fetchServerResources(params) {
+    return async function fetchServerResources(params, options) {
         const { relativePath, method } = getServerStateModuleFetcherParams();
         const url = `${urlSegmentWithoutEndSlash(baseUrl)}${relativePath}`;
 
-        return new Promise((resolve, reject) => {
-            const xhr = new XMLHttpRequest();
-
-            xhr.open(method, url, true);
-            xhr.setRequestHeader('Content-Type', 'application/json');
-            Object.keys(headers).forEach((headerName) => {
-                xhr.setRequestHeader(headerName, headers[headerName]);
-            });
-            xhr.onload = () => {
-                if (xhr.status === 200) {
-                    resolve(JSON.parse(xhr.responseText));
-                } else {
-                    reject(new Error(xhr.statusText));
-                }
-            };
-            xhr.onerror = () => reject(new Error(xhr.statusText));
-            xhr.send(JSON.stringify(params));
+        const response = await fetch(url, {
+            method,
+            headers: {
+                'Content-Type': 'application/json',
+                ...headers,
+            },
+            body: JSON.stringify(params),
+            signal: options?.signal,
         });
+
+        if (!response.ok) {
+            // В теле может быть полезная для клиента информация об ошибке, поэтому кладём его
+            // в сообщение целиком. Статус (без statusText) включаем всегда: под HTTP/2
+            // statusText приходит пустым.
+            const responseText = await response.text().catch(() => '');
+
+            throw new Error(
+                `Module resources request for ${params.moduleId} failed: ${url} responded with ${
+                    response.statusText
+                        ? `${response.status} ${response.statusText}`
+                        : response.status
+                }${responseText ? `\n${responseText}` : ''}`,
+            );
+        }
+
+        return response.json();
     };
 }

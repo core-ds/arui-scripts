@@ -1,5 +1,24 @@
 # @alfalab/scripts-server
 
+## 1.4.0
+
+### Minor Changes
+
+-   [#532](https://github.com/core-ds/arui-scripts/pull/532) [`b82a10c`](https://github.com/core-ds/arui-scripts/commit/b82a10c4e90e625ff538f47528de0869f798d6d4) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Добавлена поддержка серверного рендера модулей в `createGetModulesMethod`:
+
+    -   `ModuleDescriptor` теперь может принимать метод `renderToHtml`, который возвращает HTML
+        модуля для SSR-запросов;
+    -   в ответ ресурсов модуля может попадать поле `html`, которое используется
+        `createSsrMounter` из `@alfalab/scripts-modules/ssr`;
+    -   для SSR-запросов в ответ добавляются `styles` module-federation модулей, что позволяет
+        хост-серверу встроить стили при серверном рендере и избежать мигания интерфейса; для
+        обычных (не-SSR) запросов ответ остаётся прежним;
+    -   экспортированы типы `RenderModuleToHtmlParams`, `SsrErrorMode` и
+        `CreateGetModulesMethodOptions`, включая настройку обработки ошибок SSR через
+        `ssrErrorMode`.
+
+    Подробнее: [SSR-спецификация модулей](../docs/specs/ssr-spec.md).
+
 ## 1.3.1
 
 ### Patch Changes

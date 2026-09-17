@@ -17,6 +17,7 @@ import {
     detectUseYarn,
     getInstallProductionCommand,
     getPruningCommand,
+    getYarnBinSymlinkCommand,
     getYarnVersion,
 } from '../utils/yarn';
 
@@ -105,6 +106,7 @@ function resolveDocker(options: ArtifactsOptions, debug: boolean): ResolvedDocke
         platform: withDefault(docker.platform, 'auto'),
         buildArgs: withDefault(docker.buildArgs, {}),
         addNodeModulesToDockerIgnore: withDefault(docker.addNodeModulesToDockerIgnore, false),
+        deleteNpm: withDefault(docker.deleteNpm, false),
     };
 }
 
@@ -163,6 +165,8 @@ function resolvePackageManager(
         installProductionCommand:
             packageManager.installProductionCommand ?? getInstallProductionCommand(yarnVersion),
         pruneCommand: packageManager.pruneCommand ?? getPruningCommand({ yarnVersion, clientOnly }),
+        yarnBinSymlinkCommand:
+            packageManager.yarnBinSymlinkCommand ?? getYarnBinSymlinkCommand({ yarnVersion, cwd }),
     };
 }
 

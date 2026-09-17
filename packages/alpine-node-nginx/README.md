@@ -14,9 +14,9 @@ alpine-node-nginx
 
 ### Список доступных версий образа:
 
-- 20.20.0, 20.20.0-slim
 - 22.22.0, 22.22.0-slim
 - 24.14.1, 24.14.1-slim
+- 26.7.0, 26.7.0-slim
 - nginx-1.27.1-slim
 
 Наиболее актуальный список тегов можно найти на [dockerhub](https://hub.docker.com/r/alfabankui/arui-scripts/tags).

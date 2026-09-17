@@ -44,6 +44,11 @@ export type DockerOptions = {
     buildArgs?: Record<string, string>;
     /** Добавлять ли `node_modules` в `.dockerignore` (нужно для compiled-образа). */
     addNodeModulesToDockerIgnore?: boolean;
+    /**
+     * Удалять ли npm и связанные библиотеки из итогового образа. Нужно тем, кому npm в образе
+     * фонит в сканерах уязвимостей.
+     */
+    deleteNpm?: boolean;
 };
 
 /** Настройки базового nginx-конфига (http-блок, `/etc/nginx/nginx.conf`). */
@@ -109,6 +114,11 @@ export type PackageManagerOptions = {
     installProductionCommand?: string;
     /** Команда очистки dev-зависимостей на хосте перед упаковкой артефакта. */
     pruneCommand?: string;
+    /**
+     * Команда создания symlink на бинарник yarn внутри образа (для `compiled`). По умолчанию
+     * подставляется для yarn 2+ с `yarnPath` в `.yarnrc.yml`, иначе — пустая строка.
+     */
+    yarnBinSymlinkCommand?: string;
 };
 
 /**

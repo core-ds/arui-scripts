@@ -66,7 +66,8 @@ export function scriptsFetcher(params: ResourceFetcherParams): Promise<HTMLEleme
 
             return script;
         },
-        createFetcher: (_, element, abortSignal) => createElementFetcher(element, abortSignal),
+        createFetcher: (src, element, abortSignal) =>
+            createElementFetcher(src, element, abortSignal),
     });
 }
 
@@ -95,7 +96,7 @@ export async function stylesFetcher(params: ResourceFetcherParams): Promise<HTML
                 return createContentFetcher(src, element, abortSignal);
             }
 
-            return createElementFetcher(element, abortSignal);
+            return createElementFetcher(src, element, abortSignal);
         },
     });
 }
@@ -155,7 +156,7 @@ async function appendTag(
     return element;
 }
 
-function createElementFetcher(element: HTMLElement, abortSignal?: AbortSignal) {
+function createElementFetcher(src: string, element: HTMLElement, abortSignal?: AbortSignal) {
     return () =>
         new Promise<HTMLElement>((resolve, reject) => {
             element.addEventListener('load', () => {
@@ -167,10 +168,15 @@ function createElementFetcher(element: HTMLElement, abortSignal?: AbortSignal) {
                     resolve(element);
                 }
             });
-            element.addEventListener('error', (error) => {
+            element.addEventListener('error', () => {
                 // Если во время загрузки ресурса произошла ошибка, то удаляем ресурс из DOM
                 element.remove();
-                reject(error);
+                // браузер не сообщает причину ошибки в событии, поэтому кладем в сообщение хотя бы адрес ресурса
+                reject(
+                    new Error(
+                        `Failed to load ${element.tagName.toLowerCase()} resource ${src}. Check that the file exists and is available`,
+                    ),
+                );
             });
         });
 }

@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 
+import { webpackServerConfig } from '../../configs/rspack.server.prod';
 import { supportingNode } from '../../configs/supporting-node';
-import { webpackServerConfig } from '../../configs/webpack.server.prod';
 import { printBuildError } from '../util/print-build-error';
 
 import build from './build-wrapper';

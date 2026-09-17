@@ -10,6 +10,10 @@ const { swcJestConfig } = require('../swc');
 
 const { configs } = require('../app-configs');
 
+// Значения по умолчанию из самого jest, см. https://jestjs.io/docs/configuration#transformignorepatterns-arraystring
+const PNP_TRANSFORM_IGNORE_PATTERN = '\\.pnp\\.[^\\\\/]+$';
+const DEFAULT_TRANSFORM_IGNORE_PATTERNS = ['/node_modules/', PNP_TRANSFORM_IGNORE_PATTERN];
+
 module.exports = {
     testRegex: 'src/.*(((/__test__/|/__tests__/).*)|(test|spec|tests)).(jsx?|tsx?)$',
     moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
@@ -23,6 +27,7 @@ module.exports = {
         '^.+\\.tsx?$': getTsTransformer(),
         '^(?!.*\\.(js|jsx|ts|tsx|css|json)$)': require.resolve('./file-transform'),
     },
+    transformIgnorePatterns: getTransformIgnorePatterns(),
     moduleNameMapper: {
         // replace all css files with simple empty exports
         '\\.css$': require.resolve('./css-mock'),
@@ -65,4 +70,22 @@ function getJsTransformer() {
     }
 
     return require.resolve('./babel-transform');
+}
+
+function getTransformIgnorePatterns() {
+    const packages = configs.jestTransformNodeModules;
+
+    if (!packages || packages.length === 0) {
+        return DEFAULT_TRANSFORM_IGNORE_PATTERNS;
+    }
+
+    const list = packages.map((name) => name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+
+    // Игнорируем всё в node_modules, кроме путей, содержащих /node_modules/<пакет>/.
+    // Вхождение ищется в любом месте пути, чтобы работали вложенные установки
+    // вида node_modules/foo/node_modules/uuid.
+    return [
+        `^(?!.*[\\\\/]node_modules[\\\\/](?:${list})[\\\\/]).*[\\\\/]node_modules[\\\\/]`,
+        PNP_TRANSFORM_IGNORE_PATTERN,
+    ];
 }

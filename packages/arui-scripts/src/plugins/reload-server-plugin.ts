@@ -1,7 +1,7 @@
 import cluster, { type Worker } from 'cluster';
 import path from 'path';
 
-import { type Compiler } from 'webpack';
+import { type Compiler } from '@rspack/core';
 
 const defaultOptions = {
     script: 'server.js',

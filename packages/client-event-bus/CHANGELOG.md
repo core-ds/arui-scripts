@@ -1,5 +1,11 @@
 # @alfalab/client-event-bus
 
+## 2.1.0
+
+### Minor Changes
+
+-   [#544](https://github.com/core-ds/arui-scripts/pull/544) [`87d6a9d`](https://github.com/core-ds/arui-scripts/commit/87d6a9d45bb935b5d947af63ba05fd6f6762e03b) Thanks [@dmitrbrvsk](https://github.com/dmitrbrvsk)! - Исправлен баг с синхронизацией последнего значения событий и react хука, добавлены безопасные browser guards и стабильные package exports для переиспользования runtime.
+
 ## 2.0.3
 
 ### Patch Changes

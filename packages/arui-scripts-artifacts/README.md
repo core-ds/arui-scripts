@@ -48,11 +48,11 @@ export default defineConfig({
 | Секция           | За что отвечает                                                                  |
 | ---------------- | -------------------------------------------------------------------------------- |
 | _верхний уровень_ | `artifact`, `name`, `version`, `cwd`, `debug`, `clientOnly`, `buildPath`, `serverOutput`, `serverPort`, `assetsPath`, `publicPath` |
-| `docker`         | `variant`, `registry`, `baseImage`, `runFromNonRootUser`, `context`, `tempDirName`, `push`, `platform`, `buildArgs`, `addNodeModulesToDockerIgnore` |
+| `docker`         | `variant`, `registry`, `baseImage`, `runFromNonRootUser`, `context`, `tempDirName`, `push`, `platform`, `buildArgs`, `addNodeModulesToDockerIgnore`, `deleteNpm` |
 | `nginx`          | `port`, `rootPath`, `enablePreviousVersionHeaders`, `baseConf` (http-блок)        |
 | `archive`        | `name`, `tempDirName`, `additionalPaths`                                          |
 | `build`          | хост-пайплайн: `cleanBuildPath`, `command`, `removeDevDependencies`               |
-| `packageManager` | `useYarn`, `yarnVersion`, `installProductionCommand`, `pruneCommand`              |
+| `packageManager` | `useYarn`, `yarnVersion`, `installProductionCommand`, `pruneCommand`, `yarnBinSymlinkCommand` |
 | `localFiles`     | пути до `dockerfile`/`startScript`/`nginxConf`/`nginxBaseConf` и флаги `allowDockerfile`/`allowStartScript` |
 | `templates`, `overrides` | кастомизация шаблонов (см. ниже)                                          |
 
@@ -268,6 +268,7 @@ const options = resolveCommandOptions('docker-build:server', configFile);
 | `configs.dockerRegistry`                                     | `docker.registry`                      |
 | `configs.baseDockerImage`                                    | `docker.baseImage`                     |
 | `configs.runFromNonRootUser`                                 | `docker.runFromNonRootUser`            |
+| `configs.deleteNpm`                                          | `docker.deleteNpm`                     |
 | `configs.clientServerPort`                                   | `nginx.port`                           |
 | `configs.nginxRootPath`                                      | `nginx.rootPath`                       |
 | `configs.nginx` (настройки базового конфига)                 | `nginx.baseConf`                       |

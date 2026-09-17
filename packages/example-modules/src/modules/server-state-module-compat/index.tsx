@@ -1,5 +1,5 @@
 import React from 'react';
-import { createRoot } from 'react-dom/client';
+import { createRoot, hydrateRoot } from 'react-dom/client';
 
 import {
     type ModuleMountFunction,
@@ -11,6 +11,10 @@ import { ServerStateModuleCompat } from '#/modules/server-state-module-compat/se
 
 let root: ReturnType<typeof createRoot>;
 
+const renderModule = (runParams: Record<string, unknown>, serverState: Record<string, unknown>) => {
+    root.render(<ServerStateModuleCompat serverState={serverState} runParams={runParams} />);
+};
+
 const mountModule: ModuleMountFunction<Record<string, unknown>> = (
     targetNode,
     runParams,
@@ -19,7 +23,30 @@ const mountModule: ModuleMountFunction<Record<string, unknown>> = (
     console.log('ServerStateModuleCompat: mount', { runParams, serverState });
 
     root = createRoot(targetNode);
-    root.render(<ServerStateModuleCompat serverState={serverState} runParams={runParams} />);
+    renderModule(runParams, serverState);
+};
+
+const hydrateModule: ModuleMountFunction<Record<string, unknown>> = (
+    targetNode,
+    runParams,
+    serverState,
+) => {
+    console.log('ServerStateModuleCompat: hydrate', { runParams, serverState });
+
+    root = hydrateRoot(
+        targetNode,
+        <ServerStateModuleCompat serverState={serverState} runParams={runParams} />,
+    );
+};
+
+const updateModule: ModuleMountFunction<Record<string, unknown>> = (
+    targetNode,
+    runParams,
+    serverState,
+) => {
+    console.log('ServerStateModuleCompat: update', { runParams, serverState }, targetNode);
+
+    renderModule(runParams, serverState);
 };
 
 const unmountModule: ModuleUnmountFunction = () => {
@@ -30,5 +57,7 @@ const unmountModule: ModuleUnmountFunction = () => {
 
 (window as WindowWithModule).ServerStateModuleCompat = {
     mount: mountModule,
+    hydrate: hydrateModule,
+    update: updateModule,
     unmount: unmountModule,
 };

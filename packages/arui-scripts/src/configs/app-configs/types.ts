@@ -50,6 +50,8 @@ export type AppConfigs = {
     runFromNonRootUser?: boolean;
     /** @deprecated Используйте `build.removeDevDependencies` в конфиге @alfalab/arui-scripts-artifacts. */
     removeDevDependenciesDuringDockerBuild?: boolean;
+    /** @deprecated Используйте `docker.deleteNpm` в конфиге @alfalab/arui-scripts-artifacts. */
+    deleteNpm?: boolean;
     /** @deprecated Используйте `archive.name` в конфиге @alfalab/arui-scripts-artifacts. */
     archiveName?: string;
     /**
@@ -68,8 +70,11 @@ export type AppConfigs = {
     codeLoader: 'babel' | 'tsc' | 'swc';
     experimentalReactCompiler: 'disabled' | ReactCompilerOptions;
     installServerSourceMaps: boolean;
-    disableDevWebpackTypecheck: boolean;
+    disableDevRspackTypecheck: boolean;
+    /** @deprecated используйте `disableDevRspackTypecheck` */
+    disableDevWebpackTypecheck?: boolean;
     jestCodeTransformer: 'babel' | 'tsc' | 'swc';
+    jestTransformNodeModules: string[];
     collectCoverage: boolean;
 
     // image processing

@@ -1,6 +1,8 @@
 import {
     getInstallProductionCommand as dockerGetInstallProductionCommand,
     getPruningCommand as dockerGetPruningCommand,
+    getYarnBinSymlinkCommand as dockerGetYarnBinSymlinkCommand,
+    getYarnPathFromRc as dockerGetYarnPathFromRc,
     getYarnVersion as dockerGetYarnVersion,
     type YarnVersion,
 } from '@alfalab/arui-scripts-artifacts';
@@ -26,4 +28,22 @@ export function getPruningCommand(): string {
 
 export function getInstallProductionCommand(): string {
     return dockerGetInstallProductionCommand(getYarnVersion());
+}
+
+/**
+ * Читает значение yarnPath из .yarnrc.yml.
+ * Возвращает путь к бинарнику yarn (например .yarn/releases/yarn-4.18.0.cjs) или null.
+ */
+export function getYarnPathFromRc(): string | null {
+    return dockerGetYarnPathFromRc(configs.cwd);
+}
+
+/**
+ * Возвращает команду для создания symlink на yarn бинарник в Docker-образе.
+ * Используется при yarn 2+ с yarnPath в .yarnrc.yml, чтобы yarn был доступен
+ * в PATH внутри Docker-образов (где yarn не установлен глобально).
+ * Возвращает пустую строку, если symlink не нужен.
+ */
+export function getYarnBinSymlinkCommand(): string {
+    return dockerGetYarnBinSymlinkCommand({ yarnVersion: getYarnVersion(), cwd: configs.cwd });
 }

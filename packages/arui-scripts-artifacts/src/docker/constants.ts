@@ -22,3 +22,7 @@ export const PLATFORM_FLAG_MIN_DOCKER_VERSION = '>=20.10.21';
 
 /** Значение флага `--platform`, которое подставляется при `platform: 'auto'` на новых версиях docker. */
 export const DEFAULT_PLATFORM = 'linux/x86_64';
+
+/** Команда удаления npm и связанных библиотек из образа (`docker.deleteNpm`). */
+export const DELETE_NPM_COMMAND =
+    'RUN rm -rf /usr/local/bin/npm /usr/local/bin/npx /usr/local/lib/node_modules/npm';

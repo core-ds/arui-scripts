@@ -11,6 +11,7 @@ const DEPRECATED_SETTINGS = {
     dockerRegistry: 'docker.registry',
     baseDockerImage: 'docker.baseImage',
     runFromNonRootUser: 'docker.runFromNonRootUser',
+    deleteNpm: 'docker.deleteNpm',
     nginxRootPath: 'nginx.rootPath',
     nginx: 'nginx.baseConf',
     archiveName: 'archive.name',

@@ -55,5 +55,7 @@ export {
     detectUseYarn,
     getInstallProductionCommand,
     getPruningCommand,
+    getYarnBinSymlinkCommand,
+    getYarnPathFromRc,
     getYarnVersion,
 } from './utils/yarn';

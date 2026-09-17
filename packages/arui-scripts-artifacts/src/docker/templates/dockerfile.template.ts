@@ -1,11 +1,12 @@
 import { type ResolvedArtifactsConfig } from '../../config/types';
+import { DELETE_NPM_COMMAND } from '../constants';
 
 /**
  * Dockerfile для «сырого» образа: приложение собирается на хосте, в образ кладется результат сборки.
  */
 export function renderDockerfile(config: ResolvedArtifactsConfig): string {
     const { clientOnly, buildPath, docker, nginx } = config;
-    const { runFromNonRootUser, baseImage } = docker;
+    const { runFromNonRootUser, baseImage, deleteNpm } = docker;
 
     const appPathToAdd = clientOnly ? buildPath : '.';
     const appTargetPath = clientOnly ? `/src/${buildPath}` : '/src';
@@ -36,6 +37,8 @@ WORKDIR /src
 ADD $START_SH_LOCATION /src/start.sh
 ADD $NGINX_CONF_LOCATION ${nginxConfTargetLocation}
 ${nginx.baseConf ? 'ADD $NGINX_BASE_CONF_LOCATION /etc/nginx/nginx.conf' : ''}
+
+${deleteNpm ? DELETE_NPM_COMMAND : ''}
 
 ${nginxNonRootPart}
 

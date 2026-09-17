@@ -47,6 +47,7 @@ export function getDefaultAppConfig(): AppConfigs {
         nginx: undefined,
         runFromNonRootUser: undefined,
         removeDevDependenciesDuringDockerBuild: undefined,
+        deleteNpm: undefined,
         archiveName: undefined,
         additionalBuildPath: undefined,
 
@@ -60,8 +61,9 @@ export function getDefaultAppConfig(): AppConfigs {
         codeLoader: 'swc',
         experimentalReactCompiler: 'disabled',
         installServerSourceMaps: false,
-        disableDevWebpackTypecheck: true,
+        disableDevRspackTypecheck: true,
         jestCodeTransformer: 'swc',
+        jestTransformNodeModules: [],
         collectCoverage:
             process.env.NODE_ENV === 'cypress' || process.env.USE_ISTANBUL === 'enabled',
 

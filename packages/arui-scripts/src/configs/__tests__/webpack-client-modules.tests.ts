@@ -2,7 +2,7 @@ import { type Configuration } from '@rspack/core';
 
 import { configs } from '../app-configs';
 import { MODULES_SEPARATE_BUILD_NAME } from '../modules';
-import { createClientWebpackConfig } from '../webpack.client';
+import { createClientWebpackConfig } from '../rspack.client';
 
 describe('client webpack config for modules', () => {
     const originalModules = configs.modules;

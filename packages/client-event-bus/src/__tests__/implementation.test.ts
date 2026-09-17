@@ -8,13 +8,11 @@ describe('EventBus', () => {
     let eventBus: EventBus<EventList>;
 
     beforeEach(() => {
-        eventBus = new EventBus<EventList>({ debugMode: true });
+        eventBus = new EventBus<EventList>();
     });
 
     it('should create EventBus with default parameters', () => {
-        expect(eventBus).toBeDefined();
-        expect(eventBus).toHaveProperty('targetNode');
-        expect(eventBus).toHaveProperty('debugMode', true);
+        expect(eventBus).toBeInstanceOf(EventBus);
     });
 
     it('should dispatch an event and capture it', () => {
@@ -38,6 +36,33 @@ describe('EventBus', () => {
         expect(detail).toEqual({ message: 'Test Message' });
     });
 
+    it('should expose the dispatched detail to synchronous listeners', () => {
+        const details: Array<EventList['testEvent'] | undefined> = [];
+
+        eventBus.addEventListener('testEvent', () => {
+            details.push(eventBus.getLastEventDetail('testEvent'));
+        });
+
+        eventBus.dispatchEvent('testEvent', { message: 'current message' });
+
+        expect(details).toEqual([{ message: 'current message' }]);
+    });
+
+    it('should subscribe and return the latest detail', () => {
+        const handler = jest.fn();
+
+        eventBus.dispatchEvent('testEvent', { message: 'latest message' });
+
+        expect(eventBus.addEventListenerAndGetLast('testEvent', handler)).toEqual({
+            message: 'latest message',
+        });
+
+        eventBus.dispatchEvent('testEvent', { message: 'Next message' });
+        expect(handler).toHaveBeenCalledWith(
+            expect.objectContaining({ detail: { message: 'Next message' } }),
+        );
+    });
+
     it('should add and remove event listeners', () => {
         const handler = jest.fn();
 
@@ -54,6 +79,14 @@ describe('EventBus', () => {
 });
 
 describe('createBus', () => {
+    beforeEach(() => {
+        Object.defineProperty(window, '__alfa_event_buses', {
+            configurable: true,
+            value: {},
+            writable: true,
+        });
+    });
+
     it('should create and return the same EventBus instance for the same key', () => {
         const eventBus1 = createBus('eventBus');
         const eventBus2 = createBus('eventBus');

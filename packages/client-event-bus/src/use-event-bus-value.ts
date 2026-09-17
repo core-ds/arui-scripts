@@ -15,11 +15,12 @@ export function useEventBusValue<
         const eventHandler = (event: CustomEvent<EventTypes[Event]>) => setLastValue(event.detail);
 
         eventBus?.addEventListener?.(eventName, eventHandler);
+        setLastValue(eventBus?.getLastEventDetail?.(eventName));
 
         return () => {
             eventBus?.removeEventListener?.(eventName, eventHandler);
         };
-    }, [eventBus, eventName, setLastValue]);
+    }, [eventBus, eventName]);
 
     return lastValue;
 }

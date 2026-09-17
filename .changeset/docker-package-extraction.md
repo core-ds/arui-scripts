@@ -29,7 +29,7 @@ dev-зависимостей) у них общий.
 
 Настройки сборки артефактов в конфиге arui-scripts (`dockerRegistry`, `baseDockerImage`,
 `nginxRootPath`, `nginx`, `runFromNonRootUser`, `removeDevDependenciesDuringDockerBuild`,
-`archiveName`, `additionalBuildPath`) и оверрайды `Dockerfile`, `DockerfileCompiled`, `nginx`,
+`deleteNpm`, `archiveName`, `additionalBuildPath`) и оверрайды `Dockerfile`, `DockerfileCompiled`, `nginx`,
 `nginxConf`, `start.sh` объявлены устаревшими: они продолжают работать, но команды сборки печатают
 предупреждение со ссылкой на замену, а в следующей мажорной версии будут удалены.
 

@@ -8,7 +8,7 @@ if (!configs.clientOnly) {
     compilersCommands.push(require.resolve('./server'));
 }
 
-if (configs.tsconfig && configs.disableDevWebpackTypecheck) {
+if (configs.tsconfig && configs.disableDevRspackTypecheck) {
     compilersCommands.push(getTscWatchCommand(configs.tsconfig));
 }
 

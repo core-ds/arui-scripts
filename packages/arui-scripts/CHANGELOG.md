@@ -1,5 +1,93 @@
 # arui-scripts
 
+## 23.8.1
+
+### Patch Changes
+
+-   [#592](https://github.com/core-ds/arui-scripts/pull/592) [`4a921582`](https://github.com/core-ds/arui-scripts/commit/4a921582c18940dd9a952cfdb0f78e2dabe6564f) Thanks [@VladislavNsk](https://github.com/VladislavNsk)! - Обновлены react-refresh до 0.19.0 и react-refresh-typescript до 2.0.12. Исправлено обновление компонентов после гидрации React 18 через Fast Refresh
+
+    Исправлена передача параметра skipEnvCheck в режиме codeLoader: tsc, чтобы dev-сборка работала с NODE_ENV=localhost и другими именами окружений.
+
+## 23.8.0
+
+### Minor Changes
+
+-   [#585](https://github.com/core-ds/arui-scripts/pull/585) [`f17e49d3`](https://github.com/core-ds/arui-scripts/commit/f17e49d32666cd41a978c40c97bef3d3870dfedc) Thanks [@Burzachil](https://github.com/Burzachil)! - Обновлены `@babel/core` и все `@babel/*` пресеты и плагины до 7.29.7. Закрыты известные уязвимости Babel. Все пакеты `@babel/*` теперь одной версии, из lock-файла ушли дублирующиеся копии `@babel/core`. Папка `node_modules/@babel` уменьшилась примерно с 60 МБ до 12 МБ.
+
+## 23.7.0
+
+### Minor Changes
+
+-   [#581](https://github.com/core-ds/arui-scripts/pull/581) [`1df61ec7`](https://github.com/core-ds/arui-scripts/commit/1df61ec77ff6f75077b1d4fa27a86413cc0c3b48) Thanks [@Burzachil](https://github.com/Burzachil)! - Исправлен порядок инструкций в Dockerfile-шаблоне команды `docker-build`: шаг удаления npm
+    (`deleteNpm: true`) выполнялся после переключения на непривилегированного пользователя
+    (`runFromNonRootUser: true`) и падал с ошибкой прав доступа. Теперь npm удаляется до инструкции `USER nginx` — так же, как это уже было
+    сделано в шаблоне для `docker-build-compiled`
+
+## 23.6.0
+
+### Minor Changes
+
+-   [#532](https://github.com/core-ds/arui-scripts/pull/532) [`b82a10c`](https://github.com/core-ds/arui-scripts/commit/b82a10c4e90e625ff538f47528de0869f798d6d4) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - CSS module-federation модулей теперь попадает в манифест сборки на уровне каждого модуля.
+    Раньше стили модуля не были привязаны к его записи в манифесте, из-за чего хост-сервер не мог
+    отдать их при серверном рендере, и модуль отрисовывался без стилей до загрузки на клиенте.
+    Теперь стили доступны в записи модуля и могут быть встроены при SSR. Изменение аддитивно: для
+    сборок без модулей и для не-SSR потребления манифест остаётся прежним.
+
+    Подробнее: [SSR-спецификация модулей, раздел 10](../docs/specs/ssr-spec.md#10-addendum-css-delivery-for-module-federation-modules)..
+
+## 23.5.1
+
+### Patch Changes
+
+-   [#574](https://github.com/core-ds/arui-scripts/pull/574) [`2e48012`](https://github.com/core-ds/arui-scripts/commit/2e4801232e988fc8da639faac6e6e5fd716118e8) Thanks [@artemgafarov66](https://github.com/artemgafarov66)! - Исправлено создание ссылки на Yarn при сборке Docker-образа, если бинарник уже существует.
+
+## 23.5.0
+
+### Minor Changes
+
+-   [#571](https://github.com/core-ds/arui-scripts/pull/571) [`9c548f5`](https://github.com/core-ds/arui-scripts/commit/9c548f51c44d6198c8a98dd4b03f6a3a372324b7) Thanks [@syn7xx](https://github.com/syn7xx)! - Добавлен автоматический symlink на yarn бинарник в Dockerfile при использовании yarn 2+ с yarnPath в .yarnrc.yml. Это исправляет ошибку `yarn: not found` в Docker-образах (ни полный, ни slim-образ не содержат yarn).
+
+## 23.4.0
+
+### Minor Changes
+
+-   [#569](https://github.com/core-ds/arui-scripts/pull/569) [`ea2dfc8`](https://github.com/core-ds/arui-scripts/commit/ea2dfc84ee753f85c94900b015d26b776f3ecc30) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Добавлена настройка `deleteNpm` для команд `docker-build` и `docker-build:compiled`. При её
+    включении из docker-образа удаляются npm и связанные с ним библиотеки, что уменьшает
+    поверхность атаки и исключает неиспользуемые пакеты из результатов security-сканирования.
+
+## 23.3.1
+
+### Patch Changes
+
+-   [#563](https://github.com/core-ds/arui-scripts/pull/563) [`6d9bf3b`](https://github.com/core-ds/arui-scripts/commit/6d9bf3b9077025827179b8fe094fb905e2687e40) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Исправлен запуск команды bundle-analyze с параметрами по умолчанию
+
+## 23.3.0
+
+### Minor Changes
+
+-   [#561](https://github.com/core-ds/arui-scripts/pull/561) [`98a2da5`](https://github.com/core-ds/arui-scripts/commit/98a2da587e1f0bc1d9b053cf509d96379b2e9af2) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Добавлена настройка `jestTransformNodeModules` — список пакетов из `node_modules`, которые нужно прогонять
+    через трансформер при запуске тестов. Нужна для зависимостей, публикующихся только в формате ESM: рантайм jest
+    работает в CommonJS, а его нативный ESM-режим до сих пор требует `--experimental-vm-modules`.
+    По умолчанию `[]`, поведение не меняется.
+
+## 23.2.0
+
+### Minor Changes
+
+-   [#552](https://github.com/core-ds/arui-scripts/pull/552) [`3658e49`](https://github.com/core-ds/arui-scripts/commit/3658e49b0b752c592e738726aa8056569e28e19b) Thanks [@dmitrbrvsk](https://github.com/dmitrbrvsk)! - Добавлен пакет `create-arui-scripts-app` для генерации нового приложения через CLI. В `arui-scripts` CLI был переведен на commander.
+
+## 23.1.0
+
+### Minor Changes
+
+-   [#537](https://github.com/core-ds/arui-scripts/pull/537) [`a1666b0`](https://github.com/core-ds/arui-scripts/commit/a1666b047e991acd2147dfd22197e31785be8fbf) Thanks [@dmitrbrvsk](https://github.com/dmitrbrvsk)! - переименование webpack-ключей оверрайдов в rspack с обратной совместимостью
+
+## 23.0.2
+
+### Patch Changes
+
+-   [#512](https://github.com/core-ds/arui-scripts/pull/512) [`e2b0ee1`](https://github.com/core-ds/arui-scripts/commit/e2b0ee1d3376e359a7e466de7a5d3c37ed672684) Thanks [@dmitrbrvsk](https://github.com/dmitrbrvsk)! - Исправлен запуск команды `bundle-analyze`. Теперь явно включаются необходимые поля stats для `webpack-bundle-analyzer`, которые больше не попадают в `stats.toJson()` по умолчанию
+
 ## 23.0.1
 
 ### Patch Changes

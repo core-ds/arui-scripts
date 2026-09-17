@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - packages/arui-scripts/**
+      - packages/create-arui-scripts-app/**
 
 permissions:
   discussions: write

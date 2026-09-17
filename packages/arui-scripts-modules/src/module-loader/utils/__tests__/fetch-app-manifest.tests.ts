@@ -42,7 +42,31 @@ describe('fetchAppManifest', () => {
 
         xhrMock.onload();
 
-        await expect(manifestPromise).rejects.toEqual(new Error('Not Found'));
+        await expect(manifestPromise).rejects.toThrow(
+            'App manifest request failed: http://test/manifest.json responded with 404 Not Found',
+        );
+    });
+
+    it('should reject promise with status code if statusText is empty', async () => {
+        xhrMock.status = 502;
+        const manifestPromise = fetchAppManifest('http://test/manifest.json');
+
+        xhrMock.onload();
+
+        await expect(manifestPromise).rejects.toThrow(
+            'App manifest request failed: http://test/manifest.json responded with 502',
+        );
+    });
+
+    it('should reject promise if response is not a valid json', async () => {
+        xhrMock.responseText = '<!doctype html>';
+        const manifestPromise = fetchAppManifest('http://test/manifest.json');
+
+        xhrMock.onload();
+
+        await expect(manifestPromise).rejects.toThrow(
+            /App manifest request failed: http:\/\/test\/manifest\.json returned invalid JSON/,
+        );
     });
 
     it('should reject promise if request was errored', async () => {
@@ -50,6 +74,8 @@ describe('fetchAppManifest', () => {
 
         xhrMock.onerror();
 
-        await expect(manifestPromise).rejects.toEqual(new Error(''));
+        await expect(manifestPromise).rejects.toThrow(
+            /App manifest request failed: network error while requesting http:\/\/test\/manifest\.json/,
+        );
     });
 });

@@ -1,14 +1,17 @@
 import React from 'react';
-import { createRoot } from 'react-dom/client';
+import { createRoot, hydrateRoot } from 'react-dom/client';
 
 import { App } from './components/app';
 
 const targetElement = document.getElementById('react-app');
+const shouldHydrate = !!targetElement?.hasChildNodes();
 
-const root = createRoot(targetElement!);
+const root = shouldHydrate ? hydrateRoot(targetElement!, <App />) : createRoot(targetElement!);
 
 if (process.env.NODE_ENV !== 'production' && module.hot) {
-    root.render(<App />);
+    if (!shouldHydrate) {
+        root.render(<App />);
+    }
 
     module.hot.accept('./components/app', () => {
         // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
@@ -16,7 +19,7 @@ if (process.env.NODE_ENV !== 'production' && module.hot) {
 
         root.render(<NextAppAssignments />);
     });
-} else {
+} else if (!shouldHydrate) {
     root.render(<App />);
 }
 

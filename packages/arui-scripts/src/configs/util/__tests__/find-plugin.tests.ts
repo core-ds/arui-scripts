@@ -1,7 +1,7 @@
 import { type Plugin, type Plugins } from '@rspack/core';
 
-import { createSingleClientWebpackConfig } from '../../webpack.client';
-import { createServerConfig } from '../../webpack.server';
+import { createSingleClientWebpackConfig } from '../../rspack.client';
+import { createServerConfig } from '../../rspack.server';
 import { createFindPluginFunction } from '../find-plugin';
 
 const getPlugins = (

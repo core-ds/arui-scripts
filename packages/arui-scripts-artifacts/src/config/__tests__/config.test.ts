@@ -139,6 +139,21 @@ describe('resolveArtifactsConfig', () => {
         );
     });
 
+    it('should not add yarn bin symlink command when there is no .yarnrc.yml', () => {
+        const config = resolveArtifactsConfig({
+            cwd: __dirname,
+            packageManager: { yarnVersion: '2+' },
+        });
+
+        expect(config.packageManager.yarnBinSymlinkCommand).toBe('');
+    });
+
+    it('should default docker.deleteNpm to false', () => {
+        const config = resolveArtifactsConfig({ cwd: __dirname });
+
+        expect(config.docker.deleteNpm).toBe(false);
+    });
+
     it('should default local file substitution to allowed', () => {
         const { localFiles } = resolveArtifactsConfig({ cwd: __dirname });
 

@@ -65,6 +65,7 @@ export function getArtifactsOptions(extraOptions: ArtifactsConfigFile = {}): Art
             registry: configs.dockerRegistry,
             baseImage: configs.baseDockerImage,
             runFromNonRootUser: configs.runFromNonRootUser,
+            deleteNpm: configs.deleteNpm,
         },
 
         nginx: {

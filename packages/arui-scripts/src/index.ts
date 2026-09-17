@@ -35,4 +35,7 @@ export {
     type ResolvedArtifactsConfig,
 } from '@alfalab/arui-scripts-artifacts';
 
-export { patchMainWebpackConfigForModules } from './configs/modules';
+export {
+    patchMainRspackConfigForModules,
+    patchMainWebpackConfigForModules,
+} from './configs/modules';
