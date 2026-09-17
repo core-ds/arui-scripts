@@ -12,6 +12,29 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@alfalab/arui-scripts-artifacts@workspace:^, @alfalab/arui-scripts-artifacts@workspace:packages/arui-scripts-artifacts":
+  version: 0.0.0-use.local
+  resolution: "@alfalab/arui-scripts-artifacts@workspace:packages/arui-scripts-artifacts"
+  dependencies:
+    "@types/fs-extra": "npm:^9.0.13"
+    "@types/jest": "npm:^29.5.14"
+    "@types/node": "npm:^20.19.0"
+    "@types/semver": "npm:^7.5.0"
+    "@types/shelljs": "npm:^0.8.12"
+    commander: "npm:^12"
+    fs-extra: "npm:6.0.1"
+    jest: "npm:^29.7.0"
+    jiti: "npm:^2.4.2"
+    semver: "npm:^7.5.4"
+    shelljs: "npm:0.8.5"
+    tar: "npm:7.5.21"
+    ts-jest: "npm:29.1.0"
+    typescript: "npm:6.0.2"
+  bin:
+    arui-scripts-artifacts: ./build/cjs/bin/index.js
+  languageName: unknown
+  linkType: soft
+
 "@alfalab/client-event-bus@workspace:packages/client-event-bus":
   version: 0.0.0-use.local
   resolution: "@alfalab/client-event-bus@workspace:packages/client-event-bus"
@@ -7183,6 +7206,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "arui-scripts@workspace:packages/arui-scripts"
   dependencies:
+    "@alfalab/arui-scripts-artifacts": "workspace:^"
     "@alfalab/postcss-custom-properties": "npm:^9.1.2"
     "@babel/core": "npm:7.29.7"
     "@babel/plugin-proposal-decorators": "npm:^7.29.7"
@@ -13853,6 +13877,15 @@ __metadata:
   bin:
     jiti: bin/jiti.js
   checksum: 10/6a182521532126e4b7b5ad64b64fb2e162718fc03bc6019c21aa2222aacde6c6dfce4fc3bce9f69561a73b24ab5f79750ad353c37c3487a220d5869a39eae3a2
+  languageName: node
+  linkType: hard
+
+"jiti@npm:^2.4.2":
+  version: 2.7.0
+  resolution: "jiti@npm:2.7.0"
+  bin:
+    jiti: lib/jiti-cli.mjs
+  checksum: 10/6d75a8dbd61dbee031aa0937fabb748ff8ddf370b971958cc704f5cf26b4c5bdc9dcd0563059b2627a2bd41d946fa0bc64f912fdc8981ca7945a9d63c74ad0f9
   languageName: node
   linkType: hard
 

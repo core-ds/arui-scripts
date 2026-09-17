@@ -1,0 +1,7 @@
+{
+    "extends": "./tsconfig.json",
+    // для корректной работы @typescript-eslint/parser
+    "include": ["src", "./*.js", "./*.ts", ".eslintrc.js"],
+    // tsconfig.json исключает тесты из сборки, но линтить их надо
+    "exclude": ["build"]
+}

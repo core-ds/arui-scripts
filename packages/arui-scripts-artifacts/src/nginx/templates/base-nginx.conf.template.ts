@@ -1,19 +1,15 @@
-import { configs } from '../configs/app-configs';
-import { applyOverrides } from '../configs/util/apply-overrides';
+import { type ResolvedArtifactsConfig } from '../../config/types';
+import { DEFAULT_NGINX_BASE_CONF } from '../constants';
 
-const baseNginxConfig = {
-    workerProcesses: 2,
-    workerRlimitNoFile: 20000,
-    workerConnections: 19000,
-    eventsUse: 'epoll',
-    daemon: 'off',
-};
-const nginx = {
-    ...baseNginxConfig,
-    ...configs.nginx,
-};
+/**
+ * http-блок nginx-конфига (базовый nginx.conf). Значения приходят из `nginx.baseConf` уже
+ * донасыщенными дефолтами; если базовый конфиг выключен (`baseConf: null`), рендерится с дефолтами —
+ * решение о том, класть ли его в артефакт, принимает `renderTemplates`.
+ */
+export function renderBaseNginxConf(config: ResolvedArtifactsConfig): string {
+    const nginx = config.nginx.baseConf ?? DEFAULT_NGINX_BASE_CONF;
 
-const baseNginxTemplate = `
+    return `
 worker_processes            ${nginx.workerProcesses};
 worker_rlimit_nofile        ${nginx.workerRlimitNoFile};
 daemon                      ${nginx.daemon};
@@ -58,5 +54,4 @@ http {
 
     include                 /etc/nginx/conf.d/*.conf;
 }`;
-
-export const nginxBaseConfTemplate = applyOverrides('nginxConf', baseNginxTemplate);
+}

@@ -1,8 +1,15 @@
-import { configs } from '../configs/app-configs';
-import { ENV_CONFIG_FILENAME } from '../configs/client-env-config';
-import { applyOverrides } from '../configs/util/apply-overrides';
+import { type ResolvedArtifactsConfig } from '../config/types';
 
-const startTemplate = `#!/bin/sh
+import { ENV_CONFIG_FILENAME } from './constants';
+
+/**
+ * start.sh — entrypoint артефакта: используется и docker-образом, и tar-архивом. Для serverful-режима
+ * поднимает nginx + nodejs, для clientOnly — подставляет env-config и запускает nginx.
+ */
+export function renderStartScript(config: ResolvedArtifactsConfig): string {
+    const { clientOnly, buildPath, serverOutput } = config;
+
+    const serverStartTemplate = `#!/bin/sh
 
 # Подменяем env переменные в nginx конфиге перед стартом
 # Сначала заменяем все слова, начинающиеся на $ но без \${} на ~~слово~~
@@ -29,14 +36,14 @@ node_memory_limit="$(($max_total_memory / 1024 / 1024 - 100))"
 nginx &
 
 # Start nodejs process
-exec node --max-old-space-size="$node_memory_limit" ./${configs.buildPath}/${configs.serverOutput}
+exec node --max-old-space-size="$node_memory_limit" ./${buildPath}/${serverOutput}
 `;
 
-const envConfigTargetPath = `/src/${configs.buildPath}/${ENV_CONFIG_FILENAME}`;
-const envConfigPath = `/src/${ENV_CONFIG_FILENAME}`;
-const htmlPath = `/src/${configs.buildPath}/index.html`;
+    const envConfigTargetPath = `/src/${buildPath}/${ENV_CONFIG_FILENAME}`;
+    const envConfigPath = `/src/${ENV_CONFIG_FILENAME}`;
+    const htmlPath = `/src/${buildPath}/index.html`;
 
-const clientOnlyStartTemplate = `#!/bin/sh
+    const clientOnlyStartTemplate = `#!/bin/sh
 
 # Мы подставляем значения из env в env-config.json если он есть, и кладем его в публичную папку.
 # Дополнительно подставляем контент полученного файла в index.html
@@ -67,7 +74,5 @@ fi
 
 nginx`;
 
-export const startScript = applyOverrides(
-    'start.sh',
-    configs.clientOnly ? clientOnlyStartTemplate : startTemplate,
-);
+    return clientOnly ? clientOnlyStartTemplate : serverStartTemplate;
+}
