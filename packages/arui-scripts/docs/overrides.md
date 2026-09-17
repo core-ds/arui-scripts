@@ -86,7 +86,7 @@ export default overrides;
 > ⚠️ Оверрайды файлов артефакта поставки (`Dockerfile`, `DockerfileCompiled`, `nginx`, `nginxConf`,
 > `start.sh`) объявлены устаревшими и будут удалены в следующей мажорной версии arui-scripts.
 > Переносите их в секцию `overrides` конфига `arui-scripts-artifacts.ts`
-> ([таблица соответствия](../../arui-scripts-artifacts/README.md#миграция-с-arui-scripts-docker-build)).
+> ([таблица соответствия](../../arui-scripts-artifacts/docs/migration.md)).
 > Команды сборки предупреждают о таких оверрайдах в консоли.
 
 ### Создание дополнительных конфигураций для webpack

@@ -173,7 +173,7 @@ const settings = {
 > [@alfalab/arui-scripts-artifacts](../../arui-scripts-artifacts/README.md), где и живут их значения по
 > умолчанию. В следующей мажорной версии arui-scripts они будут удалены — переносите их в конфиг
 > `arui-scripts-artifacts.ts` в корне проекта (таблица соответствия — в
-> [README пакета](../../arui-scripts-artifacts/README.md#миграция-с-arui-scripts-docker-build)).
+> [документации пакета](../../arui-scripts-artifacts/docs/migration.md)).
 > Команды сборки предупреждают о таких настройках в консоли.
 
 #### dockerRegistry

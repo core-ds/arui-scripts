@@ -71,7 +71,7 @@ export function warnAboutArtifactsDeprecations() {
             'Перенесите их в конфиг @alfalab/arui-scripts-artifacts (arui-scripts-artifacts.ts в корне проекта):',
             ...usedSettings,
             ...usedOverrides,
-            'Подробнее: https://github.com/core-ds/arui-scripts/tree/master/packages/arui-scripts-artifacts#миграция-с-arui-scripts-docker-build',
+            'Подробнее: https://github.com/core-ds/arui-scripts/blob/master/packages/arui-scripts-artifacts/docs/migration.md',
         ].join('\n'),
     );
 }
