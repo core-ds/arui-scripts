@@ -1,4 +1,5 @@
 import { createServerStateModuleFetcher } from '../create-server-state-module-fetcher';
+import { LOCAL_OVERRIDE_STORAGE_KEY } from '../utils/local-override';
 import { urlSegmentWithoutEndSlash } from '../utils/normalize-url-segment';
 
 jest.mock('../utils/normalize-url-segment');
@@ -32,7 +33,9 @@ describe('createServerStateModuleFetcher', () => {
     beforeAll(() => {
         oldFetch = global.fetch;
         global.fetch = mockFetch as unknown as typeof global.fetch;
-        (urlSegmentWithoutEndSlash as jest.Mock).mockReturnValue('https://test.com');
+        (urlSegmentWithoutEndSlash as jest.Mock).mockImplementation((value: string) =>
+            value.replace(/\/$/, ''),
+        );
     });
 
     afterAll(() => {
@@ -41,6 +44,7 @@ describe('createServerStateModuleFetcher', () => {
 
     beforeEach(() => {
         mockFetch.mockReset();
+        window.localStorage.clear();
     });
 
     it('should perform a POST request with the correct url, headers and body', async () => {
@@ -69,6 +73,73 @@ describe('createServerStateModuleFetcher', () => {
             body: JSON.stringify(fetchParams),
             signal: undefined,
         });
+    });
+
+    it('uses the override base url when allowLocalOverride is enabled', async () => {
+        window.localStorage.setItem(
+            LOCAL_OVERRIDE_STORAGE_KEY,
+            JSON.stringify({ test: 'http://localhost:8080/' }),
+        );
+        mockResponse({ json: {} });
+
+        const fetchServerResources = createServerStateModuleFetcher({
+            baseUrl: 'https://test.com/',
+            allowLocalOverride: true,
+        });
+
+        await fetchServerResources({
+            moduleId: 'test',
+            hostAppId: 'host',
+            params: undefined,
+        });
+
+        expect(mockFetch).toHaveBeenCalledWith(
+            'http://localhost:8080/api/getModuleResources',
+            expect.any(Object),
+        );
+    });
+
+    it('falls back to baseUrl when no local override exists', async () => {
+        mockResponse({ json: {} });
+
+        const fetchServerResources = createServerStateModuleFetcher({
+            baseUrl: 'https://test.com/',
+            allowLocalOverride: true,
+        });
+
+        await fetchServerResources({
+            moduleId: 'test',
+            hostAppId: 'host',
+            params: undefined,
+        });
+
+        expect(mockFetch).toHaveBeenCalledWith(
+            'https://test.com/api/getModuleResources',
+            expect.any(Object),
+        );
+    });
+
+    it('ignores a local override when allowLocalOverride is disabled', async () => {
+        window.localStorage.setItem(
+            LOCAL_OVERRIDE_STORAGE_KEY,
+            JSON.stringify({ test: 'http://localhost:8080' }),
+        );
+        mockResponse({ json: {} });
+
+        const fetchServerResources = createServerStateModuleFetcher({
+            baseUrl: 'https://test.com/',
+        });
+
+        await fetchServerResources({
+            moduleId: 'test',
+            hostAppId: 'host',
+            params: undefined,
+        });
+
+        expect(mockFetch).toHaveBeenCalledWith(
+            'https://test.com/api/getModuleResources',
+            expect.any(Object),
+        );
     });
 
     it('should pass the abort signal through to fetch', async () => {

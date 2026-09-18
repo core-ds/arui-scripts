@@ -1,3 +1,4 @@
+import { getLocalModuleOverride } from './utils/local-override';
 import { urlSegmentWithoutEndSlash } from './utils/normalize-url-segment';
 import { type ModuleResourcesGetter } from './create-module-loader';
 import { getServerStateModuleFetcherParams } from './get-server-state-module-fetcher-params';
@@ -6,20 +7,31 @@ import { type BaseModuleState } from './types';
 type CreateServerResourcesFetcherParams = {
     baseUrl: string;
     headers?: Record<string, string>;
+    /**
+     * Разрешает переопределять базовый адрес приложения-источника модулей через localStorage
+     * (см. LOCAL_OVERRIDE_STORAGE_KEY). По-умолчанию false.
+     */
+    allowLocalOverride?: boolean;
 };
 
 /**
  * Функция, которая создает метод для получения ресурсов модуля с серверным состоянием
  * @param baseUrl
  * @param headers
+ * @param allowLocalOverride Флаг, включающий локальный оверрайд адреса модуля через localStorage
  */
 export function createServerStateModuleFetcher<GetResourcesParams = undefined>({
     baseUrl,
     headers = {},
+    allowLocalOverride = false,
 }: CreateServerResourcesFetcherParams): ModuleResourcesGetter<GetResourcesParams, BaseModuleState> {
     return async function fetchServerResources(params, options) {
         const { relativePath, method } = getServerStateModuleFetcherParams();
-        const url = `${urlSegmentWithoutEndSlash(baseUrl)}${relativePath}`;
+        const overrideBaseUrl = allowLocalOverride
+            ? getLocalModuleOverride(params.moduleId)
+            : undefined;
+        const effectiveBaseUrl = overrideBaseUrl ?? baseUrl;
+        const url = `${urlSegmentWithoutEndSlash(effectiveBaseUrl)}${relativePath}`;
 
         const response = await fetch(url, {
             method,
