@@ -1,45 +1,53 @@
 # arui-scripts
 
+## 23.9.0
+
+### Minor Changes
+
+-   [#599](https://github.com/core-ds/arui-scripts/pull/599) [`03f84fad`](https://github.com/core-ds/arui-scripts/commit/03f84fadb4d4a13c455624630d1902113ac29906) Thanks [@Burzachil](https://github.com/Burzachil)! - **Что изменилось**
+    Rspack обновлён с 2.0.0 до 2.2.5 (анонсы [2.1](https://rspack.rs/blog/announcing-2-1) и [2.2](https://rspack.rs/blog/announcing-2-2)): исправлены ошибки генерации кода, утечки памяти в dev-режиме и CSS HMR. Вместе с ним обновлены `@swc/core`, `swc-plugin-coverage-instrument`, `ts-checker-rspack-plugin` (проверка типов в `build` стала быстрее), `@rsdoctor/rspack-plugin` и `rspack-manifest-plugin`.
+
 ## 23.8.2
 
 ### Patch Changes
 
 -   [#565](https://github.com/core-ds/arui-scripts/pull/565) [`a6c84b42`](https://github.com/core-ds/arui-scripts/commit/a6c84b4246fdeb156da2a0e5980dfba796e2d7d5) Thanks [@sowtame](https://github.com/sowtame)! - Сборка артефактов поставки вынесена в отдельный пакет `@alfalab/arui-scripts-artifacts`.
 
-    Пакет устроен как набор чистых функций и настраивается одним файлом `arui-scripts-artifacts.ts` в
-    корне проекта (путь можно задать через `--c`/`--config`). Конфиг может быть на TypeScript, ESM или
-    CommonJS и описывает всё: базовый образ, параметры nginx, кастомные шаблоны и свои команды сборки —
-    так что кастомные сборочные скрипты в проектах больше не нужны.
+        Пакет устроен как набор чистых функций и настраивается одним файлом `arui-scripts-artifacts.ts` в
+        корне проекта (путь можно задать через `--c`/`--config`). Конфиг может быть на TypeScript, ESM или
+        CommonJS и описывает всё: базовый образ, параметры nginx, кастомные шаблоны и свои команды сборки —
+        так что кастомные сборочные скрипты в проектах больше не нужны.
 
-    Поддерживаются оба типа артефактов: docker-образ (`docker-build`, `docker-build:compiled`) и
-    tar-архив (`archive-build`). Хост-пайплайн (очистка `buildPath` → сборка приложения → удаление
-    dev-зависимостей) у них общий.
+        Поддерживаются оба типа артефактов: docker-образ (`docker-build`, `docker-build:compiled`) и
+        tar-архив (`archive-build`). Хост-пайплайн (очистка `buildPath` → сборка приложения → удаление
+        dev-зависимостей) у них общий.
 
-    `arui-scripts` теперь использует этот пакет вместо собственной копии шаблонов и утилит. Поведение
-    команд и все ключи оверрайдов (`Dockerfile`, `DockerfileCompiled`, `nginx`, `nginxConf`, `start.sh`)
-    сохранены без изменений — отрендеренные Dockerfile, nginx-конфиги и start.sh совпадают побайтово.
+        `arui-scripts` теперь использует этот пакет вместо собственной копии шаблонов и утилит. Поведение
+        команд и все ключи оверрайдов (`Dockerfile`, `DockerfileCompiled`, `nginx`, `nginxConf`, `start.sh`)
+        сохранены без изменений — отрендеренные Dockerfile, nginx-конфиги и start.sh совпадают побайтово.
 
-    Попутно починен `archive-build`: он падал с `TypeError: Cannot read properties of undefined
-(reading 'c')`, потому что в `tar@7` нет default-экспорта, а код использовал `import tar from 'tar'`.
+        Попутно починен `archive-build`: он падал с `TypeError: Cannot read properties of undefined
 
-    Команды `arui-scripts docker-build`, `docker-build:compiled` и `archive-build` теперь запускают CLI
-    `@alfalab/arui-scripts-artifacts` с конфигом, который arui-scripts возит с собой. Благодаря этому
-    `arui-scripts-artifacts.ts` в корне проекта работает и через команды arui-scripts: он находится по
-    обычным правилам и кладется поверх настроек из конфига arui-scripts. Заводить его по-прежнему не
-    обязательно.
+    (reading 'c')`, потому что в `tar@7`нет default-экспорта, а код использовал`import tar from 'tar'`.
 
-    Настройки сборки артефактов в конфиге arui-scripts (`dockerRegistry`, `baseDockerImage`,
-    `nginxRootPath`, `nginx`, `runFromNonRootUser`, `removeDevDependenciesDuringDockerBuild`,
-    `deleteNpm`, `archiveName`, `additionalBuildPath`) и оверрайды `Dockerfile`, `DockerfileCompiled`, `nginx`,
-    `nginxConf`, `start.sh` объявлены устаревшими: они продолжают работать, но команды сборки печатают
-    предупреждение со ссылкой на замену, а в следующей мажорной версии будут удалены.
+        Команды `arui-scripts docker-build`, `docker-build:compiled` и `archive-build` теперь запускают CLI
+        `@alfalab/arui-scripts-artifacts` с конфигом, который arui-scripts возит с собой. Благодаря этому
+        `arui-scripts-artifacts.ts` в корне проекта работает и через команды arui-scripts: он находится по
+        обычным правилам и кладется поверх настроек из конфига arui-scripts. Заводить его по-прежнему не
+        обязательно.
 
-    Настройки в конфиге @alfalab/arui-scripts-artifacts сгруппированы по доменам: `docker`, `nginx`, `archive`, `build`,
-    `packageManager`, `localFiles`. Так же разложен и код пакета — по папке на домен.
+        Настройки сборки артефактов в конфиге arui-scripts (`dockerRegistry`, `baseDockerImage`,
+        `nginxRootPath`, `nginx`, `runFromNonRootUser`, `removeDevDependenciesDuringDockerBuild`,
+        `deleteNpm`, `archiveName`, `additionalBuildPath`) и оверрайды `Dockerfile`, `DockerfileCompiled`, `nginx`,
+        `nginxConf`, `start.sh` объявлены устаревшими: они продолжают работать, но команды сборки печатают
+        предупреждение со ссылкой на замену, а в следующей мажорной версии будут удалены.
 
-    Единственное отличие в поведении: `archive-build` теперь подхватывает локальный `start.sh` из корня
-    проекта так же, как уже подхватывал `nginx.conf` (раньше игнорировал). Отключается опцией
-    `localFiles.allowStartScript: false`.
+        Настройки в конфиге @alfalab/arui-scripts-artifacts сгруппированы по доменам: `docker`, `nginx`, `archive`, `build`,
+        `packageManager`, `localFiles`. Так же разложен и код пакета — по папке на домен.
+
+        Единственное отличие в поведении: `archive-build` теперь подхватывает локальный `start.sh` из корня
+        проекта так же, как уже подхватывал `nginx.conf` (раньше игнорировал). Отключается опцией
+        `localFiles.allowStartScript: false`.
 
 -   Updated dependencies [[`a6c84b42`](https://github.com/core-ds/arui-scripts/commit/a6c84b4246fdeb156da2a0e5980dfba796e2d7d5)]:
     -   @alfalab/arui-scripts-artifacts@1.0.0
