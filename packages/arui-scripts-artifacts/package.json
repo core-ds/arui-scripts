@@ -1,6 +1,6 @@
 {
     "name": "@alfalab/arui-scripts-artifacts",
-    "version": "0.0.0",
+    "version": "1.0.0",
     "description": "CLI и библиотека для сборки артефактов поставки приложений на arui-scripts: docker-образ и tar-архив с генерируемыми Dockerfile, nginx-конфигом и start-скриптом",
     "main": "./build/cjs/index.js",
     "module": "./build/index.js",
