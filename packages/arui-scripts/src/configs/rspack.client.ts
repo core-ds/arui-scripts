@@ -264,6 +264,8 @@ export const createSingleClientWebpackConfig = (
                             },
                         ],
                     },
+                    // В oneOf срабатывает первое подходящее правило, поэтому минификация картинок должна стоять раньше svg правила
+                    mode === 'prod' && getImageMinLoader(),
                     {
                         test: /\.svg/,
                         type: 'asset',
@@ -273,7 +275,6 @@ export const createSingleClientWebpackConfig = (
                             },
                         },
                     },
-                    mode === 'prod' && getImageMinLoader(),
                     {
                         exclude: [/\.(js|jsx|mjs|cjs|ts|tsx)$/, /\.(html|ejs)$/, /\.json$/],
                         type: 'asset',

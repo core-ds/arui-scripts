@@ -19,7 +19,13 @@ export function getImageMinLoader() {
 
     return {
         test: new RegExp(`\\.(${loaderExtensions.join('|')})$`),
-        type: 'assets',
+        type: 'asset',
+        // правило стоит раньше общих asset правил, поэтому порог инлайна должен быть тем же
+        parser: {
+            dataUrlCondition: {
+                maxSize: configs.dataUrlMaxSize,
+            },
+        },
         use: [
             {
                 loader: ImageMinimizerPlugin.loader,
@@ -45,7 +51,20 @@ export function getImageMinLoader() {
                                         interlaced: png?.interlaced,
                                     },
                                 ],
-                                svg?.enabled && ['svgo'],
+                                svg?.enabled && [
+                                    'svgo',
+                                    {
+                                        plugins: [
+                                            {
+                                                name: 'preset-default',
+                                                params: {
+                                                    // preset-default в svgo вырезает viewBox, без него svg перестают масштабироваться
+                                                    overrides: { removeViewBox: false },
+                                                },
+                                            },
+                                        ],
+                                    },
+                                ],
                                 gif?.enabled && [
                                     'gifsicle',
                                     {
