@@ -32,6 +32,7 @@ import { checkNodeVersion } from './util/check-node-version';
 import { compressionPluginsForDictionaries } from './util/compression-plugins-for-dictionaries';
 import { createWatchIgnoreRegex } from './util/create-watch-ignore-regex';
 import { type Entry, getEntry } from './util/get-entry';
+import { getSwcHelpersAlias } from './util/swc-helpers';
 import { configs } from './app-configs';
 import { babelClientConfig as babelConf } from './babel-client';
 import { babelDependencies } from './babel-dependencies';
@@ -43,9 +44,10 @@ import {
 } from './modules';
 import { postcssConfig as postcssConf } from './postcss';
 import { processAssetsPluginOutput } from './process-assets-plugin-output';
-import { swcClientConfig } from './swc';
+import { getSwcDependenciesOptions, swcClientConfig } from './swc';
 
 const noopPath = require.resolve('./util/noop');
+const swcHelpersAlias = getSwcHelpersAlias();
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getSingleEntry(entryPoint: string[], mode: 'dev' | 'prod') {
@@ -186,6 +188,7 @@ export const createSingleClientWebpackConfig = (
         // if there are any conflicts. This matches Node resolution mechanism.
         // https://github.com/facebookincubator/create-react-app/issues/253
         modules: ['node_modules', configs.appNodeModules],
+        alias: swcHelpersAlias,
         // These are the reasonable defaults supported by the Node ecosystem.
         // We also include JSX as a common component filename extension to support
         // some tools, although we do not recommend using it, see:
@@ -569,7 +572,8 @@ function getTsLoaderIfEnabled(mode: 'dev' | 'prod'): RuleSetRule | false {
 function getExternalCodeLoader(mode: 'dev' | 'prod'): RuleSetRule {
     const baseLoaderConfig = {
         test: /\.(js|mjs|cjs)$/,
-        exclude: /@babel(?:\/|\\{1,2})runtime/,
+        // Рантайм-хелперы babel и swc уже собраны под нужные цели, их не трогаем
+        exclude: /(?:@babel(?:\/|\\{1,2})runtime|@swc(?:\/|\\{1,2})helpers)/,
         resolve: {
             fullySpecified: false,
         },
@@ -579,10 +583,8 @@ function getExternalCodeLoader(mode: 'dev' | 'prod'): RuleSetRule {
         return {
             ...baseLoaderConfig,
             loader: require.resolve('swc-loader'),
-            options: {
-                cacheDirectory: mode === 'dev',
-                cacheCompression: false,
-            },
+            // node_modules собираем под те же цели, что и код приложения: без env swc-loader даёт ES5
+            options: getSwcDependenciesOptions(swcClientConfig),
         };
     }
 

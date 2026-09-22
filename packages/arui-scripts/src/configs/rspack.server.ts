@@ -23,7 +23,7 @@ import { babelDependencies } from './babel-dependencies';
 import { config as babelConf } from './babel-server';
 import { serverPostcssConfig as postcssConf } from './postcss';
 import { serverExternalsExemptions } from './server-externals-exemptions';
-import { swcServerConfig } from './swc';
+import { getSwcDependenciesOptions, swcServerConfig } from './swc';
 
 const assetsIgnoreBanner = fs.readFileSync(require.resolve('./util/node-assets-ignore'), 'utf8');
 const sourceMapSupportBanner = fs.readFileSync(
@@ -298,7 +298,8 @@ function getTsLoaderIfEnabled(mode: 'dev' | 'prod'): RuleSetRule | false {
 function getExternalCodeLoader(mode: 'dev' | 'prod'): RuleSetRule {
     const baseLoaderConfig = {
         test: /\.(js|mjs|cjs)$/,
-        exclude: /@babel(?:\/|\\{1,2})runtime/,
+        // Рантайм-хелперы babel и swc уже собраны под нужные цели, их не трогаем
+        exclude: /(?:@babel(?:\/|\\{1,2})runtime|@swc(?:\/|\\{1,2})helpers)/,
         resolve: {
             fullySpecified: false,
         },
@@ -308,6 +309,8 @@ function getExternalCodeLoader(mode: 'dev' | 'prod'): RuleSetRule {
         return {
             ...baseLoaderConfig,
             loader: 'builtin:swc-loader',
+            // node_modules собираем под текущую node, без env builtin:swc-loader даёт ES5
+            options: getSwcDependenciesOptions(swcServerConfig),
         };
     }
 

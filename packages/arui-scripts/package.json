@@ -52,6 +52,7 @@
         "@rspack/dev-server": "2.2.1",
         "@rspack/plugin-react-refresh": "2.0.2",
         "@swc/core": "1.16.2",
+        "@swc/helpers": "^0.5.23",
         "@swc/jest": "0.2.39",
         "assets-webpack-plugin": "7.1.1",
         "autoprefixer": "^10.3.16",

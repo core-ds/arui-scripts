@@ -62,6 +62,8 @@ export default overrides;
   Ключи: `webpack`, `webpackServer`, `webpackProd`, `webpackServerProd`.
 - `supporting-browsers` - список поддерживаемых браузеров в формате [browserslist](https://github.com/browserslist/browserslist).
   Альтернативно вы можете использовать любые методы передачи списка браузеров, поддерживаемые пакетом browserslist.
+  Список используется и при `codeLoader: 'swc'`: он резолвится JS-версией browserslist и передаётся в `env.targets`
+  обоих swc-лоадеров (код приложения и node_modules), поэтому SWC компилирует код ровно под эти браузеры, а не в ES5.
   Ключи: `browsers`, `supportingBrowsers`
 - `supportingNode` - список поддерживаемых версий nodejs в формате [browserslist](https://github.com/browserslist/browserslist).
 - `Dockerfile` - :warning: устарел, см. врезку ниже. Докерфайл, который будет использоваться для сборки контейнера.
@@ -78,7 +80,9 @@ export default overrides;
 - `serverExternalsExemptions` - список модулей, которые не будут добавлены в список внешних зависимостей сервера. [Подробнее](caveats.md#node-externals).
 - `html` - шаблон для htmlWebpackPlugin, будет использоваться только в режиме [`clientOnly`](./settings.md#clientonly).
 - `swc-client` - конфигурация `swc` для клиентского кода. Ключи: `swc`, `swcClient`.
-- `swc-server` - конфигурация `swc` для серверного кода. Ключи: `swc`, `swcServer`.
+  В `env.targets` уже подставлены цели из `supporting-browsers`, а `jsc.externalHelpers` включён: хелперы импортируются из `@swc/helpers`.
+  Эта же `env` используется для обработки node_modules.
+- `swc-server` - конфигурация `swc` для серверного кода. Ключи: `swc`, `swcServer`. В `env.targets` подставлена версия node из `supportingNode`.
 - `swc-jest` - конфигурация `swc` для тестов. Ключи: `swc`, `swcJest`.
 
 Для некоторых конфигураций определены несколько ключей, они будут применяться в том порядке, в котором они приведены в этом файле.
