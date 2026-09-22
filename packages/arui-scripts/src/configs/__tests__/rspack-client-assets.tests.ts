@@ -1,4 +1,4 @@
-import { type Configuration, type RuleSetRule } from '@rspack/core';
+import { type Configuration, CopyRspackPlugin, type RuleSetRule } from '@rspack/core';
 import ImageMinimizerPlugin from 'image-minimizer-webpack-plugin';
 
 import { createClientWebpackConfig } from '../rspack.client';
@@ -42,5 +42,11 @@ describe('client rspack config assets', () => {
             type: 'asset',
             parser: { dataUrlCondition: { maxSize: expect.any(Number) } },
         });
+    });
+
+    it('does not add copy plugin if compression dictionaries is empty', () => {
+        const { plugins = [] } = getMainConfig();
+
+        expect(plugins.some((plugin) => plugin instanceof CopyRspackPlugin)).toBe(false);
     });
 });

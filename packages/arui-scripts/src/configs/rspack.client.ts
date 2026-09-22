@@ -357,7 +357,7 @@ export const createSingleClientWebpackConfig = (
                 filename: '../index.html',
             }),
         mode === 'dev' && configs.clientOnly && new ClientConfigPlugin(),
-        configs.compressionPredefinedDictionaryPath &&
+        configs.compressionPredefinedDictionaryPath.length > 0 &&
             new CopyRspackPlugin({
                 patterns: configs.compressionPredefinedDictionaryPath,
             }),
