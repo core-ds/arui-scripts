@@ -74,7 +74,7 @@ export function printAssetsSizes(webpackStats: Stats) {
     Object.keys(assetsMap).forEach((assetName) => {
         const asset = assetsMap[assetName];
         const size = asset.size || 0;
-        const gzipSize = asset.brSize || size;
+        const gzipSize = asset.gzipSize || size;
         const brSize = asset.brSize || gzipSize;
         const dcbSize = asset.dcbSize || brSize;
 
