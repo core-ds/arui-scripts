@@ -8,7 +8,6 @@ import { printCompilerOutput } from '../start/print-compiler-output';
 
 export async function runClientDevServer(configuration: Configuration | Configuration[]) {
     const clientCompiler = rspack(configuration);
-    const clientDevServer = new RspackDevServer(devServerConfig, clientCompiler);
 
     clientCompiler.hooks.invalid.tap('client', () => console.log('Compiling client...'));
     clientCompiler.hooks.done.tap('client', (stats) =>
@@ -30,9 +29,12 @@ export async function runClientDevServer(configuration: Configuration | Configur
             return;
         }
 
-        clientDevServer.startCallback(() => {
-            console.log(`Client dev server running at http://${HOST}:${port}...`);
-        });
+        // dev-server слушает порт из конфига как есть, поэтому подменяем его найденным свободным
+        const clientDevServer = new RspackDevServer({ ...devServerConfig, port }, clientCompiler);
+
+        await clientDevServer.start();
+
+        console.log(`Client dev server running at http://${HOST}:${port}...`);
     } catch (err) {
         if (types.isNativeError(err)) {
             console.log(err.message);
