@@ -1,5 +1,13 @@
 # arui-scripts
 
+## 23.9.2
+
+### Patch Changes
+
+-   [#602](https://github.com/core-ds/arui-scripts/pull/602) [`0c7063af`](https://github.com/core-ds/arui-scripts/commit/0c7063af3b3c735a562962a4d56884399511f430) Thanks [@dmitrbrvsk](https://github.com/dmitrbrvsk)! - Минификация картинок не работала: правило стояло после общего svg правила в `oneOf` и использовало несуществующий тип модуля `assets`. Правило перенесено вперед, поправлен тип, у svgo отключен `removeViewBox`
+
+-   [#602](https://github.com/core-ds/arui-scripts/pull/602) [`d67562cb`](https://github.com/core-ds/arui-scripts/commit/d67562cb95db673cee84bf1b7e0df3a85a4ec503) Thanks [@dmitrbrvsk](https://github.com/dmitrbrvsk)! - для словарей сжатия не добавляется `CopyRspackPlugin`, если список словарей пуст
+
 ## 23.9.1
 
 ### Patch Changes
