@@ -1,13 +1,12 @@
 import { type Stats } from '@rspack/core';
 
+import { printAssetsSizes } from '../client-assets-sizes';
+
 jest.mock('../../../configs/app-configs', () => ({
     configs: {
         dictionaryCompression: { dictionaryPath: [] },
     },
 }));
-
-// eslint-disable-next-line import/first
-import { printAssetsSizes } from '../client-assets-sizes';
 
 describe('printAssetsSizes', () => {
     it('prints gzip and brotli sizes of their own compressed assets', () => {
