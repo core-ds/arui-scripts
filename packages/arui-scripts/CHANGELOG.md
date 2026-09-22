@@ -1,5 +1,13 @@
 # arui-scripts
 
+## 23.9.1
+
+### Patch Changes
+
+-   [#600](https://github.com/core-ds/arui-scripts/pull/600) [`c42d4163`](https://github.com/core-ds/arui-scripts/commit/c42d4163b69b4da28a2e4def467082b6ee59e663) Thanks [@dmitrbrvsk](https://github.com/dmitrbrvsk)! - В выводе размеров ассетов после сборки gzip размер брался из brotli файла, теперь показывается настоящий gzip-размер
+
+-   [#600](https://github.com/core-ds/arui-scripts/pull/600) [`12c1b1d3`](https://github.com/core-ds/arui-scripts/commit/12c1b1d3855539287a6ba560aa54a6d2d435eab1) Thanks [@dmitrbrvsk](https://github.com/dmitrbrvsk)! - dev server слушает свободный порт, который нашел `get-port`, а не всегда порт из конфига и адрес печатается только после успешного старта
+
 ## 23.9.0
 
 ### Minor Changes
