@@ -10,32 +10,36 @@ export function runCompilers(pathToCompilers: Array<string | string[]>) {
     }
 
     const compilers = pathToCompilers.map((pathToCompiler) => {
-        if (Array.isArray(pathToCompiler)) {
-            const compiler = spawn('node', pathToCompiler, {
+        const compiler = spawn(
+            'node',
+            Array.isArray(pathToCompiler) ? pathToCompiler : [pathToCompiler],
+            {
                 stdio: 'inherit',
                 cwd: configs.cwd,
-            });
+            },
+        );
 
-            compiler.on('error', onProcessExit);
-            compiler.on('close', onProcessExit);
-
-            return compiler;
-        }
-
-        const compiler = spawn('node', [pathToCompiler], {
-            stdio: 'inherit',
-        });
-
-        compiler.on('error', onProcessExit);
-        compiler.on('close', onProcessExit);
+        compiler.on('error', onProcessError);
+        compiler.on('close', onProcessClose);
 
         return compiler;
     });
 
-    function onProcessExit(code: number) {
+    function stopCompilers(exitCode: number) {
+        compilers.forEach((compiler) => compiler.kill());
+        process.exit(exitCode);
+    }
+
+    // в error приходит объект ошибки, а не код для выхода
+    function onProcessError(error: Error) {
+        console.error(error.message);
+        stopCompilers(1);
+    }
+
+    function onProcessClose(code: number | null) {
         if (code !== 0) {
-            compilers.forEach((compiler) => compiler.kill());
-            process.exit(code);
+            // code === null означает, что процесс убит сигналом
+            stopCompilers(code ?? 1);
         }
     }
 }
