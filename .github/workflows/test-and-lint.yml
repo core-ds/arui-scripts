@@ -24,6 +24,20 @@ jobs:
       env:
         CI: true
 
+    - name: Check arui-scripts coverage
+      if: matrix.node-version == '22.x'
+      run: yarn workspace arui-scripts test:coverage
+      env:
+        CI: true
+    - name: Upload arui-scripts coverage
+      if: always() && matrix.node-version == '22.x'
+      uses: actions/upload-artifact@v4
+      with:
+        name: arui-scripts-coverage
+        path: packages/arui-scripts/coverage/
+        retention-days: 14
+        if-no-files-found: ignore
+
   lint:
 
     runs-on: ubuntu-latest

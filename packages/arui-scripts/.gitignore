@@ -1,2 +1,6 @@
 build
 *.tsbuildinfo
+coverage/
+!src/commands/build/
+# Preserve the existing build-script lint exclusion, but include nested tests.
+src/commands/build/*.ts
