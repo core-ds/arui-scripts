@@ -13,3 +13,5 @@ tsconfig.tsbuildinfo
 build
 .DS_Store
 .vscode/
+coverage/
+!packages/arui-scripts/src/commands/build/
