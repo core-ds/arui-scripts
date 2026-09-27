@@ -56,3 +56,9 @@ github action [Create snapshot release of packages](https://github.com/core-ds/a
 Перед первым запуском выполните `yarn install --immutable && yarn build` для сборки внутренних workspace-зависимостей.
 
 В расчёт входят все `src/**/*.{ts,js}`, включая не импортированные тестами файлы. Исключены только тесты и декларации типов. HTML-отчёт находится в `packages/arui-scripts/coverage/index.html`, машинные отчёты — `coverage-summary.json`, `coverage-final.json` и `lcov.info` в той же папке. Отчёты не коммитятся.
+
+Минимальный общий порог — **80% отдельно для lines, statements, functions и branches**. Команда `test:coverage` завершается с ошибкой, если любой показатель ниже порога. В CI эта проверка выполняется на Node.js 22; HTML и LCOV доступны в артефакте `arui-scripts-coverage` (14 дней).
+
+Для проверки независимости тестов от порядка запуска: `yarn workspace arui-scripts test --runInBand --randomize --seed=928`.
+
+Область тестирования и оставшиеся пробелы описаны в [testing.md](packages/arui-scripts/docs/testing.md).
