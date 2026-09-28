@@ -52,6 +52,38 @@ describe('print-build-error', () => {
             expect(consoleLogSpy).toHaveBeenCalled();
         });
 
+        it.each(['0', '7'])('prints the Terser file location for column %s', (column) => {
+            const error = new Error('Error from Terser');
+
+            error.stack = `Error [bundle.js:12,${column}][details]`;
+            printBuildError(error);
+
+            const output = consoleLogSpy.mock.calls.flat().join('\n');
+
+            expect(output).toContain(column === '0' ? 'bundle.js:12\n' : 'bundle.js:12:7');
+            expect(output).not.toContain('bundle.js:12:0');
+        });
+
+        it.each([true, false])(
+            'handles an unrecognized Terser stack with showStack=%s',
+            (showStack) => {
+                const error = new Error('Error from Terser');
+
+                error.stack = 'Unrecognized minifier stack';
+                printBuildError(error, { showStack });
+
+                expect(consoleLogSpy.mock.calls.flat().join('\n')).toContain(
+                    'Failed to minify the bundle.',
+                );
+
+                if (showStack) {
+                    expect(consoleLogSpy).toHaveBeenCalledWith(error.stack);
+                } else {
+                    expect(consoleLogSpy).not.toHaveBeenCalledWith(error.stack);
+                }
+            },
+        );
+
         it('preserves diagnostics and can disable suggestions', () => {
             const error = new Error("Cannot find module 'lodash/debounce'\nResolver details");
 
@@ -80,7 +112,8 @@ describe('print-build-error', () => {
 
             printBuildError(error, { showStack: true });
 
-            expect(consoleLogSpy).toHaveBeenCalled();
+            expect(consoleLogSpy).toHaveBeenCalledWith(error.stack);
+            expect(consoleLogSpy.mock.calls.flat().join('\n')).toContain('Stack trace:');
         });
 
         it('does not show stack trace by default', () => {
