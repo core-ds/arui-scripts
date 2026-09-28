@@ -4,9 +4,13 @@
 
 CLI `arui-scripts` поддерживает глобальные флаги:
 
-- `arui-scripts --help` - список всех команд с описаниями.
-- `arui-scripts --version` (`-v`) - версия пакета.
-- `arui-scripts <command> --help` - справка по конкретной команде.
+-   `arui-scripts --help` - список всех команд с описаниями.
+-   `arui-scripts --version` (`-v`) - версия пакета.
+-   `arui-scripts <command> --help` - справка по конкретной команде.
+
+## Вывод ошибок
+
+`start` и `start:prod` группируют ошибки watch-компиляции по категориям и показывают подсказки для распознанных ошибок. `build` выводит первую ошибку с подробностями и подсказками. Многострочные сообщения сохраняют причину ошибки и фрагмент исходника, переданные сборщиком. [Примеры и ограничения](error-grouping.md).
 
 ## start
 
@@ -42,11 +46,12 @@ arui-scripts build
 ## test
 
 Конфигурация включает в себя:
-- Использование `jest-snapshot-serializer-class-name-to-string` для правильной работы с `cn`
-- Замену всех импортов css файлов на пустые файлы
-- Компиляцию .js/.jsx файлов используя babel
-- Компиляцию .ts/.tsx файлов используя tsc
-- Замену импортов остальных типов файлов на импорт строк с названием файла
+
+-   Использование `jest-snapshot-serializer-class-name-to-string` для правильной работы с `cn`
+-   Замену всех импортов css файлов на пустые файлы
+-   Компиляцию .js/.jsx файлов используя babel
+-   Компиляцию .ts/.tsx файлов используя tsc
+-   Замену импортов остальных типов файлов на импорт строк с названием файла
 
 Команда `arui-scripts test` внутри запускает jest с дополнительной конфигурацией.
 
@@ -58,6 +63,7 @@ arui-scripts build
 Таким образом будет работать как запуск тестов через arui-script, так и любые сторонние инструменты, запускающие jest.
 
 _package.json_
+
 ```json
 {
     "jest": {
@@ -85,19 +91,23 @@ arui-scripts test
 import { defineConfig, mergeConfig } from 'vitest/config';
 import aruiConfig from 'arui-scripts/vitest';
 
-export default mergeConfig(aruiConfig, defineConfig({
-    test: {
-        setupFiles: ['./__tests__/setup.js'],
-        // другие настройки Vitest
-    },
-}));
+export default mergeConfig(
+    aruiConfig,
+    defineConfig({
+        test: {
+            setupFiles: ['./__tests__/setup.js'],
+            // другие настройки Vitest
+        },
+    }),
+);
 ```
 
 Базовый конфиг arui-scripts включает:
-- API Vitest - используйте явные импорты: `import { describe, it, expect } from 'vitest'` (без глобальных переменных)
-- Замену импортов `.css` на пустые модули, ассетов (svg, png, шрифты и др.) - на строку с именем файла
-- Маппинг путей из `tsconfig.json` (paths) через [vite-tsconfig-paths](https://www.npmjs.com/package/vite-tsconfig-paths)
-- Маски для тестов: `src/**/__tests__/**/*`, `src/**/__test__/**/*`, `src/**/*.{test,spec,tests}.*`
+
+-   API Vitest - используйте явные импорты: `import { describe, it, expect } from 'vitest'` (без глобальных переменных)
+-   Замену импортов `.css` на пустые модули, ассетов (svg, png, шрифты и др.) - на строку с именем файла
+-   Маппинг путей из `tsconfig.json` (paths) через [vite-tsconfig-paths](https://www.npmjs.com/package/vite-tsconfig-paths)
+-   Маски для тестов: `src/**/__tests__/**/*`, `src/**/__test__/**/*`, `src/**/*.{test,spec,tests}.*`
 
 **Обратная совместимость**: при отсутствии `vitest.config.*` по-прежнему читается `jest.setupFiles` из `package.json`.
 
@@ -177,3 +187,5 @@ arui-scripts archive-build
 Так же при запуске будет генерироваться [stats-файл](https://webpack.js.org/api/stats/), который можно использовать в
 [сторонних](http://webpack.github.io/analyse/) инструментах, например для понимания почему тот или иной модуль попал в бандл.
 По умолчанию файл будет писаться в `.build/stats.json`, вы можете поменять это через отдельную [настройку statsOutputFilename](settings.md#statsOutputFilename).
+
+Настройки `stats` для группированного watch-вывода и ограничения описаны в [диагностике сборки](error-grouping.md#настройка-watch-вывода).
