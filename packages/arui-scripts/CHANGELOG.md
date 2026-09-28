@@ -1,5 +1,11 @@
 # arui-scripts
 
+## 23.9.3
+
+### Patch Changes
+
+-   [#605](https://github.com/core-ds/arui-scripts/pull/605) [`94ce42aa`](https://github.com/core-ds/arui-scripts/commit/94ce42aa67e8fa3e8c4f1f883c5aac179de9413e) Thanks [@dmitrbrvsk](https://github.com/dmitrbrvsk)! - Сборка больше не завершается успешно, если компилятор упал. Раньше при падении по сигналу (например, из-за нехватки памяти) `arui-scripts build` выходил с кодом 0 и CI/CD считал такую сборку успешной, хотя ассеты собраны не полностью.
+
 ## 23.9.2
 
 ### Patch Changes
