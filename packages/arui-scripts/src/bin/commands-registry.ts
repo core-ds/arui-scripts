@@ -56,10 +56,12 @@ export const commands: CliCommand[] = [
     },
     {
         name: 'test:vitest',
-        description: 'Запускает unit тесты через vitest',
+        description:
+            'Запускает unit тесты через vitest (устарела, используйте @alfalab/arui-scripts-vitest)',
         help: [
-            'Использует vitest.config.* из корня проекта, иначе конфигурацию arui-scripts.',
+            'Использует vitest.config.* из корня проекта, иначе конфигурацию @alfalab/arui-scripts-vitest.',
             'Все аргументы после команды пробрасываются в vitest.',
+            'Команда будет удалена в следующей мажорной версии: запускайте `vitest run` с конфигом из @alfalab/arui-scripts-vitest.',
         ].join('\n'),
         passthrough: true,
         load: () => require('../commands/test-vitest'),
