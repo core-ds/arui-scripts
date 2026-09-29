@@ -76,6 +76,9 @@ arui-scripts test
 
 Команда `arui-scripts test:vitest` запускает unit тесты через [Vitest](https://vitest.dev/).
 
+Vitest требует Node.js 22.12 или новее. Ему также нужен `vite` (peer-зависимость), `arui-scripts` устанавливает его сам.
+Если `vitest` подключен в проект напрямую и используется yarn, добавьте `vite` в `devDependencies` проекта (yarn не устанавливает peer-зависимости автоматически).
+
 Если в корне проекта есть `vitest.config.ts` (или `.js`, `.mjs`, `.cjs`), то используется он.
 Иначе применяется конфигурация arui-scripts.
 
