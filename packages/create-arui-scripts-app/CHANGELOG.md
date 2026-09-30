@@ -1,5 +1,11 @@
 # create-arui-scripts-app
 
+## 1.2.1
+
+### Patch Changes
+
+-   [#609](https://github.com/core-ds/arui-scripts/pull/609) [`fdc0e343`](https://github.com/core-ds/arui-scripts/commit/fdc0e3433d79884165072aa0f68c94345b574f71) Thanks [@dmitrbrvsk](https://github.com/dmitrbrvsk)! - В шаблоне приложения с Vitest обновлена версия `vitest` до `^5.0.2` и добавлен `vite@^8.3.1`: vitest 5 требует его как peer зависимость
+
 ## 1.2.0
 
 ### Minor Changes

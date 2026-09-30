@@ -1,5 +1,16 @@
 # arui-scripts
 
+## 24.0.0
+
+### Major Changes
+
+-   [#609](https://github.com/core-ds/arui-scripts/pull/609) [`fdc0e343`](https://github.com/core-ds/arui-scripts/commit/fdc0e3433d79884165072aa0f68c94345b574f71) Thanks [@dmitrbrvsk](https://github.com/dmitrbrvsk)! - Vitest обновлен с v4 до v5
+
+    ## Почему мажорный релиз
+
+    Vitest 5 требует Node.js `^22.12.0 || ^24.0.0 || >=26.0.0`.
+    Полный список изменений: [Migrating to Vitest 5](https://vitest.dev/guide/migration/#vitest-5)
+
 ## 23.9.3
 
 ### Patch Changes
