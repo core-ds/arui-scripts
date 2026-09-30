@@ -86,6 +86,14 @@ describe('buildContext', () => {
         expect(vitestCtx.devDependencies).not.toHaveProperty('ts-jest');
     });
 
+    it('vitest добавляет vite: это обязательный peer vitest, а Yarn peer-зависимости не ставит', () => {
+        const vitestCtx = buildContext({ ...base, testRunner: 'vitest' }, '1.0.0');
+        const jestCtx = buildContext({ ...base, testRunner: 'jest' }, '1.0.0');
+
+        expect(vitestCtx.devDependencies).toHaveProperty('vite');
+        expect(jestCtx.devDependencies).not.toHaveProperty('vite');
+    });
+
     it('useLint добавляет arui-presets-lint', () => {
         const withLint = buildContext({ ...base, useLint: true }, '1.0.0');
         const withoutLint = buildContext({ ...base, useLint: false }, '1.0.0');

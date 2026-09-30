@@ -21,7 +21,8 @@ const VERSIONS = {
     jest: '^29.7.0',
     tsJest: '^29.1.0',
     typesJest: '^29.5.0',
-    vitest: '^4.1.5',
+    vitest: '^5.0.2',
+    vite: '^8.3.1',
     playwrightTest: '^1.57.0',
     cypress: '^15.19.0',
     reactRouterDom: '^7.6.0',
@@ -76,6 +77,7 @@ export function buildContext(answers: InitAnswers, aruiScriptsVersion: string): 
         devDependencies['@types/jest'] = VERSIONS.typesJest;
     } else {
         devDependencies.vitest = VERSIONS.vitest;
+        devDependencies.vite = VERSIONS.vite;
     }
 
     if (answers.e2eFramework === 'playwright') {
