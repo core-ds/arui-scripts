@@ -30,7 +30,6 @@ export function runCompilers(pathToCompilers: Array<string | string[]>) {
         process.exit(exitCode);
     }
 
-    // в error приходит объект ошибки, а не код для выхода
     function onProcessError(error: Error) {
         console.error(error.message);
         stopCompilers(1);
@@ -38,7 +37,6 @@ export function runCompilers(pathToCompilers: Array<string | string[]>) {
 
     function onProcessClose(code: number | null) {
         if (code !== 0) {
-            // code === null означает, что процесс убит сигналом
             stopCompilers(code ?? 1);
         }
     }

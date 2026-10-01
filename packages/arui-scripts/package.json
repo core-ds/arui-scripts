@@ -22,6 +22,7 @@
     "bin": "./build/bin/index.js",
     "dependencies": {
         "@alfalab/arui-scripts-artifacts": "workspace:^",
+        "@alfalab/arui-scripts-vitest": "workspace:^",
         "@alfalab/postcss-custom-properties": "^9.1.2",
         "@babel/core": "7.29.7",
         "@babel/plugin-proposal-decorators": "^7.29.7",
@@ -123,9 +124,6 @@
         "ts-jest": "29.1.0",
         "ts-loader": "9.4.4",
         "ts-node": "10.9.2",
-        "vite": "^8.3.1",
-        "vite-tsconfig-paths": "^6.1.1",
-        "vitest": "^5.0.2",
         "webpack-bundle-analyzer": "4.10.2",
         "webpack-deduplication-plugin": "^0.0.8",
         "webpack-node-externals": "3.0.0"
@@ -156,7 +154,6 @@
         "build": "sh bin/build.sh",
         "cli": "node build/bin/index.js",
         "test": "jest",
-        "test:vitest": "vitest",
         "lint:scripts": "arui-presets-lint scripts",
         "format": "arui-presets-lint format",
         "format:check": "arui-presets-lint format:check",

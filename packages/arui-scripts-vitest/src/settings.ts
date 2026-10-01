@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 import tsconfigPaths from 'vite-tsconfig-paths';
+import { type ViteUserConfig } from 'vitest/config';
 
 function getSetupFiles(cwd: string): string[] {
     const packagePath = path.join(cwd, 'package.json');
@@ -56,7 +57,7 @@ const staticFilesMockPlugin = {
     },
 };
 
-export function getVitestConfig() {
+export function getVitestConfig(): ViteUserConfig {
     const cwd = process.cwd();
     const setupFiles = getSetupFiles(cwd);
 
