@@ -8,7 +8,8 @@
         "./vitest": "./build/configs/vitest/config.js",
         "./jest-preset": "./jest-preset.js",
         "./jest-preset.js": "./jest-preset.js",
-        "./tsconfig.json": "./tsconfig.json"
+        "./tsconfig.json": "./tsconfig.json",
+        "./build/configs/modules": "./build/configs/modules.js"
     },
     "license": "MPL-2.0",
     "repository": {
