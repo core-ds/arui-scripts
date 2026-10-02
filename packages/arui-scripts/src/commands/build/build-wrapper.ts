@@ -1,7 +1,7 @@
 import { type Configuration, type MultiStats, rspack, type Stats } from '@rspack/core';
 import chalk from 'chalk';
 
-import { formatWebpackMessages } from '../util/format-webpack-messages';
+import { formatRspackMessages } from '../util/format-rspack-messages';
 
 type BuildResult = {
     stats: Stats | MultiStats;
@@ -17,7 +17,7 @@ function build(config: Configuration | Configuration[], previousFileSizes?: unkn
             if (err) {
                 return reject(err);
             }
-            const messages = formatWebpackMessages(stats?.toJson({}));
+            const messages = formatRspackMessages(stats?.toJson({}));
 
             if (messages.errors.length) {
                 // Only keep the first error. Others are often indicative

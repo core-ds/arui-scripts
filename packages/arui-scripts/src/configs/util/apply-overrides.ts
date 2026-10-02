@@ -4,7 +4,7 @@ import { type Options as SwcOptions } from '@swc/core';
 
 import { configs } from '../app-configs';
 import { type AppContextWithConfigs } from '../app-configs/types';
-import { type createSingleClientWebpackConfig } from '../rspack.client';
+import { type createSingleClientRspackConfig } from '../rspack.client';
 
 import { type findLoader } from './find-loader';
 import { type createFindPluginFunction } from './find-plugin';
@@ -59,28 +59,12 @@ type Overrides = {
     html: string;
 };
 
-// Маппинг устаревших webpack-ключей оверрайдов на актуальные ключи для rspack
-// Поддержка webpack-ключей будет скоро удалена.
-const DEPRECATED_OVERRIDE_KEYS = {
-    webpack: 'rspack',
-    webpackClient: 'rspackClient',
-    webpackDev: 'rspackDev',
-    webpackClientDev: 'rspackClientDev',
-    webpackServer: 'rspackServer',
-    webpackServerDev: 'rspackServerDev',
-    webpackProd: 'rspackProd',
-    webpackClientProd: 'rspackClientProd',
-    webpackServerProd: 'rspackServerProd',
-} as const;
-
-type DeprecatedOverrideKey = keyof typeof DEPRECATED_OVERRIDE_KEYS;
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type OmitFirstArg<F> = F extends (x: any, ...args: infer P) => infer R ? (...args: P) => R : never;
-type BoundCreateSingleClientWebpackConfig = OmitFirstArg<typeof createSingleClientWebpackConfig>;
+type BoundCreateSingleClientRspackConfig = OmitFirstArg<typeof createSingleClientRspackConfig>;
 
 type ClientRspackAdditionalArgs = {
-    createSingleClientWebpackConfig: BoundCreateSingleClientWebpackConfig;
+    createSingleClientRspackConfig: BoundCreateSingleClientRspackConfig;
     findLoader: typeof findLoader;
     findPlugin: ReturnType<typeof createFindPluginFunction<'client'>>;
 };
@@ -103,25 +87,6 @@ type OverridesAdditionalArgs = {
     rspackServer: ServerRspackAdditionalArgs;
     rspackServerDev: ServerRspackAdditionalArgs;
     rspackServerProd: ServerRspackAdditionalArgs;
-
-    /** @deprecated используйте rspack */
-    webpack: ClientRspackAdditionalArgs;
-    /** @deprecated используйте rspackClient */
-    webpackClient: ClientRspackAdditionalArgs;
-    /** @deprecated используйте rspackDev */
-    webpackDev: ClientRspackAdditionalArgs;
-    /** @deprecated используйте rspackClientDev */
-    webpackClientDev: ClientRspackAdditionalArgs;
-    /** @deprecated используйте rspackProd */
-    webpackProd: ClientRspackAdditionalArgs;
-    /** @deprecated используйте rspackClientProd */
-    webpackClientProd: ClientRspackAdditionalArgs;
-    /** @deprecated используйте rspackServer */
-    webpackServer: ServerRspackAdditionalArgs;
-    /** @deprecated используйте rspackServerDev */
-    webpackServerDev: ServerRspackAdditionalArgs;
-    /** @deprecated используйте rspackServerProd */
-    webpackServerProd: ServerRspackAdditionalArgs;
 };
 
 type OverrideFunction<K extends keyof Overrides> = (
@@ -134,37 +99,7 @@ type OverrideFunction<K extends keyof Overrides> = (
 
 export type OverrideFile = {
     [K in keyof Overrides]?: OverrideFunction<K>;
-} & Partial<Record<DeprecatedOverrideKey, OverrideFunction<'rspack'>>>;
-
-/**
- * Переносит устаревшие webpack-ключи оверрайдов на актуальные rspack-ключи и
- * предупреждает о необходимости миграции. Если заданы оба ключа — приоритет у
- * нового, устаревший игнорируется.
- */
-function normalizeDeprecatedOverrideKeys(override: OverrideFile): OverrideFile {
-    const result: Record<string, unknown> = { ...override };
-
-    (Object.keys(DEPRECATED_OVERRIDE_KEYS) as DeprecatedOverrideKey[]).forEach((deprecatedKey) => {
-        if (!Object.prototype.hasOwnProperty.call(result, deprecatedKey)) {
-            return;
-        }
-
-        const newKey = DEPRECATED_OVERRIDE_KEYS[deprecatedKey];
-
-        console.warn(
-            `[arui-scripts] Ключ оверрайда "${deprecatedKey}" устарел, используйте "${newKey}". ` +
-                `Поддержка "${deprecatedKey}" будет скоре удалена.`,
-        );
-
-        if (!Object.prototype.hasOwnProperty.call(result, newKey)) {
-            result[newKey] = result[deprecatedKey];
-        }
-
-        delete result[deprecatedKey];
-    });
-
-    return result as OverrideFile;
-}
+};
 
 let overrides: OverrideFile[] = [];
 
@@ -176,10 +111,10 @@ overrides = configs.overridesPath.map((path) => {
         // eslint-disable-next-line no-underscore-dangle
         if (requireResult.__esModule) {
             // ts-node импортирует esModules, из них надо вытягивать default именно так
-            return normalizeDeprecatedOverrideKeys(requireResult.default);
+            return requireResult.default;
         }
 
-        return normalizeDeprecatedOverrideKeys(requireResult);
+        return requireResult;
     } catch (e) {
         console.error(`Unable to process override file "${path}"`);
         console.log(e);
@@ -225,9 +160,7 @@ export function applyOverrides<
                     throw new TypeError(`Override ${key} must be a function`);
                 }
                 // eslint-disable-next-line no-param-reassign
-                // @ts-expect-error Union type conflict between rspack and deprecated webpack keys - resolved at runtime
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any,no-param-reassign
-                config = overrideFn(config, configs, args) as T;
+                config = overrideFn(config, configs, args);
             }
         });
     });

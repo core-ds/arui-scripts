@@ -39,7 +39,7 @@ import { addEnvToHtmlTemplate, ClientConfigPlugin } from './client-env-config';
 import {
     MODULES_SEPARATE_BUILD_NAME,
     patchMainRspackConfigForModules,
-    patchWebpackConfigForCompat,
+    patchRspackConfigForCompat,
 } from './modules';
 import { postcssConfig as postcssConf } from './postcss';
 import { processAssetsPluginOutput } from './process-assets-plugin-output';
@@ -105,11 +105,11 @@ function getMinimizeConfig(mode: 'dev' | 'prod') {
 /**
  * Создает конфигурацию для сборки клиентского кода. Может быть использована для создания дополнительных конфигураций.
  * @param mode Режим сборки (dev или prod)
- * @param entry Точка входа, любой валидный вход для webpack
+ * @param entry Точка входа, любой валидный вход для rspack
  * @param configName Имя конфигурации, если не указано, то используется имя по умолчанию
  */
 // eslint-disable-next-line complexity
-export const createSingleClientWebpackConfig = (
+export const createSingleClientRspackConfig = (
     mode: 'dev' | 'prod',
     entry: Entry,
     configName?: string,
@@ -408,34 +408,34 @@ export const createSingleClientWebpackConfig = (
     },
 });
 
-export const createClientWebpackConfig = (mode: 'dev' | 'prod') => {
-    const baseWebpackConfig = [createSingleClientWebpackConfig(mode, configs.clientEntry)];
+export const createClientRspackConfig = (mode: 'dev' | 'prod') => {
+    const baseRspackConfig = [createSingleClientRspackConfig(mode, configs.clientEntry)];
 
     if (configs.modules?.options?.useSeparateBuild) {
-        baseWebpackConfig[0] = patchMainRspackConfigForModules(baseWebpackConfig[0], 'consumer');
-        baseWebpackConfig.push(
+        baseRspackConfig[0] = patchMainRspackConfigForModules(baseRspackConfig[0], 'consumer');
+        baseRspackConfig.push(
             patchMainRspackConfigForModules(
-                createSingleClientWebpackConfig(mode, {}, MODULES_SEPARATE_BUILD_NAME),
+                createSingleClientRspackConfig(mode, {}, MODULES_SEPARATE_BUILD_NAME),
                 'provider',
             ),
         );
     } else {
-        baseWebpackConfig[0] = patchMainRspackConfigForModules(baseWebpackConfig[0], 'both');
+        baseRspackConfig[0] = patchMainRspackConfigForModules(baseRspackConfig[0], 'both');
     }
 
     const exposedCompatModules = configs.compatModules?.exposes;
 
     if (!exposedCompatModules || Object.keys(exposedCompatModules).length === 0) {
-        return baseWebpackConfig.length === 1 ? baseWebpackConfig[0] : baseWebpackConfig;
+        return baseRspackConfig.length === 1 ? baseRspackConfig[0] : baseRspackConfig;
     }
 
     // Добавляем отдельные конфигурации для compat модулей
-    const modulesWebpackConfigs = Object.keys(exposedCompatModules).map((moduleName) => {
+    const modulesRspackConfigs = Object.keys(exposedCompatModules).map((moduleName) => {
         const module = {
             name: moduleName,
             ...exposedCompatModules[moduleName],
         };
-        const config = createSingleClientWebpackConfig(
+        const config = createSingleClientRspackConfig(
             mode,
             {
                 [module.name]: module.entry,
@@ -443,10 +443,10 @@ export const createClientWebpackConfig = (mode: 'dev' | 'prod') => {
             module.name,
         );
 
-        return patchWebpackConfigForCompat(module, config);
+        return patchRspackConfigForCompat(module, config);
     });
 
-    return [...baseWebpackConfig, ...modulesWebpackConfigs];
+    return [...baseRspackConfig, ...modulesRspackConfigs];
 };
 
 function getCodeLoader(mode: 'dev' | 'prod'): RuleSetRule[] {

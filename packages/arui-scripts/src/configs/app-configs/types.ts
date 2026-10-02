@@ -1,7 +1,7 @@
 import { type DevTool, type Shared } from '@rspack/core';
 import { type Configuration as DevServerConfiguration } from '@rspack/dev-server';
 import { type PluginOptions as ReactCompilerOptions } from 'babel-plugin-react-compiler';
-import type webpackNodeExternals from 'webpack-node-externals';
+import type NodeExternals from 'webpack-node-externals';
 
 import { type NginxBaseConfOptions } from '@alfalab/arui-scripts-artifacts';
 
@@ -71,8 +71,6 @@ export type AppConfigs = {
     experimentalReactCompiler: 'disabled' | ReactCompilerOptions;
     installServerSourceMaps: boolean;
     disableDevRspackTypecheck: boolean;
-    /** @deprecated используйте `disableDevRspackTypecheck` */
-    disableDevWebpackTypecheck?: boolean;
     jestCodeTransformer: 'babel' | 'tsc' | 'swc';
     jestTransformNodeModules: string[];
     collectCoverage: boolean;
@@ -122,7 +120,7 @@ export type AppConfigs = {
         options?: ModuleConfigBase;
         shareScope?: string;
     } | null;
-    nodeExternals?: Omit<webpackNodeExternals.Options, 'allowlist'>;
+    nodeExternals?: Omit<NodeExternals.Options, 'allowlist'>;
 };
 
 export type ModuleConfigBase = {
