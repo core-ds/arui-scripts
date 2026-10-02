@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 
-import { webpackServerConfig } from '../../configs/rspack.server.prod';
+import { rspackServerConfig } from '../../configs/rspack.server.prod';
 import { supportingNode } from '../../configs/supporting-node';
 import { printBuildError } from '../util/print-build-error';
 
@@ -10,7 +10,7 @@ process.env.BROWSERSLIST = supportingNode.join(',');
 
 console.log(chalk.magenta('Building server...'));
 
-build(webpackServerConfig)
+build(rspackServerConfig)
     .then(({ warnings }) => {
         if (warnings.length) {
             console.log(chalk.yellow('Server compiled with warnings.\n'));

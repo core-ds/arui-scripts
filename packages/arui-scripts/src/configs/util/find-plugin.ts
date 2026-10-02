@@ -36,7 +36,7 @@ type PluginsListClient = {
         options: MiniCssExtractPlugin.PluginOptions;
         runtimeOptions: MiniCssExtractPlugin.RuntimeOptions;
     };
-    ForkTsCheckerWebpackPlugin: {
+    TsCheckerRspackPlugin: {
         options: TsCheckerRspackPluginOptions;
     };
     IgnorePlugin: {
@@ -102,7 +102,7 @@ type SelectedPluginsList<Type extends 'client' | 'server'> = Type extends 'clien
 
 export function createFindPluginFunction<Type extends 'client' | 'server'>() {
     /**
-     * @param config конфигурация webpack
+     * @param config конфигурация rspack
      * @param pluginName имя плагина
      * @returns плагин или плагины, которые подошли под условие из testRule
      */

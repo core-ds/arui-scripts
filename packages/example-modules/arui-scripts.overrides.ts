@@ -1,16 +1,16 @@
 // TODO: remove eslint-disable and eslint-disable-next-line
 /* eslint-disable no-param-reassign */
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { type RuleSetRule } from '@rspack/core';
 import { type OverrideFile } from 'arui-scripts';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import path from 'node:path';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { type RuleSetRule } from 'webpack';
 
 const overrides: OverrideFile = {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    webpackClient: (config, appConfig, { findLoader }) => {
+    rspackClient: (config, appConfig, { findLoader }) => {
         const allConfigs = Array.isArray(config) ? config : [config];
 
         // Делаем стабильные имена классов css модулей для тестирования
@@ -46,7 +46,7 @@ const overrides: OverrideFile = {
 
         return allConfigs;
     },
-    webpackClientProd: (config) => {
+    rspackClientProd: (config) => {
         const allConfigs = Array.isArray(config) ? config : [config];
 
         return allConfigs.map((singleConfig) => {

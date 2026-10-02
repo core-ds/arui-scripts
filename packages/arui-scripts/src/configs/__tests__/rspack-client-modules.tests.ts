@@ -2,9 +2,9 @@ import { type Configuration } from '@rspack/core';
 
 import { configs } from '../app-configs';
 import { MODULES_SEPARATE_BUILD_NAME } from '../modules';
-import { createClientWebpackConfig } from '../rspack.client';
+import { createClientRspackConfig } from '../rspack.client';
 
-describe('client webpack config for modules', () => {
+describe('client rspack config for modules', () => {
     const originalModules = configs.modules;
     const originalNormalizedName = configs.normalizedName;
 
@@ -25,7 +25,7 @@ describe('client webpack config for modules', () => {
             },
         };
 
-        const clientConfig = createClientWebpackConfig('prod') as Configuration[];
+        const clientConfig = createClientRspackConfig('prod') as Configuration[];
         const mainConfig = clientConfig.find((config) => !config.name);
         const wmfConfig = clientConfig.find(
             (config) => config.name === MODULES_SEPARATE_BUILD_NAME,
