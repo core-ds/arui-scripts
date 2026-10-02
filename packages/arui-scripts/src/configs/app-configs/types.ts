@@ -68,6 +68,22 @@ export type AppConfigs = {
     // build tuning
     keepPropTypes: boolean;
     codeLoader: 'babel' | 'tsc' | 'swc';
+    /**
+     * Собирать клиентский JSX через собственную реализацию JSX-рантайма, совместимую
+     * и с React 18, и с React 19.
+     *
+     * Проблема, которую решает флаг: SWC компилирует JSX в вызовы "react/jsx-runtime",
+     * и если этот модуль будет из React 19, элементы получат тип
+     * Symbol.for("react.transitional.element"), который не умеет рендерить React 18
+     * (Minified React error #31 "Objects are not valid as a React child").
+     * С флагом вместо "react/jsx-runtime" и "react/jsx-dev-runtime" подставляется
+     * реализация arui-scripts, которая выбирает тип элемента по версии хостового react
+     * в момент создания (см. configs/util/jsx-runtime).
+     *
+     * Нужно для библиотек/виджетов, чей клиентский код исполняется внутри React-приложений
+     * разных мажорных версий.
+     */
+    pinJsxRuntime: boolean;
     experimentalReactCompiler: 'disabled' | ReactCompilerOptions;
     installServerSourceMaps: boolean;
     disableDevRspackTypecheck: boolean;

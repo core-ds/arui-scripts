@@ -59,6 +59,7 @@ export function getDefaultAppConfig(): AppConfigs {
         // build tuning
         keepPropTypes: false,
         codeLoader: 'swc',
+        pinJsxRuntime: false,
         experimentalReactCompiler: 'disabled',
         installServerSourceMaps: false,
         disableDevRspackTypecheck: true,

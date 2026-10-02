@@ -47,6 +47,11 @@ import { swcClientConfig } from './swc';
 
 const noopPath = require.resolve('./util/noop');
 
+// Путь до реализации JSX-рантайма, который подставляется вместо "react/jsx-runtime"
+// при включенном `pinJsxRuntime`. Используется __dirname, чтобы путь указывал на
+// скомпилированный файл внутри самого arui-scripts, а не на src приложения.
+const pinnedJsxRuntimePath = path.resolve(__dirname, './util/jsx-runtime');
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getSingleEntry(entryPoint: string[], mode: 'dev' | 'prod') {
     return [
@@ -186,6 +191,12 @@ export const createSingleClientWebpackConfig = (
         // if there are any conflicts. This matches Node resolution mechanism.
         // https://github.com/facebookincubator/create-react-app/issues/253
         modules: ['node_modules', configs.appNodeModules],
+        alias: configs.pinJsxRuntime
+            ? {
+                  'react/jsx-runtime': pinnedJsxRuntimePath,
+                  'react/jsx-dev-runtime': pinnedJsxRuntimePath,
+              }
+            : undefined,
         // These are the reasonable defaults supported by the Node ecosystem.
         // We also include JSX as a common component filename extension to support
         // some tools, although we do not recommend using it, see:

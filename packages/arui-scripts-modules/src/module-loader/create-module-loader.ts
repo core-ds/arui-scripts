@@ -4,6 +4,7 @@ import { removeModuleResources } from './utils/dom-utils';
 import { fetchResources, getResourcesTargetNodes } from './utils/fetch-resources';
 import { getCompatModule, getModule } from './utils/get-module';
 import { addCleanupMethod, cleanupModule, getModulesCache } from './utils/modules-cache';
+import { enableLegacyReactCompat } from './utils/react-legacy-compat';
 import { type MountableModule } from './module-types';
 import {
     type BaseModuleState,
@@ -188,25 +189,36 @@ export function createModuleLoader<
         if (!isModuleResourcesCached) {
             await lifecycleHooks.onBeforeResourcesMount?.(moduleId, moduleResources);
 
-            await fetchResources({
-                cssTargetNode: resourcesNodes.css,
-                jsTargetNode: resourcesNodes.js,
-                cssTargetSelector,
-                moduleId,
-                scripts: moduleResources.scripts,
-                // Стили default-модулей грузит рантайм module federation, а не мы.
-                // Начиная с поддержки SSR сервер может присылать
-                // css default-модуля в `styles` — но только чтобы хост-сервер отрендерил
-                // серверные стили. На клиенте их наследует MF-рантайм по `data-href`,
-                // поэтому здесь их НЕ подключаем, иначе будет двойная загрузка.
-                styles: moduleResources.mountMode === 'default' ? [] : moduleResources.styles,
-                baseUrl: moduleResources.moduleState.baseUrl,
-                abortSignal,
-                disableInlineStyleSafari,
-            }).catch((error) => {
+            // Compat-модули собираются с легаси jsx-runtime (React 18): на хостах с React 19+
+            // eval чанка падает (нет __SECRET_INTERNALS) или создаёт классические элементы,
+            // которые react-dom 19 не рендерит. Временно включаем шим совместимости на время
+            // выполнения ресурсов модуля (внутри происходит eval чанков), затем выключаем.
+            const disableLegacyReactCompat =
+                moduleResources.mountMode === 'compat' ? enableLegacyReactCompat() : undefined;
+
+            try {
+                await fetchResources({
+                    cssTargetNode: resourcesNodes.css,
+                    jsTargetNode: resourcesNodes.js,
+                    cssTargetSelector,
+                    moduleId,
+                    scripts: moduleResources.scripts,
+                    // Стили default-модулей грузит рантайм module federation, а не мы.
+                    // Начиная с поддержки SSR сервер может присылать
+                    // css default-модуля в `styles` — но только чтобы хост-сервер отрендерил
+                    // серверные стили. На клиенте их наследует MF-рантайм по `data-href`,
+                    // поэтому здесь их НЕ подключаем, иначе будет двойная загрузка.
+                    styles: moduleResources.mountMode === 'default' ? [] : moduleResources.styles,
+                    baseUrl: moduleResources.moduleState.baseUrl,
+                    abortSignal,
+                    disableInlineStyleSafari,
+                });
+            } catch (error) {
                 lifecycleHooks.onError?.(moduleId, 'fetch-resources', error);
                 throw error;
-            });
+            } finally {
+                disableLegacyReactCompat?.();
+            }
         }
 
         await lifecycleHooks.onBeforeModuleMount?.(moduleId, moduleResources);
