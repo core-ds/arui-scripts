@@ -28,7 +28,7 @@ function getSeparateBuildRuntimeName() {
 }
 
 export function patchMainRspackConfigForModules(
-    webpackConf: rspack.Configuration,
+    rspackConf: rspack.Configuration,
     mode: 'consumer' | 'provider' | 'both',
 ) {
     /* eslint-disable no-param-reassign */
@@ -37,49 +37,49 @@ export function patchMainRspackConfigForModules(
 
     if (configs.disableModulesSupport) {
         // проект хочет сам разбираться с WMF и прочими вещами, полностью отключаем обработку модулей на своей стороне
-        return webpackConf;
+        return rspackConf;
     }
-    if (!webpackConf.module?.rules || !webpackConf.plugins) {
+    if (!rspackConf.module?.rules || !rspackConf.plugins) {
         // делаем TS счастливым, на самом деле module и plugins у нас будут всегда
-        return webpackConf;
+        return rspackConf;
     }
 
     if (isConsumer) {
         // Добавляем expose loader для библиотек, которые мы хотим вынести в глобальную область видимости
-        webpackConf.module.rules.unshift(...getExposeLoadersFormCompatModules());
+        rspackConf.module.rules.unshift(...getExposeLoadersFormCompatModules());
     }
 
-    if (!configs.modules || !webpackConf.output || !webpackConf.plugins) {
+    if (!configs.modules || !rspackConf.output || !rspackConf.plugins) {
         if (isConsumer) {
             // webpack по умолчанию всегда добавлял runtime для шаринга, даже когда модули не включены.
             // Rspack этого больше не делает, поэтому добавляем плагин для рантайма самостоятельно
-            webpackConf.plugins.push(new rspack.sharing.ProvideSharedPlugin({ provides: {} }));
+            rspackConf.plugins.push(new rspack.sharing.ProvideSharedPlugin({ provides: {} }));
         }
 
-        return webpackConf;
+        return rspackConf;
     }
 
     const { cssPrefix } = configs.modules.options || {};
 
     if (cssPrefix && isProvider) {
-        addCssPrefix(webpackConf, cssPrefix);
+        addCssPrefix(rspackConf, cssPrefix);
     }
 
-    webpackConf.output.publicPath = haveExposedDefaultModules()
+    rspackConf.output.publicPath = haveExposedDefaultModules()
         ? 'auto' // Для того чтобы модули могли подключаться из разных мест, нам необходимо использовать auto. Для корректной работы в IE надо подключaть https://github.com/amiller-gh/currentScript-polyfill
         : configs.publicPath;
 
     if (mode === 'provider') {
         const uniqueName = getSeparateBuildRuntimeName();
 
-        webpackConf.output = {
-            ...webpackConf.output,
+        rspackConf.output = {
+            ...rspackConf.output,
             uniqueName,
             chunkLoadingGlobal: `rspackChunk${uniqueName}`,
         };
     }
 
-    webpackConf.plugins.push(
+    rspackConf.plugins.push(
         new rspack.container.ModuleFederationPlugin({
             name: getModuleFederationContainerName(),
             filename: isProvider && configs.modules.exposes ? MODULES_ENTRY_NAME : undefined,
@@ -94,7 +94,7 @@ export function patchMainRspackConfigForModules(
         ...getModuleCssPlugins(isProvider),
     );
 
-    return webpackConf;
+    return rspackConf;
     /* eslint-enable no-param-reassign */
 }
 
@@ -105,9 +105,6 @@ function getModuleCssPlugins(isProvider: boolean): AttributeModuleCssPlugin[] {
 
     return [new AttributeModuleCssPlugin(configs.modules.exposes, modulesCssManifest)];
 }
-
-/** @deprecated используйте `patchMainRspackConfigForModules` */
-export const patchMainWebpackConfigForModules = patchMainRspackConfigForModules;
 
 export function getCssPrefixForModule(module: CompatModuleConfig) {
     if (module.cssPrefix) {
@@ -144,9 +141,9 @@ export function getExposeLoadersFormCompatModules() {
     });
 }
 
-function addCssPrefix(webpackConf: rspack.Configuration, cssPrefix: string) {
-    const cssRule = findLoader(webpackConf, '/\\.css$/');
-    const cssModulesRule = findLoader(webpackConf, '/\\.module\\.css$/');
+function addCssPrefix(rspackConf: rspack.Configuration, cssPrefix: string) {
+    const cssRule = findLoader(rspackConf, '/\\.css$/');
+    const cssModulesRule = findLoader(rspackConf, '/\\.module\\.css$/');
 
     addPrefixCssRule(cssRule, cssPrefix);
     addPrefixCssRule(cssModulesRule, `:global(${cssPrefix})`);
@@ -183,13 +180,13 @@ function addPrefixCssRule(rule: rspack.RuleSetRule | undefined, prefix: string) 
     ];
 }
 
-export function patchWebpackConfigForCompat(
+export function patchRspackConfigForCompat(
     module: CompatModuleConfig,
-    webpackConf: rspack.Configuration,
+    rspackConf: rspack.Configuration,
 ) {
     /* eslint-disable no-param-reassign */
-    webpackConf.externals = {
-        ...((webpackConf.externals as Record<string, string>) || {}),
+    rspackConf.externals = {
+        ...((rspackConf.externals as Record<string, string>) || {}),
         ...(module.externals || {}),
     };
     // Название переменной вебпака, которую он будет использовать для загрузки чанков. Важно чтобы для разных модулей они отличались,
@@ -197,14 +194,14 @@ export function patchWebpackConfigForCompat(
     const uniqueName = module.name;
 
     // Для того чтобы модули могли подключаться из разных мест, нам необходимо использовать publicPath = auto. Для корректной работы в IE надо подключaть https://github.com/amiller-gh/currentScript-polyfill
-    webpackConf.output = { ...webpackConf.output, publicPath: 'auto', uniqueName };
+    rspackConf.output = { ...rspackConf.output, publicPath: 'auto', uniqueName };
 
     const cssPrefix = getCssPrefixForModule(module);
 
     if (cssPrefix) {
-        addCssPrefix(webpackConf, cssPrefix);
+        addCssPrefix(rspackConf, cssPrefix);
     }
 
-    return webpackConf;
+    return rspackConf;
     /* eslint-enable no-param-reassign */
 }

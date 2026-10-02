@@ -116,7 +116,7 @@ function formatMessage(message: string | { message: string }) {
     return newMessage.trim();
 }
 
-export function formatWebpackMessages(json: StatsCompilation | undefined) {
+export function formatRspackMessages(json: StatsCompilation | undefined) {
     const formattedErrors = json?.errors?.map(formatMessage) || [];
     const formattedWarnings = json?.warnings?.map(formatMessage) || [];
     const result = { errors: formattedErrors, warnings: formattedWarnings };

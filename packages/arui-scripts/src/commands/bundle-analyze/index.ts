@@ -3,7 +3,7 @@ import { rspack, type RspackOptionsNormalized, type WebpackPluginInstance } from
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 
 import { configs } from '../../configs/app-configs';
-import { webpackClientConfig } from '../../configs/rspack.client.prod';
+import { rspackClientConfig } from '../../configs/rspack.client.prod';
 import { loadBrowserslist } from '../util/load-browserslist';
 import { makeTmpDir } from '../util/make-tmp-dir';
 
@@ -33,20 +33,20 @@ const bundleAnalyzerStatsOptions: BundleAnalyzerStatsOptions = {
     loadBrowserslist();
     console.log('Starting bundle analysis...');
 
-    const clientWebpackConfigs = Array.isArray(webpackClientConfig)
-        ? webpackClientConfig
-        : [webpackClientConfig];
+    const clientRspackConfigs = Array.isArray(rspackClientConfig)
+        ? rspackClientConfig
+        : [rspackClientConfig];
 
     /* eslint-disable no-param-reassign */
-    const promises = clientWebpackConfigs.map(async (webpackConfig, i) => {
+    const promises = clientRspackConfigs.map(async (rspackConfig, i) => {
         const tmpDir = await makeTmpDir(i.toString());
-        const webpackStatsOptions: RspackOptionsNormalized['stats'] = {
-            ...(typeof webpackConfig.stats === 'object' ? webpackConfig.stats : {}),
+        const rspackStatsOptions: RspackOptionsNormalized['stats'] = {
+            ...(typeof rspackConfig.stats === 'object' ? rspackConfig.stats : {}),
             ...bundleAnalyzerStatsOptions,
         };
 
-        webpackConfig.plugins = [
-            ...(webpackConfig.plugins || []),
+        rspackConfig.plugins = [
+            ...(rspackConfig.plugins || []),
             new BundleAnalyzerPlugin({
                 generateStatsFile: true,
                 statsFilename: configs.statsOutputPath,
@@ -58,16 +58,16 @@ const bundleAnalyzerStatsOptions: BundleAnalyzerStatsOptions = {
             }) as unknown as WebpackPluginInstance, // webpack-bundle-analyzer has incorrect types
             new RsdoctorRspackPlugin({}),
         ];
-        webpackConfig.stats = webpackStatsOptions;
-        webpackConfig.output = {
-            ...webpackConfig.output,
+        rspackConfig.stats = rspackStatsOptions;
+        rspackConfig.output = {
+            ...rspackConfig.output,
             path: tmpDir,
         };
     });
 
     await Promise.all(promises);
 
-    rspack(clientWebpackConfigs).run((err, stats) => {
+    rspack(clientRspackConfigs).run((err, stats) => {
         if (err) {
             console.error('Bundle analysis failed with error: ', err);
             process.exit(1);

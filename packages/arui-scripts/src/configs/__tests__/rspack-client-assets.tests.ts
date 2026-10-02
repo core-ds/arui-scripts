@@ -1,10 +1,10 @@
 import { type Configuration, CopyRspackPlugin, type RuleSetRule } from '@rspack/core';
 import ImageMinimizerPlugin from 'image-minimizer-webpack-plugin';
 
-import { createClientWebpackConfig } from '../rspack.client';
+import { createClientRspackConfig } from '../rspack.client';
 
 function getMainConfig(): Configuration {
-    const config = createClientWebpackConfig('prod');
+    const config = createClientRspackConfig('prod');
 
     return Array.isArray(config) ? config[0] : config;
 }
