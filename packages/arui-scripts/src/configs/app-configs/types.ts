@@ -66,6 +66,7 @@ export type AppConfigs = {
     };
 
     // build tuning
+    buildSizeBudgets: BuildSizeBudgets | null;
     keepPropTypes: boolean;
     codeLoader: 'babel' | 'tsc' | 'swc';
     experimentalReactCompiler: 'disabled' | ReactCompilerOptions;
@@ -185,3 +186,14 @@ export type AppContext = {
 export type AppContextWithConfigs = AppContext & AppConfigs;
 
 export type PackageSettings = Partial<AppConfigs>;
+
+export const BUILD_SIZE_ASSET_TYPES = ['js', 'css'] as const;
+export const BUILD_SIZE_METRICS = ['raw', 'gzip'] as const;
+
+export type BuildSizeAssetType = (typeof BUILD_SIZE_ASSET_TYPES)[number];
+export type BuildSizeMetric = (typeof BUILD_SIZE_METRICS)[number];
+
+export type BuildSizeLimit = { [metric in BuildSizeMetric]?: number };
+
+/** Absolute initial asset limits per client entrypoint, in bytes. */
+export type BuildSizeBudgets = { [type in BuildSizeAssetType]?: BuildSizeLimit };
