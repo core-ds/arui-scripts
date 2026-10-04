@@ -180,3 +180,19 @@ arui-scripts archive-build
 Так же при запуске будет генерироваться [stats-файл](https://webpack.js.org/api/stats/), который можно использовать в
 [сторонних](http://webpack.github.io/analyse/) инструментах, например для понимания почему тот или иной модуль попал в бандл.
 По умолчанию файл будет писаться в `.build/stats.json`, вы можете поменять это через отдельную [настройку statsOutputFilename](settings.md#statsOutputFilename).
+
+## cache:info
+
+Показывает каталог, размер, режимы и области постоянного кэша Rspack. Флаг `--json` даёт JSON-вывод без значений настроек/env.
+
+```sh
+arui-scripts cache:info --json
+```
+
+## cache:clear
+
+Очищает только принадлежащий arui-scripts постоянный кэш Rspack. Требует остановить активные build/dev; сохраняет `.build`, зависимости и остальные кэши. Отсутствие кэша — успех. [Подробности](./persistent-cache.md).
+
+```sh
+arui-scripts cache:clear
+```

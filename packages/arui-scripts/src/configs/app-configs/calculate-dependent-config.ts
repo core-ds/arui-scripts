@@ -2,6 +2,7 @@
 import fs from 'fs';
 import path from 'path';
 
+import { DEFAULT_CACHE_DIRECTORY } from '../cache/settings';
 import { getPolyfills } from '../util/get-polyfills';
 import { resolveNodeModuleRelativeTo } from '../util/resolve';
 
@@ -69,7 +70,12 @@ export function calculateDependentContext(config: AppConfigs, context: AppContex
         serverOutputPath: path.resolve(context.cwd, config.buildPath),
         clientOutputPath: path.resolve(context.cwd, config.buildPath, config.assetsPath),
         statsOutputPath: path.resolve(context.cwd, config.buildPath, config.statsOutputFilename),
-        watchIgnorePath: ['node_modules', config.buildPath],
+        watchIgnorePath: [
+            'node_modules',
+            config.buildPath,
+            (typeof config.persistentCache === 'object' && config.persistentCache.directory) ||
+                DEFAULT_CACHE_DIRECTORY,
+        ],
         babelRuntimeVersion,
         compressionPredefinedDictionaryPath: singleFilesDictionaries,
         compressionPreviousVersionPath: previousVersionPath,

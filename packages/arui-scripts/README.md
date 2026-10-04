@@ -80,3 +80,7 @@ npm install arui-scripts --save-dev
 - [Использование модулей](docs/modules.md)
 - [Client-only режим](./docs/client-only.md)
 - [Словарь для сжатия](./docs/compression-dictionary.md)
+
+## Постоянный кэш
+
+Чтобы повторные dev/build-запуски использовали работу предыдущего процесса, задайте `persistentCache: true`. [Настройки, диагностика и CI](./docs/persistent-cache.md).

@@ -1,5 +1,6 @@
 {
     "extends": "./tsconfig.json",
+    "compilerOptions": { "allowJs": true },
     // для корректной работы @typescript-eslint/parser
-    "include": ["src", "./*.js", "./*.ts", ".eslintrc.js"]
+    "include": ["src", "./*.js", "./*.ts", ".eslintrc.js", "test/**/*.cjs"]
 }

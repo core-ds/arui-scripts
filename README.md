@@ -35,6 +35,7 @@ yarn test   # Запустить тесты выбранным тест-ранн
 ## Настроить под свой проект
 
 - [Настройки](./packages/arui-scripts/docs/settings.md) - точки входа, порты, транспилятор и остальные опции сборки.
+-   [Постоянный кэш](./packages/arui-scripts/docs/persistent-cache.md) — повторные dev/build-запуски и восстановление кэша в CI.
 - [Пресеты](./packages/arui-scripts/docs/presets.md) и [overrides](./packages/arui-scripts/docs/overrides.md) - общие настройки для нескольких проектов и изменения конфигурации сборщика.
 - [Client-only](./packages/arui-scripts/docs/client-only.md) - приложение без серверной части.
 - [Модули](./packages/arui-scripts/docs/modules.md) - сборка и подключение модулей приложения.

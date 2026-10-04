@@ -26,6 +26,8 @@ describe('runCompilers', () => {
     });
 
     afterEach(() => {
+        process.removeAllListeners('SIGINT');
+        process.removeAllListeners('SIGTERM');
         jest.restoreAllMocks();
     });
 
@@ -56,6 +58,10 @@ describe('runCompilers', () => {
 
         expect(processes[0].kill).toHaveBeenCalled();
         expect(processes[1].kill).toHaveBeenCalled();
+        expect(exitSpy).not.toHaveBeenCalled();
+        processes[0].emit('close', null);
+        expect(exitSpy).not.toHaveBeenCalled();
+        processes[1].emit('close', 0);
         expect(exitSpy).toHaveBeenCalledWith(1);
     });
 
@@ -80,7 +86,7 @@ describe('runCompilers', () => {
         runCompilers(['client.js']);
         compiler.emit('close', null, 'SIGABRT');
 
-        expect(compiler.kill).toHaveBeenCalled();
+        expect(compiler.kill).not.toHaveBeenCalled();
         expect(exitSpy).toHaveBeenCalledWith(1);
         expect(exitSpy).not.toHaveBeenCalledWith(0);
         expect(exitSpy).not.toHaveBeenCalledWith(null);

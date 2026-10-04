@@ -26,6 +26,8 @@ export function createCli(): Command {
     commands.forEach((cmd) => {
         const command = program.command(cmd.name).description(cmd.description).action(cmd.load);
 
+        cmd.options?.forEach((option) => command.option(option.flags, option.description));
+
         if (cmd.passthrough) {
             // --help/-h пробрасываем в jest/vitest/docker, а не показываем help commander.
             command.allowUnknownOption().allowExcessArguments().helpOption(false);

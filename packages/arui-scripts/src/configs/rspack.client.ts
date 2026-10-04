@@ -41,6 +41,7 @@ import {
     patchMainRspackConfigForModules,
     patchWebpackConfigForCompat,
 } from './modules';
+import { getRspackCache } from './persistent-cache';
 import { postcssConfig as postcssConf } from './postcss';
 import { processAssetsPluginOutput } from './process-assets-plugin-output';
 import { swcClientConfig } from './swc';
@@ -196,7 +197,7 @@ export const createSingleClientWebpackConfig = (
         tsConfig: configs.tsconfig ? { configFile: configs.tsconfig } : undefined,
     },
     resolveLoader: {},
-    cache: mode === 'dev',
+    cache: getRspackCache(mode, 'client'),
     module: {
         rules: [
             {

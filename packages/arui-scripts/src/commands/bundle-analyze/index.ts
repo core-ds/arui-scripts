@@ -58,6 +58,7 @@ const bundleAnalyzerStatsOptions: BundleAnalyzerStatsOptions = {
             }) as unknown as WebpackPluginInstance, // webpack-bundle-analyzer has incorrect types
             new RsdoctorRspackPlugin({}),
         ];
+        webpackConfig.cache = false;
         webpackConfig.stats = webpackStatsOptions;
         webpackConfig.output = {
             ...webpackConfig.output,
@@ -67,10 +68,12 @@ const bundleAnalyzerStatsOptions: BundleAnalyzerStatsOptions = {
 
     await Promise.all(promises);
 
-    rspack(clientWebpackConfigs).run((err, stats) => {
+    const compiler = rspack(clientWebpackConfigs);
+
+    compiler.run((err, stats) => {
         if (err) {
             console.error('Bundle analysis failed with error: ', err);
-            process.exit(1);
+            process.exitCode = 1;
         }
 
         if (stats) {
@@ -90,5 +93,11 @@ const bundleAnalyzerStatsOptions: BundleAnalyzerStatsOptions = {
                 );
             }
         }
+        const hasErrors = stats?.hasErrors();
+
+        compiler.close((closeError) => {
+            if (closeError) console.error('Bundle analysis cleanup failed:', closeError);
+            if (err || closeError || hasErrors) process.exit(1);
+        });
     });
 })();

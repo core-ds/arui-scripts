@@ -66,6 +66,7 @@ export type AppConfigs = {
     };
 
     // build tuning
+    persistentCache: boolean | PersistentCacheSettings;
     keepPropTypes: boolean;
     codeLoader: 'babel' | 'tsc' | 'swc';
     experimentalReactCompiler: 'disabled' | ReactCompilerOptions;
@@ -185,3 +186,13 @@ export type AppContext = {
 export type AppContextWithConfigs = AppContext & AppConfigs;
 
 export type PackageSettings = Partial<AppConfigs>;
+
+export type PersistentCacheSettings = {
+    modes?: Array<'dev' | 'production'>;
+    directory?: string;
+    version?: string;
+    buildDependencies?: string[];
+    env?: string[];
+    portable?: boolean;
+    readonly?: boolean;
+};

@@ -23,7 +23,7 @@ type AssetSize = {
     dcbSize?: number;
 };
 
-export function printAssetsSizes(webpackStats: Stats) {
+export function printAssetsSizes(webpackStats: Pick<Stats, 'toJson'>) {
     const assetsStats = webpackStats.toJson({ all: false, assets: true }).assets || [];
     const assetsMap: Record<string, AssetSize> = {};
     const statExtensions = ['js', 'css', 'br', 'gz', 'dcb'];

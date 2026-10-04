@@ -30,6 +30,25 @@ export class ReloadServerPlugin {
     }
 
     apply(compiler: Compiler) {
+        compiler.hooks.shutdown.tapAsync('ReloadServerPlugin', (callback) => {
+            const workers = this.workers.filter((worker) => !worker.isDead());
+
+            if (!workers.length) {
+                callback();
+
+                return;
+            }
+            let remaining = workers.length;
+
+            workers.forEach((worker) => {
+                worker.once('exit', () => {
+                    remaining -= 1;
+                    if (!remaining) callback();
+                });
+                worker.kill('SIGTERM');
+            });
+        });
+
         compiler.hooks.afterEmit.tapAsync('ReloadServerPlugin', (compilation, callback) => {
             this.done = callback;
             this.workers.forEach((worker) => {

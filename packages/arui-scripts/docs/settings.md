@@ -363,3 +363,7 @@ module.exports = {
 #### disableModulesSupport
 Полностью выключает любые манипуляции с WMF плагином. По умолчанию `false`.
 Нужно для проектов, которые хотят реализовывать модули самостоятельно, чтобы избежать конфликтов в конфигурации плагинов.
+
+#### persistentCache
+
+По умолчанию `false`. Включает постоянный кэш Rspack для повторных процессов dev/build. Можно задать `true` или объект с `modes`, `directory`, `version`, `buildDependencies`, `env`, `portable`, `readonly`. [Настройки, ограничения и пример CI](./persistent-cache.md).

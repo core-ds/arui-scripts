@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable global-require */
 /* eslint import/no-dynamic-require: 0 */
 
@@ -5,11 +6,23 @@ export type CliCommand = {
     name: string;
     description: string;
     help?: string;
+    options?: Array<{ flags: string; description: string }>;
     passthrough?: boolean; // для проброса аргументов во вне
-    load: () => void;
+    load: (options?: { json?: boolean }) => void;
 };
 
 export const commands: CliCommand[] = [
+    {
+        name: 'cache:info',
+        description: 'Показать каталог, размер и области постоянного кэша Rspack',
+        options: [{ flags: '--json', description: 'Вывод в JSON без значений настроек и env' }],
+        load: (options) => require('../commands/cache').cacheInfo(!!options?.json),
+    },
+    {
+        name: 'cache:clear',
+        description: 'Безопасно очистить собственный постоянный кэш Rspack',
+        load: () => require('../commands/cache').cacheClear(),
+    },
     {
         name: 'start',
         description: 'Dev сервер для клиента и серверный код в watch режиме',
