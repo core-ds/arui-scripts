@@ -8,6 +8,7 @@
         "start": "NODE_ENV=localhost arui-scripts start",
         "start:prod": "NODE_ENV=localhost arui-scripts start:prod",
         "validate": "jest \"validate-build/*\" --config jest.config.validate-build.js",
+        "typecheck": "tsc --noEmit --incremental false --project tsconfig.json && tsc --noEmit --incremental false --project validate-build/tsconfig.json",
         "lint:styles": "arui-presets-lint styles",
         "lint:scripts": "arui-presets-lint scripts",
         "format": "arui-presets-lint format",
@@ -29,6 +30,8 @@
         "react-dom": "18.3.1"
     },
     "devDependencies": {
+        "@swc/core": "1.16.2",
+        "@swc/jest": "0.2.39",
         "@types/enzyme": "^3.10.13",
         "@types/express": "^4.17.17",
         "@types/jest": "^23.3.14",
@@ -40,7 +43,6 @@
         "enzyme": "3.11.0",
         "enzyme-adapter-react-16": "^1.15.4",
         "jest": "28.1.3",
-        "ts-jest": "28.0.8",
         "typescript": "6.0.2"
     }
 }

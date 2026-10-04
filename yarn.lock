@@ -16,6 +16,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@alfalab/arui-scripts-artifacts@workspace:packages/arui-scripts-artifacts"
   dependencies:
+    "@swc/core": "npm:1.16.2"
+    "@swc/jest": "npm:0.2.39"
     "@types/fs-extra": "npm:^9.0.13"
     "@types/jest": "npm:^29.5.14"
     "@types/node": "npm:^20.19.0"
@@ -28,7 +30,6 @@ __metadata:
     semver: "npm:^7.5.4"
     shelljs: "npm:0.8.5"
     tar: "npm:7.5.21"
-    ts-jest: "npm:29.1.0"
     typescript: "npm:6.0.2"
   bin:
     arui-scripts-artifacts: ./build/cjs/bin/index.js
@@ -39,6 +40,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@alfalab/client-event-bus@workspace:packages/client-event-bus"
   dependencies:
+    "@swc/core": "npm:1.16.2"
+    "@swc/jest": "npm:0.2.39"
     "@testing-library/dom": "npm:^10.4.1"
     "@testing-library/react": "npm:^16.3.2"
     "@types/jest": "npm:^23.3.14"
@@ -47,7 +50,6 @@ __metadata:
     jest: "npm:28.1.3"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
-    ts-jest: "npm:28.0.8"
     typescript: "npm:6.0.2"
   peerDependencies:
     react: ">16.18.0"
@@ -179,15 +181,17 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@alfalab/scripts-modules@workspace:packages/arui-scripts-modules"
   dependencies:
+    "@swc/core": "npm:1.16.2"
+    "@swc/jest": "npm:0.2.39"
     "@testing-library/dom": "npm:^10.4.1"
     "@testing-library/react": "npm:^16.3.0"
+    "@types/node": "npm:^20.19.0"
     "@types/react": "npm:18.3.24"
     abortcontroller-polyfill: "npm:^1.7.5"
     jest: "npm:28.1.3"
     jest-environment-jsdom: "npm:^29.6.2"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
-    ts-jest: "npm:28.0.8"
     typescript: "npm:6.0.2"
   peerDependencies:
     react: ">16.18.0"
@@ -199,12 +203,13 @@ __metadata:
   resolution: "@alfalab/scripts-server@workspace:packages/arui-scripts-server"
   dependencies:
     "@alfalab/scripts-modules": "workspace:*"
+    "@swc/core": "npm:1.16.2"
+    "@swc/jest": "npm:0.2.39"
     "@types/express": "npm:^4.17.17"
     "@types/hapi16": "npm:@types/hapi@16.1.12"
     "@types/hapi20": "npm:@types/hapi__hapi@20"
     express: "npm:^4.20.0"
     jest: "npm:28.1.3"
-    ts-jest: "npm:28.0.8"
     typescript: "npm:6.0.2"
   peerDependencies:
     "@hapi/hapi": ">20.0.0"
@@ -8963,6 +8968,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "create-arui-scripts-app@workspace:packages/create-arui-scripts-app"
   dependencies:
+    "@swc/core": "npm:1.16.2"
+    "@swc/jest": "npm:0.2.39"
     "@types/fs-extra": "npm:^9.0.13"
     "@types/jest": "npm:^29.5.14"
     "@types/node": "npm:^20.19.0"
@@ -8976,7 +8983,6 @@ __metadata:
     ora: "npm:^5"
     prompts: "npm:^2.4.2"
     shelljs: "npm:0.8.5"
-    ts-jest: "npm:28.0.8"
     typescript: "npm:6.0.2"
     validate-npm-package-name: "npm:^5.0.1"
   bin:
@@ -10912,6 +10918,8 @@ __metadata:
   dependencies:
     "@alfalab/scripts-modules": "workspace:*"
     "@alfalab/scripts-server": "workspace:*"
+    "@swc/core": "npm:1.16.2"
+    "@swc/jest": "npm:0.2.39"
     "@types/enzyme": "npm:^3.10.13"
     "@types/express": "npm:^4.17.17"
     "@types/jest": "npm:^23.3.14"
@@ -10929,7 +10937,6 @@ __metadata:
     lodash: "npm:^4.18.1"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
-    ts-jest: "npm:28.0.8"
     typescript: "npm:6.0.2"
   languageName: unknown
   linkType: soft
@@ -10942,6 +10949,8 @@ __metadata:
     "@alfalab/scripts-modules": "workspace:*"
     "@alfalab/scripts-server": "workspace:*"
     "@hapi/hapi": "npm:^21.3.2"
+    "@swc/core": "npm:1.16.2"
+    "@swc/jest": "npm:0.2.39"
     "@types/enzyme": "npm:^3.10.13"
     "@types/express": "npm:^4.17.17"
     "@types/jest": "npm:^23.3.14"
@@ -10960,7 +10969,6 @@ __metadata:
     react: "npm:18.3.1"
     react-compiler-runtime: "npm:^1.0.0"
     react-dom: "npm:18.3.1"
-    ts-jest: "npm:28.0.8"
     typescript: "npm:6.0.2"
   languageName: unknown
   linkType: soft
@@ -13838,7 +13846,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-util@npm:^28.0.0, jest-util@npm:^28.1.3":
+"jest-util@npm:^28.1.3":
   version: 28.1.3
   resolution: "jest-util@npm:28.1.3"
   dependencies:
@@ -14190,7 +14198,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"json5@npm:^2.2.1, json5@npm:^2.2.3":
+"json5@npm:^2.2.3":
   version: 2.2.3
   resolution: "json5@npm:2.2.3"
   bin:
@@ -20369,39 +20377,6 @@ __metadata:
     "@typescript/native-preview":
       optional: true
   checksum: 10/320bb2985de3897a3bff6aa0d73d7d328b5720fccacd1c350bc6e247285b666f82733559adf89ad65073a41aa381d671b6944dff04239e7d897f70b17391413a
-  languageName: node
-  linkType: hard
-
-"ts-jest@npm:28.0.8":
-  version: 28.0.8
-  resolution: "ts-jest@npm:28.0.8"
-  dependencies:
-    bs-logger: "npm:0.x"
-    fast-json-stable-stringify: "npm:2.x"
-    jest-util: "npm:^28.0.0"
-    json5: "npm:^2.2.1"
-    lodash.memoize: "npm:4.x"
-    make-error: "npm:1.x"
-    semver: "npm:7.x"
-    yargs-parser: "npm:^21.0.1"
-  peerDependencies:
-    "@babel/core": ">=7.0.0-beta.0 <8"
-    "@jest/types": ^28.0.0
-    babel-jest: ^28.0.0
-    jest: ^28.0.0
-    typescript: ">=4.3"
-  peerDependenciesMeta:
-    "@babel/core":
-      optional: true
-    "@jest/types":
-      optional: true
-    babel-jest:
-      optional: true
-    esbuild:
-      optional: true
-  bin:
-    ts-jest: cli.js
-  checksum: 10/16cfe812ac5ec6557c9dc17e93bb0785c535002e5c13287f5a2bd2440ab57ea03ff696b32a80ba2992ca9fddab1c8649d7ae42670c02a22322805212933b1096
   languageName: node
   linkType: hard
 

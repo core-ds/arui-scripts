@@ -19,6 +19,7 @@ yarn lint
 - Собрать все пакеты: `yarn build`
 - Прогнать тесты: `yarn test`
 - Проверить линтинг: `yarn lint`
+- Проверить типы, в том числе в тестах: `yarn typecheck`
 - собрать локально пакет `arui-scripts`: `yarn workspace arui-scripts build`
 
 Если вы меняете поведение CLI, то необходимо обновить документацию:

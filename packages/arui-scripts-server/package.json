@@ -15,6 +15,7 @@
     "scripts": {
         "build": "tsc --project tsconfig.json",
         "test": "jest",
+        "typecheck": "tsc --noEmit --incremental false --project tsconfig.eslint.json",
         "lint:scripts": "arui-presets-lint scripts",
         "format": "arui-presets-lint format",
         "format:check": "arui-presets-lint format:check",
@@ -24,12 +25,13 @@
     },
     "devDependencies": {
         "@alfalab/scripts-modules": "workspace:*",
+        "@swc/core": "1.16.2",
+        "@swc/jest": "0.2.39",
         "@types/express": "^4.17.17",
         "@types/hapi16": "npm:@types/hapi@16.1.12",
         "@types/hapi20": "npm:@types/hapi__hapi@20",
         "express": "^4.20.0",
         "jest": "28.1.3",
-        "ts-jest": "28.0.8",
         "typescript": "6.0.2"
     },
     "peerDependencies": {

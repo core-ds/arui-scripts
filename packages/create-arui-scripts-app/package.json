@@ -23,6 +23,7 @@
         "sync:version": "node ./scripts/sync-arui-scripts-version.js",
         "build": "yarn sync:version && tsc --project tsconfig.json",
         "test": "jest",
+        "typecheck": "tsc --noEmit --incremental false --project tsconfig.eslint.json",
         "lint:scripts": "arui-presets-lint scripts",
         "format": "arui-presets-lint format",
         "format:check": "arui-presets-lint format:check",
@@ -40,6 +41,8 @@
         "validate-npm-package-name": "^5.0.1"
     },
     "devDependencies": {
+        "@swc/core": "1.16.2",
+        "@swc/jest": "0.2.39",
         "@types/fs-extra": "^9.0.13",
         "@types/jest": "^29.5.14",
         "@types/node": "^20.19.0",
@@ -47,7 +50,6 @@
         "@types/shelljs": "^0.8.12",
         "@types/validate-npm-package-name": "^3.0.3",
         "jest": "28.1.3",
-        "ts-jest": "28.0.8",
         "typescript": "6.0.2"
     },
     "engines": {
