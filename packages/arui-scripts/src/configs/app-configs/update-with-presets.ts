@@ -22,7 +22,7 @@ export function updateWithPresets(config: AppConfigs, context: AppContext) {
 
         // eslint-disable-next-line no-underscore-dangle
         if (presetsSettings.__esModule) {
-            // ts-node импортирует esModules, из них надо вытягивать default именно так
+            // TypeScript-файлы компилируются в CommonJS, и значение export default лежит в поле default
             presetsSettings = presetsSettings.default;
         }
         validateSettingsKeys(config, presetsSettings, presetsConfigPath);

@@ -175,7 +175,7 @@ overrides = configs.overridesPath.map((path) => {
 
         // eslint-disable-next-line no-underscore-dangle
         if (requireResult.__esModule) {
-            // ts-node импортирует esModules, из них надо вытягивать default именно так
+            // TypeScript-файлы компилируются в CommonJS, и значение export default лежит в поле default
             return normalizeDeprecatedOverrideKeys(requireResult.default);
         }
 

@@ -7405,6 +7405,7 @@ __metadata:
     jest-config: "npm:^29.7.0"
     jest-resolve: "npm:^29.7.0"
     jest-snapshot-serializer-class-name-to-string: "npm:1.0.0"
+    jsonc-parser: "npm:^3.2.0"
     lodash.merge: "npm:4.6.2"
     mini-css-extract-plugin: "npm:2.7.6"
     mini-svg-data-uri: "npm:^1.4.4"

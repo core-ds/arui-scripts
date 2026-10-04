@@ -1,3 +1,6 @@
+import { registerTypescript } from '../util/register-typescript';
+
+import { assertTypescriptSupport } from './assert-typescript-support';
 import { calculateDependentConfig, calculateDependentContext } from './calculate-dependent-config';
 import { getDefaultAppConfig, getDefaultAppContext } from './get-defaults';
 import { type AppConfigs, type AppContext, type AppContextWithConfigs } from './types';
@@ -8,7 +11,7 @@ import { updateWithPresets } from './update-with-presets';
 import { validateConfig } from './validate-config';
 import { warnAboutDeprecations } from './warn-about-deprecations';
 
-import '../util/register-ts-node';
+registerTypescript();
 
 let tmpConfig: AppConfigs = getDefaultAppConfig();
 let tmpContext: AppContext = getDefaultAppContext();
@@ -28,5 +31,6 @@ export const configs: AppContextWithConfigs = {
     ...appContext,
 };
 
+assertTypescriptSupport(configs);
 validateConfig(configs);
 warnAboutDeprecations(configs);

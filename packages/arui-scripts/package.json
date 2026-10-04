@@ -81,6 +81,7 @@
         "jest-config": "^29.7.0",
         "jest-resolve": "^29.7.0",
         "jest-snapshot-serializer-class-name-to-string": "1.0.0",
+        "jsonc-parser": "^3.2.0",
         "lodash.merge": "4.6.2",
         "mini-css-extract-plugin": "2.7.6",
         "mini-svg-data-uri": "^1.4.4",
