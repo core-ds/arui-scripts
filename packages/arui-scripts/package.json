@@ -147,7 +147,7 @@
         "@types/webpack-node-externals": "^3.0.0",
         "babel-plugin-transform-import-meta": "^2.3.3",
         "type-fest": "2.19.0",
-        "typescript": "6.0.2"
+        "typescript": "7.0.2"
     },
     "engines": {
         "node": "^20.19.0 || >=22.12.0"

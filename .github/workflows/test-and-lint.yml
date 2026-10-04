@@ -40,3 +40,31 @@ jobs:
         yarn run lint
       env:
         CI: true
+
+  typescript-6:
+    # Монорепо работает на TypeScript 7, а arui-scripts поддерживает и более ранние версии,
+    # поэтому сборку и тесты отдельно проверяем на TypeScript 6
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js 22.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22.x'
+    - name: Switch the workspace to TypeScript 6
+      run: |
+        node -e "
+          const fs = require('fs');
+          const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+          pkg.resolutions = { ...pkg.resolutions, typescript: '6.0.2' };
+          fs.writeFileSync('package.json', JSON.stringify(pkg, null, 4));
+        "
+    - name: yarn install and test
+      # lockfile из-за подмены версии меняется, поэтому в CI нужен --no-immutable
+      run: |
+        yarn install --no-immutable
+        yarn run test
+      env:
+        CI: true
