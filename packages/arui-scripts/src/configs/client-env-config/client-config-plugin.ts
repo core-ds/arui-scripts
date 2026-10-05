@@ -10,21 +10,19 @@ export class ClientConfigPlugin {
     apply(compiler: Compiler) {
         const pluginName = ClientConfigPlugin.name;
 
-        const { webpack } = compiler;
-
         compiler.hooks.thisCompilation.tap(pluginName, (compilation) => {
             // Tapping to the assets processing pipeline on a specific stage.
             compilation.hooks.processAssets.tap(
                 {
                     name: pluginName,
-                    stage: webpack.Compilation.PROCESS_ASSETS_STAGE_SUMMARIZE,
+                    stage: compiler.webpack.Compilation.PROCESS_ASSETS_STAGE_SUMMARIZE,
                 },
                 () => {
                     const content = getEnvConfigContent();
 
                     compilation.emitAsset(
                         `../${ENV_CONFIG_FILENAME}`,
-                        new webpack.sources.RawSource(content),
+                        new compiler.webpack.sources.RawSource(content),
                     );
                 },
             );

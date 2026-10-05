@@ -15,16 +15,6 @@ export function warnAboutDeprecations(config: AppContextWithConfigs) {
         // eslint-disable-next-line no-param-reassign
         config.proxy = convertObjectProxyConfigurationToArray(config.proxy);
     }
-
-    if (config.disableDevWebpackTypecheck !== undefined) {
-        console.warn(
-            'Настройка `disableDevWebpackTypecheck` устарела, используйте `disableDevRspackTypecheck`. ',
-            'Поддержка `disableDevWebpackTypecheck` будет скоро удалена.',
-        );
-
-        // eslint-disable-next-line no-param-reassign
-        config.disableDevRspackTypecheck = config.disableDevWebpackTypecheck;
-    }
 }
 
 function convertObjectProxyConfigurationToArray(

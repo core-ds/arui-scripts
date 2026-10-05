@@ -1,6 +1,6 @@
 import { type Plugin, type Plugins } from '@rspack/core';
 
-import { createSingleClientWebpackConfig } from '../../rspack.client';
+import { createSingleClientRspackConfig } from '../../rspack.client';
 import { createServerConfig } from '../../rspack.server';
 import { createFindPluginFunction } from '../find-plugin';
 
@@ -25,7 +25,7 @@ const getPlugins = (
 describe('override plugins with findPlugin', () => {
     describe("client's findPlugin", () => {
         it('should return original client dev config with modified MiniCssExtractPlugin: options.ignoreOrder = false', () => {
-            const devConfig = createSingleClientWebpackConfig('dev', './index.ts');
+            const devConfig = createSingleClientRspackConfig('dev', './index.ts');
 
             const [MiniCssExtractPlugin] = createFindPluginFunction<'client'>()(
                 devConfig,
@@ -51,7 +51,7 @@ describe('override plugins with findPlugin', () => {
         });
 
         it('should return original client prod config with modified WebpackManifestPlugin: options.fileName = super-app-manifest.json', () => {
-            const prodConfig = createSingleClientWebpackConfig('prod', './index.ts');
+            const prodConfig = createSingleClientRspackConfig('prod', './index.ts');
 
             const [WebpackManifestPlugin] = createFindPluginFunction<'client'>()(
                 prodConfig,
