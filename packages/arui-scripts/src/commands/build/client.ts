@@ -3,7 +3,7 @@ import chalk from 'chalk';
 
 import { configs } from '../../configs/app-configs';
 import { rspackClientConfig } from '../../configs/rspack.client.prod';
-import { checkBuildSizeBudgets } from '../util/build-size-budgets';
+import { BuildSizeBudgetError, checkBuildSizeBudgets } from '../util/build-size-budgets';
 import { printAssetsSizes } from '../util/client-assets-sizes';
 import { loadBrowserslist } from '../util/load-browserslist';
 import { printBuildError } from '../util/print-build-error';
@@ -21,7 +21,6 @@ async function printOutputSizes(webpackConfig: Configuration, stats: Stats) {
 
     try {
         printAssetsSizes(stats);
-        await checkBuildSizeBudgets(stats, configs.buildSizeBudgets, name);
     } catch (error) {
         console.warn(
             chalk.yellow(
@@ -31,6 +30,8 @@ async function printOutputSizes(webpackConfig: Configuration, stats: Stats) {
             ),
         );
     }
+
+    await checkBuildSizeBudgets(stats, configs.buildSizeBudgets, name);
 }
 
 async function main() {
@@ -62,6 +63,10 @@ async function main() {
             await printOutputSizes(rspackClientConfig, stats as Stats);
         }
     } catch (err) {
+        if (err instanceof BuildSizeBudgetError) {
+            process.exit(1);
+        }
+
         console.log(chalk.red('Failed to compile client.\n'));
         printBuildError(err as Error);
         process.exit(1);

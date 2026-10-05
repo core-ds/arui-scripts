@@ -15,6 +15,14 @@ import {
     type BuildSizeMetric,
 } from '../../configs/app-configs/types';
 
+export class BuildSizeBudgetError extends Error {
+    constructor(messages: string[]) {
+        super(messages.join('\n'));
+
+        this.name = 'BuildSizeBudgetError';
+    }
+}
+
 const gzipAsync = promisify(gzip);
 
 // CompressionPlugin по умолчанию жмёт gzip с Z_BEST_COMPRESSION (9).
@@ -150,7 +158,7 @@ function overBudgetMessages(
     return messages;
 }
 
-function warnAssetSizeError(
+function failedToMeasureMessage(
     compilerName: string,
     entryName: string,
     type: BuildSizeAssetType,
@@ -158,9 +166,7 @@ function warnAssetSizeError(
 ) {
     const message = error instanceof Error ? error.message : String(error);
 
-    warn(
-        `[buildSizeBudgets] Could not measure ${compilerName}/${entryName} ${type.toUpperCase()}: ${message}`,
-    );
+    return `[buildSizeBudgets] Could not measure ${compilerName}/${entryName} ${type.toUpperCase()}: ${message}`;
 }
 
 export async function checkBuildSizeBudgets(
@@ -205,10 +211,17 @@ export async function checkBuildSizeBudgets(
                     ...overBudgetMessages(compilerName, entryName, type, limits, sizes),
                 );
             } catch (error) {
-                warnAssetSizeError(compilerName, entryName, type, error);
+                const message = failedToMeasureMessage(compilerName, entryName, type, error);
+
+                warn(message);
+                throw new BuildSizeBudgetError([message]);
             }
         }
     }
 
     reportOverBudget(overBudget);
+
+    if (overBudget.length) {
+        throw new BuildSizeBudgetError(overBudget);
+    }
 }

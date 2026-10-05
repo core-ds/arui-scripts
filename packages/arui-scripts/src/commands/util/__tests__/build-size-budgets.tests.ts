@@ -5,7 +5,7 @@ import { constants as zlibConstants, gzipSync } from 'zlib';
 
 import { type Compiler, rspack, type Stats } from '@rspack/core';
 
-import { checkBuildSizeBudgets } from '../build-size-budgets';
+import { BuildSizeBudgetError, checkBuildSizeBudgets } from '../build-size-budgets';
 
 describe('build size budgets with real Rspack output', () => {
     let directory: string;
@@ -99,7 +99,9 @@ describe('build size budgets with real Rspack output', () => {
         const other = await sizes(['runtime.js', 'vendor.js', 'other.js']);
         const vendor = await sizes(['runtime.js', 'vendor.js']);
 
-        await checkBuildSizeBudgets(stats, { js: { raw: 0, gzip: 0 } });
+        await expect(checkBuildSizeBudgets(stats, { js: { raw: 0, gzip: 0 } })).rejects.toThrow(
+            BuildSizeBudgetError,
+        );
 
         const output = warn.mock.calls.flat().join('\n');
 
@@ -115,7 +117,9 @@ describe('build size budgets with real Rspack output', () => {
     it('measures emitted CSS separately even when no precompressed files exist', async () => {
         const css = await sizes(['main.css']);
 
-        await checkBuildSizeBudgets(stats, { css: { raw: 0, gzip: 0 } });
+        await expect(checkBuildSizeBudgets(stats, { css: { raw: 0, gzip: 0 } })).rejects.toThrow(
+            BuildSizeBudgetError,
+        );
 
         const output = warn.mock.calls.flat().join('\n');
 
@@ -129,7 +133,7 @@ describe('build size budgets with real Rspack output', () => {
         const main = await sizes(['runtime.js', 'vendor.js', 'main.js']);
         const css = await sizes(['main.css']);
 
-        await checkBuildSizeBudgets(stats, { js: main, css });
+        await expect(checkBuildSizeBudgets(stats, { js: main, css })).resolves.toBeUndefined();
 
         expect(warn).not.toHaveBeenCalled();
     });
@@ -137,20 +141,24 @@ describe('build size budgets with real Rspack output', () => {
     it('reads shared assets once and measures only configured types', async () => {
         const read = jest.spyOn(fs, 'readFile');
 
-        await checkBuildSizeBudgets(stats, { js: { raw: 0 } });
+        await expect(checkBuildSizeBudgets(stats, { js: { raw: 0 } })).rejects.toThrow(
+            BuildSizeBudgetError,
+        );
 
         expect(read).toHaveBeenCalledTimes(4);
         expect(read.mock.calls.some(([file]) => String(file).endsWith('.css'))).toBe(false);
     });
 
-    it('keeps budget warnings out of compiler diagnostics even in CI', async () => {
+    it('fails the build on over-budget without adding compiler diagnostics even in CI', async () => {
         const previousCI = process.env.CI;
 
         process.env.CI = 'true';
         const warnings = stats.compilation.warnings.length;
 
         try {
-            await expect(checkBuildSizeBudgets(stats, { js: { raw: 0 } })).resolves.toBeUndefined();
+            await expect(checkBuildSizeBudgets(stats, { js: { raw: 0 } })).rejects.toThrow(
+                BuildSizeBudgetError,
+            );
             expect(warn).toHaveBeenCalled();
             expect(stats.compilation.warnings).toHaveLength(warnings);
             expect(stats.hasErrors()).toBe(false);
@@ -160,10 +168,12 @@ describe('build size budgets with real Rspack output', () => {
         }
     });
 
-    it('warns when measurement fails instead of reporting zero or failing the build', async () => {
+    it('fails the build when measurement fails instead of reporting zero', async () => {
         jest.spyOn(fs, 'readFile').mockRejectedValue(new Error('Permission denied'));
 
-        await expect(checkBuildSizeBudgets(stats, { js: { raw: 1 } })).resolves.toBeUndefined();
+        await expect(checkBuildSizeBudgets(stats, { js: { raw: 1 } })).rejects.toThrow(
+            BuildSizeBudgetError,
+        );
 
         const output = warn.mock.calls.flat().join('\n');
 
@@ -171,7 +181,7 @@ describe('build size budgets with real Rspack output', () => {
         expect(output).not.toContain('exceeded by');
     });
 
-    it('warns instead of failing the build when the chunk graph cannot be walked', async () => {
+    it('fails the build when the chunk graph cannot be walked', async () => {
         const brokenStats = {
             compilation: {
                 name: 'client',
@@ -190,9 +200,9 @@ describe('build size budgets with real Rspack output', () => {
             },
         } as unknown as Stats;
 
-        await expect(
-            checkBuildSizeBudgets(brokenStats, { js: { raw: 0 } }),
-        ).resolves.toBeUndefined();
+        await expect(checkBuildSizeBudgets(brokenStats, { js: { raw: 0 } })).rejects.toThrow(
+            BuildSizeBudgetError,
+        );
 
         expect(warn.mock.calls.flat().join('\n')).toContain(
             'Could not measure client/main JS: broken chunk graph',
@@ -212,7 +222,9 @@ describe('build size budgets with real Rspack output', () => {
         );
 
         try {
-            await checkBuildSizeBudgets(stats, { js: { gzip: 0 } });
+            await expect(checkBuildSizeBudgets(stats, { js: { gzip: 0 } })).rejects.toThrow(
+                BuildSizeBudgetError,
+            );
         } finally {
             stats.compilation.deleteAsset('main.js.gz');
         }
@@ -225,7 +237,9 @@ describe('build size budgets with real Rspack output', () => {
     });
 
     it('uses the build name passed by the compiler command', async () => {
-        await checkBuildSizeBudgets(stats, { js: { raw: 0 } }, 'custom-build');
+        await expect(
+            checkBuildSizeBudgets(stats, { js: { raw: 0 } }, 'custom-build'),
+        ).rejects.toThrow(BuildSizeBudgetError);
 
         const output = warn.mock.calls.flat().join('\n');
 

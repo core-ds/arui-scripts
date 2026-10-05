@@ -82,4 +82,4 @@ npm install arui-scripts --save-dev
 - [Словарь для сжатия](./docs/compression-dictionary.md)
 
 Размер начального JS и CSS можно контролировать настройкой [buildSizeBudgets](docs/settings.md#buildsizebudgets).
-При превышении лимита сборка выводит предупреждение, сохраняя успешный код завершения.
+При превышении лимита сборка завершается с ошибкой.
