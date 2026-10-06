@@ -57,6 +57,7 @@ export function getDefaultAppConfig(): AppConfigs {
         },
 
         // build tuning
+        buildSizeBudgets: null,
         keepPropTypes: false,
         codeLoader: 'swc',
         experimentalReactCompiler: 'disabled',
