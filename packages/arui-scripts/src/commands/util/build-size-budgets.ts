@@ -5,6 +5,7 @@ import { constants as zlibConstants, gzip } from 'zlib';
 
 import { type ChunkGroup, type Stats } from '@rspack/core';
 import chalk from 'chalk';
+import filesize from 'filesize';
 
 import {
     BUILD_SIZE_ASSET_TYPES,
@@ -133,6 +134,10 @@ async function calcInitialAssetSizes(
     return sizes;
 }
 
+function formatSize(bytes: number) {
+    return filesize(bytes, { exponent: bytes >= 1024 ** 2 ? 2 : -1 });
+}
+
 function overBudgetMessages(
     compilerName: string,
     entryName: string,
@@ -148,9 +153,9 @@ function overBudgetMessages(
 
         if (limit !== undefined && actual > limit) {
             messages.push(
-                `[buildSizeBudgets] ${compilerName}/${entryName}: initial ${type.toUpperCase()} (${metric}) is ${actual} bytes; limit ${limit} bytes; exceeded by ${
-                    actual - limit
-                } bytes.`,
+                `[buildSizeBudgets] ${compilerName}/${entryName}: initial ${type.toUpperCase()} (${metric}) is ${formatSize(
+                    actual,
+                )}; limit ${formatSize(limit)}; exceeded by ${formatSize(actual - limit)}.`,
             );
         }
     }

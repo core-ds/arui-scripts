@@ -333,8 +333,8 @@ import type { PackageSettings } from 'arui-scripts';
 
 const settings: PackageSettings = {
     buildSizeBudgets: {
-        js: { raw: 1536000, gzip: 409600 },
-        css: { gzip: 51200 },
+        js: { raw: 1_536_000, gzip: 409_600 },
+        css: { gzip: 51_200 },
     },
 };
 
@@ -349,7 +349,7 @@ export default settings;
 При превышении после таблицы размеров печатается красный блок `BUILD SIZE BUDGET EXCEEDED` и строки превышения, например:
 
 ```text
-[buildSizeBudgets] main/main: initial JS (gzip) is 460800 bytes; limit 409600 bytes; exceeded by 51200 bytes.
+[buildSizeBudgets] main/main: initial JS (gzip) is 450 KB; limit 400 KB; exceeded by 50 KB.
 ```
 
 Первые два имени — имя клиентской сборки и еe точки входа. Превышение **завершает сборку с ненулевым кодом**. Если прочитать файл для измерения не удалось, выводится отдельное сообщение и сборка тоже падает. Ошибки в самих настройках лимитов, как и ошибки компиляции, остаются ошибками.

@@ -4,6 +4,7 @@ import path from 'path';
 import { constants as zlibConstants, gzipSync } from 'zlib';
 
 import { type Compiler, rspack, type Stats } from '@rspack/core';
+import filesize from 'filesize';
 
 import { BuildSizeBudgetError, checkBuildSizeBudgets } from '../build-size-budgets';
 
@@ -106,8 +107,12 @@ describe('build size budgets with real Rspack output', () => {
         const output = warn.mock.calls.flat().join('\n');
 
         for (const [name, expected] of Object.entries({ main, other, vendor })) {
-            expect(output).toContain(`client/${name}: initial JS (raw) is ${expected.raw} bytes`);
-            expect(output).toContain(`client/${name}: initial JS (gzip) is ${expected.gzip} bytes`);
+            expect(output).toContain(
+                `client/${name}: initial JS (raw) is ${filesize(expected.raw)}`,
+            );
+            expect(output).toContain(
+                `client/${name}: initial JS (gzip) is ${filesize(expected.gzip)}`,
+            );
         }
 
         expect(output).toContain('BUILD SIZE BUDGET EXCEEDED');
@@ -123,10 +128,40 @@ describe('build size budgets with real Rspack output', () => {
 
         const output = warn.mock.calls.flat().join('\n');
 
-        expect(output).toContain(`client/main: initial CSS (raw) is ${css.raw} bytes`);
-        expect(output).toContain(`client/main: initial CSS (gzip) is ${css.gzip} bytes`);
+        expect(output).toContain(`client/main: initial CSS (raw) is ${filesize(css.raw)}`);
+        expect(output).toContain(`client/main: initial CSS (gzip) is ${filesize(css.gzip)}`);
         expect(output).toContain('BUILD SIZE BUDGET EXCEEDED');
         expect(warn).toHaveBeenCalledTimes(3);
+    });
+
+    describe.each(['raw', 'gzip'] as const)('%s size formatting', (metric) => {
+        it.each<[number, number, string]>([
+            [512, 256, '512 B; limit 256 B; exceeded by 256 B.'],
+            [1024, 1023, '1 KB; limit 1023 B; exceeded by 1 B.'],
+            [4096, 2048, '4 KB; limit 2 KB; exceeded by 2 KB.'],
+            [1024 ** 2, 1024 ** 2 - 1, '1 MB; limit 1024 KB; exceeded by 1 B.'],
+            [3 * 1024 ** 2, 1024 ** 2, '3 MB; limit 1 MB; exceeded by 2 MB.'],
+        ])('formats %i bytes with a limit of %i bytes', async (actual, limit, expected) => {
+            const content = Buffer.alloc(actual);
+
+            jest.spyOn(fs, 'readFile').mockResolvedValue(content);
+
+            const source = new rspack.sources.RawSource(content);
+
+            stats.compilation.emitAsset('main.css.gz', source);
+
+            const message = `[buildSizeBudgets] client/main: initial CSS (${metric}) is ${expected}`;
+
+            try {
+                await expect(
+                    checkBuildSizeBudgets(stats, { css: { [metric]: limit } }),
+                ).rejects.toThrow(message);
+            } finally {
+                stats.compilation.deleteAsset('main.css.gz');
+            }
+
+            expect(warn.mock.calls.flat().join('\n')).toContain(message);
+        });
     });
 
     it('does not warn at or below the limit', async () => {
@@ -177,7 +212,9 @@ describe('build size budgets with real Rspack output', () => {
 
         const output = warn.mock.calls.flat().join('\n');
 
-        expect(output).toContain('Could not measure client/main JS: Permission denied');
+        const [entryName] = stats.compilation.entrypoints.keys();
+
+        expect(output).toContain(`Could not measure client/${entryName} JS: Permission denied`);
         expect(output).not.toContain('exceeded by');
     });
 
@@ -209,32 +246,45 @@ describe('build size budgets with real Rspack output', () => {
         );
     });
 
-    it('prefers the emitted .gz size over compressing in memory', async () => {
-        const shared = await sizes(['runtime.js', 'vendor.js']);
-        const inMemory = await sizes(['main.js']);
-        const emittedSize = 4096;
+    it.each([
+        [1_234_204, '1.18 MB'],
+        [1024 ** 3, '1024 MB'],
+    ])(
+        'prefers the emitted .gz size and caps units at MB (%i bytes)',
+        async (emittedSize, expectedSize) => {
+            const inMemory = await sizes(['main.js']);
+            const limit = 1_000;
 
-        expect(inMemory.gzip).not.toBe(emittedSize);
+            expect(inMemory.gzip).not.toBe(emittedSize);
 
-        stats.compilation.emitAsset(
-            'main.js.gz',
-            new rspack.sources.RawSource(Buffer.alloc(emittedSize)),
-        );
+            const emittedSource = new rspack.sources.RawSource('emitted gzip');
 
-        try {
-            await expect(checkBuildSizeBudgets(stats, { js: { gzip: 0 } })).rejects.toThrow(
-                BuildSizeBudgetError,
+            jest.spyOn(emittedSource, 'size').mockReturnValue(emittedSize);
+            const getAsset = stats.compilation.getAsset.bind(stats.compilation);
+            const mainAsset = getAsset('main.js')!;
+            const asset = jest
+                .spyOn(stats.compilation, 'getAsset')
+                .mockImplementation((name) =>
+                    name === 'main.js.gz'
+                        ? { ...mainAsset, name, source: emittedSource }
+                        : getAsset(name),
+                );
+
+            try {
+                await expect(checkBuildSizeBudgets(stats, { js: { gzip: limit } })).rejects.toThrow(
+                    BuildSizeBudgetError,
+                );
+            } finally {
+                asset.mockRestore();
+            }
+
+            const output = warn.mock.calls.flat().join('\n');
+
+            expect(output).toContain(
+                `client/main: initial JS (gzip) is ${expectedSize}; limit 1000 B; exceeded by ${expectedSize}.`,
             );
-        } finally {
-            stats.compilation.deleteAsset('main.js.gz');
-        }
-
-        const output = warn.mock.calls.flat().join('\n');
-
-        expect(output).toContain(
-            `client/main: initial JS (gzip) is ${emittedSize + shared.gzip} bytes`,
-        );
-    });
+        },
+    );
 
     it('uses the build name passed by the compiler command', async () => {
         await expect(
