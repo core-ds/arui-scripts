@@ -51,20 +51,8 @@ export function getImageMinLoader() {
                                         interlaced: png?.interlaced,
                                     },
                                 ],
-                                svg?.enabled && [
-                                    'svgo',
-                                    {
-                                        plugins: [
-                                            {
-                                                name: 'preset-default',
-                                                params: {
-                                                    // preset-default в svgo вырезает viewBox, без него svg перестают масштабироваться
-                                                    overrides: { removeViewBox: false },
-                                                },
-                                            },
-                                        ],
-                                    },
-                                ],
+                                // imagemin-svgo использует svgo 4, его preset-default уже сохраняет viewBox
+                                svg?.enabled && 'svgo',
                                 gif?.enabled && [
                                     'gifsicle',
                                     {
