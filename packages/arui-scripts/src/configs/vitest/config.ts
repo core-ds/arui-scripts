@@ -1,5 +1,8 @@
-import { defineConfig } from 'vitest/config';
+import aruiVitestConfig from '@alfalab/arui-scripts-vitest';
 
-import { getVitestConfig } from './settings';
+console.warn(
+    'Импорт `arui-scripts/vitest` устарел и будет удален в следующей мажорной версии arui-scripts.',
+    'Установите `@alfalab/arui-scripts-vitest` и импортируйте конфиг из него.',
+);
 
-export default defineConfig(getVitestConfig());
+export default aruiVitestConfig;

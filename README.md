@@ -51,6 +51,7 @@ yarn test   # Запустить тесты выбранным тест-ранн
 - [arui-scripts](./packages/arui-scripts/) - CLI и конфигурации сборки и тестирования.
 - [create-arui-scripts-app](./packages/create-arui-scripts-app/) - создание нового приложения.
 - [@alfalab/arui-scripts-artifacts](./packages/arui-scripts-artifacts/) - сборка Docker-образов и tar-архивов, генерация Dockerfile и конфигурации nginx.
+- [@alfalab/arui-scripts-vitest](./packages/arui-scripts-vitest/) - конфигурация Vitest для приложений.
 - [alpine-node-nginx](./packages/alpine-node-nginx/) - базовые Docker-образы с Node.js и nginx.
 - [@alfalab/scripts-server](./packages/arui-scripts-server/) - серверные утилиты для работы с ресурсами сборки и модулями.
 - [@alfalab/scripts-modules](./packages/arui-scripts-modules/) - загрузка и рендеринг модулей приложения.

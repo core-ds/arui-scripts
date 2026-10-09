@@ -76,19 +76,23 @@ arui-scripts test
 
 ## test:vitest
 
+> **Устарела.** Команда и импорт `arui-scripts/vitest` будут удалены в следующей мажорной версии.
+> Конфигурация Vitest вынесена в пакет [`@alfalab/arui-scripts-vitest`](../../arui-scripts-vitest/README.md):
+> установите его, создайте `vitest.config.ts` и запускайте `vitest run`.
+
 Команда `arui-scripts test:vitest` запускает unit тесты через [Vitest](https://vitest.dev/).
 
-Vitest требует Node.js 22.12 или новее. Ему также нужен `vite` (peer-зависимость), `arui-scripts` устанавливает его сам.
+Vitest требует Node.js 22.12 или новее. Ему также нужен `vite` (peer-зависимость), `@alfalab/arui-scripts-vitest` устанавливает его сам.
 Если `vitest` подключен в проект напрямую и используется yarn, добавьте `vite` в `devDependencies` проекта (yarn не устанавливает peer-зависимости автоматически).
 
 Если в корне проекта есть `vitest.config.ts` (или `.js`, `.mjs`, `.cjs`), то используется он.
-Иначе применяется конфигурация arui-scripts.
+Иначе применяется конфигурация из `@alfalab/arui-scripts-vitest`.
 
 **Рекомендуемый способ настройки** - создать `vitest.config.js` с `mergeConfig`:
 
 ```javascript
 import { defineConfig, mergeConfig } from 'vitest/config';
-import aruiConfig from 'arui-scripts/vitest';
+import aruiConfig from '@alfalab/arui-scripts-vitest';
 
 export default mergeConfig(aruiConfig, defineConfig({
     test: {
@@ -98,17 +102,15 @@ export default mergeConfig(aruiConfig, defineConfig({
 }));
 ```
 
-Базовый конфиг arui-scripts включает:
-- API Vitest - используйте явные импорты: `import { describe, it, expect } from 'vitest'` (без глобальных переменных)
-- Замену импортов `.css` на пустые модули, ассетов (svg, png, шрифты и др.) - на строку с именем файла
-- Маппинг путей из `tsconfig.json` (paths) через [vite-tsconfig-paths](https://www.npmjs.com/package/vite-tsconfig-paths)
-- Маски для тестов: `src/**/__tests__/**/*`, `src/**/__test__/**/*`, `src/**/*.{test,spec,tests}.*`
+Состав базового конфига описан в [README пакета](../../arui-scripts-vitest/README.md#что-входит-в-конфигурацию).
 
 **Обратная совместимость**: при отсутствии `vitest.config.*` по-прежнему читается `jest.setupFiles` из `package.json`.
 
 **Как запустить?**
 
 ```bash
+vitest run
+# или, пока команда не удалена
 arui-scripts test:vitest
 ```
 
