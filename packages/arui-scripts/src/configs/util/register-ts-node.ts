@@ -5,11 +5,12 @@ require('ts-node').register({
     ignore: [],
     compilerOptions: {
         target: 'esnext',
-        module: 'esnext',
+        // Конфиги и overrides загружаются через require(), включая их локальные импорты.
+        module: 'Node16',
         skipLibCheck: true,
         allowJs: false,
         allowSyntheticDefaultImports: true,
-        moduleResolution: 'bundler',
+        moduleResolution: 'node16',
         esModuleInterop: true,
     },
     skipProject: true,
