@@ -175,6 +175,7 @@
     },
     "jest": {
         "testRegex": "src/.*/__tests__/.*\\.ts$",
+        "maxWorkers": "25%",
         "moduleFileExtensions": [
             "ts",
             "js"
