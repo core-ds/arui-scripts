@@ -6,7 +6,13 @@ export type CliCommand = {
     description: string;
     help?: string;
     passthrough?: boolean; // для проброса аргументов во вне
-    load: () => void;
+    load: (options: Record<string, string | boolean>) => void;
+    options?: Array<{
+        flags: string;
+        description: string;
+        required?: boolean;
+        defaultValue?: string;
+    }>;
 };
 
 export const commands: CliCommand[] = [
@@ -84,5 +90,30 @@ export const commands: CliCommand[] = [
         name: 'changelog',
         description: 'postchangelog-хук standard-version: формирует описание версии в CHANGELOG.md',
         load: () => require('../commands/changelog'),
+    },
+    {
+        name: 'bundle-diff',
+        description: 'Генерирует Rsdoctor html diff и markdown комментарий для CI',
+        options: [
+            {
+                flags: '--current <directory>',
+                description: 'Каталог данных текущей сборки',
+                required: true,
+            },
+            { flags: '--baseline <directory>', description: 'Каталог данных базовой сборки' },
+            {
+                flags: '--output <directory>',
+                description: 'Каталог отчетов',
+                defaultValue: 'rsdoctor/diff',
+            },
+            {
+                flags: '--report-url <url>',
+                description: 'URL опубликованного каталога HTML отчетов',
+            },
+            { flags: '--current-label <label>', description: 'Коммит текущей сборки' },
+            { flags: '--baseline-label <label>', description: 'Ветка и коммит базовой сборки' },
+        ],
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        load: (options) => require('../commands/bundle-diff').run(options),
     },
 ];

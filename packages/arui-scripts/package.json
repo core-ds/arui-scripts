@@ -47,7 +47,10 @@
         "@babel/runtime": "^7.29.7",
         "@module-federation/runtime-tools": "^2.0.0",
         "@pmmmwh/react-refresh-webpack-plugin": "0.6.2",
+        "@rsdoctor/cli": "1.6.4",
+        "@rsdoctor/client": "1.6.4",
         "@rsdoctor/rspack-plugin": "1.6.4",
+        "@rsdoctor/utils": "1.6.4",
         "@rspack/cli": "2.2.5",
         "@rspack/core": "2.2.5",
         "@rspack/dev-server": "2.2.1",
@@ -132,6 +135,7 @@
         "webpack-node-externals": "3.0.0"
     },
     "devDependencies": {
+        "@rsdoctor/types": "1.6.4",
         "@types/assets-webpack-plugin": "6.1.2",
         "@types/case-sensitive-paths-webpack-plugin": "2.1.6",
         "@types/compression-webpack-plugin": "4.0.1",

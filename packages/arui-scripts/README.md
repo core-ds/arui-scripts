@@ -19,6 +19,13 @@ yarn start
 CLI `arui-scripts` поддерживает глобальные флаги `--help`, `--version` и справку по командам
 `arui-scripts <команда> --help`. Подробнее в [CLI](docs/cli.md).
 
+Для анализа изменений клиентских бандлов в CI сохраняйте данные production сборки через
+`ARUI_SCRIPTS_RSDOCTOR_OUTPUT=rsdoctor/current yarn build`, затем запускайте
+`arui-scripts bundle-diff --current rsdoctor/current --baseline rsdoctor/baseline`.
+
+Команда создает HTML/JSON diff и markdown комментарий с таблицей размеров и ссылками на отчеты.
+Подробнее, включая использование в CI, в [документации bundle-diff](docs/commands.md#bundle-diff).
+
 Использование
 
 ===

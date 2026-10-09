@@ -182,3 +182,56 @@ arui-scripts archive-build
 Так же при запуске будет генерироваться [stats-файл](https://webpack.js.org/api/stats/), который можно использовать в
 [сторонних](http://webpack.github.io/analyse/) инструментах, например для понимания почему тот или иной модуль попал в бандл.
 По умолчанию файл будет писаться в `.build/stats.json`, вы можете поменять это через отдельную [настройку statsOutputFilename](settings.md#statsOutputFilename).
+
+## bundle-diff
+
+Генерирует [Rsdoctor Bundle Diff](https://rsdoctor.rs/guide/usage/bundle-diff) для двух production сборок клиента:
+HTML отчеты, JSON diff, таблицу размеров `summary.json` и markdown комментарий для pull request `comment.md`.
+
+### Сохранение данных production сборки
+
+```bash
+ARUI_SCRIPTS_RSDOCTOR_OUTPUT=rsdoctor/current yarn build
+```
+
+`yarn build` должен запускать `arui-scripts build`. Rsdoctor подключается к тем же production конфигурациям клиента, отдельная пересборка не нужна, серверные бандлы не учитываются.
+Rsdoctor собирает только данные о бандле и не меняет результат сборки: JS, CSS и source maps совпадают со сборкой без этой переменной.
+Встроенные lint правила Rsdoctor отключены, поэтому сбор данных не добавляет предупреждений. Обычный `bundle-analyze` сохраняет свое интерактивное поведение.
+
+### Сравнение
+
+```bash
+yarn arui-scripts bundle-diff \
+  --current rsdoctor/current \
+  --baseline rsdoctor/baseline \
+  --output rsdoctor/diff \
+  --report-url https://artifacts.example/reports/build-123/ \
+  --current-label 'feature/form @ current-sha' \
+  --baseline-label 'develop @ baseline-sha'
+```
+
+| Опция                      | Назначение                                                                                                                       |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `--current <directory>`    | Обязательный каталог текущего snapshot с `index.json`                                                                            |
+| `--baseline <directory>`   | Каталог базового snapshot; если он не передан, не содержит snapshot или собран другой версией Rsdoctor, выводятся текущие размеры и причина |
+| `--output <directory>`     | Каталог результата; по умолчанию `rsdoctor/diff`                                                                                 |
+| `--report-url <url>`       | URL, по которому будет опубликован каталог `--output`; без него ссылки на HTML отчеты относительные                              |
+| `--current-label <label>`  | Ветка/коммит текущей сборки для комментария                                                                                      |
+| `--baseline-label <label>` | Ветка/коммит базовой сборки для комментария                                                                                      |
+
+Метрики Total Size / JavaScript / CSS / HTML / Other Assets используют правила Rsdoctor (emitted assets, без source maps и LICENSE). Other Assets объединяет изображения, шрифты, медиа и прочие файлы.
+Предсжатые копии `.gz` и `.br` в таблицу не входят, потому что дублируют те же JS и CSS; в HTML отчете Rsdoctor они видны отдельными assets.
+Для нескольких клиентов таблица суммирует размеры их outputs; одинаковый файл в двух outputs учитывается дважды.
+
+Для каждого общего имени клиента создаются `client-N.html` и `client-N.json`. Новые и удалённые конфигурации учитываются в итоговой таблице и отмечаются в комментарии; для них парного HTML diff нет. JSON содержит native diff assets/modules/packages. При нулевом baseline рост отмечается как `new`, без бесконечного процента.
+
+Повреждённые данные, несовместимый текущий snapshot и ошибки генерации завершают команду с ненулевым кодом. Snapshot фиксирует формат и версию Rsdoctor, поэтому baseline другой версии не сравнивается: например, в PR, который обновляет arui-scripts, сравнение появится после сборки целевой ветки с новой версией.
+
+### Использование в CI
+
+1. В сборке каждой ветки сохраняйте snapshot как артефакт, привязанный к SHA коммита.
+2. В сборке pull request скачайте snapshot последнего коммита целевой ветки в каталог baseline. Snapshot другого коммита подставлять не стоит: сравнение покажет чужие изменения. Если snapshot не найден, все равно запускайте команду: комментарий покажет текущие размеры и объяснит, что нужна сборка целевой ветки.
+3. Запустите `bundle-diff` с `--report-url`, указывающим, куда будет опубликован каталог `--output`, и опубликуйте этот каталог.
+4. Опубликуйте `comment.md` комментарием в pull request. При повторных запусках удобно обновлять прежний комментарий, найдя его по заголовку `Rsdoctor Bundle Diff Analysis`.
+
+HTML отчет — самодостаточный файл со встроенным JavaScript. Если хранилище артефактов запрещает выполнение скриптов, отчет можно скачать и открыть локально.
