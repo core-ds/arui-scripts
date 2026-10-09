@@ -1,5 +1,32 @@
 # arui-scripts
 
+## 25.0.0
+
+### Major Changes
+
+-   [#615](https://github.com/core-ds/arui-scripts/pull/615) [`3bd3e860`](https://github.com/core-ds/arui-scripts/commit/3bd3e86002c6d5966f0a6aada5f3554819bd3e7d) Thanks [@dmitrbrvsk](https://github.com/dmitrbrvsk)! - Удалены deprecated webpack имена из кодовой базы.
+    В оверрайдах, настройках остались только имена rspack.
+
+    **Что сделать пользователю**
+
+    Замените имена один в один:
+
+    -   ключи оверрайдов `webpack*` на такие же `rspack*` (`webpackClient` -> `rspackClient` и т.д.);
+    -   `disableDevWebpackTypecheck` -> `disableDevRspackTypecheck`;
+    -   `patchMainWebpackConfigForModules` -> `patchMainRspackConfigForModules`;
+    -   `createSingleClientWebpackConfig` -> `createSingleClientRspackConfig`;
+    -   в `findPlugin` ключ `ForkTsCheckerWebpackPlugin` -> `TsCheckerRspackPlugin`.
+
+### Minor Changes
+
+-   [#614](https://github.com/core-ds/arui-scripts/pull/614) [`13254a03`](https://github.com/core-ds/arui-scripts/commit/13254a030228e2486714ef3abac69fd6a0c83f43) Thanks [@dmitrbrvsk](https://github.com/dmitrbrvsk)! - Добавлена настройка buildSizeBudgets для контроля размера начального JS и CSS при production сборке.
+    Лимиты задаются в байтах для файлов без сжатия и gzip и проверяются отдельно для каждой точки входа.
+    При превышении сборка завершается с ошибкой, по умолчанию проверка выключена.
+
+### Patch Changes
+
+-   [#623](https://github.com/core-ds/arui-scripts/pull/623) [`5fa1063e`](https://github.com/core-ds/arui-scripts/commit/5fa1063ea39fa6b3bf9e3c0c6b2ed4e00bbb869d) Thanks [@dmitrbrvsk](https://github.com/dmitrbrvsk)! - Исправлены варнинги svgo `You are trying to configure removeViewBox which is not part of preset-default` в production сборке при включенной минификации svg
+
 ## 24.0.0
 
 ### Major Changes
