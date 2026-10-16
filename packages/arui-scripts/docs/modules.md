@@ -141,6 +141,58 @@ export default aruiScriptsConfig;
 ```
 Эта конфигурация даст возможность использовать react и react-dom библиотеки из bar-app, не загружая их из foo-app.
 
+### Sharing библиотек с учётом runtime-зависимостей
+
+Если хост и модуль могут использовать разные версии React, одного совпадения версий библиотеки компонентов недостаточно: компонент и renderer должны использовать один экземпляр React.
+
+Для такого случая есть отдельный opt-in helper. Он возвращает стандартный объект `shared` и не изменяет обработку конфигурации `arui-scripts`:
+
+```ts
+import { createSharedGroup } from 'arui-scripts/helpers';
+
+const shared = createSharedGroup({
+    packageJson: require.resolve('./package.json'),
+    runtime: ['react', 'react-dom'],
+    libraries: [
+        '@alfalab/core-components/',
+        '@company/internal-components/',
+    ],
+    eager: true,
+});
+
+export default {
+    modules: { shared },
+};
+```
+
+В модуле используйте тот же список `runtime` и `eager: false` (значение по умолчанию). Список `libraries` может отличаться. При `useSeparateBuild: true` helper также можно вызывать для `modules.options.separateBuildShared`, задавая `eager: false` только для отдельной WMF-сборки.
+
+Helper читает точные **установленные** версии runtime-пакетов относительно указанного абсолютного пути `packageJson`. Из отсортированных имён и версий он получает стабильный идентификатор и добавляет его в `shareKey` всех участников группы. Для runtime генерируются правила на корневые импорты и subpath-импорты, например `react-dom/client` и `react/jsx-runtime`.
+
+- Совпадают все версии runtime и подходит версия библиотеки — библиотека может переиспользоваться.
+- Отличается хотя бы одна версия runtime, включая patch — используются другие ключи и локальные fallback-копии.
+- Runtime совпадает, а версия библиотеки не подходит — используется локальная библиотека с общим runtime.
+
+Runtime-пакеты имеют `singleton: true` и `strictVersion: true` **внутри своей группы**. Это позволяет React 18 и React 19 существовать независимо. Не добавляйте поверх результата обычные shared-правила для тех же runtime-пакетов: они нарушат согласованность группы. Все библиотеки, которые должны использовать этот runtime, включайте в ту же группу. Отдельно собранные compat-модули этой конфигурацией не управляются.
+
+Для библиотек по умолчанию используются точные установленные версии, `singleton: false`, `strictVersion: true` и локальный fallback. Можно задать диапазон и другие настройки отдельно:
+
+```ts
+createSharedGroup({
+    packageJson: require.resolve('./package.json'),
+    runtime: ['react', 'react-dom'],
+    libraries: {
+        '@alfalab/core-components/': { requiredVersion: '^42.1.0' },
+        '@company/internal-components/button': { requiredVersion: '^3.0.0' },
+    },
+    eager: true,
+});
+```
+
+Доступные настройки библиотеки: `requiredVersion`, `eager`, `singleton`, `strictVersion`. Фактическая предоставляемая версия всегда читается из установленного пакета. Связь библиотеки с runtime объявляется явно, а не выводится из `peerDependencies`.
+
+Завершающий `/` означает sharing встреченных импортов по префиксу, а не включение всей библиотеки. Однако `eager: true` помещает предоставляемые компоненты и их зависимости в начальную загрузку, в том числе компоненты из ленивых разделов хоста. Так можно сохранить синхронную входную точку; для асинхронных потребителей используйте `eager: false`.
+
 ## Готово!
 
 Эта минимальная конфигурация, которая нужна для работы с модулями. Далее идет информация об advanced настройках работы с модулями.
