@@ -13,6 +13,7 @@ function run(args: string[]): { captured: Captured; error?: CommanderError } {
     const program: Command = createCli();
 
     program.exitOverride();
+    program.commands.forEach((command) => command.exitOverride());
     program.configureOutput({
         writeOut: (str) => {
             captured.out += str;
@@ -32,21 +33,21 @@ function run(args: string[]): { captured: Captured; error?: CommanderError } {
 }
 
 describe('createCli', () => {
-    it('регистрирует все команды из реестра', () => {
+    it('registers all commands from the registry', () => {
         const program = createCli();
         const registered = program.commands.map((command) => command.name());
 
         expect(registered).toEqual(commands.map((cmd) => cmd.name));
     });
 
-    it('по --version печатает версию пакета', () => {
+    it('prints the package version with --version', () => {
         const { captured, error } = run(['--version']);
 
         expect(captured.out).toContain(version);
         expect(error?.code).toBe('commander.version');
     });
 
-    it('по --help выводит список команд', () => {
+    it('lists available commands with --help', () => {
         const { captured } = run(['--help']);
 
         expect(captured.out).toContain('start');
@@ -54,25 +55,38 @@ describe('createCli', () => {
         expect(captured.out).toContain('docker-build');
     });
 
-    it('на неизвестную команду завершается с ненулевым кодом', () => {
+    it('returns a nonzero exit code for unknown commands', () => {
         const { error } = run(['buld']);
 
         expect(error).toBeInstanceOf(CommanderError);
         expect(error?.exitCode).not.toBe(0);
     });
 
-    it('предлагает похожую команду при опечатке', () => {
+    it('suggests a similar command for a typo', () => {
         const { captured } = run(['buld']);
 
         expect(captured.err).toContain('build');
     });
 
-    it('для passthrough-команд отключает встроенный --help', () => {
+    it('disables built-in --help for passthrough commands', () => {
         const program = createCli();
         const testCmd = program.commands.find((command) => command.name() === 'test');
         const vitestCmd = program.commands.find((command) => command.name() === 'test:vitest');
 
         expect(testCmd?.options.some((option) => option.long === '--help')).toBe(false);
         expect(vitestCmd?.options.some((option) => option.long === '--help')).toBe(false);
+    });
+
+    it('requires the current snapshot directory for bundle-diff', () => {
+        const { error } = run(['bundle-diff']);
+
+        expect(error?.code).toBe('commander.missingMandatoryOptionValue');
+    });
+
+    it('lists bundle-diff baseline and report options in help', () => {
+        const { captured } = run(['bundle-diff', '--help']);
+
+        expect(captured.out).toContain('--baseline <directory>');
+        expect(captured.out).toContain('--report-url <url>');
     });
 });
