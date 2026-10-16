@@ -1,5 +1,15 @@
 # arui-scripts
 
+## 25.0.1
+
+### Patch Changes
+
+-   [#625](https://github.com/core-ds/arui-scripts/pull/625) [`feb40c0a`](https://github.com/core-ds/arui-scripts/commit/feb40c0acc85e8569318086744c5d89ad31d3cc8) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - **Что изменилось**
+    Исправлена загрузка локальных TypeScript-модулей через относительные импорты без расширения в конфигах, overrides и presets CommonJS-проектов. Такие импорты больше не вызывают `ERR_MODULE_NOT_FOUND`.
+
+    **Что делать потребителю**
+    Обновите `arui-scripts`. Если для обхода ошибки использовалась JS-обёртка, можно вернуться к исходному TS-конфигу и удалить обёртку. Менять `tsconfig.json` приложения не требуется. Если импортируемая зависимость предоставляет разные `exports.import` и `exports.require`, проверьте её поведение: статические импорты в TS-конфигах CommonJS-проектов теперь используют `exports.require`.
+
 ## 25.0.0
 
 ### Major Changes
