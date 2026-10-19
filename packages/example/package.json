@@ -24,7 +24,7 @@
         ]
     },
     "dependencies": {
-        "@alfalab/core-components": "^42.1.0",
+        "@alfalab/core-components": "42.2.1",
         "@alfalab/scripts-modules": "workspace:*",
         "@alfalab/scripts-server": "workspace:*",
         "@hapi/hapi": "^21.3.2",
