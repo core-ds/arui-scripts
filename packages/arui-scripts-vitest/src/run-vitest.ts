@@ -21,7 +21,7 @@ type RunVitestParams = {
 };
 
 export function runVitest({ args, cwd = process.cwd() }: RunVitestParams): Promise<number> {
-    const aruiVitestConfigPath = path.resolve(__dirname, '../../configs/vitest/config.js');
+    const aruiVitestConfigPath = path.resolve(__dirname, 'config.js');
     const vitestArgs = hasProjectVitestConfig(cwd)
         ? ['run', ...args]
         : ['run', '--config', aruiVitestConfigPath, ...args];
@@ -36,7 +36,7 @@ export function runVitest({ args, cwd = process.cwd() }: RunVitestParams): Promi
         });
 
         vitestProcess.on('close', (code) => {
-            resolve(code ?? 0);
+            resolve(code ?? 1);
         });
 
         vitestProcess.on('error', (error) => {

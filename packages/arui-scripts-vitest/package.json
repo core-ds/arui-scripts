@@ -1,0 +1,53 @@
+{
+    "name": "@alfalab/arui-scripts-vitest",
+    "version": "0.0.0",
+    "description": "Конфигурация Vitest для приложений на arui-scripts",
+    "main": "./build/index.js",
+    "types": "./build/index.d.ts",
+    "exports": {
+        ".": {
+            "import": {
+                "types": "./build/index.d.mts",
+                "default": "./build/index.mjs"
+            },
+            "types": "./build/index.d.ts",
+            "default": "./build/index.js"
+        },
+        "./run": {
+            "types": "./build/run-vitest.d.ts",
+            "default": "./build/run-vitest.js"
+        },
+        "./package.json": "./package.json"
+    },
+    "license": "MPL-2.0",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/core-ds/arui-scripts.git"
+    },
+    "bugs": {
+        "url": "https://github.com/core-ds/arui-scripts/issues"
+    },
+    "homepage": "https://github.com/core-ds/arui-scripts/tree/master/packages/arui-scripts-vitest#readme",
+    "scripts": {
+        "build": "rm -rf build && tsc --project tsconfig.json && cp src/index.mjs build/index.mjs && cp src/esm-entry.d.mts build/index.d.mts",
+        "test": "vitest run",
+        "lint:scripts": "arui-presets-lint scripts",
+        "format": "arui-presets-lint format",
+        "format:check": "arui-presets-lint format:check",
+        "lint": "yarn lint:scripts && yarn format:check",
+        "lint:fix": "yarn lint:scripts --fix && yarn format",
+        "audit": "yarn npm audit --severity high --environment production"
+    },
+    "dependencies": {
+        "vite": "^8.3.1",
+        "vite-tsconfig-paths": "^6.1.1",
+        "vitest": "^5.0.2"
+    },
+    "devDependencies": {
+        "@types/node": "^22.12.0",
+        "typescript": "6.0.2"
+    },
+    "engines": {
+        "node": "^22.12.0 || ^24.0.0 || >=26.0.0"
+    }
+}
