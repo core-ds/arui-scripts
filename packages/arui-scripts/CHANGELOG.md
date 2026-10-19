@@ -1,5 +1,17 @@
 # arui-scripts
 
+## 25.0.2
+
+### Patch Changes
+
+-   [#628](https://github.com/core-ds/arui-scripts/pull/628) [`f8b1235b`](https://github.com/core-ds/arui-scripts/commit/f8b1235ba28e31fe6cdd87fbe078d3479d7024f4) Thanks [@HappyManWorld](https://github.com/HappyManWorld)! - **Что изменилось**
+    Исправлены потерянные двоеточия в переменных `@custom-media` `--large`, `--xlarge` и `--xxlarge` в `configs/mq.css`. Раньше в собранный CSS попадал невалидный media query вида `@media screen and (min-width 64em)`, который не матчится ни в одном браузере, поэтому правила внутри `@media (--large)`, `@media (--xlarge)` и `@media (--xxlarge)` не применялись.
+
+    **Что делать потребителю**
+    Обновите `arui-scripts`. Если для обхода проблемы подменялись значения брейкпоинтов (например, через оверрайд `postcss` с собственным файлом custom media), после обновления подмену можно убрать.
+
+    **Контекст:** регрессия появилась в 7e6f548 при переносе `configs/mq.ts` в `configs/mq.css`: в `mq.ts` значения были записаны корректно (`screen and (min-width: 64em)`). Ошибка «тихая»: `postcss-custom-media` не валидирует подставляемое значение, поэтому предупреждений при сборке нет. Воспроизводится в 25.0.0 и 25.0.1.
+
 ## 25.0.1
 
 ### Patch Changes
