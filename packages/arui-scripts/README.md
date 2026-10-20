@@ -19,9 +19,28 @@ yarn start
 CLI `arui-scripts` поддерживает глобальные флаги `--help`, `--version` и справку по командам
 `arui-scripts <команда> --help`. Подробнее в [CLI](docs/cli.md).
 
-Для анализа изменений клиентских бандлов в CI сохраняйте данные production сборки через
-`ARUI_SCRIPTS_RSDOCTOR_OUTPUT=rsdoctor/current yarn build`, затем запускайте
-`arui-scripts bundle-diff --current rsdoctor/current --baseline rsdoctor/baseline`.
+Команду `bundle-diff` можно запускать локально или в CI/CD.
+
+Для анализа изменений клиентских бандлов необходимы snapshot двух production сборок:
+
+- `current`: snapshot текущей сборки PR
+- `baseline`: snapshot сборки целевой ветки PR
+
+Сохранить snapshot текущей сборки можно командой:
+
+```bash
+ARUI_SCRIPTS_RSDOCTOR_OUTPUT=rsdoctor/current yarn build
+```
+
+Сохраните snapshot успешной сборки целевой ветки. Перед сравнением поместите snapshot
+нужного коммита целевой ветки в каталог `rsdoctor/baseline`, затем запустите команду:
+
+```bash
+arui-scripts bundle-diff --current rsdoctor/current --baseline rsdoctor/baseline
+```
+
+Команда `bundle-diff` не скачивает baseline автоматически. При запуске в CI/CD настройте
+получение и сохранение snapshot в пайплайне (при локальном запуске нужно подготовить вручную).
 
 Команда создает HTML/JSON diff и markdown комментарий с таблицей размеров и ссылками на отчеты.
 Подробнее, включая использование в CI, в [документации bundle-diff](docs/commands.md#bundle-diff).

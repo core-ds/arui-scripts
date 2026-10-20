@@ -8,7 +8,12 @@ import {
 } from '@rspack/core';
 import fs from 'fs-extra';
 
-export const rsdoctorVersion = '1.6.4';
+// eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
+const { dependencies } = require('../../../package.json') as {
+    dependencies: Record<string, string>;
+};
+
+export const rsdoctorVersion = dependencies['@rsdoctor/rspack-plugin'];
 
 // Rsdoctor reads source maps at this processAssets stage to attribute bundled code to modules.
 const RSDOCTOR_SOURCE_MAPS_STAGE = 2400;

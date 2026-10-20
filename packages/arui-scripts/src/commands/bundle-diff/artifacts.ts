@@ -42,6 +42,7 @@ export async function generateArtifacts(
 ): Promise<BundleComparison[]> {
     await fs.ensureDir(output);
 
+    // удаляем только отчеты, так как в --output могут лежать входные snapshot и посторонние файлы
     const oldFiles = (await fs.readdir(output)).filter(
         (file) =>
             /^client-\d+\.(html|json)$/.test(file) || ['comment.md', 'summary.json'].includes(file),

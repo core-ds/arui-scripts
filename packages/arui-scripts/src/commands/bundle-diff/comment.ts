@@ -20,7 +20,10 @@ type CommentOptions = {
 const baselineIssueMessages: Record<BaselineIssue, string> = {
     missing:
         'Baseline для точного коммита целевой ветки отсутствует. Запустите ее сборку с rsdoctor и повторите сборку PR. Сравнение и HTML diff пока недоступны.',
-    incompatible: `Baseline целевой ветки собран другой версией Rsdoctor, а эта сборка использует Rsdoctor ${rsdoctorVersion}. Сравнение станет доступно, когда целевая ветка будет собрана с этой версией arui-scripts, например после мержа PR.`,
+    incompatible:
+        'Baseline несовместим с текущей сборкой (версия Rsdoctor или формат snapshot). ' +
+        `Текущая версия Rsdoctor: ${rsdoctorVersion}. ` +
+        'Для сравнения необходимо пересобрать baseline с совместимой версией Rsdoctor и форматом snapshot.',
 };
 
 export function formatChange(current: number, baseline: number): string {

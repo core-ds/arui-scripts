@@ -108,7 +108,7 @@ it('reports a baseline collected by another Rsdoctor version instead of failing'
     const comment = await fs.readFile(path.join(output, 'comment.md'), 'utf8');
 
     expect(comment).toContain('| 📄 JavaScript | 100 B |  |  |');
-    expect(comment).toContain('собран другой версией Rsdoctor');
+    expect(comment).toContain('Baseline несовместим с текущей сборкой');
     expect(comment).not.toContain('Baseline для точного коммита');
     expect((await fs.readJson(path.join(output, 'summary.json'))).baseline).toBeNull();
     expect(execute).not.toHaveBeenCalled();
