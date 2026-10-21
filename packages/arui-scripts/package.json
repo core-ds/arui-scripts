@@ -190,7 +190,7 @@
                     "tsconfig": "tsconfig-local.json"
                 }
             ],
-            "/node_modules/@rspack/.+\\.(mjs|js)$": [
+            "/node_modules/.+\\.(mjs|js)$": [
                 "babel-jest",
                 {
                     "presets": [
@@ -211,7 +211,7 @@
             ]
         },
         "transformIgnorePatterns": [
-            "/node_modules/(?!@rspack/)"
+            "/node_modules/(?!@rspack/|@rsdoctor/|rslog/|strip-ansi/|ansi-regex/)"
         ]
     }
 }
