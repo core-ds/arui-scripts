@@ -1,4 +1,5 @@
 import { type TemplateContext } from '../types';
+import { LINT_TYPESCRIPT } from '../typescript-lint-compat';
 
 function sortKeys(record: Record<string, string>): Record<string, string> {
     return Object.keys(record)
@@ -14,6 +15,7 @@ export function packageJsonTemplate(ctx: TemplateContext): string {
     const scripts: Record<string, string> = {
         start: 'arui-scripts start',
         build: 'arui-scripts build',
+        typecheck: 'node ./node_modules/typescript/bin/tsc --noEmit --incremental false',
         test: ctx.testRunner === 'jest' ? 'arui-scripts test' : 'arui-scripts test:vitest',
     };
 
@@ -30,9 +32,9 @@ export function packageJsonTemplate(ctx: TemplateContext): string {
         scripts['lint:unused:fix'] = 'arui-presets-lint knip --fix';
         scripts['lint:secrets'] = 'arui-presets-lint secretlint';
         scripts.lint =
-            'yarn lint:styles && yarn lint:scripts && yarn format:check && yarn lint:unused && yarn lint:secrets';
+            'arui-presets-lint styles --max-warnings=0 && arui-presets-lint scripts --max-warnings=0 && arui-presets-lint format:check && arui-presets-lint knip && arui-presets-lint secretlint';
         scripts['lint:fix'] =
-            'yarn lint:styles --fix && yarn lint:scripts --fix && yarn format && yarn lint:secrets';
+            'arui-presets-lint styles --max-warnings=0 --fix && arui-presets-lint scripts --max-warnings=0 --fix && arui-presets-lint format && arui-presets-lint secretlint';
     }
 
     if (ctx.e2eFramework === 'playwright') {
@@ -50,10 +52,13 @@ export function packageJsonTemplate(ctx: TemplateContext): string {
         scripts,
         engines: {
             node: '>=24.11.1',
+            ...(ctx.useLint ? { npm: '>=10.9.3' } : {}),
         },
     };
 
     if (ctx.useLint) {
+        // npm не читает packageExtensions из .yarnrc.yml: изолируем TS6 внутри зависимостей линтера.
+        pkg.overrides = { 'arui-presets-lint': { typescript: LINT_TYPESCRIPT } };
         pkg.prettier = 'arui-presets-lint/prettier';
         pkg.stylelint = { extends: 'arui-presets-lint/stylelint' };
         pkg.commitlint = { extends: './node_modules/arui-presets-lint/commitlint' };

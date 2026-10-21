@@ -5,6 +5,6 @@ module.exports = {
         '\\.css$': '<rootDir>/validate-build/style-mock.js',
     },
     transform: {
-        '^.+\\.tsx?$': require.resolve('ts-jest'),
+        '^.+\\.tsx?$': ['@swc/jest', { jsc: { target: 'es2022' } }],
     },
 };

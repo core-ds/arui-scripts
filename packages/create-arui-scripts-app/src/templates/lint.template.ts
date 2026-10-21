@@ -24,11 +24,7 @@ export default defineConfig(eslintConfig, [
 export function knipConfigTemplate(): string {
     return `import baseConfig from 'arui-presets-lint/knip';
 
-export default {
-    ...baseConfig,
-    // ts-jest подключается через jest.preset arui-scripts, прямых импортов в коде нет
-    ignoreDependencies: [...baseConfig.ignoreDependencies, 'ts-jest'],
-};
+export default baseConfig;
 `;
 }
 

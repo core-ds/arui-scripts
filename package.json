@@ -14,7 +14,8 @@
         "publish-packages": "yarn test && changeset version && yarn npm-publish",
         "npm-publish": "yarn workspaces foreach --all --no-private npm publish --access public --tolerate-republish && yarn changeset tag",
         "build": "turbo run build",
-        "test": "turbo run build build:app test validate",
+        "test": "turbo run build build:app test validate typecheck",
+        "typecheck": "turbo run typecheck",
         "lint": "turbo run lint"
     },
     "prettier": "arui-presets-lint/prettier",
@@ -29,5 +30,5 @@
             "./node_modules/arui-presets-lint/commitlint"
         ]
     },
-    "packageManager": "yarn@4.13.0"
+    "packageManager": "yarn@4.18.0"
 }

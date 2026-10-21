@@ -30,8 +30,9 @@ jobs:
 
       - name: Test and version snapshot
         run: |
-            yarn run turbo test build
+            yarn test
             yarn run changeset version --snapshot ${{ github.event.inputs.prefix }}
+            yarn build
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 

@@ -1,12 +1,10 @@
-/** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
+/** @type {import('jest').Config} */
 module.exports = {
-    preset: 'ts-jest',
     testEnvironment: 'node',
     // фикстуры лежат рядом с тестами и сами тестами не являются
     testMatch: ['**/__tests__/**/*.test.ts'],
     testPathIgnorePatterns: ['/node_modules/', '/build/'],
     transform: {
-        // основной tsconfig собирает ESM, а jest исполняет тесты как CommonJS
-        '^.+\\.tsx?$': ['ts-jest', { tsconfig: 'tsconfig.cjs.json' }],
+        '^.+\\.tsx?$': ['@swc/jest', { jsc: { target: 'es2022' } }],
     },
 };

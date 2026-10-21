@@ -1,7 +1,6 @@
 import path from 'path';
 import * as zlib from 'zlib';
 
-import ReactRefreshTypeScript from 'react-refresh-typescript';
 import {
     type Configuration,
     CopyRspackPlugin,
@@ -206,8 +205,6 @@ export const createSingleClientWebpackConfig = (
                 oneOf: [
                     // Обработка основного кода приложения
                     ...getCodeLoader(mode),
-                    // обработка ts кода если codeLoader = tsc
-                    getTsLoaderIfEnabled(mode),
                     // Обработка внешнего для приложения кода (node_modules)
                     getExternalCodeLoader(mode),
                     // process simple css files with postcss loader and css loader
@@ -322,7 +319,6 @@ export const createSingleClientWebpackConfig = (
         ),
         (mode === 'prod' || !configs.disableDevRspackTypecheck) &&
             configs.tsconfig !== null &&
-            configs.codeLoader !== 'tsc' &&
             new TsCheckerRspackPlugin(),
         // moment.js очень большая библиотека, которая включает в себя массу локализаций, которые мы не используем.
         // Поэтому мы их просто игнорируем, чтобы не включать в сборку.
@@ -511,8 +507,7 @@ function getCodeLoader(mode: 'dev' | 'prod'): RuleSetRule[] {
 
     return [
         {
-            test:
-                configs.codeLoader === 'tsc' ? /\.(js|jsx|mjs|cjs)$/ : /\.(js|jsx|mjs|ts|tsx|cjs)$/,
+            test: /\.(js|jsx|mjs|ts|tsx|cjs)$/,
             include: configs.appSrc,
             loader: require.resolve('babel-loader'),
             options: {
@@ -528,42 +523,6 @@ function getCodeLoader(mode: 'dev' | 'prod'): RuleSetRule[] {
             },
         },
     ];
-}
-
-function getTsLoaderIfEnabled(mode: 'dev' | 'prod'): RuleSetRule | false {
-    if (configs.codeLoader !== 'tsc' || !configs.tsconfig) {
-        return false;
-    }
-
-    return {
-        test: /\.tsx?$/,
-        use: [
-            {
-                loader: require.resolve('babel-loader'),
-                options: {
-                    ...babelConf,
-                    cacheDirectory: mode === 'dev',
-                    cacheCompression: false,
-                    plugins:
-                        mode === 'dev'
-                            ? [[require.resolve('react-refresh/babel'), { skipEnvCheck: true }]]
-                            : undefined,
-                },
-            },
-            {
-                loader: require.resolve('ts-loader'),
-                options: {
-                    getCustomTransformers: () => ({
-                        before: mode === 'dev' ? [ReactRefreshTypeScript()] : [],
-                    }),
-                    onlyCompileBundledFiles: true,
-                    transpileOnly: true,
-                    happyPackMode: true,
-                    configFile: configs.tsconfig,
-                },
-            },
-        ],
-    };
 }
 
 function getExternalCodeLoader(mode: 'dev' | 'prod'): RuleSetRule {

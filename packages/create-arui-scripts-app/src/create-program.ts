@@ -25,9 +25,7 @@ export function createProgram(onInit: InitHandler = defaultInitHandler): Command
         .option('--no-rtk', 'Только React, без RTK')
         .addOption(new Option('--client-only', 'Только клиент').conflicts('ssr'))
         .addOption(new Option('--ssr', 'Клиент + сервер').conflicts('clientOnly'))
-        .addOption(
-            new Option('--code-loader <loader>', 'Транспилятор').choices(['swc', 'babel', 'tsc']),
-        )
+        .addOption(new Option('--code-loader <loader>', 'Транспилятор').choices(['swc', 'babel']))
         .addOption(new Option('--test-runner <runner>', 'Тест-раннер').choices(['jest', 'vitest']))
         .addOption(
             new Option('--e2e-framework <framework>', 'e2e фреймворк').choices([

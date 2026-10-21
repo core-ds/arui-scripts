@@ -3,12 +3,11 @@
 // jest-presets могут использоваться внешними утилитами, которые используют разработчики, настройки в скриптах
 // используются при запуске `arui-scripts test`. Посколько в jest жестко зафиксировано где именно должен лежать файл с пресетами
 // нам приходится отвязывать его от основного кода скриптов
-const fs = require('fs');
-const { pathsToModuleNameMapper } = require('ts-jest');
-const { parseConfigFileTextToJson } = require('typescript');
+const { createModuleNameMapper } = require('./create-module-name-mapper');
 const { swcJestConfig } = require('../swc');
 
 const { configs } = require('../app-configs');
+const { readTsconfigPaths } = require('./read-tsconfig-paths');
 
 // Значения по умолчанию из самого jest, см. https://jestjs.io/docs/configuration#transformignorepatterns-arraystring
 const PNP_TRANSFORM_IGNORE_PATTERN = '\\.pnp\\.[^\\\\/]+$';
@@ -31,32 +30,12 @@ module.exports = {
     moduleNameMapper: {
         // replace all css files with simple empty exports
         '\\.css$': require.resolve('./css-mock'),
-        ...pathsToModuleNameMapper(getPathMapping(), { prefix: '<rootDir>/' }),
+        ...createModuleNameMapper(readTsconfigPaths(configs.tsconfig)),
     },
     snapshotSerializers: [require.resolve('jest-snapshot-serializer-class-name-to-string')],
-    globals: {
-        'ts-jest': {
-            tsconfig: configs.tsconfig,
-        },
-    },
 };
 
-function getPathMapping() {
-    if (!configs.tsconfig) {
-        return {};
-    }
-
-    const tsConfigText = fs.readFileSync(configs.tsconfig, 'utf8');
-    const tsConfig = parseConfigFileTextToJson(configs.tsconfig, tsConfigText);
-
-    return tsConfig.config.compilerOptions?.paths || {};
-}
-
 function getTsTransformer() {
-    if (configs.jestCodeTransformer === 'tsc') {
-        return require.resolve('ts-jest');
-    }
-
     if (configs.jestCodeTransformer === 'swc') {
         return [require.resolve('@swc/jest'), swcJestConfig];
     }
@@ -81,7 +60,7 @@ function getTransformIgnorePatterns() {
 
     const list = packages.map((name) => name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
 
-    // Игнорируем всё в node_modules, кроме путей, содержащих /node_modules/<пакет>/.
+    // Игнорируем все в node_modules, кроме путей, содержащих /node_modules/<пакет>/.
     // Вхождение ищется в любом месте пути, чтобы работали вложенные установки
     // вида node_modules/foo/node_modules/uuid.
     return [

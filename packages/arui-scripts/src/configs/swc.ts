@@ -20,7 +20,7 @@ const swcConfig: Options = {
         },
         experimental: configs.collectCoverage
             ? {
-                  plugins: [['swc-plugin-coverage-instrument', {}]],
+                  plugins: [[require.resolve('swc-plugin-coverage-instrument'), {}]],
               }
             : {},
     },

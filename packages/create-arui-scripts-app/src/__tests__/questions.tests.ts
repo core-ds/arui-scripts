@@ -3,6 +3,15 @@ import prompts from 'prompts';
 import { getQuestions } from '../questions';
 
 describe('getQuestions', () => {
+    it('предлагает только совместимые с TypeScript 7 транспиляторы', () => {
+        const loader = getQuestions('app').find((question) => question.name === 'codeLoader');
+
+        expect(loader?.choices).toEqual([
+            expect.objectContaining({ value: 'swc' }),
+            expect.objectContaining({ value: 'babel' }),
+        ]);
+    });
+
     it('пропускает serverPort в режиме clientOnly', async () => {
         // Порядок ответов соответствует порядку вопросов; serverPort пропускается.
         prompts.inject([

@@ -13,7 +13,7 @@ describe('copyStaticAssets', () => {
             const count = await copyStaticAssets(tempDir);
 
             expect(count).toBe(1);
-            expect(await fs.pathExists(path.join(tempDir, '.yarn/releases/yarn-4.9.1.cjs'))).toBe(
+            expect(await fs.pathExists(path.join(tempDir, '.yarn/releases/yarn-4.18.0.cjs'))).toBe(
                 true,
             );
         } finally {

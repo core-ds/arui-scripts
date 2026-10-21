@@ -31,8 +31,13 @@ describe('runInit', () => {
 
         expect(pkg.name).toBe('app');
         expect(pkg.devDependencies['arui-scripts']).toBe('^23.0.1');
+        expect(pkg.devDependencies.typescript).toBe('^7.0.2');
+        expect(pkg.devDependencies).not.toHaveProperty('ts-jest');
+        expect(pkg.scripts.typecheck).toBe(
+            'node ./node_modules/typescript/bin/tsc --noEmit --incremental false',
+        );
         expect(await fs.pathExists(path.join(target, 'src/client/index.tsx'))).toBe(true);
-        expect(await fs.pathExists(path.join(target, '.yarn/releases/yarn-4.9.1.cjs'))).toBe(true);
+        expect(await fs.pathExists(path.join(target, '.yarn/releases/yarn-4.18.0.cjs'))).toBe(true);
     });
 
     it('падает при конфликте файлов без --force', async () => {

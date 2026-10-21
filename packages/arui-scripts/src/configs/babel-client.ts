@@ -17,9 +17,7 @@ export const babelClientConfig = applyOverrides(['babel', 'babelClient'], {
                 exclude: ['transform-typeof-symbol'],
             },
         ],
-        configs.tsconfig !== null &&
-            configs.codeLoader !== 'tsc' &&
-            require.resolve('@babel/preset-typescript'),
+        configs.tsconfig !== null && require.resolve('@babel/preset-typescript'),
         require.resolve('@babel/preset-react'),
     ].filter(Boolean),
     plugins: [

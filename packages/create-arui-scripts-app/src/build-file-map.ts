@@ -56,7 +56,7 @@ export function buildFileMap(ctx: TemplateContext): Record<string, string> {
         'arui-scripts.config.ts': aruiScriptsConfigTemplate(ctx),
         'tsconfig.json': tsconfigTemplate(ctx),
         '.gitignore': gitignoreTemplate(ctx),
-        '.yarnrc.yml': yarnrcTemplate(),
+        '.yarnrc.yml': yarnrcTemplate(ctx),
         'global-definitions.d.ts': globalDefinitionsTemplate(),
         'README.md': readmeTemplate(ctx),
         [`${client}/index.tsx`]: clientEntryTemplate(ctx),

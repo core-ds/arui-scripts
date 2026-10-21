@@ -1,4 +1,4 @@
-export type CodeLoader = 'swc' | 'babel' | 'tsc';
+export type CodeLoader = 'swc' | 'babel';
 export type TestRunner = 'jest' | 'vitest';
 export type E2eFramework = 'cypress' | 'playwright' | 'none';
 

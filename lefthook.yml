@@ -9,4 +9,4 @@ pre-commit:
 pre-push:
   commands:
     run-test:
-      run: yarn turbo run lint build build:app test validate
+      run: yarn turbo run lint build build:app test validate typecheck

@@ -67,13 +67,13 @@ export type AppConfigs = {
 
     // build tuning
     keepPropTypes: boolean;
-    codeLoader: 'babel' | 'tsc' | 'swc';
+    codeLoader: 'babel' | 'swc';
     experimentalReactCompiler: 'disabled' | ReactCompilerOptions;
     installServerSourceMaps: boolean;
     disableDevRspackTypecheck: boolean;
     /** @deprecated используйте `disableDevRspackTypecheck` */
     disableDevWebpackTypecheck?: boolean;
-    jestCodeTransformer: 'babel' | 'tsc' | 'swc';
+    jestCodeTransformer: 'babel' | 'swc';
     jestTransformNodeModules: string[];
     collectCoverage: boolean;
 

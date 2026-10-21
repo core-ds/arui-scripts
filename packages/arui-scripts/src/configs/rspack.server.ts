@@ -102,8 +102,6 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
                 oneOf: [
                     // Обработка основного кода приложения
                     ...getCodeLoader(mode),
-                    // обработка ts кода если codeLoader = tsc
-                    getTsLoaderIfEnabled(mode),
                     // Обработка внешнего для приложения кода (node_modules)
                     getExternalCodeLoader(mode),
                     // replace css imports with empty files
@@ -249,8 +247,7 @@ function getCodeLoader(mode: 'dev' | 'prod'): RuleSetRule[] {
 
     return [
         {
-            test:
-                configs.codeLoader === 'tsc' ? /\.(js|jsx|mjs|cjs)$/ : /\.(js|jsx|mjs|ts|tsx|cjs)$/,
+            test: /\.(js|jsx|mjs|ts|tsx|cjs)$/,
             include: configs.appSrc,
             loader: require.resolve('babel-loader'),
             options: {
@@ -262,37 +259,6 @@ function getCodeLoader(mode: 'dev' | 'prod'): RuleSetRule[] {
             },
         },
     ];
-}
-
-function getTsLoaderIfEnabled(mode: 'dev' | 'prod'): RuleSetRule | false {
-    if (configs.codeLoader !== 'tsc' || !configs.tsconfig) {
-        return false;
-    }
-
-    return {
-        test: /\.tsx?$/,
-        use: [
-            {
-                loader: require.resolve('babel-loader'),
-                options: {
-                    // This is a feature of `babel-loader` for webpack (not Babel itself).
-                    // It enables caching results in ./node_modules/.cache/babel-loader/
-                    // directory for faster rebuilds.
-                    cacheDirectory: mode === 'dev',
-                    ...babelConf,
-                },
-            },
-            {
-                loader: require.resolve('ts-loader'),
-                options: {
-                    onlyCompileBundledFiles: true,
-                    transpileOnly: true,
-                    happyPackMode: true,
-                    configFile: configs.tsconfig,
-                },
-            },
-        ],
-    };
 }
 
 function getExternalCodeLoader(mode: 'dev' | 'prod'): RuleSetRule {

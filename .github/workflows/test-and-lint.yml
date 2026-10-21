@@ -17,9 +17,11 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
-    - name: yarn install and test
+    - name: yarn install and test on TypeScript 7
       run: |
         yarn install --immutable
+        yarn workspace arui-scripts node -e "const { version } = require('typescript/package.json'); if (Number(version.split('.')[0]) !== 7) throw new Error('Expected TypeScript 7, got ' + version);"
+        yarn workspace arui-scripts exec tsc --version
         yarn run test
       env:
         CI: true

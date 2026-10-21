@@ -1,7 +1,7 @@
 import { createModuleLoader } from '../create-module-loader';
 import { type MountableModule } from '../module-types';
-import * as cleanGlobal from '../utils/clean-global';
-import * as domUtils from '../utils/dom-utils';
+import { cleanGlobal } from '../utils/clean-global';
+import { removeModuleResources } from '../utils/dom-utils';
 import { fetchResources } from '../utils/fetch-resources';
 import { getCompatModule, getModule } from '../utils/get-module';
 import { cleanupModulesCache } from '../utils/modules-cache';
@@ -15,6 +15,20 @@ jest.mock('../utils/get-module', () => ({
     getModule: jest.fn(),
     getCompatModule: jest.fn(),
 }));
+
+// Экспорты ES-модуля нельзя подменить через jest.spyOn: swc и нативный ESM делают их неконфигурируемыми.
+// Поэтому оборачиваем настоящие реализации в jest.fn прямо в фабрике мока
+jest.mock('../utils/clean-global', () => {
+    const actual = jest.requireActual('../utils/clean-global');
+
+    return { ...actual, cleanGlobal: jest.fn(actual.cleanGlobal) };
+});
+
+jest.mock('../utils/dom-utils', () => {
+    const actual = jest.requireActual('../utils/dom-utils');
+
+    return { ...actual, removeModuleResources: jest.fn(actual.removeModuleResources) };
+});
 
 describe('createModuleLoader', () => {
     beforeEach(() => {
@@ -434,8 +448,6 @@ describe('createModuleLoader', () => {
     });
 
     it('should not remove module resources if there is still someone consuming it', async () => {
-        jest.spyOn(domUtils, 'removeModuleResources');
-        jest.spyOn(cleanGlobal, 'cleanGlobal');
         const getModuleResources = jest.fn();
         const loader = createModuleLoader({
             moduleId: 'test',
@@ -459,13 +471,11 @@ describe('createModuleLoader', () => {
 
         unmount();
 
-        expect(domUtils.removeModuleResources).not.toHaveBeenCalled();
-        expect(cleanGlobal.cleanGlobal).not.toHaveBeenCalled();
+        expect(removeModuleResources).not.toHaveBeenCalled();
+        expect(cleanGlobal).not.toHaveBeenCalled();
     });
 
     it('should remove module resources if there is no one consuming it', async () => {
-        jest.spyOn(domUtils, 'removeModuleResources');
-        jest.spyOn(cleanGlobal, 'cleanGlobal');
         const getModuleResources = jest.fn();
         const loader = createModuleLoader({
             moduleId: 'unique-id',
@@ -487,11 +497,11 @@ describe('createModuleLoader', () => {
 
         unmount();
 
-        expect(domUtils.removeModuleResources).toHaveBeenCalledWith({
+        expect(removeModuleResources).toHaveBeenCalledWith({
             moduleId: 'unique-id',
             targetNodes: [],
         });
-        expect(cleanGlobal.cleanGlobal).toHaveBeenCalledWith('unique-id');
+        expect(cleanGlobal).toHaveBeenCalledWith('unique-id');
     });
 
     describe('aborting', () => {
@@ -548,8 +558,6 @@ describe('createModuleLoader', () => {
         });
 
         it('should remove module resources when receive abort signal', async () => {
-            jest.spyOn(domUtils, 'removeModuleResources');
-            jest.spyOn(cleanGlobal, 'cleanGlobal');
             const getModuleResources = jest.fn();
             const loader = createModuleLoader({
                 moduleId: 'another-id',
@@ -573,11 +581,11 @@ describe('createModuleLoader', () => {
 
             abortController.abort();
 
-            expect(domUtils.removeModuleResources).toHaveBeenCalledWith({
+            expect(removeModuleResources).toHaveBeenCalledWith({
                 moduleId: 'another-id',
                 targetNodes: [],
             });
-            expect(cleanGlobal.cleanGlobal).toHaveBeenCalledWith('another-id');
+            expect(cleanGlobal).toHaveBeenCalledWith('another-id');
         });
     });
 

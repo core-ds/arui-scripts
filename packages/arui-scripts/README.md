@@ -27,20 +27,26 @@ CLI `arui-scripts` поддерживает глобальные флаги `--h
 
 Зависимость | Версия
 -- | --
-`nodejs` | `20.0.0+, 22.0.0+, 24.0.0+`
+`nodejs` | `^20.19.0` или `>=22.12.0`
+`typescript` | `7.x`
+Yarn (если используется) | `4.17.1+`
 `react` | `16.13.0+`
 `react-dom` | `16.13.0+`
 
-1. Установите `arui-scripts` в свой проект как dev зависимость
+Для обновления существующего проекта см. [переход на TypeScript 7](docs/typescript-7.md).
+Поддержка TypeScript 5/6 и значений `codeLoader: "tsc"`, `jestCodeTransformer: "tsc"` удалена.
+Для преобразования кода используйте SWC (по умолчанию) или Babel; типы проверяет нативный TypeScript 7.
+
+1. Установите `arui-scripts` и TypeScript 7 в свой проект как dev зависимости
 
 ```bash
-yarn add arui-scripts --dev
+yarn add arui-scripts typescript@^7.0.0 --dev
 ```
 
 или
 
 ```bash
-npm install arui-scripts --save-dev
+npm install arui-scripts typescript@^7.0.0 --save-dev
 ```
 
 2. Создайте необходимые файлы
@@ -76,6 +82,7 @@ npm install arui-scripts --save-dev
 - [Тонкая настройка](docs/overrides.md)
 - [Настройки сборки артефакта](docs/artifact.md)
 - [Настройки компиляторов](docs/compilers.md)
+- [Переход на TypeScript 7](docs/typescript-7.md)
 - [Особенности поведения](docs/caveats.md)
 - [Использование модулей](docs/modules.md)
 - [Client-only режим](./docs/client-only.md)

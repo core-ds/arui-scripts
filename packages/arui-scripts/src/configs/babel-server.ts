@@ -7,9 +7,7 @@ export const config = applyOverrides(['babel', 'babelServer'], {
             require.resolve('@babel/preset-env'),
             { modules: false, targets: { node: 'current' }, loose: true },
         ],
-        configs.tsconfig !== null &&
-            configs.codeLoader !== 'tsc' &&
-            require.resolve('@babel/preset-typescript'),
+        configs.tsconfig !== null && require.resolve('@babel/preset-typescript'),
         require.resolve('@babel/preset-react'),
     ].filter(Boolean),
     plugins: [

@@ -1,4 +1,5 @@
 import { type TemplateContext } from '../types';
+import { LINT_TYPESCRIPT, TYPESCRIPT_API_PACKAGES } from '../typescript-lint-compat';
 
 export function gitignoreTemplate(ctx?: TemplateContext): string {
     let e2eIgnores = '';
@@ -57,7 +58,19 @@ export function polyfillsTemplate(): string {
     return "import 'core-js/stable';\n";
 }
 
-export function yarnrcTemplate(): string {
+export function yarnrcTemplate(ctx: TemplateContext): string {
+    const lintExtensions = ctx.useLint
+        ? `
+# TypeScript 6 нужен только JavaScript API линтера.
+packageExtensions:
+${TYPESCRIPT_API_PACKAGES.map(
+    (name) => `  "${name}@*":
+    dependencies:
+      typescript: "${LINT_TYPESCRIPT}"
+`,
+).join('')}`
+        : '';
+
     return `nodeLinker: node-modules
 
 npmRegistryServer: "http://binary/artifactory/api/npm/npm/"
@@ -65,10 +78,10 @@ npmRegistryServer: "http://binary/artifactory/api/npm/npm/"
 unsafeHttpWhitelist:
   - binary
 
-yarnPath: .yarn/releases/yarn-4.9.1.cjs
+yarnPath: .yarn/releases/yarn-4.18.0.cjs
 
 defaultSemverRangePrefix: ""
-`;
+${lintExtensions}`;
 }
 
 export function readmeTemplate(ctx: TemplateContext): string {
@@ -131,5 +144,9 @@ Dev-сервер поднимается автоматически через we
 ## Установка
 
     yarn install
+
+Проверка типов приложения и тестов на TypeScript 7:
+
+    yarn typecheck
 ${routerSection}${e2eSection}`;
 }

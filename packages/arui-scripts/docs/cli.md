@@ -1,7 +1,11 @@
 # CLI arui-scripts
 
 `arui-scripts` предоставляет CLI для сборки, запуска и тестирования react-приложений.
-После установки пакета команды доступны через `arui-scripts <команда>`
+После установки пакета команды доступны через `arui-scripts <команда>`.
+
+CLI требует TypeScript 7. Значения `codeLoader: "tsc"` и `jestCodeTransformer: "tsc"` удалены:
+исходники преобразуются через SWC или Babel, типы проверяет нативный TypeScript 7.
+Порядок обновления описан в [руководстве по миграции](typescript-7.md).
 
 Для генерации нового проекта используйте отдельный пакет
 [`create-arui-scripts-app`](../../create-arui-scripts-app/README.md):

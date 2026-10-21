@@ -3,7 +3,7 @@ import { type InitAnswers, type TemplateContext } from './types';
 const VERSIONS = {
     react: '^19.0.0',
     reactDom: '^19.0.0',
-    typescript: '^6.0.0',
+    typescript: '^7.0.2',
     typesReact: '^19.0.0',
     typesReactDom: '^19.0.0',
     typesNode: '^24.0.0',
@@ -19,7 +19,6 @@ const VERSIONS = {
     coreJs: '^3.32.0',
     reactCompilerRuntime: '^1.0.0',
     jest: '^29.7.0',
-    tsJest: '^29.1.0',
     typesJest: '^29.5.0',
     vitest: '^4.1.5',
     playwrightTest: '^1.57.0',
@@ -72,7 +71,6 @@ export function buildContext(answers: InitAnswers, aruiScriptsVersion: string): 
 
     if (answers.testRunner === 'jest') {
         devDependencies.jest = VERSIONS.jest;
-        devDependencies['ts-jest'] = VERSIONS.tsJest;
         devDependencies['@types/jest'] = VERSIONS.typesJest;
     } else {
         devDependencies.vitest = VERSIONS.vitest;

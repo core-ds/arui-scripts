@@ -29,7 +29,7 @@ describe('buildContext', () => {
         expect(ctx.dependencies).not.toHaveProperty('arui-scripts');
         expect(ctx.devDependencies['arui-scripts']).toBe('^23.0.1');
         expect(ctx.dependencies).toHaveProperty('@alfalab/core-components');
-        expect(ctx.devDependencies).toHaveProperty('typescript');
+        expect(ctx.devDependencies.typescript).toBe('^7.0.2');
     });
 
     it('добавляет обязательные peer-зависимости core-components', () => {
@@ -74,11 +74,11 @@ describe('buildContext', () => {
         );
     });
 
-    it('jest добавляет jest/ts-jest, vitest только vitest', () => {
+    it('jest и vitest не добавляют несовместимый с TS7 ts-jest', () => {
         const jestCtx = buildContext({ ...base, testRunner: 'jest' }, '1.0.0');
 
         expect(jestCtx.devDependencies).toHaveProperty('jest');
-        expect(jestCtx.devDependencies).toHaveProperty('ts-jest');
+        expect(jestCtx.devDependencies).not.toHaveProperty('ts-jest');
 
         const vitestCtx = buildContext({ ...base, testRunner: 'vitest' }, '1.0.0');
 

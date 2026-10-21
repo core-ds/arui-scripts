@@ -49,7 +49,6 @@ export function getQuestions(defaultName: string, prefill: CliFlags = {}): promp
             choices: [
                 { title: 'swc', value: 'swc', description: 'Самый быстрый' },
                 { title: 'babel', value: 'babel', description: 'Максимальная совместимость' },
-                { title: 'tsc', value: 'tsc', description: 'Через TypeScript-компилятор' },
             ],
         },
         {

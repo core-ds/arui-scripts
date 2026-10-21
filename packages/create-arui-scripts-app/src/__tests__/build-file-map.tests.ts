@@ -26,6 +26,66 @@ function map(overrides: Partial<InitAnswers> = {}): Record<string, string> {
 }
 
 describe('buildFileMap', () => {
+    it.each(['jest', 'vitest'] as const)(
+        'проверяет типы приложения и тестов с %s на TS7',
+        (testRunner) => {
+            const files = map({ testRunner });
+            const pkg = JSON.parse(files['package.json']) as {
+                devDependencies: Record<string, string>;
+                scripts: Record<string, string>;
+            };
+            const tsconfig = JSON.parse(files['tsconfig.json']) as { include: string[] };
+
+            expect(pkg.devDependencies.typescript).toBe('^7.0.2');
+            expect(pkg.devDependencies).not.toHaveProperty('ts-jest');
+            expect(pkg.scripts.typecheck).toBe(
+                'node ./node_modules/typescript/bin/tsc --noEmit --incremental false',
+            );
+            expect(tsconfig.include).toEqual(
+                expect.arrayContaining(['src/**/*.ts', 'src/**/*.tsx']),
+            );
+        },
+    );
+
+    it('изолирует TypeScript 6 для линтера в Yarn и npm, сохраняя TS7 приложения', () => {
+        const files = map({ useLint: true });
+        const pkg = JSON.parse(files['package.json']) as {
+            devDependencies: Record<string, string>;
+            overrides: Record<string, Record<string, string>>;
+        };
+        const yarnrc = files['.yarnrc.yml'];
+
+        expect(pkg.devDependencies.typescript).toBe('^7.0.2');
+        expect(pkg.overrides).toEqual({
+            'arui-presets-lint': { typescript: 'npm:@typescript/typescript6@^6.0.0' },
+        });
+        expect(yarnrc).toContain('packageExtensions:');
+        [
+            'typescript-eslint',
+            '@typescript-eslint/eslint-plugin',
+            '@typescript-eslint/parser',
+            '@typescript-eslint/typescript-estree',
+            '@typescript-eslint/type-utils',
+            '@typescript-eslint/project-service',
+            '@typescript-eslint/tsconfig-utils',
+            '@typescript-eslint/utils',
+            'ts-api-utils',
+        ].forEach((name) => {
+            expect(yarnrc).toContain(`"${name}@*":`);
+        });
+        expect(yarnrc.match(/typescript: "npm:@typescript\/typescript6@\^6\.0\.0"/g)).toHaveLength(
+            9,
+        );
+    });
+
+    it('не добавляет TypeScript 6 проектам без линтера', () => {
+        const files = map();
+
+        expect(JSON.parse(files['package.json'])).not.toHaveProperty('overrides');
+        expect(files['.yarnrc.yml']).not.toContain('packageExtensions');
+        expect(files['.yarnrc.yml']).not.toContain('typescript6');
+    });
+
     it('создает общий набор файлов', () => {
         const keys = Object.keys(map());
 
@@ -51,7 +111,7 @@ describe('buildFileMap', () => {
         expect(yarnrc).toContain('npmRegistryServer: "http://binary/artifactory/api/npm/npm/"');
         expect(yarnrc).toContain('unsafeHttpWhitelist:');
         expect(yarnrc).toContain('- binary');
-        expect(yarnrc).toContain('yarnPath: .yarn/releases/yarn-4.9.1.cjs');
+        expect(yarnrc).toContain('yarnPath: .yarn/releases/yarn-4.18.0.cjs');
         expect(yarnrc).toContain('defaultSemverRangePrefix: ""');
     });
 
@@ -128,7 +188,7 @@ describe('buildFileMap', () => {
         );
     });
 
-    it('package.json кладёт arui-scripts в devDependencies', () => {
+    it('package.json кладет arui-scripts в devDependencies', () => {
         const pkg = JSON.parse(map()['package.json']) as {
             dependencies: Record<string, string>;
             devDependencies: Record<string, string>;
@@ -243,8 +303,8 @@ describe('buildFileMap', () => {
         };
 
         expect(files['eslint.config.mts']).toContain('arui-presets-lint/eslint');
-        expect(files['knip.ts']).toContain("import baseConfig from 'arui-presets-lint/knip'");
-        expect(files['knip.ts']).toContain("'ts-jest'");
+        expect(files['knip.ts']).toContain("from 'arui-presets-lint/knip'");
+        expect(files['knip.ts']).not.toContain('ts-jest');
         expect(files['.secretlintrc.json']).toContain(
             '@secretlint/secretlint-rule-preset-recommend',
         );
@@ -254,7 +314,8 @@ describe('buildFileMap', () => {
         expect(pkg.prettier).toBe('arui-presets-lint/prettier');
         expect(pkg.stylelint.extends).toBe('arui-presets-lint/stylelint');
         expect(pkg.commitlint.extends).toBe('./node_modules/arui-presets-lint/commitlint');
-        expect(pkg.scripts.lint).toContain('yarn lint:scripts');
+        expect(pkg.scripts.lint).toContain('arui-presets-lint scripts --max-warnings=0');
+        expect(pkg.scripts.lint).not.toContain('yarn ');
         expect(pkg.scripts['lint:styles']).toBe('arui-presets-lint styles --max-warnings=0');
         expect(pkg.scripts['lint:scripts']).toBe('arui-presets-lint scripts --max-warnings=0');
         expect(pkg.devDependencies).toHaveProperty('arui-presets-lint');

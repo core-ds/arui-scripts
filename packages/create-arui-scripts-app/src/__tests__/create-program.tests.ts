@@ -17,6 +17,14 @@ async function parseFlags(args: string[]): Promise<CliFlags> {
 }
 
 describe('createProgram', () => {
+    it('поддерживает SWC и Babel, но отклоняет несовместимый с TS7 загрузчик tsc', async () => {
+        await expect(parseFlags(['--code-loader', 'swc'])).resolves.toEqual({ codeLoader: 'swc' });
+        await expect(parseFlags(['--code-loader', 'babel'])).resolves.toEqual({
+            codeLoader: 'babel',
+        });
+        await expect(parseFlags(['--code-loader', 'tsc'])).rejects.toThrow();
+    });
+
     it('без флагов не фиксирует ответы (все вопросы зададутся мастером)', async () => {
         await expect(parseFlags(['my-app'])).resolves.toEqual({});
     });
