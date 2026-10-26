@@ -28,7 +28,10 @@ export type DockerOptions = {
     variant?: DockerfileVariant;
     /** Docker registry, к которому будет добавлен образ (`registry/name:version`). */
     registry?: string;
-    /** Базовый docker-образ (`FROM`). */
+    /**
+     * Базовый docker образ (`FROM`). Без явного значения для clientOnly runtime выбирается
+     * Nginx-only, для остальных режимов это образ с Node.js.
+     */
     baseImage?: string;
     /** Запускать ли процессы в образе от пользователя nginx (не root). */
     runFromNonRootUser?: boolean;

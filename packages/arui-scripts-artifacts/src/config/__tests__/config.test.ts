@@ -1,3 +1,4 @@
+import { DEFAULT_BASE_DOCKER_IMAGE } from '../../docker/constants';
 import { resolveArtifactsConfig } from '..';
 
 describe('resolveArtifactsConfig', () => {
@@ -19,6 +20,45 @@ describe('resolveArtifactsConfig', () => {
         expect(config.assetsPath).toBe('assets');
         expect(config.publicPath).toBe('assets/');
     });
+
+    it.each([false, true])(
+        'should use nginx-only for clientOnly runtime with explicit variant=%s',
+        (explicitVariant) => {
+            const config = resolveArtifactsConfig({
+                cwd: __dirname,
+                clientOnly: true,
+                docker: explicitVariant ? { variant: 'runtime' } : undefined,
+            });
+
+            expect(config.docker.baseImage).toBe('alfabankui/arui-scripts:nginx-1.27.1-slim');
+        },
+    );
+
+    it('should keep Node.js for compiled clientOnly images', () => {
+        const config = resolveArtifactsConfig({
+            cwd: __dirname,
+            clientOnly: true,
+            docker: { variant: 'compiled' },
+        });
+
+        expect(config.docker.baseImage).toBe(DEFAULT_BASE_DOCKER_IMAGE);
+    });
+
+    it.each([false, true])(
+        'should preserve an explicit clientOnly base image with compiled=%s',
+        (compiled) => {
+            const config = resolveArtifactsConfig({
+                cwd: __dirname,
+                clientOnly: true,
+                docker: {
+                    variant: compiled ? 'compiled' : 'runtime',
+                    baseImage: 'custom/base:1.0.0',
+                },
+            });
+
+            expect(config.docker.baseImage).toBe('custom/base:1.0.0');
+        },
+    );
 
     it('should derive publicPath from a custom assetsPath', () => {
         expect(resolveArtifactsConfig({ cwd: __dirname, assetsPath: 'static' }).publicPath).toBe(

@@ -11,6 +11,7 @@ export { renderDockerfile } from './templates/dockerfile.template';
 export { renderDockerfileCompiled } from './templates/dockerfile-compiled.template';
 export {
     DEFAULT_BASE_DOCKER_IMAGE,
+    DEFAULT_CLIENT_ONLY_BASE_DOCKER_IMAGE,
     DEFAULT_PLATFORM,
     DEFAULT_TEMP_DIR_NAME,
     DELETE_NPM_COMMAND,
