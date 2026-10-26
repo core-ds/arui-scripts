@@ -106,7 +106,7 @@ Docker registry, к которому будет добавлено имя обр
 — то есть публичный registry. Переопределяется аргументом командной строки `registry=...`.
 
 #### docker.baseImage
-Базовый docker-образ (`FROM`). По умолчанию `alfabankui/arui-scripts:24.10.0-slim` — см.
+Базовый docker-образ (`FROM`). По умолчанию `alfabankui/arui-scripts:24.22.1-slim` — см.
 [список актуальных версий](../../alpine-node-nginx/README.md).
 
 #### docker.runFromNonRootUser

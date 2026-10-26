@@ -4,7 +4,7 @@ describe('resolveArtifactsConfig', () => {
     it('should fill defaults matching arui-scripts historical behaviour', () => {
         const config = resolveArtifactsConfig({ cwd: __dirname });
 
-        expect(config.docker.baseImage).toBe('alfabankui/arui-scripts:24.10.0-slim');
+        expect(config.docker.baseImage).toBe('alfabankui/arui-scripts:24.22.1-slim');
         expect(config.buildPath).toBe('.build');
         expect(config.serverOutput).toBe('server.js');
         expect(config.serverPort).toBe(3000);

@@ -5,7 +5,7 @@
 export const DEFAULT_TEMP_DIR_NAME = '.docker-build';
 
 /** Базовый docker-образ по умолчанию. */
-export const DEFAULT_BASE_DOCKER_IMAGE = 'alfabankui/arui-scripts:24.10.0-slim';
+export const DEFAULT_BASE_DOCKER_IMAGE = 'alfabankui/arui-scripts:24.22.1-slim';
 
 /** Имя Dockerfile во временной директории. */
 export const DOCKERFILE_FILENAME = 'Dockerfile';
