@@ -80,9 +80,6 @@ RUN \
 	cd /usr/src/nginx-$NGINX_VERSION \
 	&& export CFLAGS="${CFLAGS:-} -Wno-unterminated-string-initialization" \
 	&& ./configure $NGINX_CONFIG \
-	&& make -j$(getconf _NPROCESSORS_ONLN) \
-	&& mv objs/nginx objs/nginx-debug \
-	&& ./configure $NGINX_CONFIG \
 	&& make -j$(getconf _NPROCESSORS_ONLN)
 
 RUN \
@@ -93,7 +90,6 @@ RUN \
 	&& mkdir -p /usr/share/nginx/html/ \
 	&& install -m644 html/index.html /usr/share/nginx/html/ \
 	&& install -m644 html/50x.html /usr/share/nginx/html/ \
-	&& install -m755 objs/nginx-debug /usr/sbin/nginx-debug \
 	&& strip /usr/sbin/nginx* \
 	&& apk add --no-cache --virtual .gettext gettext \
 	&& scanelf --needed --nobanner /usr/sbin/nginx /usr/bin/envsubst \
@@ -109,7 +105,7 @@ FROM ${NODE_BASE_IMAGE}:${NODE_VERSION}-alpine${ALPINE_VERSION}
 
 COPY --from=0 /tmp/runDeps.txt /tmp/runDeps.txt
 COPY --from=0 /etc/nginx /etc/nginx
-COPY --from=0 /usr/sbin/nginx /usr/sbin/nginx-debug /usr/sbin/
+COPY --from=0 /usr/sbin/nginx /usr/sbin/nginx
 COPY --from=0 /usr/share/nginx/html/* /usr/share/nginx/html/
 COPY --from=0 /usr/bin/envsubst /usr/local/bin/envsubst
 

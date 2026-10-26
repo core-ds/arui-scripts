@@ -93,10 +93,6 @@ RUN \
 	cd /usr/src/nginx-$NGINX_VERSION \
   	&& export CFLAGS="${CFLAGS:-} -Wno-unterminated-string-initialization" \
 	&& ./configure $NGINX_CONFIG \
-	&& make -j$(getconf _NPROCESSORS_ONLN) \
-	&& mv objs/nginx objs/nginx-debug \
-	&& mv objs/ngx_http_image_filter_module.so objs/ngx_http_image_filter_module-debug.so \
-	&& ./configure $NGINX_CONFIG \
 	&& make -j$(getconf _NPROCESSORS_ONLN)
 
 RUN \
@@ -107,8 +103,6 @@ RUN \
 	&& mkdir -p /usr/share/nginx/html/ \
 	&& install -m644 html/index.html /usr/share/nginx/html/ \
 	&& install -m644 html/50x.html /usr/share/nginx/html/ \
-	&& install -m755 objs/nginx-debug /usr/sbin/nginx-debug \
-	&& install -m755 objs/ngx_http_image_filter_module-debug.so /usr/lib/nginx/modules/ngx_http_image_filter_module-debug.so \
 	&& strip /usr/sbin/nginx* \
 	&& strip /usr/lib/nginx/modules/*.so \
 	&& apk add --no-cache --virtual .gettext gettext \
@@ -126,7 +120,7 @@ FROM ${NODE_BASE_IMAGE}:${NODE_VERSION}-alpine${ALPINE_VERSION}
 COPY --from=0 /tmp/runDeps.txt /tmp/runDeps.txt
 COPY --from=0 /etc/nginx /etc/nginx
 COPY --from=0 /usr/lib/nginx/modules/*.so /usr/lib/nginx/modules/
-COPY --from=0 /usr/sbin/nginx /usr/sbin/nginx-debug /usr/sbin/
+COPY --from=0 /usr/sbin/nginx /usr/sbin/nginx
 COPY --from=0 /usr/share/nginx/html/* /usr/share/nginx/html/
 COPY --from=0 /usr/bin/envsubst /usr/local/bin/envsubst
 
