@@ -20,6 +20,7 @@ yarn add @alfalab/scripts-modules
 - [`useModuleFactory`](#useModuleFactory)
 - [`executeModuleFactory`](#executeModuleFactory)
 - [`createSsrMounter`](#createSsrMounter)
+- [`createReactModule`, `useModuleReady`](#react-хелпер-модуля)
 
 ## Использование
 
@@ -520,3 +521,75 @@ Loader hooks сохраняются для мониторинга. `onAfterModul
 `params.onLoadError?.('fetch-manifest')` (либо `fetch-resources` / `resolve-export`)
 перед отклонением Promise, чтобы сообщить mounter-у этап исходной ошибки. Если этап
 не сообщён, используется `resolve-export`.
+
+
+### React-хелпер модуля
+
+`@alfalab/scripts-modules/react` предоставляет `createReactModule` и `useModuleReady`.
+Для этой точки входа нужны согласованные версии React и ReactDOM 18+.
+`react-dom` — опциональная peer-зависимость: основной импорт пакета её не загружает.
+
+Минимальная входная точка React-модуля:
+
+```tsx
+import { createReactModule, type ReactModuleProps } from '@alfalab/scripts-modules/react';
+
+function App({ runParams, serverState }: ReactModuleProps<{ title: string }>) {
+    return <h1>{runParams.title}: {serverState.hostAppId}</h1>;
+}
+
+export default createReactModule({ Component: App });
+```
+
+Результат — обычный `MountableModule` с `mount`, `hydrate`, `update`, `unmount`.
+Компонент получает `runParams` и `serverState`; их типы выводятся из его props.
+Можно указать собственный тип серверного состояния вторым параметром `ReactModuleProps`.
+Каждый контейнер получает отдельный React root. Update сохраняет состояние компонентов;
+unmount безопасно вызывать повторно. Провайдеры приложения размещаются внутри App.
+
+По умолчанию готовность автоматическая: хелпер сообщает её после первого успешного
+commit. Возврат из `root.render` ещё не считается готовностью. Если первый commit
+показывает Suspense fallback или загрузочный экран, автоматическая готовность всё равно
+наступает. Для бизнес-готовности используется явный режим:
+
+```tsx
+import { createReactModule, useModuleReady } from '@alfalab/scripts-modules/react';
+
+function App() {
+    const account = useAccount();
+    useModuleReady(account.status === 'success');
+
+    return <AccountScreen account={account} />;
+}
+
+export default createReactModule({ Component: App, readiness: 'explicit' });
+```
+
+`useAccount` и `AccountScreen` в примере принадлежат приложению. `useModuleReady(condition)`
+отправляет сигнал в эффекте после commit с истинным условием; по умолчанию condition
+равен true. Готовность одноразовая для запуска: изменение condition обратно в false
+или update не сбрасывают её. Если хук вызван несколькими компонентами, достаточно
+первого истинного сигнала. Несколько обязательных условий нужно объединить самостоятельно.
+В режиме auto хук не меняет автоматическую семантику.
+
+Внутри адаптера оба режима используют `readiness: 'explicit'` контракта модуля:
+mounter ожидает сигнал от React. Поэтому заданный хостом `readyTimeoutMs` применяется
+к ожиданию готовности хелпера в обоих режимах. Без внешнего lifecycle context модуль
+рендерится, но не отправляет уведомления хосту. Хук вне Provider хелпера ничего не
+делает, что позволяет отдельно рендерить App в Storybook или на сервере.
+
+Внутренний Error Boundary сообщает фатальные ошибки рендера и React-эффектов через
+`context.reportError`. Хост получает этап `runtime` и управляет fallback. Boundary
+возвращает null после ошибки; готовность этого запуска больше не сообщается.
+Без контекста ошибка выводится в консоль. Обработчики событий и фоновые Promise
+Boundary автоматически не перехватывает. Для их интеграции нужен явный вызов
+`reportError` через обычный lifecycle context, например в собственной обёртке адаптера.
+Восстановимые ошибки гидрации сохраняют стандартное поведение React.
+
+Хелпер гидрирует серверную разметку через hydrateRoot. Сервер продолжает рендерить
+обычный App без внутренних обёрток адаптера; серверный render API хелпер не добавляет.
+Импорт и вызов фабрики безопасны без DOM, сами lifecycle-методы предназначены для клиента.
+Повторный mount/hydrate в активный контейнер и update до запуска выбрасывают ошибку.
+Очистка React root откладывается до микрозадачи, чтобы хост мог вызывать unmount во
+время собственного commit. Повторный запуск в том же контейнере до этой очистки
+сохраняет root, но создаёт новое дерево приложения с новым состоянием.
