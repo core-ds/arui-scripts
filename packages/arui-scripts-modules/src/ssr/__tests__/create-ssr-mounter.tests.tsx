@@ -217,59 +217,75 @@ describe('createSsrMounter', () => {
         expect(html).not.toContain('.a{color:red}');
     });
 
-    it('hydrates server markup on the client without a second resources request', async () => {
-        const getModuleResources = jest.fn().mockResolvedValue(buildResources());
-        const module = {
-            hydrate: jest.fn(),
-            mount: jest.fn(),
-            unmount: jest.fn(),
-        };
+    it.each([undefined, 'explicit'] as const)(
+        'гидрирует серверную разметку в режиме готовности %s без повторного запроса',
+        async (readiness) => {
+            const getModuleResources = jest.fn().mockResolvedValue(buildResources());
+            const onReady = jest.fn();
+            const module = {
+                readiness,
+                hydrate: jest.fn(),
+                mount: jest.fn(),
+                unmount: jest.fn(),
+            };
 
-        (window as unknown as Record<string, unknown>)[MODULE_ID] = module;
+            (window as unknown as Record<string, unknown>)[MODULE_ID] = module;
 
-        const { ModuleComponent } = createSsrMounter<RunParams>({
-            moduleId: MODULE_ID,
-            hostAppId: 'host',
-            getModuleResources,
-        });
+            const { ModuleComponent } = createSsrMounter<RunParams>({
+                moduleId: MODULE_ID,
+                hostAppId: 'host',
+                getModuleResources,
+            });
 
-        const runParams: RunParams = { name: 'Vasia' };
-        const element = (
-            <Suspense fallback={<span>loading</span>}>
-                <ModuleComponent
-                    instanceId={INSTANCE_ID}
-                    ssrRunParams={{ name: 'Vasia' }}
-                    runParams={runParams}
-                />
-            </Suspense>
-        );
+            const runParams: RunParams = { name: 'Vasia' };
+            const element = (
+                <Suspense fallback={<span>loading</span>}>
+                    <ModuleComponent
+                        instanceId={INSTANCE_ID}
+                        ssrRunParams={{ name: 'Vasia' }}
+                        runParams={runParams}
+                        onReady={onReady}
+                    />
+                </Suspense>
+            );
 
-        const html = await renderServerHtml(element);
+            const html = await renderServerHtml(element);
 
-        expect(getModuleResources).toHaveBeenCalledTimes(1);
+            expect(getModuleResources).toHaveBeenCalledTimes(1);
 
-        container.innerHTML = html;
+            expect(onReady).not.toHaveBeenCalled();
+            container.innerHTML = html;
+            let root!: ReturnType<typeof hydrateRoot>;
 
-        await act(async () => {
-            hydrateRoot(container, element);
-        });
+            await act(async () => {
+                root = hydrateRoot(container, element);
+            });
 
-        await waitFor(() => {
-            expect(module.hydrate).toHaveBeenCalled();
-        });
+            await waitFor(() => {
+                expect(module.hydrate).toHaveBeenCalled();
+            });
 
-        // гидрация в outlet с серверной разметкой
-        const [target, passedRunParams, passedState] = module.hydrate.mock.calls[0];
+            // гидрация в outlet с серверной разметкой
+            const [target, passedRunParams, passedState, context] = module.hydrate.mock.calls[0];
 
-        expect(target.getAttribute('data-module-mount-id')).toBe(INSTANCE_ID);
-        expect(target.innerHTML).toContain('Hello from server');
-        expect(passedRunParams).toEqual(runParams);
-        expect(passedState).toEqual(moduleState);
+            expect(target.getAttribute('data-module-mount-id')).toBe(INSTANCE_ID);
+            expect(target.innerHTML).toContain('Hello from server');
+            expect(passedRunParams).toEqual(runParams);
+            expect(passedState).toEqual(moduleState);
 
-        // mount не вызывается, повторного запроса ресурсов нет
-        expect(module.mount).not.toHaveBeenCalled();
-        expect(getModuleResources).toHaveBeenCalledTimes(1);
-    });
+            if (readiness === 'explicit') {
+                expect(onReady).not.toHaveBeenCalled();
+                act(() => context.reportReady());
+            }
+            expect(onReady).toHaveBeenCalledTimes(1);
+            act(() => root.unmount());
+            expect(context.signal.aborted).toBe(true);
+
+            // mount не вызывается, повторного запроса ресурсов нет
+            expect(module.mount).not.toHaveBeenCalled();
+            expect(getModuleResources).toHaveBeenCalledTimes(1);
+        },
+    );
 
     it('hydrates each SSR instance with its own embedded payload', async () => {
         const firstState = { ...moduleState, preloadedState: { name: 'first' } };
@@ -467,6 +483,7 @@ describe('createSsrMounter', () => {
                 expect.anything(),
                 { name: 'Petya' },
                 moduleState,
+                expect.objectContaining({ signal: expect.any(AbortSignal) }),
             );
         });
         // повторного монтирования не было

@@ -1,3 +1,5 @@
+import { type ModuleLoadErrorStage } from './module-types';
+
 /**
  * То, как подключать модуль на страницу.
  * compat - режим подключения без использования module-federation. В этом случае мы сами подключаем все скрипты и стили.
@@ -92,6 +94,8 @@ export type LoaderResult<ModuleExportType> = {
 // Для того чтобы пользователям не приходилось передавать undefined если их загрузчик не принимает параметры
 // мы делаем такой мини-хак
 export type LoaderParams<GetResourcesParams> = {
+    /** Наблюдатель этапа ошибки загрузки; исходная ошибка по-прежнему отклоняет Promise. */
+    onLoadError?: (stage: ModuleLoadErrorStage) => void;
     /**
      * Параметры, которые будут переданы в функцию получения ресурсов модуля
      */

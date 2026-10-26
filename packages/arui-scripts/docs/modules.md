@@ -1058,3 +1058,22 @@ type GetResourcesRequest<GetResourcesParams = void> = {
     params: GetResourcesParams; // параметры, которые передаются в функцию получения ресурсов модуля
 };
 ```
+
+# Контекст готовности и ошибок модуля
+
+`mount`, `hydrate` и `update` получают опциональный четвёртый аргумент
+`ModuleLifecycleContext` с `signal`, `reportReady()` и `reportError(error)`.
+Старые модули продолжают работать без изменений. Чтобы хост ожидал явную готовность,
+добавьте к экспорту модуля `readiness: 'explicit'` и вызывайте
+`context?.reportReady()` после инициализации приложения. Контекст может отсутствовать
+при запуске в старом хосте. Без `readiness` готовность определяется завершением
+`mount` / `hydrate`, включая возвращённый Promise.
+
+На хосте доступны `onReady`, `onError({ error, stage })` и `readyTimeoutMs`:
+в параметрах `useModuleMounter`, в настройках фабрики `createLazyMounter` или в props
+`ModuleComponent` от `createSsrMounter`. Таймаут по умолчанию отключён и применяется
+только к явной готовности. `reportError` сообщает фатальную ошибку экземпляра,
+останавливает его обновления и запускает cleanup. Внутренний Error Boundary React-модуля
+может передавать ошибки в этот callback; внешний Boundary хоста не видит другой root.
+
+[Подробный контракт, примеры и правила очистки](../../arui-scripts-modules/README.md#готовность-и-ошибки-экземпляра-модуля).

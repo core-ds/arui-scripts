@@ -430,3 +430,93 @@ const moduleRouter = createGetModulesExpress({
     },
 });
 ```
+
+### Готовность и ошибки экземпляра модуля
+
+`useModuleMounter`, `createLazyMounter` и клиентская часть `createSsrMounter` передают
+в `mount`, `hydrate`, `update` опциональный четвёртый аргумент `ModuleLifecycleContext`:
+
+```ts
+import { type ModuleLifecycleContext, type MountableModule } from '@alfalab/scripts-modules';
+
+const module: MountableModule<RunParams> = {
+    readiness: 'explicit',
+    mount(target, runParams, serverState, context?: ModuleLifecycleContext) {
+        startApplication(target, runParams, serverState, {
+            signal: context?.signal,
+            onReady: () => context?.reportReady(),
+            onFatalError: (error: unknown) => context?.reportError(error),
+        });
+    },
+    unmount(target) {
+        stopApplication(target);
+    },
+};
+
+export default module;
+```
+
+`startApplication` / `stopApplication` в примере — функции самого модуля. Они должны
+освобождать частично созданное приложение при `unmount` и прекращать работу при отмене.
+Контекст может отсутствовать при запуске в старом хосте; реализация модуля должна
+это допускать. Старые модули с тремя аргументами работают без изменений.
+
+Без `readiness` mounter сообщает готовность после успешного завершения `mount` или
+`hydrate`. Методы могут возвращать `void` либо `Promise<void>`; Promise ожидается.
+Это означает завершение lifecycle-метода, а не завершение React-рендера.
+При `readiness: 'explicit'` дополнительно ожидается `context.reportReady()`.
+Ранний сигнал внутри метода запоминается, но ошибка метода отменяет готовность.
+Повторные сигналы игнорируются. `update` получает тот же контекст и не сбрасывает готовность.
+
+На хосте callbacks относятся к отдельному смонтированному экземпляру:
+
+```tsx
+<ModuleComponent
+    runParams={runParams}
+    onReady={() => setInitialized(true)}
+    onError={({ error, stage }) => {
+        setFailed(true);
+        reportError(error, { stage });
+    }}
+    readyTimeoutMs={10_000}
+/>
+```
+
+У `useModuleMounter` эти же параметры передаются в объект аргументов хука; его
+`loadingState` остаётся `pending` до готовности и становится `rejected` при фатальной
+ошибке, включая runtime-ошибку после готовности. У `createLazyMounter` callbacks и
+таймаут передаются в настройки фабрики рядом с `loader`; props возвращённого
+компонента по-прежнему целиком принадлежат `runParams` модуля. Для нескольких lazy
+экземпляров используются общие callbacks фабрики, но независимые контексты и таймеры.
+SSR вызывает эти callbacks только на клиенте; серверные ошибки обрабатываются
+существующим серверным механизмом рендеринга.
+
+`readyTimeoutMs` по умолчанию отключён. Положительное конечное значение включает
+таймаут только для `readiness: 'explicit'`, начиная с вызова `mount` / `hydrate`.
+Загрузка ресурсов в этот интервал не входит. Готовность, ошибка и размонтирование
+отменяют таймер. Ошибка таймаута имеет этап `ready-timeout`.
+
+`onError` получает `{ error, stage }`, где `stage` — `fetch-manifest`, `fetch-resources`,
+`resolve-export`, `mount`, `hydrate`, `update`, `runtime`, `ready-timeout` или `unmount`.
+Синхронные исключения и отклонённые Promise из lifecycle-методов обрабатываются
+одинаково. Обновления выполняются последовательно; пока метод выполняется, сохраняются
+последние параметры следующего обновления. После фатальной ошибки новые обновления
+прекращаются, signal отменяется, экземпляр и его ресурсы освобождаются.
+Очистка выполняется один раз, даже после частичного неудачного монтирования.
+Ошибка очистки сообщается отдельно с этапом `unmount`, сохраняя исходную ошибку.
+При отсутствии `onError` ошибка выводится в консоль.
+
+После cleanup запоздалые сигналы контекста и завершения lifecycle Promise игнорируются.
+Модуль должен сам учитывать `signal`: mounter не может остановить произвольную
+асинхронную работу или предотвратить её последующие изменения DOM.
+
+Ошибки внутри отдельного React root автоматически не перехватываются. Модуль должен
+связать свой Error Boundary с `context.reportError`; ошибки фоновых операций тоже
+нужно передавать явно.
+
+Loader hooks сохраняются для мониторинга. `onAfterModuleMount` означает получение
+экспорта, а не готовность UI. При прямом вызове методов результата loader без mounter
+управление контекстом остаётся у вызывающего кода. Собственный `Loader` может вызвать
+`params.onLoadError?.('fetch-manifest')` (либо `fetch-resources` / `resolve-export`)
+перед отклонением Promise, чтобы сообщить mounter-у этап исходной ошибки. Если этап
+не сообщён, используется `resolve-export`.
