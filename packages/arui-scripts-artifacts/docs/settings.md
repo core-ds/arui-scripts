@@ -66,6 +66,7 @@ export default defineConfig({
 #### clientOnly
 Собирается только клиентская часть — в образе поднимается nginx без nodejs-сервера. Влияет на
 Dockerfile, nginx-конфиг и start.sh. По умолчанию `false`.
+Для Docker-варианта `runtime` автоматически выбирается базовый образ без Node.js, если `docker.baseImage` не задан явно.
 Подробнее про режим — в [документации arui-scripts](../../arui-scripts/docs/client-only.md).
 
 #### buildPath
@@ -106,8 +107,13 @@ Docker registry, к которому будет добавлено имя обр
 — то есть публичный registry. Переопределяется аргументом командной строки `registry=...`.
 
 #### docker.baseImage
-Базовый docker-образ (`FROM`). По умолчанию `alfabankui/arui-scripts:24.10.0-slim` — см.
-[список актуальных версий](../../alpine-node-nginx/README.md).
+Базовый docker-образ (`FROM`). Если значение не задано явно:
+
+- Для `clientOnly: true` и `docker.variant: 'runtime'` используется опубликованный
+  `alfabankui/arui-scripts:nginx-1.27.1-slim` без Node.js и npm.
+- Для serverful и `compiled` используется `alfabankui/arui-scripts:24.10.0-slim` с Node.js.
+
+[Cписок версий образов](../../alpine-node-nginx/README.md).
 
 #### docker.runFromNonRootUser
 Запускать ли процессы в образе от пользователя `nginx`, а не от root. По умолчанию `true`.

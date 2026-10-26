@@ -61,6 +61,7 @@ describe('renderTemplates', () => {
         const config = resolveArtifactsConfig({ ...baseOptions, clientOnly: true });
         const templates = renderTemplates({ config });
 
+        expect(templates.dockerfile).toContain('FROM alfabankui/arui-scripts:nginx-1.27.1-slim');
         expect(templates.startScript).toContain('env-config.json');
         expect(templates.startScript).not.toContain('max-old-space-size');
     });

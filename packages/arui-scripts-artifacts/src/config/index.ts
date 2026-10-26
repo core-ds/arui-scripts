@@ -7,7 +7,11 @@ import {
     DEFAULT_ARCHIVE_NAME,
     DEFAULT_ARCHIVE_TEMP_DIR_NAME,
 } from '../archive/constants';
-import { DEFAULT_BASE_DOCKER_IMAGE, DEFAULT_TEMP_DIR_NAME } from '../docker/constants';
+import {
+    DEFAULT_BASE_DOCKER_IMAGE,
+    DEFAULT_CLIENT_ONLY_BASE_DOCKER_IMAGE,
+    DEFAULT_TEMP_DIR_NAME,
+} from '../docker/constants';
 import {
     DEFAULT_NGINX_BASE_CONF,
     DEFAULT_NGINX_PORT,
@@ -52,9 +56,8 @@ function withDefault<T>(value: T | undefined, fallback: T): T {
  * Донасыщает частичные опции сборки полным набором значений с дефолтами.
  *
  * Все дефолты артефактов живут здесь (и в константах доменных папок) — потребители, включая
- * arui-scripts, только транслируют то, что задал пользователь. Значения по умолчанию совпадают с
- * историческим поведением arui-scripts, поэтому вызов без аргументов даст такой же образ, как
- * команда `arui-scripts docker-build`.
+ * arui-scripts, только транслируют то, что задал пользователь. API и команда
+ * `arui-scripts docker-build` используют одинаковые дефолты.
  */
 export function resolveArtifactsConfig(options: ArtifactsOptions = {}): ResolvedArtifactsConfig {
     const cwd = options.cwd ?? process.cwd();
@@ -94,11 +97,16 @@ export function resolveArtifactsConfig(options: ArtifactsOptions = {}): Resolved
 
 function resolveDocker(options: ArtifactsOptions, debug: boolean): ResolvedDockerConfig {
     const docker = options.docker ?? {};
+    const variant = withDefault(docker.variant, 'runtime');
+    const defaultBaseImage =
+        options.clientOnly && variant === 'runtime'
+            ? DEFAULT_CLIENT_ONLY_BASE_DOCKER_IMAGE
+            : DEFAULT_BASE_DOCKER_IMAGE;
 
     return {
-        variant: withDefault(docker.variant, 'runtime'),
+        variant,
         registry: withDefault(docker.registry, ''),
-        baseImage: withDefault(docker.baseImage, DEFAULT_BASE_DOCKER_IMAGE),
+        baseImage: withDefault(docker.baseImage, defaultBaseImage),
         runFromNonRootUser: withDefault(docker.runFromNonRootUser, true),
         context: withDefault(docker.context, '.'),
         tempDirName: withDefault(docker.tempDirName, DEFAULT_TEMP_DIR_NAME),

@@ -1,3 +1,5 @@
+import { resolveArtifactsConfig } from '../../config';
+import { DEFAULT_BASE_DOCKER_IMAGE } from '../../docker/constants';
 import { getAvailableCommands, mergeConfigFiles, resolveCommandOptions } from '../config-file';
 
 describe('resolveCommandOptions', () => {
@@ -15,6 +17,23 @@ describe('resolveCommandOptions', () => {
             docker: { variant: 'compiled', addNodeModulesToDockerIgnore: true },
             localFiles: { allowDockerfile: false },
         });
+    });
+
+    it('should select the clientOnly base image after resolving command defaults', () => {
+        const configFile = { clientOnly: true };
+        const runtime = resolveCommandOptions('docker-build', configFile);
+        const compiled = resolveCommandOptions('docker-build:compiled', configFile);
+
+        if (!runtime || !compiled) {
+            throw new Error('Built-in Docker commands must exist');
+        }
+
+        expect(resolveArtifactsConfig({ cwd: __dirname, ...runtime }).docker.baseImage).toBe(
+            'alfabankui/arui-scripts:nginx-1.27.1-slim',
+        );
+        expect(resolveArtifactsConfig({ cwd: __dirname, ...compiled }).docker.baseImage).toBe(
+            DEFAULT_BASE_DOCKER_IMAGE,
+        );
     });
 
     it('should provide archive-build as a built-in command', () => {
