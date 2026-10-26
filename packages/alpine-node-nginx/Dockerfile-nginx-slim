@@ -5,8 +5,8 @@ ARG ALPINE_VERSION=3.23
 # this one does not have a lot of unused nginx modules
 
 FROM alpine:${ALPINE_VERSION}
-ENV NGINX_VERSION 1.27.1
-ENV NGX_BROTLI_COMMIT f2e20e6a94a2267d0cdff8073060e3356ebf9d9c
+ENV NGINX_VERSION 1.31.8
+ENV NGX_BROTLI_COMMIT a754fdac434936b28760c88c21c7400ab4310854
 ENV NGINX_CONFIG "\
     --prefix=/etc/nginx \
     --sbin-path=/usr/sbin/nginx \
