@@ -287,6 +287,10 @@ export function createSsrMounter<
             hadServerHtmlRef.current = hadServerHtml;
         }
 
+        // React перезаписывает innerHTML, когда меняется идентичность этого объекта пропа.
+        // Держим объект SSR-снапшота стабильным, чтобы обновления хоста сохраняли корень модуля.
+        const snapshotHtmlRef = useRef({ __html: snapshotRef.current });
+
         const mountedRef = useRef<{
             module: ModuleType;
             target: HTMLElement;
@@ -388,7 +392,7 @@ export function createSsrMounter<
                         [MODULE_SSR_ROOT_ATTRIBUTE]: instanceId,
                         [MODULE_SSR_MODULE_ATTRIBUTE]: moduleId,
                     }}
-                    dangerouslySetInnerHTML={{ __html: snapshotRef.current }}
+                    dangerouslySetInnerHTML={snapshotHtmlRef.current}
                     suppressHydrationWarning={true}
                 />
             );
