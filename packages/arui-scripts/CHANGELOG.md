@@ -1,5 +1,16 @@
 # arui-scripts
 
+## 25.1.0
+
+### Minor Changes
+
+-   [#622](https://github.com/core-ds/arui-scripts/pull/622) [`d7399f91`](https://github.com/core-ds/arui-scripts/commit/d7399f91d45a969d96820f4ca25543dbafa8c4d4) Thanks [@dmitrbrvsk](https://github.com/dmitrbrvsk)! - Добавлена команда `bundle-diff` для сравнения размеров клиентских бандлов двух production сборок.
+    Она создает отчеты Rsdoctor в HTML и JSON, а также markdown комментарий для pull request с таблицей изменений и ссылками на отчеты.
+
+    Данные production сборки сохраняются при запуске `arui-scripts build` с переменной `ARUI_SCRIPTS_RSDOCTOR_OUTPUT`, результат сборки при этом не меняется.
+
+    Примеры использования и настройка CI описаны в [документации](docs/commands.md#bundle-diff).
+
 ## 25.0.2
 
 ### Patch Changes
