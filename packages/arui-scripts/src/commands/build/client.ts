@@ -7,6 +7,7 @@ import { BuildSizeBudgetError, checkBuildSizeBudgets } from '../util/build-size-
 import { printAssetsSizes } from '../util/client-assets-sizes';
 import { loadBrowserslist } from '../util/load-browserslist';
 import { printBuildError } from '../util/print-build-error';
+import { enableRsdoctor, writeRsdoctorSnapshot } from '../util/rsdoctor-snapshot';
 
 import build from './build-wrapper';
 
@@ -36,6 +37,11 @@ async function printOutputSizes(webpackConfig: Configuration, stats: Stats) {
 
 async function main() {
     try {
+        const snapshot = await enableRsdoctor(
+            rspackClientConfig,
+            process.env.ARUI_SCRIPTS_RSDOCTOR_OUTPUT,
+            configs.appSrc,
+        );
         const { stats, warnings } = await build(rspackClientConfig);
 
         if (warnings.length) {
@@ -61,6 +67,10 @@ async function main() {
             }
         } else {
             await printOutputSizes(rspackClientConfig, stats as Stats);
+        }
+
+        if (snapshot) {
+            await writeRsdoctorSnapshot(snapshot);
         }
     } catch (err) {
         if (err instanceof BuildSizeBudgetError) {
