@@ -44,7 +44,7 @@
 {
     "aruiScripts": {
         "dockerRegistry": "registry.example.com",
-        "baseDockerImage": "alfabankui/arui-scripts:24.10.0-slim",
+        "baseDockerImage": "alfabankui/arui-scripts:24.22.1-slim",
         "nginx": { "workerProcesses": 4 },
         "archiveName": "e2e.tar"
     }
@@ -59,7 +59,7 @@ import { defineConfig } from '@alfalab/arui-scripts-artifacts';
 export default defineConfig({
     docker: {
         registry: 'registry.example.com',
-        baseImage: 'alfabankui/arui-scripts:24.10.0-slim',
+        baseImage: 'alfabankui/arui-scripts:24.22.1-slim',
     },
     nginx: { baseConf: { workerProcesses: 4 } },
     archive: { name: 'e2e.tar' },
