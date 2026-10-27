@@ -1,3 +1,4 @@
+import { MODULE_SSR_MODULE_ATTRIBUTE } from './utils/get-embedded-module-resources';
 import { unwrapDefaultExport } from './utils/unwrap-default-export';
 import { createModuleLifecycle, reportModuleError } from './module-lifecycle';
 import {
@@ -65,9 +66,13 @@ export function createModuleSession<RunParams, ServerState extends BaseModuleSta
             const module = resolveMountableModule(result.module);
 
             if (hydrate && !module.hydrate && process.env.NODE_ENV !== 'production') {
+                const moduleId = targetNode
+                    .closest(`[${MODULE_SSR_MODULE_ATTRIBUTE}]`)
+                    ?.getAttribute(MODULE_SSR_MODULE_ATTRIBUTE);
+
                 // eslint-disable-next-line no-console
                 console.warn(
-                    'SSR module does not export hydrate — replacing server markup through mount.',
+                    `SSR module "${moduleId}" does not export hydrate — replacing server markup through mount.`,
                 );
             }
 

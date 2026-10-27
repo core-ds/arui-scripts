@@ -392,7 +392,7 @@ describe('createSsrMounter', () => {
     });
 
     it('falls back to mount (clearing the outlet) when the module has no hydrate', async () => {
-        jest.spyOn(console, 'warn').mockImplementation(() => {});
+        const consoleWarn = jest.spyOn(console, 'warn').mockImplementation(() => {});
         const getModuleResources = jest.fn().mockResolvedValue(buildResources());
         const module = { mount: jest.fn(), unmount: jest.fn() };
 
@@ -430,6 +430,9 @@ describe('createSsrMounter', () => {
 
         // outlet очищен перед mount
         expect(target.innerHTML).toBe('');
+        expect(consoleWarn).toHaveBeenCalledWith(
+            `SSR module "${MODULE_ID}" does not export hydrate — replacing server markup through mount.`,
+        );
         expect(getModuleResources).toHaveBeenCalledTimes(1);
     });
 
