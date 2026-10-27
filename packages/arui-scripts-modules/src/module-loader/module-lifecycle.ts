@@ -49,6 +49,20 @@ export function createModuleLifecycle<RunParams, ServerState extends BaseModuleS
     let pendingUpdate: { params: RunParams } | undefined;
     let timer: ReturnType<typeof setTimeout> | undefined;
 
+    const context: ModuleLifecycleContext = {
+        signal: abortController.signal,
+        reportReady() {
+            if (stopped) {
+                return;
+            }
+            readyRequested = true;
+            checkReady();
+        },
+        reportError(error) {
+            fail({ error, stage: 'runtime' });
+        },
+    };
+
     function stop() {
         stopped = true;
         clearTimeout(timer);
@@ -61,7 +75,7 @@ export function createModuleLifecycle<RunParams, ServerState extends BaseModuleS
 
         try {
             if (started) {
-                module.unmount(targetNode);
+                module.unmount(targetNode, context);
             }
         } catch (error) {
             errors.push(error);
@@ -101,20 +115,6 @@ export function createModuleLifecycle<RunParams, ServerState extends BaseModuleS
         clearTimeout(timer);
         tryNotifyModuleCallback(getOptions().onReady);
     }
-
-    const context: ModuleLifecycleContext = {
-        signal: abortController.signal,
-        reportReady() {
-            if (stopped) {
-                return;
-            }
-            readyRequested = true;
-            checkReady();
-        },
-        reportError(error) {
-            fail({ error, stage: 'runtime' });
-        },
-    };
 
     function invoke(method: 'mount' | 'hydrate' | 'update', params: RunParams) {
         if (stopped) {

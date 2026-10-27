@@ -15,7 +15,12 @@ export function createReactModule<
     readiness = 'auto',
 }: CreateReactModuleOptions<RunParams, ServerState>): MountableModule<RunParams, ServerState> {
     type Runtime = ReturnType<typeof createReactModuleRuntime>;
-    type Entry = { root: Root; runtime: Runtime; generation: number };
+    type Entry = {
+        root: Root;
+        runtime: Runtime;
+        generation: number;
+        context: ModuleLifecycleContext | undefined;
+    };
     const roots = new WeakMap<HTMLElement, Entry>();
     let generation = 0;
 
@@ -46,18 +51,18 @@ export function createReactModule<
 
         if (previous) {
             // Отменяем отложенное уничтожение root, но начинаем новый запуск с новым ключом дерева.
-            const entry = { root: previous.root, runtime, generation };
+            const entry = { root: previous.root, runtime, generation, context };
 
             roots.set(target, entry);
             entry.root.render(content);
         } else if (hydrate) {
             const root = hydrateRoot(target, content);
 
-            roots.set(target, { root, runtime, generation });
+            roots.set(target, { root, runtime, generation, context });
         } else {
             const root = createRoot(target);
 
-            roots.set(target, { root, runtime, generation });
+            roots.set(target, { root, runtime, generation, context });
             root.render(content);
         }
     }
@@ -79,10 +84,14 @@ export function createReactModule<
             }
             entry.root.render(tree(runParams, serverState, entry.runtime, entry.generation));
         },
-        unmount(target) {
+        unmount(target, context) {
             const entry = roots.get(target);
 
             if (!entry?.runtime.isActive()) {
+                return;
+            }
+            // Cleanup неудачного запуска не должен снимать владельца занятого контейнера.
+            if (context && entry.context !== context) {
                 return;
             }
             entry.runtime.deactivate();

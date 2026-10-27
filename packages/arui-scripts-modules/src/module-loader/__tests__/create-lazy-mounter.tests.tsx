@@ -203,7 +203,10 @@ describe('createLazyMounter', () => {
 
         unmount();
 
-        expect(moduleUnmount).toHaveBeenCalledWith(expect.any(HTMLDivElement));
+        expect(moduleUnmount).toHaveBeenCalledWith(
+            expect.any(HTMLDivElement),
+            mockMount.mock.calls[0][3],
+        );
         await waitFor(() => {
             expect(resourceUnmount).toHaveBeenCalledTimes(1);
         });
@@ -231,7 +234,10 @@ describe('createLazyMounter', () => {
             expect(mockMount).toHaveBeenCalledTimes(2);
         });
 
-        expect(moduleUnmount).toHaveBeenCalledWith(expect.any(HTMLDivElement));
+        expect(moduleUnmount).toHaveBeenCalledWith(
+            expect.any(HTMLDivElement),
+            mockMount.mock.calls[0][3],
+        );
         expect(moduleUnmount.mock.invocationCallOrder[0]).toBeLessThan(
             mockMount.mock.invocationCallOrder[1],
         );

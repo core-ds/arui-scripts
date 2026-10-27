@@ -542,6 +542,10 @@ export default createReactModule({ Component: App });
 ```
 
 Результат — обычный `MountableModule` с `mount`, `hydrate`, `update`, `unmount`.
+Mounter передаёт в `unmount(target, context?)` контекст снимаемого запуска.
+React-хелпер игнорирует cleanup с чужим контекстом, поэтому отказ повторного mount
+в занятый контейнер не размонтирует работающий экземпляр. Прямой вызов
+`unmount(target)` без контекста сохраняет прежнее поведение.
 Компонент получает `runParams` и `serverState`; их типы выводятся из его props.
 Можно указать собственный тип серверного состояния вторым параметром `ReactModuleProps`.
 Каждый контейнер получает отдельный React root. Update сохраняет состояние компонентов;

@@ -205,6 +205,29 @@ describe('React-хелпер модуля', () => {
         expect(view.container.textContent).toBe('ready');
     });
 
+    it('после перезапуска принимает cleanup только от нового владельца контейнера', async () => {
+        const module = createReactModule({ Component: () => <span>ready</span> });
+        const a = contexts();
+        const b = contexts();
+
+        cleanups.push(() => module.unmount(target));
+        await act(async () => {
+            module.mount(target, undefined, state, a);
+        });
+        await act(async () => {
+            module.unmount(target, a);
+            module.mount(target, undefined, state, b);
+        });
+        await act(async () => {
+            module.unmount(target, a);
+        });
+        expect(target.textContent).toBe('ready');
+        await act(async () => {
+            module.unmount(target, b);
+        });
+        expect(target.textContent).toBe('');
+    });
+
     it('отклоняет повторное активное монтирование и update до запуска', async () => {
         const module = createReactModule({ Component: () => <span>ready</span> });
 

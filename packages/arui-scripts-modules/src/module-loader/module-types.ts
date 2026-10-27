@@ -49,7 +49,10 @@ export type ModuleMountFunction<
     context?: ModuleLifecycleContext,
 ) => void | Promise<void>;
 
-export type ModuleUnmountFunction = (targetNode: HTMLElement) => void;
+export type ModuleUnmountFunction = (
+    targetNode: HTMLElement,
+    context?: ModuleLifecycleContext,
+) => void;
 
 /**
  * Специальный тип модуля, который можно монтировать на страницу
@@ -72,6 +75,7 @@ export type MountableModule<
     /**
      * Метод, с помощью которого модуль должен открепиться от DOM
      * @param targetNode DOM-нода, от которой нужно открепить модуль
+     * @param context Контекст снимаемого запуска; позволяет не затронуть другой экземпляр в том же контейнере.
      */
     unmount: ModuleUnmountFunction;
     /**
