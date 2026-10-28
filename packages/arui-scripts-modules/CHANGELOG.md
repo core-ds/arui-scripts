@@ -1,5 +1,37 @@
 # @alfalab/scripts-modules
 
+## 1.14.0
+
+### Minor Changes
+
+-   [#638](https://github.com/core-ds/arui-scripts/pull/638) [`4cb315f4`](https://github.com/core-ds/arui-scripts/commit/4cb315f47b4f5b227a4a696ae56e73b4a68a6c6f) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - **Что изменилось**
+    Добавлены опциональный контекст жизненного цикла модулей, события `onReady` и `onError`,
+    таймаут готовности `readyTimeoutMs` и поддержка асинхронных `mount`, `hydrate`, `update`.
+    Ошибки останавливают экземпляр модуля и запускают однократную очистку ресурсов.
+    В новой точке входа `@alfalab/scripts-modules/react` доступны `createReactModule` и
+    `useModuleReady`: они управляют React root, гидрацией, обновлениями, автоматической
+    или явной готовностью и передают ошибки через внутренний Error Boundary.
+
+    **Что делать потребителю**
+    Существующие модули можно обновить без обязательной миграции: поддержка контекста
+    опциональна. Для явной готовности добавьте к экспорту модуля `readiness: 'explicit'`
+    и вызывайте `context?.reportReady()`; фатальные ошибки передавайте в
+    `context?.reportError(error)`. Обработчики готовности, ошибок и таймаут задаются
+    в параметрах mounter-а.
+    Для использования React-хелпера импортируйте его из `@alfalab/scripts-modules/react`
+    и убедитесь, что установлены согласованные версии React и ReactDOM 18+.
+    Передайте компонент в `createReactModule({ Component: App })`; если нужно ждать
+    бизнес-готовности вместо первого commit, задайте `readiness: 'explicit'` в настройках
+    хелпера и используйте `useModuleReady(condition)` внутри приложения.
+
+### Patch Changes
+
+-   [#635](https://github.com/core-ds/arui-scripts/pull/635) [`1065856f`](https://github.com/core-ds/arui-scripts/commit/1065856f55e2efb551a7f87a8c36df7a438507f1) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - **Что изменилось**
+    `createSsrMounter` больше не перемонтирует SSR-модуль при обновлениях хоста: объект с SSR-разметкой для `dangerouslySetInnerHTML` теперь сохраняется между рендерами, поэтому React не перезаписывает `innerHTML` корневого узла модуля.
+
+    **Что делать потребителю**
+    Никаких действий не требуется: изменение внутреннее и не меняет публичный API.
+
 ## 1.13.0
 
 ### Minor Changes
