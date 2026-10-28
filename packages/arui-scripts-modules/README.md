@@ -20,6 +20,7 @@ yarn add @alfalab/scripts-modules
 - [`useModuleFactory`](#useModuleFactory)
 - [`executeModuleFactory`](#executeModuleFactory)
 - [`createSsrMounter`](#createSsrMounter)
+- [`createReactModule`, `useModuleReady`](#react-хелпер-модуля)
 
 ## Использование
 
@@ -430,3 +431,169 @@ const moduleRouter = createGetModulesExpress({
     },
 });
 ```
+
+### Готовность и ошибки экземпляра модуля
+
+`useModuleMounter`, `createLazyMounter` и клиентская часть `createSsrMounter` передают
+в `mount`, `hydrate`, `update` опциональный четвёртый аргумент `ModuleLifecycleContext`:
+
+```ts
+import { type ModuleLifecycleContext, type MountableModule } from '@alfalab/scripts-modules';
+
+const module: MountableModule<RunParams> = {
+    readiness: 'explicit',
+    mount(target, runParams, serverState, context?: ModuleLifecycleContext) {
+        startApplication(target, runParams, serverState, {
+            signal: context?.signal,
+            onReady: () => context?.reportReady(),
+            onFatalError: (error: unknown) => context?.reportError(error),
+        });
+    },
+    unmount(target) {
+        stopApplication(target);
+    },
+};
+
+export default module;
+```
+
+`startApplication` / `stopApplication` в примере — функции самого модуля. Они должны
+освобождать частично созданное приложение при `unmount` и прекращать работу при отмене.
+Контекст может отсутствовать при запуске в старом хосте; реализация модуля должна
+это допускать. Старые модули с тремя аргументами работают без изменений.
+
+Без `readiness` mounter сообщает готовность после успешного завершения `mount` или
+`hydrate`. Методы могут возвращать `void` либо `Promise<void>`; Promise ожидается.
+Это означает завершение lifecycle-метода, а не завершение React-рендера.
+При `readiness: 'explicit'` дополнительно ожидается `context.reportReady()`.
+Ранний сигнал внутри метода запоминается, но ошибка метода отменяет готовность.
+Повторные сигналы игнорируются. `update` получает тот же контекст и не сбрасывает готовность.
+
+На хосте callbacks относятся к отдельному смонтированному экземпляру:
+
+```tsx
+<ModuleComponent
+    runParams={runParams}
+    onReady={() => setInitialized(true)}
+    onError={({ error, stage }) => {
+        setFailed(true);
+        reportError(error, { stage });
+    }}
+    readyTimeoutMs={10_000}
+/>
+```
+
+У `useModuleMounter` эти же параметры передаются в объект аргументов хука; его
+`loadingState` остаётся `pending` до готовности и становится `rejected` при фатальной
+ошибке, включая runtime-ошибку после готовности. У `createLazyMounter` callbacks и
+таймаут передаются в настройки фабрики рядом с `loader`; props возвращённого
+компонента по-прежнему целиком принадлежат `runParams` модуля. Для нескольких lazy
+экземпляров используются общие callbacks фабрики, но независимые контексты и таймеры.
+SSR вызывает эти callbacks только на клиенте; серверные ошибки обрабатываются
+существующим серверным механизмом рендеринга.
+
+`readyTimeoutMs` по умолчанию отключён. Положительное конечное значение включает
+таймаут только для `readiness: 'explicit'`, начиная с вызова `mount` / `hydrate`.
+Загрузка ресурсов в этот интервал не входит. Готовность, ошибка и размонтирование
+отменяют таймер. Ошибка таймаута имеет этап `ready-timeout`.
+
+`onError` получает `{ error, stage }`, где `stage` — `fetch-manifest`, `fetch-resources`,
+`resolve-export`, `mount`, `hydrate`, `update`, `runtime`, `ready-timeout` или `unmount`.
+Синхронные исключения и отклонённые Promise из lifecycle-методов обрабатываются
+одинаково. Обновления выполняются последовательно; пока метод выполняется, сохраняются
+последние параметры следующего обновления. После фатальной ошибки новые обновления
+прекращаются, signal отменяется, экземпляр и его ресурсы освобождаются.
+Очистка выполняется один раз, даже после частичного неудачного монтирования.
+Ошибка очистки сообщается отдельно с этапом `unmount`, сохраняя исходную ошибку.
+При отсутствии `onError` ошибка выводится в консоль.
+
+После cleanup запоздалые сигналы контекста и завершения lifecycle Promise игнорируются.
+Модуль должен сам учитывать `signal`: mounter не может остановить произвольную
+асинхронную работу или предотвратить её последующие изменения DOM.
+
+Ошибки внутри отдельного React root автоматически не перехватываются. Модуль должен
+связать свой Error Boundary с `context.reportError`; ошибки фоновых операций тоже
+нужно передавать явно.
+
+Loader hooks сохраняются для мониторинга. `onAfterModuleMount` означает получение
+экспорта, а не готовность UI. При прямом вызове методов результата loader без mounter
+управление контекстом остаётся у вызывающего кода. Собственный `Loader` может вызвать
+`params.onLoadError?.('fetch-manifest')` (либо `fetch-resources` / `resolve-export`)
+перед отклонением Promise, чтобы сообщить mounter-у этап исходной ошибки. Если этап
+не сообщён, используется `resolve-export`.
+
+
+### React-хелпер модуля
+
+`@alfalab/scripts-modules/react` предоставляет `createReactModule` и `useModuleReady`.
+Для этой точки входа нужны согласованные версии React и ReactDOM 18+.
+`react-dom` — опциональная peer-зависимость: основной импорт пакета её не загружает.
+
+Минимальная входная точка React-модуля:
+
+```tsx
+import { createReactModule, type ReactModuleProps } from '@alfalab/scripts-modules/react';
+
+function App({ runParams, serverState }: ReactModuleProps<{ title: string }>) {
+    return <h1>{runParams.title}: {serverState.hostAppId}</h1>;
+}
+
+export default createReactModule({ Component: App });
+```
+
+Результат — обычный `MountableModule` с `mount`, `hydrate`, `update`, `unmount`.
+Mounter передаёт в `unmount(target, context?)` контекст снимаемого запуска.
+React-хелпер игнорирует cleanup с чужим контекстом, поэтому отказ повторного mount
+в занятый контейнер не размонтирует работающий экземпляр. Прямой вызов
+`unmount(target)` без контекста сохраняет прежнее поведение.
+Компонент получает `runParams` и `serverState`; их типы выводятся из его props.
+Можно указать собственный тип серверного состояния вторым параметром `ReactModuleProps`.
+Каждый контейнер получает отдельный React root. Update сохраняет состояние компонентов;
+unmount безопасно вызывать повторно. Провайдеры приложения размещаются внутри App.
+
+По умолчанию готовность автоматическая: хелпер сообщает её после первого успешного
+commit. Возврат из `root.render` ещё не считается готовностью. Если первый commit
+показывает Suspense fallback или загрузочный экран, автоматическая готовность всё равно
+наступает. Для бизнес-готовности используется явный режим:
+
+```tsx
+import { createReactModule, useModuleReady } from '@alfalab/scripts-modules/react';
+
+function App() {
+    const account = useAccount();
+    useModuleReady(account.status === 'success');
+
+    return <AccountScreen account={account} />;
+}
+
+export default createReactModule({ Component: App, readiness: 'explicit' });
+```
+
+`useAccount` и `AccountScreen` в примере принадлежат приложению. `useModuleReady(condition)`
+отправляет сигнал в эффекте после commit с истинным условием; по умолчанию condition
+равен true. Готовность одноразовая для запуска: изменение condition обратно в false
+или update не сбрасывают её. Если хук вызван несколькими компонентами, достаточно
+первого истинного сигнала. Несколько обязательных условий нужно объединить самостоятельно.
+В режиме auto хук не меняет автоматическую семантику.
+
+Внутри адаптера оба режима используют `readiness: 'explicit'` контракта модуля:
+mounter ожидает сигнал от React. Поэтому заданный хостом `readyTimeoutMs` применяется
+к ожиданию готовности хелпера в обоих режимах. Без внешнего lifecycle context модуль
+рендерится, но не отправляет уведомления хосту. Хук вне Provider хелпера ничего не
+делает, что позволяет отдельно рендерить App в Storybook или на сервере.
+
+Внутренний Error Boundary сообщает фатальные ошибки рендера и React-эффектов через
+`context.reportError`. Хост получает этап `runtime` и управляет fallback. Boundary
+возвращает null после ошибки; готовность этого запуска больше не сообщается.
+Без контекста ошибка выводится в консоль. Обработчики событий и фоновые Promise
+Boundary автоматически не перехватывает. Для их интеграции нужен явный вызов
+`reportError` через обычный lifecycle context, например в собственной обёртке адаптера.
+Восстановимые ошибки гидрации сохраняют стандартное поведение React.
+
+Хелпер гидрирует серверную разметку через hydrateRoot. Сервер продолжает рендерить
+обычный App без внутренних обёрток адаптера; серверный render API хелпер не добавляет.
+Импорт и вызов фабрики безопасны без DOM, сами lifecycle-методы предназначены для клиента.
+Повторный mount/hydrate в активный контейнер и update до запуска выбрасывают ошибку.
+Очистка React root откладывается до микрозадачи, чтобы хост мог вызывать unmount во
+время собственного commit. Повторный запуск в том же контейнере до этой очистки
+сохраняет root, но создаёт новое дерево приложения с новым состоянием.

@@ -1,11 +1,24 @@
 import React, { useEffect, useRef } from 'react';
 
 import { useModuleMountTarget } from './hooks/use-module-mount-target';
-import { unwrapDefaultExport } from './utils/unwrap-default-export';
-import { type MountableModule } from './module-types';
-import { type BaseModuleState, type Loader } from './types';
+import { reportModuleError } from './module-lifecycle';
+import {
+    createModuleSession,
+    releaseModuleResources,
+    resolveMountableModule,
+} from './module-session';
+import {
+    type ModuleMounterErrorStage,
+    type ModuleMounterOptions,
+    type MountableModule,
+} from './module-types';
+import { type BaseModuleState, type Loader, type LoaderResult } from './types';
 
-type CreateLazyMounterParams<LoaderParams, RunParams, ServerState extends BaseModuleState> = {
+type CreateLazyMounterParams<
+    LoaderParams,
+    RunParams,
+    ServerState extends BaseModuleState,
+> = ModuleMounterOptions & {
     loader: Loader<LoaderParams, MountableModule<RunParams, ServerState>>;
     /**
      * Параметры, которые будут переданы в загрузчик (и будут переданы на сервер модуля)
@@ -25,7 +38,11 @@ export function createLazyMounter<
     LoaderParams = void,
     RunParams = Record<string, unknown>,
     ServerState extends BaseModuleState = BaseModuleState,
->({ loader, loaderParams }: CreateLazyMounterParams<LoaderParams, RunParams, ServerState>) {
+>({
+    loader,
+    loaderParams,
+    ...options
+}: CreateLazyMounterParams<LoaderParams, RunParams, ServerState>) {
     return async () => {
         // `createLazyMounter` — клиентский API. Под SSR (в Node) загрузчик обращается
         // к `document`/`XMLHttpRequest`, поэтому React.lazy-фабрику нельзя выполнять на сервере.
@@ -40,11 +57,30 @@ export function createLazyMounter<
             };
         }
 
-        const result = await loader({
-            getResourcesParams: loaderParams as LoaderParams,
-            useShadowDom: false,
-        });
-        const module = unwrapDefaultExport(result.module);
+        let loadStage: ModuleMounterErrorStage = 'resolve-export';
+        let result: LoaderResult<MountableModule<RunParams, ServerState>>;
+
+        try {
+            result = await loader({
+                getResourcesParams: loaderParams as LoaderParams,
+                useShadowDom: false,
+                onLoadError: (stage) => {
+                    loadStage = stage;
+                },
+            });
+        } catch (error) {
+            reportModuleError(options, { error, stage: loadStage });
+            throw error;
+        }
+        let module: MountableModule<RunParams, ServerState>;
+
+        try {
+            module = resolveMountableModule(result.module);
+        } catch (error) {
+            reportModuleError(options, { error, stage: 'resolve-export' });
+            releaseModuleResources(result.unmount, options);
+            throw error;
+        }
         let activeInstances = 0;
         let resourceCleanupScheduled = false;
 
@@ -63,63 +99,66 @@ export function createLazyMounter<
                 resourceCleanupScheduled = false;
 
                 if (activeInstances === 0) {
-                    result.unmount();
+                    try {
+                        result.unmount();
+                    } catch (error) {
+                        reportModuleError(options, { error, stage: 'unmount' });
+                    }
                 }
             });
         }
 
         function LazyComponent(runParams: RunParams) {
             const { mountTargetNode, afterTargetMountCallback } = useModuleMountTarget({});
-            const mountedTargetRef = useRef<HTMLElement | null>(null);
-            const isMountedRef = useRef(false);
-            const hasActiveInstanceRef = useRef(false);
+            const runParamsRef = useRef(runParams);
+            const failedRef = useRef(false);
+            const sessionRef =
+                useRef<ReturnType<typeof createModuleSession<RunParams, ServerState>>>();
+
+            runParamsRef.current = runParams;
+            // lazy модули, для которых не задан update просто перемонтируем
+            const remountParams = module.update ? undefined : runParams;
 
             useEffect(() => {
-                if (!mountTargetNode) {
-                    return;
-                }
+                if (!mountTargetNode || failedRef.current) return undefined;
+                const session = createModuleSession<RunParams, ServerState>({
+                    load: async () => {
+                        activeInstances += 1;
+                        let released = false;
 
-                const serverState = result.moduleResources.moduleState as ServerState;
+                        return {
+                            ...result,
+                            unmount: () => {
+                                if (released) {
+                                    return;
+                                }
+                                released = true;
+                                releaseResources();
+                            },
+                        };
+                    },
+                    targetNode: mountTargetNode,
+                    getRunParams: () => runParamsRef.current,
+                    getOptions: () => ({
+                        ...options,
+                        onError: (event) => {
+                            failedRef.current = true;
+                            reportModuleError(options, event);
+                        },
+                    }),
+                });
 
-                // Если модуль уже смонтирован и умеет обновляться — обновляем его новыми
-                // параметрами через `update()`, не перемонтируя. Иначе — прежнее поведение
-                // (mount при каждом изменении runParams).
-                if (isMountedRef.current && module.update) {
-                    module.update(mountTargetNode, runParams, serverState);
+                sessionRef.current = session;
 
-                    return;
-                }
+                return () => {
+                    sessionRef.current = undefined;
+                    session.dispose();
+                };
+            }, [mountTargetNode, remountParams]);
 
-                if (isMountedRef.current) {
-                    module.unmount(mountedTargetRef.current as HTMLElement);
-                }
-
-                module.mount(mountTargetNode, runParams, serverState);
-                mountedTargetRef.current = mountTargetNode;
-                isMountedRef.current = true;
-                if (!hasActiveInstanceRef.current) {
-                    activeInstances += 1;
-                    hasActiveInstanceRef.current = true;
-                }
-            }, [runParams, mountTargetNode]);
-
-            useEffect(
-                () => () => {
-                    if (!isMountedRef.current || !mountedTargetRef.current) {
-                        return;
-                    }
-
-                    module.unmount(mountedTargetRef.current);
-                    mountedTargetRef.current = null;
-                    isMountedRef.current = false;
-
-                    if (hasActiveInstanceRef.current) {
-                        hasActiveInstanceRef.current = false;
-                        releaseResources();
-                    }
-                },
-                [],
-            );
+            useEffect(() => {
+                sessionRef.current?.update(runParams);
+            }, [runParams]);
 
             return <div ref={afterTargetMountCallback} />;
         }

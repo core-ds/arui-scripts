@@ -76,6 +76,7 @@ describe('useModuleMounter', () => {
             cssTargetSelector: 'head',
             abortSignal: expect.any(AbortSignal),
             useShadowDom: false,
+            onLoadError: expect.any(Function),
         });
 
         jest.advanceTimersByTime(1);
@@ -86,6 +87,7 @@ describe('useModuleMounter', () => {
             mountTargetNode,
             runParams,
             moduleServerState,
+            expect.objectContaining({ signal: expect.any(AbortSignal) }),
         );
     });
 
@@ -213,6 +215,7 @@ describe('useModuleMounter', () => {
             mountTargetNode,
             newRunParams,
             moduleServerState,
+            expect.objectContaining({ signal: expect.any(AbortSignal) }),
         );
         // модуль не перемонтируется
         expect(updatableModule.mount).toHaveBeenCalledTimes(1);

@@ -15,12 +15,20 @@
             "import": "./build/esm/ssr/index.js",
             "require": "./build/ssr/index.js"
         },
-        "./package.json": "./package.json"
+        "./package.json": "./package.json",
+        "./react": {
+            "types": "./build/react/index.d.ts",
+            "import": "./build/esm/react/index.js",
+            "require": "./build/react/index.js"
+        }
     },
     "typesVersions": {
         "*": {
             "ssr": [
                 "./build/ssr/index.d.ts"
+            ],
+            "react": [
+                "./build/react/index.d.ts"
             ]
         }
     },
@@ -46,7 +54,8 @@
         "audit": "yarn npm audit --severity high --environment production"
     },
     "peerDependencies": {
-        "react": ">16.18.0"
+        "react": ">16.18.0",
+        "react-dom": ">=18"
     },
     "devDependencies": {
         "@testing-library/dom": "^10.4.1",
@@ -61,5 +70,10 @@
     },
     "dependencies": {
         "abortcontroller-polyfill": "^1.7.5"
+    },
+    "peerDependenciesMeta": {
+        "react-dom": {
+            "optional": true
+        }
     }
 }

@@ -37,7 +37,11 @@ export type ModuleLoaderHookWithModule<
     resources: ModuleResources<ModuleState>,
     module: ModuleExportType,
 ) => Promise<void> | void;
-export type ModuleLoaderLoadingStage = 'fetch-manifest' | 'fetch-resources' | 'mount';
+export type ModuleLoaderLoadingStage =
+    | 'fetch-manifest'
+    | 'fetch-resources'
+    | 'resolve-export'
+    | 'mount';
 export type ModuleLoaderErrorHook = (
     moduleId: string,
     stage: ModuleLoaderLoadingStage,
@@ -155,7 +159,13 @@ export function createModuleLoader<
         return resources;
     }
 
-    return async ({ abortSignal, getResourcesParams, cssTargetSelector, useShadowDom } = {}) => {
+    return async ({
+        abortSignal,
+        getResourcesParams,
+        cssTargetSelector,
+        useShadowDom,
+        onLoadError,
+    } = {}) => {
         if (useShadowDom && resourcesCache === 'single-item') {
             throw new Error(
                 'Загрузка модулей в shadow DOM при использовании `resourceCache: single-item` не поддерживается.',
@@ -181,6 +191,8 @@ export function createModuleLoader<
             getResourcesParams as GetResourcesParams,
             abortSignal,
         ).catch((error) => {
+            onLoadError?.('fetch-manifest');
+            unmount();
             lifecycleHooks.onError?.(moduleId, 'fetch-manifest', error);
             throw error;
         });
@@ -204,6 +216,8 @@ export function createModuleLoader<
                 abortSignal,
                 disableInlineStyleSafari,
             }).catch((error) => {
+                onLoadError?.('fetch-resources');
+                unmount();
                 lifecycleHooks.onError?.(moduleId, 'fetch-resources', error);
                 throw error;
             });
@@ -211,13 +225,26 @@ export function createModuleLoader<
 
         await lifecycleHooks.onBeforeModuleMount?.(moduleId, moduleResources);
 
-        let loadedModule =
-            moduleResources.mountMode === 'default'
-                ? await getModule<ModuleExportType>(moduleResources.appName, moduleId, shareScope)
-                : getCompatModule<ModuleExportType>(moduleId);
+        let loadedModule: ModuleExportType;
 
-        if (!loadedModule) {
-            throw new Error(`Module ${moduleId} is not available`);
+        try {
+            loadedModule =
+                moduleResources.mountMode === 'default'
+                    ? await getModule<ModuleExportType>(
+                          moduleResources.appName,
+                          moduleId,
+                          shareScope,
+                      )
+                    : getCompatModule<ModuleExportType>(moduleId);
+
+            if (!loadedModule) {
+                throw new Error(`Module ${moduleId} is not available`);
+            }
+        } catch (error) {
+            onLoadError?.('resolve-export');
+            unmount();
+            lifecycleHooks.onError?.(moduleId, 'resolve-export', error);
+            throw error;
         }
 
         if (isMountableModule(loadedModule)) {
@@ -243,7 +270,13 @@ function createUnmountHandler(
     resourcesNodes: ReturnType<typeof getResourcesTargetNodes>,
     resourcesCache: 'none' | 'single-item',
 ): () => void {
+    let released = false;
+
     return function unmount() {
+        if (released) {
+            return;
+        }
+        released = true;
         consumerCounter.decrease(moduleId);
 
         const cleanup = () => {

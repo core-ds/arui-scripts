@@ -12,12 +12,47 @@ export type WindowWithModule<ModuleType = unknown> = typeof window & {
 
 // --- Монтируемые модули ---
 
+/** Контекст отдельного запуска. Может отсутствовать в старом хосте. */
+export type ModuleLifecycleContext = {
+    signal: AbortSignal;
+    reportReady(): void;
+    reportError(error: unknown): void;
+};
+
+export type ModuleLoadErrorStage = 'fetch-manifest' | 'fetch-resources' | 'resolve-export';
+
+export type ModuleMounterErrorStage =
+    | ModuleLoadErrorStage
+    | 'mount'
+    | 'hydrate'
+    | 'update'
+    | 'runtime'
+    | 'ready-timeout'
+    | 'unmount';
+
+export type ModuleMounterError = { error: unknown; stage: ModuleMounterErrorStage };
+
+export type ModuleMounterOptions = {
+    onReady?: () => void;
+    onError?: (event: ModuleMounterError) => void;
+    /** Таймаут ожидания explicit-готовности в мс. По умолчанию отключён. */
+    readyTimeoutMs?: number;
+};
+
 export type ModuleMountFunction<
     RunParams = void,
     ServerState extends BaseModuleState = BaseModuleState,
-> = (targetNode: HTMLElement, runParams: RunParams, serverState: ServerState) => void;
+> = (
+    targetNode: HTMLElement,
+    runParams: RunParams,
+    serverState: ServerState,
+    context?: ModuleLifecycleContext,
+) => void | Promise<void>;
 
-export type ModuleUnmountFunction = (targetNode: HTMLElement) => void;
+export type ModuleUnmountFunction = (
+    targetNode: HTMLElement,
+    context?: ModuleLifecycleContext,
+) => void;
 
 /**
  * Специальный тип модуля, который можно монтировать на страницу
@@ -28,6 +63,8 @@ export type MountableModule<
     RunParams = void,
     ServerState extends BaseModuleState = BaseModuleState,
 > = {
+    /** Ожидать reportReady вместо готовности после завершения mount/hydrate. */
+    readiness?: 'explicit';
     /**
      * Метод, с помощью которого модуль может прикрепиться к DOM
      * @param targetNode DOM-нода, к которой нужно прикрепить модуль
@@ -38,6 +75,7 @@ export type MountableModule<
     /**
      * Метод, с помощью которого модуль должен открепиться от DOM
      * @param targetNode DOM-нода, от которой нужно открепить модуль
+     * @param context Контекст снимаемого запуска; позволяет не затронуть другой экземпляр в том же контейнере.
      */
     unmount: ModuleUnmountFunction;
     /**

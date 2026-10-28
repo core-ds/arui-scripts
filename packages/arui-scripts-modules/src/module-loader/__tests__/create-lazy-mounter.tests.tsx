@@ -48,10 +48,16 @@ describe('createLazyMounter', () => {
             expect(mockLoader).toHaveBeenCalledWith({
                 getResourcesParams: loaderParams,
                 useShadowDom: false,
+                onLoadError: expect.any(Function),
             });
-            expect(mockMount).toHaveBeenCalledWith(expect.any(HTMLDivElement), runParams, {
-                testState: 'mockState',
-            });
+            expect(mockMount).toHaveBeenCalledWith(
+                expect.any(HTMLDivElement),
+                runParams,
+                {
+                    testState: 'mockState',
+                },
+                expect.objectContaining({ signal: expect.any(AbortSignal) }),
+            );
         });
     });
 
@@ -80,6 +86,28 @@ describe('createLazyMounter', () => {
         });
     });
 
+    it('сообщает о некорректном экспорте до рендера и освобождает его ресурсы', async () => {
+        const onError = jest.fn();
+        const unmount = jest.fn();
+        const loader = jest.fn().mockResolvedValue({ module: null, moduleResources: {}, unmount });
+        const mounter = createLazyMounter({ loader, onError });
+
+        await expect(mounter()).rejects.toThrow('mount/unmount');
+        expect(onError).toHaveBeenCalledWith({ error: expect.any(Error), stage: 'resolve-export' });
+        expect(unmount).toHaveBeenCalledTimes(1);
+    });
+
+    it('сообщает о синхронной ошибке загрузчика, сохраняя исходную ошибку', async () => {
+        const error = new Error('load');
+        const onError = jest.fn();
+        const loader = jest.fn(() => {
+            throw error;
+        });
+
+        await expect(createLazyMounter({ loader, onError })()).rejects.toBe(error);
+        expect(onError).toHaveBeenCalledWith({ error, stage: 'resolve-export' });
+    });
+
     it('should not mount when target node is missing', async () => {
         mockUseModuleMountTarget.mockReturnValueOnce({
             mountTargetNode: undefined,
@@ -105,6 +133,7 @@ describe('createLazyMounter', () => {
         expect(mockLoader).toHaveBeenCalledWith({
             getResourcesParams: undefined,
             useShadowDom: false,
+            onLoadError: expect.any(Function),
         });
     });
 
@@ -132,6 +161,7 @@ describe('createLazyMounter', () => {
                 expect.any(HTMLDivElement),
                 { value: 'b' },
                 { testState: 'mockState' },
+                expect.objectContaining({ signal: expect.any(AbortSignal) }),
             );
         });
         expect(mockMount).toHaveBeenCalledTimes(1);
@@ -173,7 +203,10 @@ describe('createLazyMounter', () => {
 
         unmount();
 
-        expect(moduleUnmount).toHaveBeenCalledWith(expect.any(HTMLDivElement));
+        expect(moduleUnmount).toHaveBeenCalledWith(
+            expect.any(HTMLDivElement),
+            mockMount.mock.calls[0][3],
+        );
         await waitFor(() => {
             expect(resourceUnmount).toHaveBeenCalledTimes(1);
         });
@@ -201,7 +234,10 @@ describe('createLazyMounter', () => {
             expect(mockMount).toHaveBeenCalledTimes(2);
         });
 
-        expect(moduleUnmount).toHaveBeenCalledWith(expect.any(HTMLDivElement));
+        expect(moduleUnmount).toHaveBeenCalledWith(
+            expect.any(HTMLDivElement),
+            mockMount.mock.calls[0][3],
+        );
         expect(moduleUnmount.mock.invocationCallOrder[0]).toBeLessThan(
             mockMount.mock.invocationCallOrder[1],
         );

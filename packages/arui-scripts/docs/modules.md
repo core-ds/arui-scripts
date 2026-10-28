@@ -1058,3 +1058,46 @@ type GetResourcesRequest<GetResourcesParams = void> = {
     params: GetResourcesParams; // параметры, которые передаются в функцию получения ресурсов модуля
 };
 ```
+
+# Контекст готовности и ошибок модуля
+
+`mount`, `hydrate` и `update` получают опциональный четвёртый аргумент
+`ModuleLifecycleContext` с `signal`, `reportReady()` и `reportError(error)`.
+Старые модули продолжают работать без изменений. Чтобы хост ожидал явную готовность,
+добавьте к экспорту модуля `readiness: 'explicit'` и вызывайте
+`context?.reportReady()` после инициализации приложения. Контекст может отсутствовать
+при запуске в старом хосте. Без `readiness` готовность определяется завершением
+`mount` / `hydrate`, включая возвращённый Promise.
+
+На хосте доступны `onReady`, `onError({ error, stage })` и `readyTimeoutMs`:
+в параметрах `useModuleMounter`, в настройках фабрики `createLazyMounter` или в props
+`ModuleComponent` от `createSsrMounter`. Таймаут по умолчанию отключён и применяется
+только к явной готовности. `reportError` сообщает фатальную ошибку экземпляра,
+останавливает его обновления и запускает cleanup. Внутренний Error Boundary React-модуля
+может передавать ошибки в этот callback; внешний Boundary хоста не видит другой root.
+
+[Подробный контракт, примеры и правила очистки](../../arui-scripts-modules/README.md#готовность-и-ошибки-экземпляра-модуля).
+
+
+# Готовый адаптер React-модуля
+
+Ручные `mount`, `hydrate`, `update`, `unmount` можно заменить на
+`createReactModule` из `@alfalab/scripts-modules/react`:
+
+```tsx
+import { createReactModule } from '@alfalab/scripts-modules/react';
+import { App } from './app';
+
+export default createReactModule({ Component: App });
+```
+
+App получает props `{ runParams, serverState }`. Хелпер создаёт отдельный root для
+каждого контейнера, сохраняет состояние при update, гидрирует серверный HTML и
+сообщает ошибки через внутренний Error Boundary. Нужны React и ReactDOM 18+.
+
+По умолчанию готовность наступает после первого commit, в том числе с Suspense
+fallback. Для ожидания данных задайте `readiness: 'explicit'` и вызовите в App
+`useModuleReady(data.status === 'success')`. Готовность отправляется один раз после
+commit с истинным условием. На сервере можно рендерить обычный App без обёрток хелпера.
+
+[Подробные примеры и контракт](../../arui-scripts-modules/README.md#react-хелпер-модуля).

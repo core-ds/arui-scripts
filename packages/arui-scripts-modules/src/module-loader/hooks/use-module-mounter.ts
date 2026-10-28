@@ -1,13 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
 
-import { type MountableModule } from '../module-types';
+import { createModuleSession } from '../module-session';
+import { type ModuleMounterOptions, type MountableModule } from '../module-types';
 import { type BaseModuleState, type Loader } from '../types';
-import { unwrapDefaultExport } from '../utils/unwrap-default-export';
 
 import { type LoadingState } from './types';
 import { useModuleMountTarget } from './use-module-mount-target';
 
-export type UseModuleLoaderParams<LoaderParams, RunParams, ServerState extends BaseModuleState> = {
+export type UseModuleLoaderParams<
+    LoaderParams,
+    RunParams,
+    ServerState extends BaseModuleState,
+> = ModuleMounterOptions & {
     /**
      * Загрузчик модуля
      */
@@ -51,6 +55,9 @@ export function useModuleMounter<LoaderParams, RunParams, ServerState extends Ba
     runParams,
     createTargetNode,
     useShadowDom,
+    onReady,
+    onError,
+    readyTimeoutMs,
 }: UseModuleLoaderParams<LoaderParams, RunParams, ServerState>): UseModuleLoaderResult {
     const [loadingState, setLoadingState] = useState<LoadingState>('unknown');
     const { mountTargetNode, afterTargetMountCallback, cssTargetSelector } = useModuleMountTarget({
@@ -62,91 +69,55 @@ export function useModuleMounter<LoaderParams, RunParams, ServerState extends Ba
     // но не хотим ломать правила хуков
     const loaderParamsRef = useRef(loaderParams);
     const runParamsRef = useRef(runParams);
-    const loadingStateRef = useRef(loadingState);
+    const optionsRef = useRef({ onReady, onError, readyTimeoutMs });
+    const sessionRef = useRef<ReturnType<typeof createModuleSession<RunParams, ServerState>>>();
 
     loaderParamsRef.current = loaderParams;
     runParamsRef.current = runParams;
-    loadingStateRef.current = loadingState;
-
-    // Ссылка на уже смонтированный модуль — нужна, чтобы обновлять его через `update()`
-    // при изменении runParams, не перемонтируя.
-    const mountedModuleRef = useRef<{
-        module: MountableModule<RunParams, ServerState>;
-        targetNode: HTMLElement;
-        serverState: ServerState;
-    } | null>(null);
+    optionsRef.current = { onReady, onError, readyTimeoutMs };
 
     useEffect(() => {
-        let unmountFn: () => void | undefined;
-        const abortController = new AbortController();
-
-        async function run() {
-            if (!mountTargetNode) {
-                return;
-            }
-            setLoadingState('pending');
-            try {
-                const result = await loader({
+        if (!mountTargetNode) return undefined;
+        setLoadingState('pending');
+        const session = createModuleSession<RunParams, ServerState>({
+            load: (abortSignal, onLoadError) =>
+                loader({
                     getResourcesParams: loaderParamsRef.current,
-                    abortSignal: abortController.signal,
+                    abortSignal,
                     cssTargetSelector,
                     useShadowDom,
-                });
+                    onLoadError,
+                }),
+            targetNode: mountTargetNode,
+            getRunParams: () => runParamsRef.current as RunParams,
+            getOptions: () => ({
+                readyTimeoutMs: optionsRef.current.readyTimeoutMs,
+                onReady: () => {
+                    setLoadingState('fulfilled');
+                    optionsRef.current.onReady?.();
+                },
+                onError: (event) => {
+                    setLoadingState('rejected');
+                    if (optionsRef.current.onError) {
+                        optionsRef.current.onError(event);
+                    } else {
+                        // eslint-disable-next-line no-console
+                        console.error(event.error);
+                    }
+                },
+            }),
+        });
 
-                if (abortController.signal.aborted) {
-                    return;
-                }
+        sessionRef.current = session;
 
-                const module = unwrapDefaultExport(result.module);
-                const serverState = result.moduleResources.moduleState as ServerState;
-
-                module.mount(mountTargetNode, runParamsRef.current as RunParams, serverState);
-
-                mountedModuleRef.current = {
-                    module,
-                    targetNode: mountTargetNode,
-                    serverState,
-                };
-
-                unmountFn = () => {
-                    mountedModuleRef.current = null;
-                    result.unmount();
-                    module.unmount(mountTargetNode);
-                };
-            } catch (error) {
-                if (abortController.signal.aborted) {
-                    return;
-                }
-                setLoadingState('rejected');
-                // eslint-disable-next-line no-console
-                console.error(error);
-
-                return;
-            }
-            setLoadingState('fulfilled');
-        }
-
-        run();
-
-        return function moduleCleanUp() {
-            unmountFn?.();
-            if (loadingStateRef.current === 'pending') {
-                abortController.abort();
-            }
+        return () => {
+            sessionRef.current = undefined;
+            session.dispose();
         };
     }, [mountTargetNode, loader, cssTargetSelector, useShadowDom]);
 
-    // При изменении runParams обновляем уже смонтированный модуль через `update()`, если он есть.
-    // Если модуль не поддерживает `update` — поведение прежнее (модуль остаётся с параметрами,
-    // с которыми был смонтирован; перемонтирование не происходит).
     useEffect(() => {
-        const mounted = mountedModuleRef.current;
-
-        if (!mounted?.module.update) {
-            return;
-        }
-
-        mounted.module.update(mounted.targetNode, runParams as RunParams, mounted.serverState);
+        sessionRef.current?.update(runParams as RunParams);
     }, [runParams]);
 
     return {

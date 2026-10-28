@@ -6,7 +6,8 @@ import {
     type CreateModuleLoaderParams,
     type ModuleResourcesGetter,
 } from '../module-loader/create-module-loader';
-import { type MountableModule } from '../module-loader/module-types';
+import { createModuleSession } from '../module-loader/module-session';
+import { type ModuleMounterOptions, type MountableModule } from '../module-loader/module-types';
 import { type BaseModuleState, type Loader } from '../module-loader/types';
 import {
     MODULE_DATA_HREF_ATTRIBUTE,
@@ -18,7 +19,6 @@ import {
     MODULE_SSR_ROOT_ATTRIBUTE,
 } from '../module-loader/utils/get-embedded-module-resources';
 import { serializeForHtml } from '../module-loader/utils/serialize-for-html';
-import { unwrapDefaultExport } from '../module-loader/utils/unwrap-default-export';
 
 import { getDefaultInstanceId } from './instance-id';
 import { useModuleSsrRequestContext } from './request-context';
@@ -106,18 +106,19 @@ export type CreateSsrMounterOptions<
 // Пропсы делятся между ServerModule и ClientModule (общий тип), поэтому правило
 // no-unused-prop-types даёт ложные срабатывания — отключаем для этого файла.
 /* eslint-disable react/no-unused-prop-types */
-export type SsrModuleComponentProps<RunParams, SsrRunParams, GetResourcesParams> = {
-    /** полные параметры для `mount`/`hydrate`/`update` (могут содержать колбэки, ref-ы) */
-    runParams?: RunParams;
-    /** сериализуемое подмножество параметров, с которым модуль рендерится на сервере */
-    ssrRunParams?: SsrRunParams;
-    /** параметры, которые передаются в фетчер ресурсов модуля */
-    getResourcesParams?: GetResourcesParams;
-    /** id инстанса — нужен, если на странице несколько инстансов одного модуля */
-    instanceId?: string;
-    /** SSR + shadow DOM не поддерживается — приведёт к ошибке */
-    useShadowDom?: boolean;
-};
+export type SsrModuleComponentProps<RunParams, SsrRunParams, GetResourcesParams> =
+    ModuleMounterOptions & {
+        /** полные параметры для `mount`/`hydrate`/`update` (могут содержать колбэки, ref-ы) */
+        runParams?: RunParams;
+        /** сериализуемое подмножество параметров, с которым модуль рендерится на сервере */
+        ssrRunParams?: SsrRunParams;
+        /** параметры, которые передаются в фетчер ресурсов модуля */
+        getResourcesParams?: GetResourcesParams;
+        /** id инстанса — нужен, если на странице несколько инстансов одного модуля */
+        instanceId?: string;
+        /** SSR + shadow DOM не поддерживается — приведёт к ошибке */
+        useShadowDom?: boolean;
+    };
 
 /**
  * Создаёт изоморфный компонент для серверного рендеринга модуля.
@@ -255,6 +256,9 @@ export function createSsrMounter<
         getResourcesParams,
         instanceId: instanceIdProp,
         useShadowDom,
+        onReady,
+        onError,
+        readyTimeoutMs,
     }: SsrModuleComponentProps<RunParams, SsrRunParams, GetResourcesParams>) {
         if (useShadowDom) {
             throw new Error(
@@ -291,97 +295,42 @@ export function createSsrMounter<
         // Держим объект SSR-снапшота стабильным, чтобы обновления хоста сохраняли корень модуля.
         const snapshotHtmlRef = useRef({ __html: snapshotRef.current });
 
-        const mountedRef = useRef<{
-            module: ModuleType;
-            target: HTMLElement;
-            serverState: ModuleState;
-        } | null>(null);
+        const optionsRef = useRef({ onReady, onError, readyTimeoutMs });
+        const sessionRef = useRef<ReturnType<typeof createModuleSession<RunParams, ModuleState>>>();
+
+        optionsRef.current = { onReady, onError, readyTimeoutMs };
 
         useEffect(() => {
-            const root = rootRef.current;
-
-            if (!root) {
-                return undefined;
-            }
-
-            const target = root.querySelector<HTMLElement>(
+            const target = rootRef.current?.querySelector<HTMLElement>(
                 `[${MODULE_SSR_MOUNT_ID_ATTRIBUTE}="${cssEscape(instanceId)}"]`,
             );
 
-            if (!target) {
-                return undefined;
-            }
-
-            const abortController = new AbortController();
-            let cleanup: (() => void) | undefined;
-
-            (async () => {
-                try {
-                    const result = await getClientLoader(instanceId)({
+            if (!target) return undefined;
+            const session = createModuleSession<RunParams, ModuleState>({
+                load: (abortSignal, onLoadError) =>
+                    getClientLoader(instanceId)({
                         getResourcesParams,
-                        abortSignal: abortController.signal,
-                    });
+                        abortSignal,
+                        onLoadError,
+                    }),
+                targetNode: target,
+                hydrate: hadServerHtmlRef.current,
+                getRunParams: () => runParamsRef.current as RunParams,
+                getOptions: () => optionsRef.current,
+            });
 
-                    if (abortController.signal.aborted) {
-                        return;
-                    }
-
-                    const module = unwrapDefaultExport(result.module);
-                    const serverState = result.moduleResources.moduleState as ModuleState;
-
-                    if (hadServerHtmlRef.current && module.hydrate) {
-                        module.hydrate(target, runParamsRef.current as RunParams, serverState);
-                    } else {
-                        if (
-                            hadServerHtmlRef.current &&
-                            !module.hydrate &&
-                            process.env.NODE_ENV !== 'production'
-                        ) {
-                            // eslint-disable-next-line no-console
-                            console.warn(
-                                `Модуль "${moduleId}" отрендерен на сервере, но не экспортирует hydrate — ` +
-                                    'разметка будет заменена через mount (возможно мигание). Добавьте hydrate для гидрации.',
-                            );
-                        }
-
-                        target.innerHTML = '';
-                        module.mount(target, runParamsRef.current as RunParams, serverState);
-                    }
-
-                    mountedRef.current = { module, target, serverState };
-
-                    cleanup = () => {
-                        mountedRef.current = null;
-                        result.unmount();
-                        module.unmount(target);
-                    };
-                } catch (error) {
-                    if (abortController.signal.aborted) {
-                        return;
-                    }
-                    // eslint-disable-next-line no-console
-                    console.error(error);
-                }
-            })();
+            sessionRef.current = session;
 
             return () => {
-                cleanup?.();
-                abortController.abort();
+                sessionRef.current = undefined;
+                session.dispose();
             };
-            // монтируем один раз; обновление параметров — через отдельный эффект ниже
+            // Сохраняем текущий экземпляр при изменении пропсов хоста.
             // eslint-disable-next-line react-hooks/exhaustive-deps
         }, []);
 
-        // При изменении runParams обновляем модуль через `update`, если он есть.
         useEffect(() => {
-            const mounted = mountedRef.current;
-
-            if (!mounted?.module.update) {
-                return;
-            }
-
-            mounted.module.update(mounted.target, runParams as RunParams, mounted.serverState);
-            // eslint-disable-next-line react-hooks/exhaustive-deps
+            sessionRef.current?.update(runParams as RunParams);
         }, [runParams]);
 
         if (snapshotRef.current) {
