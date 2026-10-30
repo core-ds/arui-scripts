@@ -1,6 +1,7 @@
 // TODO: remove eslint-disable-next-line
 import merge from 'lodash.merge';
 
+import { loadConfigFile } from '../util/load-config-file';
 import { tryResolve } from '../util/resolve';
 
 import { type AppConfigs, type AppContext } from './types';
@@ -17,12 +18,11 @@ export function updateWithPresets(config: AppConfigs, context: AppContext) {
     });
 
     if (presetsConfigPath) {
-        // eslint-disable-next-line import/no-dynamic-require, @typescript-eslint/no-var-requires, global-require
-        let presetsSettings = require(presetsConfigPath);
+        let presetsSettings = loadConfigFile(presetsConfigPath);
 
         // eslint-disable-next-line no-underscore-dangle
         if (presetsSettings.__esModule) {
-            // ts-node импортирует esModules, из них надо вытягивать default именно так
+            // ES-модули возвращаются с default export в обёртке.
             presetsSettings = presetsSettings.default;
         }
         validateSettingsKeys(config, presetsSettings, presetsConfigPath);

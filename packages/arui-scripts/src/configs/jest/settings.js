@@ -5,7 +5,7 @@
 // нам приходится отвязывать его от основного кода скриптов
 const fs = require('fs');
 const { pathsToModuleNameMapper } = require('ts-jest');
-const { parseConfigFileTextToJson } = require('typescript');
+const { parse, printParseErrorCode } = require('jsonc-parser');
 const { swcJestConfig } = require('../swc');
 
 const { configs } = require('../app-configs');
@@ -47,9 +47,16 @@ function getPathMapping() {
     }
 
     const tsConfigText = fs.readFileSync(configs.tsconfig, 'utf8');
-    const tsConfig = parseConfigFileTextToJson(configs.tsconfig, tsConfigText);
+    const errors = [];
+    const tsConfig = parse(tsConfigText, errors, { allowTrailingComma: true });
 
-    return tsConfig.config.compilerOptions?.paths || {};
+    if (errors.length > 0) {
+        throw new Error(
+            `Не удалось прочитать ${configs.tsconfig}: ${printParseErrorCode(errors[0].error)}`,
+        );
+    }
+
+    return tsConfig?.compilerOptions?.paths || {};
 }
 
 function getTsTransformer() {

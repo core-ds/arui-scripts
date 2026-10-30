@@ -1,4 +1,5 @@
 node_modules
 .build
+.build-start-*
 build.tar
 .cache-loader

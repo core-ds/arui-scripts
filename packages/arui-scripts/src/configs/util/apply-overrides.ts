@@ -8,6 +8,7 @@ import { type createSingleClientRspackConfig } from '../rspack.client';
 
 import { type findLoader } from './find-loader';
 import { type createFindPluginFunction } from './find-plugin';
+import { loadConfigFile } from './load-config-file';
 
 type Overrides = {
     rspack: rspack.Configuration | rspack.Configuration[];
@@ -105,12 +106,11 @@ let overrides: OverrideFile[] = [];
 
 overrides = configs.overridesPath.map((path) => {
     try {
-        // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
-        const requireResult = require(path);
+        const requireResult = loadConfigFile(path);
 
         // eslint-disable-next-line no-underscore-dangle
         if (requireResult.__esModule) {
-            // ts-node импортирует esModules, из них надо вытягивать default именно так
+            // ES-модули возвращаются с default export в обёртке.
             return requireResult.default;
         }
 

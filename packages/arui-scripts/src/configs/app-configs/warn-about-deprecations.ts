@@ -5,6 +5,14 @@ import { type AppContextWithConfigs } from './types';
 type ProxyConfigArrayItem = NonNullable<DevServerConfiguration['proxy']>[number];
 
 export function warnAboutDeprecations(config: AppContextWithConfigs) {
+    (['codeLoader', 'jestCodeTransformer'] as const).forEach((key) => {
+        if (config[key] === 'tsc') {
+            console.warn(
+                `${key}: режим "tsc" deprecated и поддерживается только с TypeScript <7. Используйте "swc" или "babel".`,
+            );
+        }
+    });
+
     if (!Array.isArray(config.proxy) && config.proxy) {
         console.warn(
             'Передача config.proxy как объекта больше не поддерживается. ',

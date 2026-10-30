@@ -1,11 +1,16 @@
 import path from 'path';
 
 export function tryResolve(...args: [id: string, options?: { paths?: string[] | undefined }]) {
-    try {
-        return require.resolve(...args);
-    } catch (e) {
-        return undefined;
+    // Discover TS configs without globally registering a TypeScript loader.
+    for (const extension of ['', '.ts', '.tsx']) {
+        try {
+            return require.resolve(`${args[0]}${extension}`, args[1]);
+        } catch (e) {
+            // Try the next supported configuration extension.
+        }
     }
+
+    return undefined;
 }
 
 /**

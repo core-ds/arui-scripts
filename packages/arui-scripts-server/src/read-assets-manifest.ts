@@ -8,21 +8,28 @@ const readFile = promisify(fs.readFile);
 
 const DEFAULT_BUNDLE_NAMES = ['vendor', 'internalVendor', 'main'];
 
-let appManifest: AruiAppManifest;
+const appManifests = new Map<string, AruiAppManifest>();
 
-export async function getAppManifest() {
-    if (!appManifest) {
-        const manifestPath = path.join(process.cwd(), '.build/webpack-assets.json');
-        const fileContent = await readFile(manifestPath, 'utf8');
+export async function getAppManifest(
+    manifestPath = path.join(process.cwd(), '.build/webpack-assets.json'),
+) {
+    const cached = appManifests.get(manifestPath);
 
-        appManifest = JSON.parse(fileContent);
-    }
+    if (cached) return cached;
+
+    const fileContent = await readFile(manifestPath, 'utf8');
+    const appManifest = JSON.parse(fileContent) as AruiAppManifest;
+
+    appManifests.set(manifestPath, appManifest);
 
     return appManifest;
 }
 
-export async function readAssetsManifest(bundleNames: string[] = DEFAULT_BUNDLE_NAMES) {
-    const manifest = await getAppManifest();
+export async function readAssetsManifest(
+    bundleNames: string[] = DEFAULT_BUNDLE_NAMES,
+    manifestPath?: string,
+) {
+    const manifest = await getAppManifest(manifestPath);
     let jsArray: string[] = [];
     let cssArray: string[] = [];
 
