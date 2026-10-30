@@ -54,7 +54,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@alfalab/core-components@npm:^42.1.0":
+"@alfalab/core-components@npm:42.2.1":
   version: 42.2.1
   resolution: "@alfalab/core-components@npm:42.2.1"
   dependencies:
@@ -10914,6 +10914,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "example-modules@workspace:packages/example-modules"
   dependencies:
+    "@alfalab/core-components": "npm:42.2.1"
     "@alfalab/scripts-modules": "workspace:*"
     "@alfalab/scripts-server": "workspace:*"
     "@types/enzyme": "npm:^3.10.13"
@@ -10942,7 +10943,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "example@workspace:packages/example"
   dependencies:
-    "@alfalab/core-components": "npm:^42.1.0"
+    "@alfalab/core-components": "npm:42.2.1"
     "@alfalab/scripts-modules": "workspace:*"
     "@alfalab/scripts-server": "workspace:*"
     "@hapi/hapi": "npm:^21.3.2"
