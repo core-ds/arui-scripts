@@ -68,10 +68,12 @@ export type AppConfigs = {
     // build tuning
     buildSizeBudgets: BuildSizeBudgets | null;
     keepPropTypes: boolean;
+    /** Значение 'tsc' deprecated; поддерживается только с TypeScript <7. Используйте 'swc' или 'babel'. */
     codeLoader: 'babel' | 'tsc' | 'swc';
     experimentalReactCompiler: 'disabled' | ReactCompilerOptions;
     installServerSourceMaps: boolean;
     disableDevRspackTypecheck: boolean;
+    /** Значение 'tsc' deprecated; поддерживается только с TypeScript <7. Используйте 'swc' или 'babel'. */
     jestCodeTransformer: 'babel' | 'tsc' | 'swc';
     jestTransformNodeModules: string[];
     collectCoverage: boolean;

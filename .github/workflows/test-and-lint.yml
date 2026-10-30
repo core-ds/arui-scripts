@@ -24,6 +24,25 @@ jobs:
       env:
         CI: true
 
+  typescript-compatibility:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        typescript-version: ['6.0.2', '7.0.2']
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '24.x'
+    - name: Build arui-scripts
+      run: |
+        yarn install --immutable
+        yarn build --filter=arui-scripts...
+    - name: Test project TypeScript ${{ matrix.typescript-version }}
+      run: |
+        npm install --prefix "$RUNNER_TEMP/typescript-compat" --no-audit --no-fund --package-lock=false typescript@${{ matrix.typescript-version }}
+        node packages/arui-scripts/test-typescript.js "$RUNNER_TEMP/typescript-compat/node_modules/typescript"
+
   lint:
 
     runs-on: ubuntu-latest

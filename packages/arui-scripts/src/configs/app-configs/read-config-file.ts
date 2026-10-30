@@ -11,7 +11,7 @@ export function readConfigFile(cwd: string) {
         // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
         let appSettings = require(appConfigPath);
 
-        // ts-node импортирует esModules, из них надо вытягивать default именно так
+        // Загрузчик возвращает ES-модули с default export в обёртке.
         // eslint-disable-next-line no-underscore-dangle
         if (appSettings.__esModule) {
             appSettings = appSettings.default;

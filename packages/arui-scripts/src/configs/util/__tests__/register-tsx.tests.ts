@@ -5,7 +5,7 @@ import path from 'path';
 
 import ts from 'typescript';
 
-describe('загрузка конфигурации в Node', () => {
+describe.each(['6.0.2', '7.0.2'])('загрузка конфигурации в Node с TypeScript %s', (version) => {
     let directory: string;
     let runtime: string;
     let project: string;
@@ -42,7 +42,7 @@ describe('загрузка конфигурации в Node', () => {
                 encoding: 'utf8',
                 env: {
                     ...process.env,
-                    NODE_PATH: require.resolve.paths('ts-node')?.join(path.delimiter),
+                    NODE_PATH: require.resolve.paths('tsx')?.join(path.delimiter),
                 },
                 timeout: 30000,
             },
@@ -66,7 +66,8 @@ describe('загрузка конфигурации в Node', () => {
                 .readdirSync(path.join(configsSource, 'app-configs'))
                 .filter((filename) => filename.endsWith('.ts'))
                 .map((filename) => `app-configs/${filename}`),
-            'util/register-ts-node.ts',
+            'util/register-tsx.ts',
+            'util/typescript.ts',
             'util/resolve.ts',
             'util/get-polyfills.ts',
             'util/apply-overrides.ts',
@@ -94,6 +95,14 @@ describe('загрузка конфигурации в Node', () => {
     beforeEach(() => {
         project = fs.mkdtempSync(path.join(directory, 'project-'));
         writeProjectFile('package.json', JSON.stringify({ name: 'config-loader-test' }));
+        if (version.startsWith('7.')) {
+            // TS 7 no longer exposes the legacy Compiler API. Config loading must not need it.
+            writeProjectFile(
+                'node_modules/typescript/package.json',
+                JSON.stringify({ name: 'typescript', version, main: './index.js' }),
+            );
+            writeProjectFile('node_modules/typescript/index.js', `exports.version = '${version}';`);
+        }
         writeProjectFile(
             'tsconfig.json',
             JSON.stringify({ compilerOptions: { module: 'esnext', moduleResolution: 'bundler' } }),
