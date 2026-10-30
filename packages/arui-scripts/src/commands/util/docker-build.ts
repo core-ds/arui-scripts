@@ -14,11 +14,7 @@ import { getResolvedArtifactsConfig } from './artifacts-config';
 export { dockerVersionSatisfies };
 
 /**
- * Совместимый слой поверх @alfalab/arui-scripts-artifacts: сохраняет исторические сигнатуры, которыми
- * пользуются сторонние сборки и реэкспорт из `arui-scripts`.
- *
- * @deprecated Используйте одноименные функции из `@alfalab/arui-scripts-artifacts` — они принимают явный
- * конфиг и не зависят от глобального `configs`. В следующей мажорной версии реэкспорт будет удален.
+ * Параметры сборки из аргументов CLI и конфигурации arui-scripts.
  */
 export function getBuildParamsFromArgs(): BuildParams {
     return artifactsGetBuildParamsFromArgs(getResolvedArtifactsConfig(), process.argv.slice(3));
@@ -54,8 +50,7 @@ type PrepareFilesForDockerParams = {
 };
 
 /**
- * @deprecated Используйте `prepareFilesForDocker` из `@alfalab/arui-scripts-artifacts`. В следующей
- * мажорной версии реэкспорт будет удален.
+ * Подготавливает файлы Docker-сборки с настройками arui-scripts.
  */
 export async function prepareFilesForDocker({
     dockerfileTemplate,
@@ -99,8 +94,7 @@ type DockerBuildCommandParams = {
 };
 
 /**
- * @deprecated Используйте `getDockerBuildCommand` из `@alfalab/arui-scripts-artifacts`. В следующей
- * мажорной версии реэкспорт будет удален.
+ * Формирует команду Docker-сборки с настройками arui-scripts.
  */
 export function getDockerBuildCommand({ tempDirName, imageFullName }: DockerBuildCommandParams) {
     const config = getResolvedArtifactsConfig();

@@ -10,10 +10,7 @@ import {
 import { configs } from '../../configs/app-configs';
 
 /**
- * Совместимый слой поверх @alfalab/arui-scripts-artifacts: сохраняет исторические сигнатуры без аргументов,
- * подставляя значения из глобального `configs`.
- *
- * @deprecated Используйте одноименные функции из `@alfalab/arui-scripts-artifacts`.
+ * Определяет версию yarn с учётом конфигурации arui-scripts.
  */
 export function getYarnVersion(): YarnVersion {
     return dockerGetYarnVersion({ useYarn: configs.useYarn });
