@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/no-var-requires, global-require */
 const assert = require('node:assert/strict');
-const { spawn, spawnSync } = require('node:child_process');
+const { spawnSync } = require('node:child_process');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 
 const { rspack } = require('@rspack/core');
+
+const { checkTypeScriptWatch } = require('./test-typescript-watch');
 
 // Pass an installed TypeScript package directory; CI installs each version outside the workspace.
 const typescriptPath = fs.realpathSync(process.argv[2]);
@@ -107,40 +109,7 @@ async function main() {
     write('src/index.ts', 'export const value: number = "wrong";');
     await compile(false);
     write('src/index.ts', 'export const value: number = 42;');
-    await new Promise((resolve, reject) => {
-        const child = spawn(process.execPath, [...watchCommand, '--pretty', 'false'], {
-            cwd: project,
-        });
-        let output = '';
-        let watching = false;
-        let finished = false;
-        const timer = setTimeout(() => finish(new Error(`Watch timed out: ${output}`)), 15000);
-
-        function finish(error) {
-            if (finished) return;
-            finished = true;
-            clearTimeout(timer);
-            child.kill();
-            if (error) reject(error);
-            else resolve();
-        }
-
-        child.on('error', finish);
-        child.on('exit', (code) => finish(new Error(`Watch exited with ${code}: ${output}`)));
-        child.stderr.on('data', (chunk) => {
-            output += chunk;
-        });
-        child.stdout.on('data', (chunk) => {
-            output += chunk;
-            if (!watching && /Found 0 errors/.test(output)) {
-                watching = true;
-                output = '';
-                write('src/index.ts', 'export const value: number = "wrong";');
-            } else if (watching && /TS2322/.test(output)) {
-                finish();
-            }
-        });
-    });
+    await checkTypeScriptWatch(watchCommand, project);
     write('src/index.ts', 'export const value: number = 42;');
     write(
         'src/__tests__/value.tests.ts',
