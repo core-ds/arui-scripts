@@ -5,9 +5,9 @@
 Отличаются имена и расположение настроек: вместо плоского конфига `arui-scripts` они разложены по
 секциям в `arui-scripts-artifacts.ts`.
 
-Настройки сборки артефактов в конфиге `arui-scripts` продолжают работать, но объявлены устаревшими:
-команды сборки печатают предупреждение со ссылкой на замену, а в следующей мажорной версии они будут
-удалены.
+Переход на этот пакет добровольный: он нужен, если требуется сборка артефактов без остальных
+возможностей `arui-scripts`. Настройки и оверрайды сборки в `arui-scripts` поддерживаются;
+переносить их при использовании его команд не нужно. У пакетов независимые конфиги.
 
 ## Таблица соответствия
 
@@ -69,9 +69,24 @@ export default defineConfig({
 Оверрайды из `arui-scripts.overrides.ts` переезжают в секции
 [`templates`/`overrides`](templates.md) того же файла.
 
-Конфиг можно завести, не переключая команды: `arui-scripts docker-build` находит
-`arui-scripts-artifacts.ts` по обычным правилам и кладет его поверх настроек из конфига
-`arui-scripts`. Заводить его по-прежнему не обязательно.
+После переноса настроек переключите команды в `package.json` на CLI этого пакета:
+
+```json
+{
+    "scripts": {
+        "docker-build": "arui-scripts-artifacts docker-build",
+        "docker-build:compiled": "arui-scripts-artifacts docker-build:compiled",
+        "archive-build": "arui-scripts-artifacts archive-build"
+    }
+}
+```
+
+Команды `arui-scripts` не загружают `arui-scripts-artifacts.ts`. Если оба инструмента
+используются в одном проекте, каждый читает свой конфиг.
+
+Если вы уже перенесли настройки по прежним рекомендациям, но продолжаете запускать команды
+`arui-scripts`, верните настройки в его конфиг и оверрайды — в `arui-scripts.overrides.ts`.
+Подробнее — [миграция на arui-scripts 26](../../arui-scripts/docs/migration-v26.md).
 
 ## publicPath
 
