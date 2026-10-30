@@ -11,7 +11,10 @@ const { checkTypeScriptWatch } = require('./test-typescript-watch');
 
 // Pass an installed TypeScript package directory; CI installs each version outside the workspace.
 const typescriptPath = fs.realpathSync(process.argv[2]);
-const project = fs.mkdtempSync(path.join(os.tmpdir(), 'arui-typescript-integration-'));
+const temporaryRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'arui-typescript-integration-'));
+// TS 7.0.2 ignores shallow watch roots such as /tmp/<fixture>/src on Linux.
+// https://github.com/microsoft/TypeScript/issues/64425
+const project = path.join(temporaryRoot, 'workspace', 'project');
 const originalCwd = process.cwd();
 
 function write(filename, content) {
@@ -139,5 +142,5 @@ main()
     })
     .finally(() => {
         process.chdir(originalCwd);
-        fs.rmSync(project, { recursive: true, force: true });
+        fs.rmSync(temporaryRoot, { recursive: true, force: true });
     });
