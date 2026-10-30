@@ -14,8 +14,18 @@ import svgIcon from '../clock.svg';
 import icon from './server.png';
 
 const app = express();
+const {
+    serverPort = 3000,
+    buildPath = '.build',
+    assetsPath = 'assets',
+} = JSON.parse(process.env.ARUI_SCRIPTS_CONFIG || '{}') as {
+    serverPort?: number;
+    buildPath?: string;
+    assetsPath?: string;
+};
+const manifestPath = path.resolve(buildPath, 'webpack-assets.json');
 
-app.use('/assets', express.static(path.join(process.cwd(), '.build', 'assets')));
+app.use(`/${assetsPath}`, express.static(path.resolve(buildPath, assetsPath)));
 
 type AppHtmlProps = {
     children: React.ReactNode;
@@ -42,7 +52,7 @@ const AppHtml = ({ children, styles, scripts }: AppHtmlProps) => (
 );
 
 app.get('/', async (req, res) => {
-    const assets = await readAssetsManifest();
+    const assets = await readAssetsManifest(undefined, manifestPath);
 
     const response = `<html>
 <head>
@@ -64,7 +74,7 @@ ${assets.js.map((c) => `<script type='text/javascript' src='/${c}'></script>`).j
 });
 
 app.get('/suspense', async (req, res) => {
-    const assets = await readAssetsManifest();
+    const assets = await readAssetsManifest(undefined, manifestPath);
 
     const { pipe, abort } = renderToPipeableStream(
         <AppHtml scripts={assets.js} styles={assets.css}>
@@ -92,7 +102,7 @@ app.get('/suspense', async (req, res) => {
     setTimeout(abort, 10000);
 });
 
-app.listen(3000, () => {
+app.listen(serverPort, () => {
     // eslint-disable-next-line no-console
-    console.log('Test server is listening on :3000');
+    console.log(`Test server is listening on :${serverPort}`);
 });

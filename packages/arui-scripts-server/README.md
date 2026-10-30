@@ -17,7 +17,7 @@ yarn add @alfalab/scripts-server
 ```ts
 import { readAssetsManifest } from '@alfalab/scripts-server';
 
-const assets = await readAssetsManifest(); // readAssetsManifest так же принимает массив названий чанков. По умолчанию - ['vendor', 'main']
+const assets = await readAssetsManifest(); // По умолчанию чанки: ['vendor', 'internalVendor', 'main']
 
 console.log(assets);
 // {
@@ -25,6 +25,15 @@ console.log(assets);
 //   css: ['assets/vendor.123456789.css', 'assets/main.123456789.css'],
 // }
 ```
+
+Первым аргументом можно передать массив названий чанков, вторым — путь к манифесту:
+
+```ts
+const assets = await readAssetsManifest(['main'], '/app/custom-build/webpack-assets.json');
+```
+
+По умолчанию читается `.build/webpack-assets.json` относительно рабочей директории.
+`getAppManifest(manifestPath?)` также принимает путь; манифесты кешируются отдельно для каждого пути.
 
 ### `createGetModulesHapi16Plugin`
 Функция, которая создает hapi-16 плагин для получения информации о модулях.
