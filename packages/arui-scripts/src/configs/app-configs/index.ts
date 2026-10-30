@@ -8,8 +8,6 @@ import { updateWithPresets } from './update-with-presets';
 import { validateConfig } from './validate-config';
 import { warnAboutDeprecations } from './warn-about-deprecations';
 
-import '../util/register-tsx';
-
 let tmpConfig: AppConfigs = getDefaultAppConfig();
 let tmpContext: AppContext = getDefaultAppContext();
 

@@ -1,15 +1,13 @@
 import path from 'path';
 
+import { loadConfigFile } from '../util/load-config-file';
 import { tryResolve } from '../util/resolve';
 
 export function readConfigFile(cwd: string) {
     const appConfigPath = getConfigFilePath(cwd);
 
     if (appConfigPath) {
-        // Мы не можем использовать импорты, нам нужен именно require, потому что мы не знаем заранее не только путь до файла,
-        // но и то, на каком языке он написан
-        // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
-        let appSettings = require(appConfigPath);
+        let appSettings = loadConfigFile(appConfigPath);
 
         // Загрузчик возвращает ES-модули с default export в обёртке.
         // eslint-disable-next-line no-underscore-dangle

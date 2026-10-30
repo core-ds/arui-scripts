@@ -37,5 +37,5 @@ arui-scripts выдаёт ошибку с рекомендацией перей�
 
 ### Конфиги и overrides
 
-Файлы `arui-scripts.config.ts`, `arui-scripts.overrides.ts` и TS-presets загружаются через `tsx`.
+Файлы `arui-scripts.config.ts`, `arui-scripts.overrides.ts` и TS-presets загружаются через `jiti`.
 Для их выполнения не нужен старый TypeScript Compiler API и не устанавливается отдельный TS 6.
