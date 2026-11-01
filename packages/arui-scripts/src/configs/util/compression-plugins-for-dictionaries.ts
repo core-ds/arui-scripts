@@ -7,6 +7,20 @@ import { configs } from '../app-configs';
 import { compressWithDcb } from './compress-with-dcb';
 import { CustomCompressionPlugin } from './dcb-compression-plugin';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires, global-require
+const dictionaryCompressorVersion: string = require('brotli-dict/package.json').version;
+
+function prepareDictionary(dictionaryContent: Buffer) {
+    return {
+        key: JSON.stringify([
+            dictionaryCompressorVersion,
+            compressWithDcb.toString(),
+            crypto.createHash('sha256').update(dictionaryContent).digest('hex'),
+        ]),
+        compress: (input: Buffer) => compressWithDcb(input, dictionaryContent),
+    };
+}
+
 export function compressionPluginsForDictionaries() {
     const predefinedPlugins = configs.compressionPredefinedDictionaryPath.map((dictionaryPath) => {
         const dictionaryName = path.parse(dictionaryPath).name;
@@ -15,9 +29,7 @@ export function compressionPluginsForDictionaries() {
             test: /\.js$|\.css$/,
             filename: ({ filename }) => `${filename}.${dictionaryName}.dcb`,
             fileDependencies: [dictionaryPath],
-            cacheKey: () =>
-                crypto.createHash('sha256').update(fs.readFileSync(dictionaryPath)).digest('hex'),
-            algorithm: (input) => compressWithDcb(input, fs.readFileSync(dictionaryPath)),
+            prepare: () => prepareDictionary(fs.readFileSync(dictionaryPath)),
             threshold: 10240,
             minRatio: 0.8,
         });
@@ -51,35 +63,21 @@ export function compressionPluginsForDictionaries() {
                 return `${parsedFilename.filename}.${matchedDictionary.hash}.dcb`;
             },
             fileDependencies: dictionaries.map((file) => path.join(dictionaryPath, file)),
-            cacheKey: (filename) => {
+            prepare: (filename) => {
                 const parsed = parseFilename(filename);
                 const matched = parsedDictionaries[`${parsed.stableName}.${parsed.ext}`];
 
-                if (!matched) return 'missing';
-
-                return crypto
-                    .createHash('sha256')
-                    .update(fs.readFileSync(path.join(dictionaryPath, matched.filename)))
-                    .digest('hex');
-            },
-            algorithm: async (input, { filename }) => {
-                const parsedFilename = parseFilename(filename);
-                const matchedDictionary =
-                    parsedDictionaries[`${parsedFilename.stableName}.${parsedFilename.ext}`];
-
-                if (!matchedDictionary) {
-                    return input;
-                }
+                if (!matched) return { key: 'missing', compress: async (input) => input };
 
                 try {
                     const dictionaryContent = fs.readFileSync(
-                        path.join(dictionaryPath, matchedDictionary.filename),
+                        path.join(dictionaryPath, matched.filename),
                         null,
                     );
 
-                    return await compressWithDcb(input, dictionaryContent);
+                    return prepareDictionary(dictionaryContent);
                 } catch (e) {
-                    return input;
+                    return { key: 'missing', compress: async (input) => input };
                 }
             },
         });

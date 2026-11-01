@@ -47,8 +47,7 @@ it('emits identical output on cache hits without recompressing', async () => {
     const plugin = new CustomCompressionPlugin({
         test: /\.js$/,
         filename: ({ filename }) => `${filename}.dcb`,
-        cacheKey: () => 'dictionary-a',
-        algorithm,
+        prepare: () => ({ key: 'dictionary-a', compress: algorithm }),
         threshold: 10,
         minRatio: 0.8,
     });
@@ -67,8 +66,7 @@ it('invalidates the cache when dictionary contents change', async () => {
     const plugin = new CustomCompressionPlugin({
         test: /\.js$/,
         filename: ({ filename }) => `${filename}.dcb`,
-        cacheKey: () => dictionary,
-        algorithm,
+        prepare: () => ({ key: dictionary, compress: algorithm }),
         threshold: 10,
         minRatio: 0.8,
     });
@@ -86,8 +84,7 @@ it('emits independent outputs for algorithms closing over different dictionaries
             new CustomCompressionPlugin({
                 test: /\.js$/,
                 filename: ({ filename }) => `${filename}.${dictionary}.dcb`,
-                cacheKey: () => dictionary,
-                algorithm: async () => Buffer.from(dictionary),
+                prepare: () => ({ key: dictionary, compress: async () => Buffer.from(dictionary) }),
                 threshold: 10,
                 minRatio: 0.8,
             }),

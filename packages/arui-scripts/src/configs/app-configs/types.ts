@@ -126,6 +126,7 @@ export type AppConfigs = {
 };
 
 export type PersistentCacheSettings = {
+    compression?: boolean;
     modes?: Array<'dev' | 'production'>;
     directory?: string;
     version?: string;

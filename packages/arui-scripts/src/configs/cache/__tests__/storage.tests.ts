@@ -92,6 +92,7 @@ it.each([
     { modes: ['prod'] },
     { env: [2] },
     { readonly: 'yes' },
+    { compression: 'yes' },
     { typo: true },
     { buildDependencies: ['missing'] },
 ])('rejects invalid settings %j', (settings) => {

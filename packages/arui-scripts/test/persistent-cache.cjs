@@ -73,6 +73,15 @@ function logs(stats) {
         .join('\n');
 }
 
+function compressionStats(stats) {
+    const entries = stats.logging?.['arui-scripts.compressionCache']?.entries || [];
+    const message = entries.find((entry) =>
+        entry.message.startsWith('Compression cache: '),
+    )?.message;
+
+    return message ? JSON.parse(message.slice('Compression cache: '.length)) : undefined;
+}
+
 try {
     fs.mkdirSync(path.join(cwd, 'src/server'), { recursive: true });
     json('package.json', {
@@ -110,11 +119,22 @@ try {
         const values = require('./build-values.json');
         module.exports = { rspack(config) {
             for (const c of Array.isArray(config) ? config : [config]) {
+                if (process.env.COMPRESSION_LEVEL) {
+                    const gzip = c.plugins.find(plugin => plugin?.constructor.name === 'CompressionPlugin' && plugin.options.algorithm === 'gzip');
+                    if (gzip) gzip.options.compressionOptions.level = Number(process.env.COMPRESSION_LEVEL);
+                }
                 c.plugins.push({ apply(compiler) {
                     new compiler.webpack.DefinePlugin({ AUDIT_MARKER: JSON.stringify(values.marker + (process.env.AUDIT_ENV || '')) }).apply(compiler);
+                    if (c.target !== 'node') compiler.hooks.thisCompilation.tap('FreshCompressionInput', compilation => {
+                        compilation.hooks.processAssets.tap({name: 'FreshCompressionInput', stage: 2990}, () => {
+                            compilation.emitAsset('compression-fixture.js', new compiler.webpack.sources.RawSource(${JSON.stringify(
+                                JSON.stringify(payload),
+                            )}));
+                        });
+                    });
                     compiler.hooks.done.tap('CacheTest', stats => fs.writeFileSync(
                         c.target === 'node' ? 'server-stats.json' : 'client-stats.json',
-                        JSON.stringify(stats.toJson({ all: false, modules: true, cachedModules: true, logging: 'verbose', loggingDebug: /rspack\\.persistentCache/ }))
+                        JSON.stringify(stats.toJson({ all: false, modules: true, cachedModules: true, logging: 'verbose', loggingDebug: /rspack\\.persistentCache|arui-scripts\\.compressionCache/ }))
                     ));
                 }});
             }
@@ -126,6 +146,41 @@ try {
     const warm = build('warm');
 
     assert.match(logs(warm.stats), /make persistent cache recovery succeeded/);
+    assert.ok(compressionStats(cold.stats).misses >= 3, 'cold build runs all three compressors');
+    assert.ok(
+        compressionStats(warm.stats).hits >= 3,
+        'gzip, Brotli and DCB bytes survive process restart',
+    );
+    assert.equal(
+        compressionStats(warm.stats).misses,
+        0,
+        'warm build does not recompress unchanged bytes',
+    );
+    const nativeOnly = build('native cache without compression cache', {
+        ARUI_SCRIPTS_CONFIG: JSON.stringify({ persistentCache: { compression: false } }),
+    });
+
+    assert.equal(compressionStats(nativeOnly.stats), undefined);
+    assert.deepEqual(nativeOnly.output, warm.output);
+    const serverStats = JSON.parse(fs.readFileSync(path.join(cwd, 'server-stats.json'), 'utf8'));
+
+    assert.match(logs(serverStats), /make persistent cache recovery succeeded/);
+    const changedLevel = build('gzip level change', { COMPRESSION_LEVEL: '1' });
+
+    assert.ok(compressionStats(changedLevel.stats).misses > 0);
+    assert.ok(compressionStats(changedLevel.stats).hits >= 2, 'Brotli and DCB remain reusable');
+    assert.notDeepEqual(changedLevel.output, warm.output);
+    const changedLevelWarm = build('gzip level change warm', { COMPRESSION_LEVEL: '1' });
+
+    assert.equal(compressionStats(changedLevelWarm.stats).misses, 0);
+    assert.deepEqual(changedLevelWarm.output, changedLevel.output);
+    assert.deepEqual(
+        build('gzip level change uncached', {
+            COMPRESSION_LEVEL: '1',
+            ARUI_SCRIPTS_CONFIG: JSON.stringify({ persistentCache: false }),
+        }).output,
+        changedLevel.output,
+    );
     assert.deepEqual(
         warm.output,
         cold.output,
@@ -135,10 +190,6 @@ try {
         Object.keys(warm.output).some((file) => file.endsWith('.dcb')),
         'DCB fixture must actually emit a file',
     );
-    const serverStats = JSON.parse(fs.readFileSync(path.join(cwd, 'server-stats.json'), 'utf8'));
-
-    assert.match(logs(serverStats), /make persistent cache recovery succeeded/);
-
     write('src/index.ts', source('SOURCE_B'));
     const edited = build('source edit');
 
@@ -152,6 +203,11 @@ try {
     write('dictionary.txt', payload.slice(10000, 35000));
     const dictionary = build('dictionary edit');
 
+    assert.ok(compressionStats(dictionary.stats).misses > 0, 'new dictionary recompresses DCB');
+    assert.ok(
+        compressionStats(dictionary.stats).hits >= 2,
+        'unchanged gzip/Brotli bytes are reused',
+    );
     assert.notDeepEqual(dictionary.output, edited.output);
     assert.deepEqual(build('dictionary warm').output, dictionary.output);
 
@@ -188,6 +244,7 @@ try {
     });
 
     assert.match(logs(readonly.stats), /make persistent cache recovery succeeded/);
+    assert.equal(compressionStats(readonly.stats).writes, 0);
     const readonlyMissing = build('readonly missing', {
         ARUI_SCRIPTS_CONFIG: JSON.stringify({
             persistentCache: { readonly: true, directory: '.cache/readonly-missing' },
@@ -195,6 +252,14 @@ try {
     });
 
     assert.deepEqual(readonlyMissing.output, readonly.output);
+    assert.equal(compressionStats(readonlyMissing.stats).writes, 0);
+    assert.ok(
+        !fs.existsSync(path.join(cwd, '.cache/readonly-missing')) ||
+            !fs
+                .readdirSync(path.join(cwd, '.cache/readonly-missing'), { recursive: true })
+                .some((name) => name.includes('compression-v1')),
+        'readonly misses must not create compression records',
+    );
 
     fs.mkdirSync(path.join(cwd, 'node_modules'), { recursive: true });
     fs.mkdirSync(path.join(cwd, 'linked-package'), { recursive: true });
@@ -318,6 +383,10 @@ try {
 
     assert.equal(clear.status, 0, clear.stderr);
     assert.ok(fs.existsSync(path.join(cwd, '.build')), 'clear must preserve build output');
+    assert.ok(
+        !fs.readdirSync(cacheRoot, { recursive: true }).some((name) => name.endsWith('.bin')),
+        'clear removes compressed bytes with native cache',
+    );
     const devProgram = `
         const { createCompiler } = require(${JSON.stringify(
             path.resolve(__dirname, '../build/commands/util/create-compiler.js'),

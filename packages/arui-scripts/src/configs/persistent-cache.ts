@@ -5,6 +5,8 @@ import path from 'path';
 
 import { type CacheOptions, type Configuration } from '@rspack/core';
 
+import { CompressionCachePlugin } from '../plugins/compression-cache';
+
 import { cacheDependencies, linkedDependencyPaths } from './cache/dependencies';
 import { cacheDirectory, cacheSettings } from './cache/settings';
 import { acquireCache, type CacheNamespace } from './cache/storage';
@@ -215,6 +217,16 @@ export function finalizePersistentCache<T extends Configuration | Configuration[
                 snapshot: { unmanagedPaths: linkedDependencyPaths(configs) },
                 storage: { type: 'filesystem', location },
             };
+            if (settings.compression !== false) {
+                config.plugins = [
+                    new CompressionCachePlugin({
+                        location,
+                        readonly: settings.readonly || false,
+                        version: settings.version,
+                    }),
+                    ...(config.plugins || []),
+                ];
+            }
             managed.set(config, {
                 directory,
                 info: {

@@ -10,14 +10,15 @@ import {
 import { type Rules } from 'compression-webpack-plugin';
 import serialize from 'serialize-javascript';
 
+import { getCompressionCache } from '../../plugins/compression-cache';
+
 type DcbCompressionOptions = {
     test?: Rules;
     include?: Rules;
     exclude?: Rules;
-    /** Content identity of the dictionary, including values captured by algorithm closures. */
-    cacheKey: (filename: string) => string;
+    /** Capture the dictionary bytes once so the key and compressor use the same input. */
+    prepare: (filename: string) => { key: string; compress: (input: Buffer) => Promise<Buffer> };
     fileDependencies?: string[];
-    algorithm: (input: Buffer, options: { filename: string }) => Promise<Buffer>;
     filename: (pathdata: PathData) => string;
     threshold: number;
     minRatio: number;
@@ -35,10 +36,6 @@ Based on compression-webpack-plugin, https://github.com/webpack-contrib/compress
 
 export class CustomCompressionPlugin {
     constructor(protected options: DcbCompressionOptions) {}
-
-    runCompressionAlgorithm(input: Buffer, filename: string) {
-        return this.options.algorithm(input, { filename });
-    }
 
     async compress(compiler: Compiler, compilation: Compilation, assets: Assets) {
         const cache = compilation.getCache('arui-scripts/dcb-v2');
@@ -70,19 +67,25 @@ export class CustomCompressionPlugin {
                 const source = asset.source.buffer();
 
                 if (source.length < this.options.threshold) return;
+                const task = this.options.prepare(name);
+                const identity = serialize({
+                    algorithm: 'dcb',
+                    dictionary: task.key,
+                    implementation: task.compress,
+                });
                 const cacheItem = cache.getItemCache(
-                    serialize({
-                        name,
-                        dictionary: this.options.cacheKey(name),
-                        algorithm: this.options.algorithm,
-                    }),
+                    serialize({ name, identity }),
                     cache.getLazyHashedEtag(asset.source as HashableObject),
                 );
                 let compressed: Buffer | undefined = await cacheItem.getPromise();
 
                 if (!compressed) {
                     try {
-                        compressed = await this.runCompressionAlgorithm(source, name);
+                        const disk = getCompressionCache(compiler);
+
+                        compressed = disk
+                            ? await disk.get(source, identity, () => task.compress(source))
+                            : await task.compress(source);
                     } catch (error) {
                         compilation.errors.push(error as RspackError);
 

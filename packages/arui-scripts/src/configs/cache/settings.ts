@@ -31,6 +31,7 @@ export function cacheSettings(config: AppContextWithConfigs): PersistentCacheSet
         'env',
         'portable',
         'readonly',
+        'compression',
     ];
 
     Object.keys(setting).forEach((key) => {
@@ -51,7 +52,7 @@ export function cacheSettings(config: AppContextWithConfigs): PersistentCacheSet
         )
             throw new Error(`persistentCache.${key}: expected a string`);
     });
-    (['portable', 'readonly'] as const).forEach((key) => {
+    (['portable', 'readonly', 'compression'] as const).forEach((key) => {
         if (setting[key] !== undefined && typeof setting[key] !== 'boolean')
             throw new Error(`persistentCache.${key}: expected a boolean`);
     });
