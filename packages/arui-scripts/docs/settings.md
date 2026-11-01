@@ -276,6 +276,23 @@ const packageSettings = {
 };
 ```
 
+#### persistentCache
+
+Сохраняет кеш компиляции Rspack между запусками `start`, `start:prod` и `build`.
+По умолчанию `false`: dev использует кеш в памяти, production собирается без постоянного кеша.
+
+```ts
+const packageSettings = {
+    persistentCache: true,
+};
+```
+
+Объект позволяет выбрать режимы (`modes`), каталог (`directory`), дополнительную версию (`version`),
+файлы (`buildDependencies`) и переменные окружения (`env`), влияющие на сборку.
+По умолчанию включаются оба режима, данные хранятся в `.cache/arui-scripts/rspack` вне каталога сборки.
+
+Полный список настроек, правила инвалидации и пример Jenkins — в [документации кеша](persistent-cache.md).
+
 #### installServerSourceMaps
 Добавлять ли в серверную сборку пакет source-map-support. По умолчанию `false`.
 

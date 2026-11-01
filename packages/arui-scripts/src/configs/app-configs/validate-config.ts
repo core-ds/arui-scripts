@@ -1,7 +1,12 @@
+import { cacheDirectory, cacheSettings } from '../cache/settings';
+
 import { type AppContextWithConfigs } from './types';
 import { validateBuildSizeBudgets } from './validate-build-size-budgets';
 
 export function validateConfig(config: AppContextWithConfigs) {
+    if (cacheSettings(config)) {
+        cacheDirectory(config);
+    }
     validateBuildSizeBudgets(config.buildSizeBudgets);
 
     if (config.experimentalReactCompiler !== 'disabled' && config.codeLoader !== 'swc') {

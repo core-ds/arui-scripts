@@ -17,6 +17,19 @@ export type CliCommand = {
 
 export const commands: CliCommand[] = [
     {
+        name: 'cache:info',
+        description: 'Показать состояние постоянного кеша Rspack',
+        options: [{ flags: '--json', description: 'Вывести данные в JSON' }],
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        load: (options) => require('../commands/cache').cacheInfo(Boolean(options.json)),
+    },
+    {
+        name: 'cache:clear',
+        description: 'Очистить постоянный кеш Rspack после остановки сборки',
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        load: () => require('../commands/cache').cacheClear(),
+    },
+    {
         name: 'start',
         description: 'Dev сервер для клиента и серверный код в watch режиме',
         load: () => require('../commands/start'),

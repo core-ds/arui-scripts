@@ -1,55 +1,81 @@
-import { type Configuration, type MultiStats, rspack, type Stats } from '@rspack/core';
+import { type Configuration, type MultiStats, type Stats } from '@rspack/core';
 import chalk from 'chalk';
 
+import { createCompiler } from '../util/create-compiler';
 import { formatRspackMessages } from '../util/format-rspack-messages';
+import { closeCompiler } from '../util/graceful-shutdown';
 
-type BuildResult = {
+type CompilationResult = {
     stats: Stats | MultiStats;
     warnings: string[];
-    previousFileSizes: unknown;
 };
 
-function build(config: Configuration | Configuration[], previousFileSizes?: unknown) {
-    const compiler = rspack(config);
+async function build(
+    config: Configuration | Configuration[],
+    beforeClose?: (result: CompilationResult) => void | Promise<void>,
+) {
+    const compiler = createCompiler(config);
+    let failed = false;
+    let failure: unknown;
+    let warnings: string[] = [];
 
-    return new Promise<BuildResult>((resolve, reject) => {
-        compiler.run((err, stats) => {
-            if (err) {
-                return reject(err);
-            }
-            const messages = formatRspackMessages(stats?.toJson({}));
+    try {
+        const result = await new Promise<CompilationResult>((resolve, reject) => {
+            compiler.run((err, stats) => {
+                try {
+                    if (err) return reject(err);
+                    if (!stats)
+                        return reject(new Error('Compiler did not return build statistics'));
+                    const messages = formatRspackMessages(stats.toJson({}));
 
-            if (messages.errors.length) {
-                // Only keep the first error. Others are often indicative
-                // of the same problem, but confuse the reader with noise.
-                if (messages.errors.length > 1) {
-                    messages.errors.length = 1;
+                    if (messages.errors.length) {
+                        return reject(new Error(messages.errors[0]));
+                    }
+                    if (
+                        process.env.CI &&
+                        process.env.CI.toLowerCase() !== 'false' &&
+                        messages.warnings.length
+                    ) {
+                        console.log(
+                            chalk.yellow(
+                                '\nTreating warnings as errors because process.env.CI = true.\n' +
+                                    'Most CI servers set it automatically.\n',
+                            ),
+                        );
+
+                        return reject(new Error(messages.warnings.join('\n\n')));
+                    }
+
+                    return resolve({ stats, warnings: messages.warnings });
+                } catch (error) {
+                    return reject(error);
                 }
-
-                return reject(new Error(messages.errors.join('\n\n')));
-            }
-            if (
-                process.env.CI &&
-                process.env.CI.toLowerCase() !== 'false' &&
-                messages.warnings.length
-            ) {
-                console.log(
-                    chalk.yellow(
-                        '\nTreating warnings as errors because process.env.CI = true.\n' +
-                            'Most CI servers set it automatically.\n',
-                    ),
-                );
-
-                return reject(new Error(messages.warnings.join('\n\n')));
-            }
-
-            return resolve({
-                stats: stats as Stats | MultiStats,
-                warnings: messages.warnings,
-                previousFileSizes,
             });
         });
-    });
+
+        // Native Stats/Compilation become invalid after close(). Consume them before flushing.
+        await beforeClose?.(result);
+
+        warnings = result.warnings;
+    } catch (error) {
+        failed = true;
+        failure = error;
+    }
+
+    try {
+        await closeCompiler(compiler);
+    } catch (error) {
+        if (failed) {
+            console.error('Failed to close Rspack compiler:', error);
+        } else {
+            failed = true;
+            failure = error;
+        }
+    }
+
+    if (failed) throw failure;
+
+    return { warnings };
 }
 
 export default build;

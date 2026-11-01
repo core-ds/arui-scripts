@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 
@@ -9,12 +10,14 @@ import { CustomCompressionPlugin } from './dcb-compression-plugin';
 export function compressionPluginsForDictionaries() {
     const predefinedPlugins = configs.compressionPredefinedDictionaryPath.map((dictionaryPath) => {
         const dictionaryName = path.parse(dictionaryPath).name;
-        const dictionaryContent = fs.readFileSync(dictionaryPath, null);
 
         return new CustomCompressionPlugin({
             test: /\.js$|\.css$/,
             filename: ({ filename }) => `${filename}.${dictionaryName}.dcb`,
-            algorithm: (input) => compressWithDcb(input, dictionaryContent),
+            fileDependencies: [dictionaryPath],
+            cacheKey: () =>
+                crypto.createHash('sha256').update(fs.readFileSync(dictionaryPath)).digest('hex'),
+            algorithm: (input) => compressWithDcb(input, fs.readFileSync(dictionaryPath)),
             threshold: 10240,
             minRatio: 0.8,
         });
@@ -46,6 +49,18 @@ export function compressionPluginsForDictionaries() {
                 }
 
                 return `${parsedFilename.filename}.${matchedDictionary.hash}.dcb`;
+            },
+            fileDependencies: dictionaries.map((file) => path.join(dictionaryPath, file)),
+            cacheKey: (filename) => {
+                const parsed = parseFilename(filename);
+                const matched = parsedDictionaries[`${parsed.stableName}.${parsed.ext}`];
+
+                if (!matched) return 'missing';
+
+                return crypto
+                    .createHash('sha256')
+                    .update(fs.readFileSync(path.join(dictionaryPath, matched.filename)))
+                    .digest('hex');
             },
             algorithm: async (input, { filename }) => {
                 const parsedFilename = parseFilename(filename);

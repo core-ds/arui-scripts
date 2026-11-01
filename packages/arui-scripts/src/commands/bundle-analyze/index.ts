@@ -39,6 +39,8 @@ const bundleAnalyzerStatsOptions: BundleAnalyzerStatsOptions = {
 
     /* eslint-disable no-param-reassign */
     const promises = clientRspackConfigs.map(async (rspackConfig, i) => {
+        // Profiling builds use temporary outputs and must collect a fresh module graph.
+        rspackConfig.cache = false;
         const tmpDir = await makeTmpDir(i.toString());
         const rspackStatsOptions: RspackOptionsNormalized['stats'] = {
             ...(typeof rspackConfig.stats === 'object' ? rspackConfig.stats : {}),

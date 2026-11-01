@@ -70,6 +70,7 @@ describe('загрузка конфигурации в Node', () => {
             'util/resolve.ts',
             'util/get-polyfills.ts',
             'util/apply-overrides.ts',
+            'cache/settings.ts',
         ];
 
         // Compile the scripts themselves as in the package build. Project TS files are

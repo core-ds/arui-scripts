@@ -70,6 +70,7 @@ export type AppConfigs = {
     keepPropTypes: boolean;
     codeLoader: 'babel' | 'tsc' | 'swc';
     experimentalReactCompiler: 'disabled' | ReactCompilerOptions;
+    persistentCache: boolean | PersistentCacheSettings;
     installServerSourceMaps: boolean;
     disableDevRspackTypecheck: boolean;
     jestCodeTransformer: 'babel' | 'tsc' | 'swc';
@@ -122,6 +123,16 @@ export type AppConfigs = {
         shareScope?: string;
     } | null;
     nodeExternals?: Omit<NodeExternals.Options, 'allowlist'>;
+};
+
+export type PersistentCacheSettings = {
+    modes?: Array<'dev' | 'production'>;
+    directory?: string;
+    version?: string;
+    buildDependencies?: string[];
+    env?: string[];
+    portable?: boolean;
+    readonly?: boolean;
 };
 
 export type ModuleConfigBase = {

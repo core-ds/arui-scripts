@@ -161,6 +161,7 @@
         "build": "sh bin/build.sh",
         "cli": "node build/bin/index.js",
         "test": "jest",
+        "test:persistent-cache": "node test/persistent-cache.cjs && node test/persistent-cache-lifecycle.cjs",
         "test:vitest": "vitest",
         "lint:scripts": "arui-presets-lint scripts",
         "format": "arui-presets-lint format",

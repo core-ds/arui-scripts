@@ -20,6 +20,9 @@ npx create-arui-scripts-app my-app
 
 Полный список и описание — в [docs/commands.md](commands.md):
 `start`, `start:prod`, `build`, `docker-build`, `docker-build:compiled`, `test`, `test:vitest`,
-`archive-build`, `bundle-analyze`, `bundle-diff`, `ensure-yarn`, `changelog`.
+`archive-build`, `bundle-analyze`, `bundle-diff`, `cache:info`, `cache:clear`, `ensure-yarn`, `changelog`.
+
+Постоянный кеш включается настройкой `persistentCache`. Команды `cache:info --json` и `cache:clear`
+позволяют проверить его состояние и очистить данные. Подробнее — в [документации кеша](persistent-cache.md).
 
 При production-сборке можно включить [проверку размера начального JS и CSS](settings.md#buildsizebudgets). Лимиты задаются через `buildSizeBudgets`; их превышение завершает сборку с ненулевым кодом.
