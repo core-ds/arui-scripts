@@ -25,6 +25,7 @@ import { WebpackDeduplicationPlugin } from 'webpack-deduplication-plugin';
 
 import { getLocalIdent } from '../commands/util/get-local-ident';
 import { AruiRuntimePlugin, getInsertCssRuntimeMethod } from '../plugins/arui-runtime';
+import { AsyncChunkGroupsPlugin } from '../plugins/async-chunk-groups';
 import { htmlTemplate } from '../templates/html.template';
 
 import { getImageMinLoader } from './config-extras/minimizers';
@@ -33,6 +34,7 @@ import { compressionPluginsForDictionaries } from './util/compression-plugins-fo
 import { createWatchIgnoreRegex } from './util/create-watch-ignore-regex';
 import { type Entry, getEntry } from './util/get-entry';
 import { configs } from './app-configs';
+import { asyncChunkGroupsManifest } from './async-chunk-groups-manifest';
 import { babelClientConfig as babelConf } from './babel-client';
 import { babelDependencies } from './babel-dependencies';
 import { addEnvToHtmlTemplate, ClientConfigPlugin } from './client-env-config';
@@ -293,6 +295,9 @@ export const createSingleClientRspackConfig = (
     plugins: [
         assetsPlugin,
         clientAssetsPlugin,
+        // Дополнительные конфигурации (compat-модули) пишут в тот же манифест, поэтому
+        // имена их async чанков могли бы затереть чанки основного приложения.
+        !configName && new AsyncChunkGroupsPlugin(asyncChunkGroupsManifest),
         new DefinePlugin({
             // Tell Webpack to provide empty mocks for process.env.
             'process.env': '{}',

@@ -35,8 +35,13 @@ export async function readAssetsManifest(bundleNames: string[] = DEFAULT_BUNDLE_
         if (css) cssArray = cssArray.concat(css);
     });
 
+    // чанк-группы могут содержать общие файлы, поэтому одну и ту же ссылку нельзя отдавать дважды
     return {
-        js: jsArray,
-        css: cssArray,
+        js: unique(jsArray),
+        css: unique(cssArray),
     };
+}
+
+function unique(items: string[]) {
+    return Array.from(new Set(items));
 }

@@ -38,4 +38,34 @@ describe('readAssetsManifest', () => {
             css: ['vendor.css', 'main.css'],
         });
     });
+
+    it('should not repeat files shared between bundles', async () => {
+        let isolatedReadAssetsManifest: typeof readAssetsManifest = readAssetsManifest;
+        let isolatedReadFile: jest.Mock = readFile as unknown as jest.Mock;
+
+        // манифест кешируется на уровне модуля, поэтому берем чистый экземпляр модуля
+        jest.isolateModules(() => {
+            isolatedReadAssetsManifest =
+                jest.requireActual('../read-assets-manifest').readAssetsManifest;
+            isolatedReadFile = jest.requireMock('fs').readFile;
+        });
+
+        isolatedReadFile.mockImplementationOnce((path, options, done) =>
+            done(
+                null,
+                JSON.stringify({
+                    vendor: { js: 'vendor.js', css: 'vendor.css' },
+                    'page-a': { js: ['shared.js', 'page-a.js'], css: ['shared.css', 'page-a.css'] },
+                    'page-b': { js: ['shared.js', 'page-b.js'], css: ['shared.css'] },
+                }),
+            ),
+        );
+
+        const result = await isolatedReadAssetsManifest(['vendor', 'page-a', 'page-b']);
+
+        expect(result).toEqual({
+            js: ['vendor.js', 'shared.js', 'page-a.js', 'page-b.js'],
+            css: ['vendor.css', 'shared.css', 'page-a.css'],
+        });
+    });
 });
