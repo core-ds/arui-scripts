@@ -1,5 +1,11 @@
 # @alfalab/scripts-server
 
+## 1.4.1
+
+### Patch Changes
+
+-   [#643](https://github.com/core-ds/arui-scripts/pull/643) [`d2ecbf82`](https://github.com/core-ds/arui-scripts/commit/d2ecbf821456c34d53670d6a76fd29a0bc13fee5) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - В `getAppManifest` и `readAssetsManifest` можно передать путь к манифесту сборки. Для разных путей используется отдельный кеш; чтение из `.build/webpack-assets.json` по умолчанию сохраняется.
+
 ## 1.4.0
 
 ### Minor Changes
