@@ -1,5 +1,19 @@
 # @alfalab/arui-scripts-artifacts
 
+## 1.0.2
+
+### Patch Changes
+
+-   [#644](https://github.com/core-ds/arui-scripts/pull/644) [`5bb3dd7d`](https://github.com/core-ds/arui-scripts/commit/5bb3dd7dac0bf120f7cf5aa474b72b04dfeba5c7) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - **Что изменилось**
+    Уточнена документация самостоятельной сборки артефактов: пакет не требует установки
+    arui-scripts и использует собственную конфигурацию. Исправлена инструкция добровольного
+    перехода с команд arui-scripts: перенос настроек сопровождается переключением на CLI
+    arui-scripts-artifacts.
+
+    **Что делать потребителю**
+    Никаких действий не требуется: обновлена документация, публичный API и поведение пакета
+    не изменились. При переходе с arui-scripts следуйте обновлённой инструкции миграции.
+
 ## 1.0.1
 
 ### Patch Changes
