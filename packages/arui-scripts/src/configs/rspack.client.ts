@@ -323,7 +323,9 @@ export const createSingleClientRspackConfig = (
         (mode === 'prod' || !configs.disableDevRspackTypecheck) &&
             configs.tsconfig !== null &&
             configs.codeLoader !== 'tsc' &&
-            new TsCheckerRspackPlugin(),
+            new TsCheckerRspackPlugin({
+                typescript: { resolveRoot: configs.cwd, configFile: configs.tsconfig },
+            }),
         // moment.js очень большая библиотека, которая включает в себя массу локализаций, которые мы не используем.
         // Поэтому мы их просто игнорируем, чтобы не включать в сборку.
         // https://github.com/jmblog/how-to-optimize-momentjs-with-webpack

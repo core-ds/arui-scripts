@@ -5,7 +5,7 @@ import path from 'path';
 
 import ts from 'typescript';
 
-describe('загрузка конфигурации в Node', () => {
+describe.each(['6.0.2', '7.0.2'])('загрузка конфигурации в Node с TypeScript %s', (version) => {
     let directory: string;
     let runtime: string;
     let project: string;
@@ -19,7 +19,7 @@ describe('загрузка конфигурации в Node', () => {
         writeFile(path.join(project, filename), content);
     }
 
-    function runLoader() {
+    function runLoader(checkRuntimeChunks = false) {
         const result = spawnSync(
             process.execPath,
             [
@@ -31,10 +31,15 @@ describe('загрузка конфигурации в Node', () => {
                 const { applyOverrides } = require(${JSON.stringify(
                     path.join(runtime, 'util/apply-overrides'),
                 )});
-                console.log(JSON.stringify({
+                const output = {
                     port: configs.serverPort,
                     browsers: applyOverrides('browsers', []),
-                }));
+                };
+                ${
+                    checkRuntimeChunks
+                        ? "require('chunk-runtime').load().then(chunkValue => console.log(JSON.stringify({ ...output, chunkValue })));"
+                        : 'console.log(JSON.stringify(output));'
+                }
                 `,
             ],
             {
@@ -42,7 +47,7 @@ describe('загрузка конфигурации в Node', () => {
                 encoding: 'utf8',
                 env: {
                     ...process.env,
-                    NODE_PATH: require.resolve.paths('ts-node')?.join(path.delimiter),
+                    NODE_PATH: require.resolve.paths('jiti')?.join(path.delimiter),
                 },
                 timeout: 30000,
             },
@@ -66,7 +71,8 @@ describe('загрузка конфигурации в Node', () => {
                 .readdirSync(path.join(configsSource, 'app-configs'))
                 .filter((filename) => filename.endsWith('.ts'))
                 .map((filename) => `app-configs/${filename}`),
-            'util/register-ts-node.ts',
+            'util/load-config-file.ts',
+            'util/typescript.ts',
             'util/resolve.ts',
             'util/get-polyfills.ts',
             'util/apply-overrides.ts',
@@ -94,6 +100,14 @@ describe('загрузка конфигурации в Node', () => {
     beforeEach(() => {
         project = fs.mkdtempSync(path.join(directory, 'project-'));
         writeProjectFile('package.json', JSON.stringify({ name: 'config-loader-test' }));
+        if (version.startsWith('7.')) {
+            // TS 7 no longer exposes the legacy Compiler API. Config loading must not need it.
+            writeProjectFile(
+                'node_modules/typescript/package.json',
+                JSON.stringify({ name: 'typescript', version, main: './index.js' }),
+            );
+            writeProjectFile('node_modules/typescript/index.js', `exports.version = '${version}';`);
+        }
         writeProjectFile(
             'tsconfig.json',
             JSON.stringify({ compilerOptions: { module: 'esnext', moduleResolution: 'bundler' } }),
@@ -137,6 +151,38 @@ describe('загрузка конфигурации в Node', () => {
         );
 
         expect(runLoader()).toEqual({ port: 4322, browsers: ['js'] });
+    });
+
+    it('сохраняет общее состояние ESM-зависимости и её динамических чанков после загрузки конфигов', () => {
+        writeProjectFile('arui-scripts.config.ts', 'export default { serverPort: 4321 };');
+        writeProjectFile('arui-scripts.overrides.ts', 'export default { browsers: () => [] };');
+        writeProjectFile(
+            'node_modules/chunk-runtime/package.json',
+            JSON.stringify({
+                name: 'chunk-runtime',
+                type: 'module',
+                exports: './index.js',
+            }),
+        );
+        writeProjectFile(
+            'node_modules/chunk-runtime/index.js',
+            `
+            export const registry = {};
+            export async function load() {
+                await import('./chunk.js');
+                return registry.value;
+            }
+        `,
+        );
+        writeProjectFile(
+            'node_modules/chunk-runtime/chunk.js',
+            `
+            import { registry } from './index.js';
+            registry.value = 42;
+        `,
+        );
+
+        expect(runLoader(true)).toEqual({ port: 4321, browsers: [], chunkValue: 42 });
     });
 
     it('сохраняет загрузку нативных JS ESM-конфигов и overrides', () => {
