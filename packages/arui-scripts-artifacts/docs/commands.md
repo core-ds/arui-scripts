@@ -83,5 +83,5 @@ arui-scripts-artifacts docker-build:server
 тоже сливается по полям, но `baseConf: false`/`null` — это осмысленное «не генерировать базовый
 конфиг», такое значение заменяет секцию целиком.
 
-То же слияние доступно и снаружи — `mergeConfigFiles`, см. [Программное API](api.md). Именно так
-`arui-scripts` кладет `arui-scripts-artifacts.ts` проекта поверх своих настроек.
+То же слияние доступно и снаружи — `mergeConfigFiles`, см. [Программное API](api.md).
+Конфигурация этого CLI независима от конфигурации `arui-scripts`.

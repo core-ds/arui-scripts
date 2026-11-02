@@ -1,7 +1,9 @@
+import fs from 'fs';
+import os from 'os';
 import path from 'path';
 
 import { resolveCommandOptions } from '../config-file';
-import { findConfigFile, loadConfigFile } from '../load-config-file';
+import { findConfigFile, loadConfigFile, resolveConfigFile } from '../load-config-file';
 
 const fixtures = path.join(__dirname, 'fixtures');
 
@@ -50,4 +52,27 @@ describe('findConfigFile', () => {
 
         expect(findConfigFile(cwd)).toBe(path.join(cwd, 'arui-scripts-artifacts.ts'));
     });
+});
+
+it('resolves its own config without reading an arui-scripts config', async () => {
+    const cwd = fs.mkdtempSync(path.join(os.tmpdir(), 'standalone-artifacts-'));
+
+    try {
+        fs.writeFileSync(
+            path.join(cwd, 'arui-scripts.config.ts'),
+            "throw new Error('arui-scripts config must not be loaded');",
+        );
+        fs.writeFileSync(
+            path.join(cwd, 'arui-scripts-artifacts.cjs'),
+            "module.exports = { docker: { registry: 'standalone.example.com' } };",
+        );
+
+        const config = await resolveConfigFile(cwd);
+
+        expect(resolveCommandOptions('docker-build', config)?.docker?.registry).toBe(
+            'standalone.example.com',
+        );
+    } finally {
+        fs.rmSync(cwd, { recursive: true, force: true });
+    }
 });

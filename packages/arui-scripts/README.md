@@ -101,6 +101,7 @@ npm install arui-scripts --save-dev
 - [Пресеты](docs/presets.md)
 - [Тонкая настройка](docs/overrides.md)
 - [Настройки сборки артефакта](docs/artifact.md)
+- [Миграция на версию 26](docs/migration-v26.md)
 - [Настройки компиляторов](docs/compilers.md)
 - [Особенности поведения](docs/caveats.md)
 - [Использование модулей](docs/modules.md)
