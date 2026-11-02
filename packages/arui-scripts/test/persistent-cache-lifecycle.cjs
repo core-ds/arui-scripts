@@ -33,7 +33,12 @@ async function startAndStop(label) {
     fs.rmSync(path.join(cwd, 'server-stats.json'), { force: true });
     const child = spawn(process.execPath, [cli, 'start'], {
         cwd,
-        env: { ...process.env, CI: 'false', WATCHPACK_POLLING: '100' },
+        env: {
+            ...process.env,
+            CI: 'false',
+            WATCHPACK_POLLING: '100',
+            ARUI_SCRIPTS_CACHE_DEBUG: '1',
+        },
         stdio: ['ignore', 'pipe', 'pipe'],
     });
     let output = '';
@@ -62,7 +67,6 @@ async function startAndStop(label) {
                 setTimeout(resolve, 50);
             });
         }
-        const stats = JSON.parse(fs.readFileSync(path.join(cwd, 'client-stats.json')));
         const timer = setTimeout(() => child.kill('SIGKILL'), 12000);
 
         child.kill('SIGTERM');
@@ -83,10 +87,20 @@ async function startAndStop(label) {
             !files.some((file) => file.endsWith('.writer.json')),
             'leases must be released after native close',
         );
+        const diagnostics = output
+            .split('\n')
+            .filter((line) => line.startsWith('[arui-scripts cache] {'))
+            .map((line) => JSON.parse(line.slice('[arui-scripts cache] '.length)));
+
+        assert.equal(
+            diagnostics.filter((event) => event.event === 'close' && event.result === 'completed')
+                .length,
+            2,
+        );
         if (label === 'warm')
             assert.ok(
-                stats.logging?.['rspack.persistentCache']?.entries.some((entry) =>
-                    entry.message.includes('make persistent cache recovery succeeded'),
+                diagnostics.some(
+                    (event) => event.event === 'compilation' && event.native?.snapshot === 'hit',
                 ),
                 'warm dev must recover from disk',
             );

@@ -45,7 +45,7 @@ function build(label, env = {}) {
     const started = Date.now();
     const result = spawnSync(process.execPath, [cli, 'build'], {
         cwd,
-        env: { ...process.env, CI: 'false', ...env },
+        env: { ...process.env, CI: 'false', ARUI_SCRIPTS_CACHE_DEBUG: '1', ...env },
         encoding: 'utf8',
         timeout: 60000,
     });
@@ -58,13 +58,18 @@ function build(label, env = {}) {
             3000,
         )}`,
     );
-    if (result.stdout.includes('cache]') || result.stderr.includes('cache]'))
-        console.log(result.stdout, result.stderr);
+    const prefix = '[arui-scripts cache] ';
+    const diagnostics = [];
+
+    for (const line of `${result.stdout}\n${result.stderr}`.split('\n')) {
+        if (line.startsWith(`${prefix}{`)) diagnostics.push(JSON.parse(line.slice(prefix.length)));
+        else if (line.includes(prefix)) console.log(line);
+    }
     const stats = JSON.parse(fs.readFileSync(path.join(cwd, 'client-stats.json'), 'utf8'));
 
     console.log(`${label}: ${Date.now() - started} ms`);
 
-    return { stats, output: artifacts() };
+    return { stats, output: artifacts(), diagnostics };
 }
 
 function logs(stats) {
@@ -145,6 +150,42 @@ try {
     const cold = build('cold');
     const warm = build('warm');
 
+    assert.ok(
+        cold.diagnostics.some(
+            (event) => event.event === 'compilation' && event.native.snapshot === 'cold',
+        ),
+    );
+    for (const result of [cold, warm]) {
+        assert.equal(
+            result.diagnostics.filter(
+                (event) => event.event === 'configured' && event.cacheType === 'persistent',
+            ).length,
+            2,
+        );
+        assert.equal(
+            result.diagnostics.filter(
+                (event) => event.event === 'close' && event.result === 'completed',
+            ).length,
+            2,
+        );
+    }
+    assert.equal(
+        warm.diagnostics.filter(
+            (event) => event.event === 'compilation' && event.native.snapshot === 'hit',
+        ).length,
+        2,
+    );
+    assert.ok(
+        warm.diagnostics.some(
+            (event) => event.compression?.hits >= 3 && event.compression.misses === 0,
+        ),
+    );
+    const quiet = build('warm diagnostics disabled', { ARUI_SCRIPTS_CACHE_DEBUG: '0' });
+
+    assert.equal(quiet.diagnostics.length, 0);
+    assert.match(logs(quiet.stats), /snapshot restored with no changed dependencies/);
+    assert.deepEqual(quiet.output, warm.output);
+
     assert.match(logs(warm.stats), /make persistent cache recovery succeeded/);
     assert.ok(compressionStats(cold.stats).misses >= 3, 'cold build runs all three compressors');
     assert.ok(
@@ -198,10 +239,27 @@ try {
         ARUI_SCRIPTS_CONFIG: JSON.stringify({ persistentCache: false }),
     });
 
+    assert.ok(
+        uncached.diagnostics.some(
+            (event) => event.event === 'configured' && event.reason === 'disabled-by-setting',
+        ),
+    );
+    assert.ok(
+        uncached.diagnostics
+            .filter((event) => event.event === 'compilation')
+            .every((event) => event.native.snapshot === 'disabled'),
+    );
+
     assert.deepEqual(edited.output, uncached.output);
 
     write('dictionary.txt', payload.slice(10000, 35000));
     const dictionary = build('dictionary edit');
+
+    assert.ok(
+        dictionary.diagnostics.some(
+            (event) => event.event === 'compilation' && event.native.snapshot === 'invalidated',
+        ),
+    );
 
     assert.ok(compressionStats(dictionary.stats).misses > 0, 'new dictionary recompresses DCB');
     assert.ok(
@@ -350,13 +408,20 @@ try {
     fs.mkdirSync(path.join(cwd, '.cache/unwritable'), { recursive: true });
     fs.chmodSync(path.join(cwd, '.cache/unwritable'), 0o555);
     try {
-        assert.deepEqual(
-            build('unwritable cache fallback', {
-                ARUI_SCRIPTS_CONFIG: JSON.stringify({
-                    persistentCache: { directory: '.cache/unwritable' },
-                }),
-            }).output,
-            recovered.output,
+        const fallback = build('unwritable cache fallback', {
+            ARUI_SCRIPTS_CONFIG: JSON.stringify({
+                persistentCache: { directory: '.cache/unwritable' },
+            }),
+        });
+
+        assert.deepEqual(fallback.output, recovered.output);
+        assert.ok(
+            fallback.diagnostics.some(
+                (event) =>
+                    event.event === 'configured' &&
+                    event.reason === 'storage-unavailable' &&
+                    event.cacheType === 'disabled',
+            ),
         );
     } finally {
         fs.chmodSync(path.join(cwd, '.cache/unwritable'), 0o755);

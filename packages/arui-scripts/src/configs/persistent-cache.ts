@@ -14,6 +14,7 @@ import { appConfigs, configs } from './app-configs';
 
 const requested = new WeakMap<object, { mode: 'dev' | 'production'; target: string }>();
 const managed = new WeakMap<Configuration, { directory: string; info: CacheNamespace }>();
+const failures = new WeakMap<Configuration, string>();
 
 /** Explicit unsupported values cause a fallback; distinct settings never share an "unknown" key. */
 export function stableSerialize(
@@ -239,6 +240,7 @@ export function finalizePersistentCache<T extends Configuration | Configuration[
                 },
             });
         } catch (error) {
+            failures.set(config, 'configuration-unavailable');
             console.warn(
                 `[arui-scripts cache] Persistent cache disabled for ${request.target}: ${
                     (error as Error).message
@@ -269,6 +271,7 @@ export function acquireCompilerCaches(
         try {
             releases.push(acquireCache(cache.directory, cache.info));
         } catch (error) {
+            failures.set(config, 'storage-unavailable');
             console.warn(
                 `[arui-scripts cache] ${cache.info.name}: ${
                     (error as Error).message
@@ -285,17 +288,28 @@ export function describeCompilerCaches(configuration: Configuration | Configurat
     return (Array.isArray(configuration) ? configuration : [configuration]).map((config) => {
         const cache = managed.get(config);
         const mode = config.mode === 'development' ? 'dev' : 'production';
-        const expected = cacheSettings(configs)?.modes || ['dev', 'production'];
+        const settings = cacheSettings(configs);
+        const expected = settings?.modes || ['dev', 'production'];
 
         let policy = 'legacy';
 
         if (cache) policy = 'arui';
-        else if (cacheSettings(configs) && expected.includes(mode)) policy = 'custom';
+        else if (settings && expected.includes(mode)) policy = 'custom';
+
+        let reason = failures.get(config);
+
+        if (!reason && !settings) reason = 'disabled-by-setting';
+        else if (!reason && !expected.includes(mode)) reason = 'mode-excluded';
+        else if (!reason && !cache) reason = 'cache-override';
+        else if (!reason && cache && typeof config.cache !== 'object')
+            reason = 'cache-overridden-after-finalize';
 
         return {
             name: config.name || 'main',
             mode,
             policy,
+            reason,
+            target: cache?.info.target || config.target,
             namespace: cache?.info.name,
             fingerprint: cache?.info.fingerprint,
         };
