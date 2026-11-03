@@ -1,18 +1,15 @@
-ARUI-scripts
-===
+# arui-scripts
 
 Простой и гибкий инструмент для одновременной сборки клиентской и серверной части react-приложений.
 
-Быстрый старт
+## Быстрый старт
 
-===
-
-Самый быстрый способ начать - запустить интерактивный CLI [`create-arui-scripts-app`](../create-arui-scripts-app/README.md):
+Для нового проекта используйте Node.js 24.x (от 24.11.1) или 26+ и интерактивный CLI [`create-arui-scripts-app`](../create-arui-scripts-app/README.md):
 
 ```bash
-npx create-arui-scripts-app my-app
+npx create-arui-scripts-app my-app --no-install
 cd my-app
-yarn
+yarn install
 yarn start
 ```
 
@@ -45,17 +42,15 @@ arui-scripts bundle-diff --current rsdoctor/current --baseline rsdoctor/baseline
 Команда создает HTML/JSON diff и markdown комментарий с таблицей размеров и ссылками на отчеты.
 Подробнее, включая использование в CI, в [документации bundle-diff](docs/commands.md#bundle-diff).
 
-Использование
-
-===
+## Использование
 
 0. Пакет требует использовать следующие версии:
 
-Зависимость | Версия
--- | --
-`nodejs` | `22.12.0+, 24.0.0+, 26.0.0+`
-`react` | `16.13.0+`
-`react-dom` | `16.13.0+`
+| Зависимость | Версия                          |
+| ----------- | ------------------------------- |
+| `nodejs`    | 22.x (от 22.12.0), 24.x или 26+ |
+| `react`     | `16.13.0+`                      |
+| `react-dom` | `16.13.0+`                      |
 
 1. Установите `arui-scripts` в свой проект как dev зависимость
 
@@ -72,8 +67,8 @@ npm install arui-scripts --save-dev
 2. Создайте необходимые файлы
 
 - `src/index.{js,jsx,ts,tsx}` - входная точка для клиентского приложения.
-- `src/server/index.{js,jsx,tsx}` - входная точка для серверного приложения.
-Если нужен только клиент, смотреть [Режим clientOnly](./docs/client-only.md).
+- `src/server/index.{js,jsx,ts,tsx}` - входная точка для серверного приложения.
+  Если нужен только клиент, смотреть [Режим clientOnly](./docs/client-only.md).
 
 **Полифилы (опционально).**
 Отдельный бандл полифилов не обязателен: по умолчанию [clientPolyfillsEntry](docs/settings.md#clientpolyfillsentry) не задан. Для большинства целей по браузерам (их можно сузить или расширить через overrides `supporting-browsers`, см. [Тонкая настройка](docs/overrides.md#тонкая-настройка)) можно не подключать отдельный файл полифилов.
@@ -89,9 +84,7 @@ npm install arui-scripts --save-dev
 
 3. Используйте команды из `arui-scripts`!
 
-TypeScript
-
-===
+## TypeScript
 
 TypeScript устанавливается в проект как peer-зависимость. Поддерживаются версии 5, 6 и 7;
 проверка типов использует установленный в проекте компилятор, в том числе нативный TypeScript 7.
@@ -105,9 +98,8 @@ TS-конфиги, overrides и presets загружаются через `jiti`
 
 Подробнее в [настройках компиляторов](docs/compilers.md).
 
-Документация
+## Документация
 
-===
 - [Список актуальных версий docker-образов](../alpine-node-nginx/README.md)
 - [Генерация проекта (`create-arui-scripts-app`)](../create-arui-scripts-app/README.md)
 - [CLI](docs/cli.md)

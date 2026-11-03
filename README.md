@@ -9,8 +9,8 @@
 
 ## Создать приложение
 
-Для нового проекта подготовьте Node.js **24.11.1 или новее** и Yarn.
-Генератор предложит выбрать SSR или только клиент, транспилятор, test раннер и другие настройки:
+Для нового проекта подготовьте Node.js **24.x (от 24.11.1) или 26+** и Yarn.
+Генератор предложит выбрать SSR или только клиент, транспилятор, тест-раннер и другие настройки:
 
 ```bash
 npx create-arui-scripts-app my-app --no-install
@@ -30,12 +30,16 @@ yarn build  # Собрать production-версию
 yarn test   # Запустить тесты выбранным тест-раннером
 ```
 
-Если приложение уже есть, начните с [инструкции по подключению arui-scripts](./packages/arui-scripts/README.md#использование). Сам пакет поддерживает Node.js `^20.19.0 || >=22.12.0`; требование Node.js `>=24.11.1` относится к новым проектам, создаваемым генератором.
+Если приложение уже есть, начните с [инструкции по подключению arui-scripts](./packages/arui-scripts/README.md#использование).
+Сам пакет поддерживает Node.js `^22.12.0 || ^24.0.0 || >=26.0.0`; актуальный диапазон указан в [package.json пакета](./packages/arui-scripts/package.json).
+Для новых проектов генератор задает дополнительное требование Node.js `>=24.11.1`.
+При обновлении на arui-scripts 26 посмотрите [инструкцию по миграции](./packages/arui-scripts/docs/migration-v26.md).
 
 ## Настроить под свой проект
 
 - [Настройки](./packages/arui-scripts/docs/settings.md) - точки входа, порты, транспилятор и остальные опции сборки.
 - [Пресеты](./packages/arui-scripts/docs/presets.md) и [overrides](./packages/arui-scripts/docs/overrides.md) - общие настройки для нескольких проектов и изменения конфигурации сборщика.
+- [Компиляторы и TypeScript](./packages/arui-scripts/docs/compilers.md) - выбор SWC/Babel, проверка типов и совместимость с TypeScript 7.
 - [Client-only](./packages/arui-scripts/docs/client-only.md) - приложение без серверной части.
 - [Модули](./packages/arui-scripts/docs/modules.md) - сборка и подключение модулей приложения.
 - [Артефакты](./packages/arui-scripts/docs/artifact.md) - подготовка Docker-образа или архива для доставки приложения.
@@ -43,6 +47,7 @@ yarn test   # Запустить тесты выбранным тест-ранн
 Список команд и их поведение - в [справочнике команд](./packages/arui-scripts/docs/commands.md).
 Справку можно посмотреть и в терминале: `yarn arui-scripts --help` или `yarn arui-scripts build --help`.
 Для изучения состава бандла и времени сборки есть команда `yarn arui-scripts bundle-analyze`.
+Для сравнения клиентских бандлов двух production-сборок используйте [bundle-diff](./packages/arui-scripts/docs/commands.md#bundle-diff).
 
 ## Что находится в репозитории
 
@@ -61,19 +66,21 @@ yarn test   # Запустить тесты выбранным тест-ранн
 
 ## Разработка arui-scripts
 
-Для работы с репозиторием рекомендуем Node.js 24.11.1 или новее, чтобы использовать то же окружение, что и в новых приложениях.
+Для работы с репозиторием рекомендуем Node.js **24.x (от 24.11.1)**.
+Версия Yarn закреплена в репозитории: **4.13.0**.
 
 Из корня репозитория:
 
 ```bash
 yarn install --immutable
-yarn build
 yarn test
 yarn lint
+yarn test:start
 ```
 
-`yarn build` собирает пакеты, а `yarn test` также запускает сборку и проверки примеров.
-Чтобы собрать только `arui-scripts`, выполните `yarn workspace arui-scripts build`.
+`yarn test` собирает пакеты и production-версии примеров, запускает тесты и проверяет полученные артефакты.
+`yarn test:start` отдельно проверяет настоящий запуск dev-сервера, SSR и доступность ресурсов по HTTP.
+Для сборки без тестов есть `yarn build`. Чтобы собрать `arui-scripts` вместе с его workspace-зависимостями, выполните `yarn build --filter=arui-scripts...`.
 
-Как подготовить изменения, добавить changeset и выпустить версию - в [CONTRIBUTING.MD](./CONTRIBUTING.MD).
+Первый запуск примеров, структура кода, проверки перед PR, changeset и выпуск snapshot-версии описаны в [CONTRIBUTING.MD](./CONTRIBUTING.MD).
 О проблемах можно сообщить в [Issues](https://github.com/core-ds/arui-scripts/issues).
