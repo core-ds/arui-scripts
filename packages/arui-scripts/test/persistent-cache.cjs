@@ -11,6 +11,15 @@ let cwd = fs.mkdtempSync(path.join(os.tmpdir(), 'arui-persistent-cache-'));
 const cli = path.resolve(__dirname, '../build/bin/index.js');
 const write = (name, content) => fs.writeFileSync(path.join(cwd, name), content);
 const json = (name, content) => write(name, JSON.stringify(content));
+function linkTypeScript() {
+    fs.mkdirSync(path.join(cwd, 'node_modules'), { recursive: true });
+    fs.symlinkSync(
+        path.dirname(require.resolve('typescript/package.json')),
+        path.join(cwd, 'node_modules/typescript'),
+        'dir',
+    );
+}
+
 const payload = Array.from({ length: 1000 }, (_, i) =>
     crypto.createHash('sha256').update(String(i)).digest('hex'),
 ).join('-');
@@ -88,6 +97,7 @@ function compressionStats(stats) {
 }
 
 try {
+    linkTypeScript();
     fs.mkdirSync(path.join(cwd, 'src/server'), { recursive: true });
     json('package.json', {
         name: 'cache-fixture',
@@ -372,6 +382,7 @@ try {
     });
     cwd = relocated;
     try {
+        linkTypeScript();
         const moved = build('portable new checkout path', portableEnv);
 
         // Rspack 2.2.5 relocation guard: first build in a new checkout is cold and correct.

@@ -1,5 +1,35 @@
 # arui-scripts
 
+## 26.0.0
+
+### Major Changes
+
+-   [#644](https://github.com/core-ds/arui-scripts/pull/644) [`5bb3dd7d`](https://github.com/core-ds/arui-scripts/commit/5bb3dd7dac0bf120f7cf5aa474b72b04dfeba5c7) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - **Что изменилось**
+    Настройки сборки артефактов (`dockerRegistry`, `baseDockerImage` и остальные) и оверрайды
+    `Dockerfile`, `DockerfileCompiled`, `nginx`, `nginxConf`, `start.sh` больше не помечены
+    устаревшими. Предупреждения об их использовании удалены.
+    Команды `docker-build`, `docker-build:compiled` и `archive-build` больше не загружают
+    проектный `arui-scripts-artifacts.ts` и другие варианты имени этого конфига.
+
+    **Что делать потребителю**
+    Если настройки сборки остались в конфигурации arui-scripts, никаких действий не требуется.
+    Если вы перенесли их в `arui-scripts-artifacts.ts`, верните настройки в
+    `arui-scripts.config.ts`, `package.json#aruiScripts` или presets, а оверрайды —
+    в `arui-scripts.overrides.ts`. Альтернатива: явно установите `@alfalab/arui-scripts-artifacts`
+    и замените команды `arui-scripts docker-build`, `arui-scripts docker-build:compiled`,
+    `arui-scripts archive-build` на соответствующие команды `arui-scripts-artifacts`.
+
+### Minor Changes
+
+-   [#643](https://github.com/core-ds/arui-scripts/pull/643) [`0a9e1a8d`](https://github.com/core-ds/arui-scripts/commit/0a9e1a8da7647e6273bfe9c757d0d3e9765a6fbf) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Добавлена поддержка TypeScript 7 без внутренней зависимости от TypeScript 6: TS-конфиги загружаются через jiti, настройки Jest читаются без Compiler API, проверка типов использует компилятор проекта.
+
+    Режимы `codeLoader: 'tsc'` и `jestCodeTransformer: 'tsc'` помечены deprecated. Они продолжают работать с TypeScript 5–6 с предупреждением; для TypeScript 7 используйте SWC или Babel.
+
+### Patch Changes
+
+-   Updated dependencies [[`5bb3dd7d`](https://github.com/core-ds/arui-scripts/commit/5bb3dd7dac0bf120f7cf5aa474b72b04dfeba5c7)]:
+    -   @alfalab/arui-scripts-artifacts@1.0.2
+
 ## 25.1.1
 
 ### Patch Changes

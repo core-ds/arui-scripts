@@ -9,7 +9,7 @@ if (!configs.clientOnly) {
 }
 
 if (configs.tsconfig && configs.disableDevRspackTypecheck) {
-    compilersCommands.push(getTscWatchCommand(configs.tsconfig));
+    compilersCommands.push(getTscWatchCommand(configs.tsconfig, configs.cwd));
 }
 
 runCompilers(compilersCommands);

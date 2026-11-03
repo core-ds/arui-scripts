@@ -132,9 +132,6 @@ export default settings;
 #### additionalBuildPath
 Массив путей, которые попадут в архив при использовании [команды archive-build](./commands.md#archive-build). По умолчанию `['config']`.
 
-:warning: Настройка устарела, см. [настройки сборки артефактов](#настройки-сборки-артефактов).
-Замена — `archive.additionalPaths` в конфиге `arui-scripts-artifacts.ts`.
-
 #### statsOutputFilename
 Имя [stats-файла](https://webpack.js.org/api/stats/), которое будет использоваться в [bundle-analyze команде](./commands.md#bundle-analyze). По умолчанию `stats.json`
 
@@ -169,12 +166,9 @@ const settings = {
 
 ### Настройки сборки артефактов
 
-> ⚠️ **Объявлены устаревшими.** Эти настройки arui-scripts просто транслирует в
-> [@alfalab/arui-scripts-artifacts](../../arui-scripts-artifacts/README.md), где и живут их значения по
-> умолчанию. В следующей мажорной версии arui-scripts они будут удалены — переносите их в конфиг
-> `arui-scripts-artifacts.ts` в корне проекта (таблица соответствия — в
-> [документации пакета](../../arui-scripts-artifacts/docs/migration.md)).
-> Команды сборки предупреждают о таких настройках в консоли.
+Настройки команд `docker-build`, `docker-build:compiled` и `archive-build` задаются в
+конфигурации arui-scripts и поддерживают presets и переменные окружения
+наравне с остальными настройками. Шаблоны можно менять через [overrides](overrides.md).
 
 #### dockerRegistry
 Адрес используемого docker registry, по умолчанию `''`, то есть используется публичный registry
@@ -250,7 +244,7 @@ const settings = {
 
 Возможные значения:
 - `babel` - для всего кода будет использоваться `babel-loader`;
-- `tsc` - для ts кода будет использоваться `ts-loader`, для всего остального - `babel-loader`;
+- `tsc` (**deprecated**, только TypeScript <7) - для ts кода будет использоваться `ts-loader`, для всего остального - `babel-loader`;
 - `swc` - для всего кода будет использоваться `swc-loader`.
 
 `swc` является предпочтительным режимом, дефолты не меняются для сохранения обратной совместимости.
@@ -301,7 +295,7 @@ const packageSettings = {
 
 Возможные значения:
 - `babel` - для всего кода будет использоваться `babel-jest`;
-- `tsc` - для ts кода будет использоваться `ts-jest`, для всего остального - `babel-jest`;
+- `tsc` (**deprecated**, только TypeScript <7) - для ts кода будет использоваться `ts-jest`, для всего остального - `babel-jest`;
 - `swc` - для всего кода будет использоваться `@swc/jest`.
   Swc более строго следует спецификациям и [не дает возможности](https://github.com/swc-project/swc/issues/5059) делать `spyOn` для экспортов из esm модулей.
 

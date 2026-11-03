@@ -92,6 +92,22 @@ npm install arui-scripts --save-dev
 
 3. Используйте команды из `arui-scripts`!
 
+TypeScript
+
+===
+
+TypeScript устанавливается в проект как peer-зависимость. Поддерживаются версии 5, 6 и 7;
+проверка типов использует установленный в проекте компилятор, в том числе нативный TypeScript 7.
+Сборка и тесты по умолчанию используют SWC. Для TypeScript 7 выбирайте `swc` или `babel`
+в настройках `codeLoader` и `jestCodeTransformer`.
+
+Значение `tsc` у обеих настроек **deprecated** и работает только с TypeScript <7.
+На TypeScript 5–6 оно сохраняет прежнее поведение и выводит предупреждение.
+На TypeScript 7 конфигурация с `tsc` отклоняется с подсказкой о переходе на SWC/Babel.
+TS-конфиги, overrides и presets загружаются через `jiti`, без внутреннего компилятора TypeScript.
+
+Подробнее в [настройках компиляторов](docs/compilers.md).
+
 Документация
 
 ===
@@ -104,6 +120,7 @@ npm install arui-scripts --save-dev
 - [Пресеты](docs/presets.md)
 - [Тонкая настройка](docs/overrides.md)
 - [Настройки сборки артефакта](docs/artifact.md)
+- [Миграция на версию 26](docs/migration-v26.md)
 - [Настройки компиляторов](docs/compilers.md)
 - [Особенности поведения](docs/caveats.md)
 - [Использование модулей](docs/modules.md)

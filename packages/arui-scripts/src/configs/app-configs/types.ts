@@ -35,28 +35,18 @@ export type AppConfigs = {
      * Значения по умолчанию задаются в @alfalab/arui-scripts-artifacts (`resolveArtifactsConfig`),
      * поэтому здесь они опциональны: arui-scripts только транслирует то, что задал пользователь.
      *
-     * Все они объявлены устаревшими и будут удалены в следующей мажорной версии — их место в
-     * конфиге `arui-scripts-artifacts.ts`.
+     * Эти настройки — поддерживаемая часть конфигурации arui-scripts.
      */
-    /** @deprecated Используйте `docker.registry` в конфиге @alfalab/arui-scripts-artifacts. */
     dockerRegistry?: string;
-    /** @deprecated Используйте `docker.baseImage` в конфиге @alfalab/arui-scripts-artifacts. */
     baseDockerImage?: string;
-    /** @deprecated Используйте `nginx.rootPath` в конфиге @alfalab/arui-scripts-artifacts. */
     nginxRootPath?: string;
-    /** @deprecated Используйте `nginx.baseConf` в конфиге @alfalab/arui-scripts-artifacts. */
     nginx?: NginxBaseConfOptions | null;
-    /** @deprecated Используйте `docker.runFromNonRootUser` в конфиге @alfalab/arui-scripts-artifacts. */
     runFromNonRootUser?: boolean;
-    /** @deprecated Используйте `build.removeDevDependencies` в конфиге @alfalab/arui-scripts-artifacts. */
     removeDevDependenciesDuringDockerBuild?: boolean;
-    /** @deprecated Используйте `docker.deleteNpm` в конфиге @alfalab/arui-scripts-artifacts. */
     deleteNpm?: boolean;
-    /** @deprecated Используйте `archive.name` в конфиге @alfalab/arui-scripts-artifacts. */
     archiveName?: string;
     /**
      * Директории проекта, которые кладутся в tar-архив рядом со сборкой.
-     * @deprecated Используйте `archive.additionalPaths` в конфиге @alfalab/arui-scripts-artifacts.
      */
     additionalBuildPath?: string[];
 
@@ -68,11 +58,13 @@ export type AppConfigs = {
     // build tuning
     buildSizeBudgets: BuildSizeBudgets | null;
     keepPropTypes: boolean;
+    /** Значение 'tsc' deprecated; поддерживается только с TypeScript <7. Используйте 'swc' или 'babel'. */
     codeLoader: 'babel' | 'tsc' | 'swc';
     experimentalReactCompiler: 'disabled' | ReactCompilerOptions;
     persistentCache: boolean | PersistentCacheSettings;
     installServerSourceMaps: boolean;
     disableDevRspackTypecheck: boolean;
+    /** Значение 'tsc' deprecated; поддерживается только с TypeScript <7. Используйте 'swc' или 'babel'. */
     jestCodeTransformer: 'babel' | 'tsc' | 'swc';
     jestTransformNodeModules: string[];
     collectCoverage: boolean;

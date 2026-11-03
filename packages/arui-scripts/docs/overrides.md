@@ -64,17 +64,17 @@ export default overrides;
   Альтернативно вы можете использовать любые методы передачи списка браузеров, поддерживаемые пакетом browserslist.
   Ключи: `browsers`, `supportingBrowsers`
 - `supportingNode` - список поддерживаемых версий nodejs в формате [browserslist](https://github.com/browserslist/browserslist).
-- `Dockerfile` - :warning: устарел, см. врезку ниже. Докерфайл, который будет использоваться для сборки контейнера.
+- `Dockerfile` - Докерфайл, который будет использоваться для сборки контейнера.
   Базовый шаблон [тут](../../arui-scripts-artifacts/src/docker/templates/dockerfile.template.ts).
   [`Dockerfile` в корне проекта](#docker) имеет приоритет над overrides.
-- `DockerfileCompiled` - :warning: устарел. Докерфайл, который будет использоваться для сборки контейнера при использовании команды `arui-scripts docker-build:compiled`
-- `nginx` - :warning: устарел. Шаблон конфигурации для nginx внутри контейнера.
+- `DockerfileCompiled` - Докерфайл, который будет использоваться для сборки контейнера при использовании команды `arui-scripts docker-build:compiled`
+- `nginx` - Шаблон конфигурации для nginx внутри контейнера.
   Базовый шаблон [тут](../../arui-scripts-artifacts/src/nginx/templates/nginx.conf.template.ts).
   [Файл `nginx.conf`](nginx.md) в корне имеет приоритет над оверрайдами.
-- `nginxConf` - :warning: устарел. Шаблон базовой конфигурации для nginx внутри  контейнера
+- `nginxConf` - Шаблон базовой конфигурации для nginx внутри  контейнера
   Базовый шаблон аналогичный тому, который добавлется в базовый образ [тут](../../arui-scripts-artifacts/src/nginx/templates/base-nginx.conf.template.ts).
   [Файл `base-nginx.conf`](base-nginx.md) в корне имеет приоритет над оверрайдами.
-- `start.sh` - :warning: устарел. Шаблон entrypoint докер контейнера. Базовый шаблон [тут](../../arui-scripts-artifacts/src/start-script/start.template.ts).
+- `start.sh` - Шаблон entrypoint докер контейнера. Базовый шаблон [тут](../../arui-scripts-artifacts/src/start-script/start.template.ts).
 - `serverExternalsExemptions` - список модулей, которые не будут добавлены в список внешних зависимостей сервера. [Подробнее](caveats.md#node-externals).
 - `html` - шаблон для htmlWebpackPlugin, будет использоваться только в режиме [`clientOnly`](./settings.md#clientonly).
 - `swc-client` - конфигурация `swc` для клиентского кода. Ключи: `swc`, `swcClient`.
@@ -82,12 +82,6 @@ export default overrides;
 - `swc-jest` - конфигурация `swc` для тестов. Ключи: `swc`, `swcJest`.
 
 Для некоторых конфигураций определены несколько ключей, они будут применяться в том порядке, в котором они приведены в этом файле.
-
-> ⚠️ Оверрайды файлов артефакта поставки (`Dockerfile`, `DockerfileCompiled`, `nginx`, `nginxConf`,
-> `start.sh`) объявлены устаревшими и будут удалены в следующей мажорной версии arui-scripts.
-> Переносите их в секцию `overrides` конфига `arui-scripts-artifacts.ts`
-> ([таблица соответствия](../../arui-scripts-artifacts/docs/migration.md)).
-> Команды сборки предупреждают о таких оверрайдах в консоли.
 
 ### Создание дополнительных конфигураций для rspack
 На некоторых проектах может потребоваться создать дополнительные конфигурации для rspack. Например, для создания

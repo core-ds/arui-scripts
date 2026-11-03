@@ -8,6 +8,7 @@ import { type createSingleClientRspackConfig } from '../rspack.client';
 
 import { type findLoader } from './find-loader';
 import { type createFindPluginFunction } from './find-plugin';
+import { loadConfigFile } from './load-config-file';
 
 type Overrides = {
     rspack: rspack.Configuration | rspack.Configuration[];
@@ -40,19 +41,11 @@ type Overrides = {
     supportingBrowsers: string[];
     supportingNode: string[];
 
-    /*
-     * Оверрайды файлов артефакта поставки. Объявлены устаревшими и будут удалены в следующей
-     * мажорной версии — их место в секции `overrides` конфига `arui-scripts-artifacts.ts`.
-     */
-    /** @deprecated Используйте `overrides.dockerfile` в конфиге @alfalab/arui-scripts-artifacts. */
+    // Оверрайды файлов артефакта поставки.
     Dockerfile: string;
-    /** @deprecated Используйте `overrides.dockerfileCompiled` в конфиге @alfalab/arui-scripts-artifacts. */
     DockerfileCompiled: string;
-    /** @deprecated Используйте `overrides.nginxConf` в конфиге @alfalab/arui-scripts-artifacts. */
     nginx: string;
-    /** @deprecated Используйте `overrides.baseNginxConf` в конфиге @alfalab/arui-scripts-artifacts. */
     nginxConf: string;
-    /** @deprecated Используйте `overrides.startScript` в конфиге @alfalab/arui-scripts-artifacts. */
     'start.sh': string;
     serverExternalsExemptions: Array<string | RegExp>;
 
@@ -105,12 +98,11 @@ let overrides: OverrideFile[] = [];
 
 overrides = configs.overridesPath.map((path) => {
     try {
-        // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
-        const requireResult = require(path);
+        const requireResult = loadConfigFile(path);
 
         // eslint-disable-next-line no-underscore-dangle
         if (requireResult.__esModule) {
-            // ts-node импортирует esModules, из них надо вытягивать default именно так
+            // ES-модули возвращаются с default export в обёртке.
             return requireResult.default;
         }
 
@@ -122,16 +114,6 @@ overrides = configs.overridesPath.map((path) => {
         return {};
     }
 });
-
-/**
- * Объявлен ли оверрайд с таким ключом хоть в одном файле оверрайдов. Нужно, чтобы предупреждать об
- * устаревших ключах только тем, кто ими действительно пользуется.
- */
-export function hasOverride(overridesKey: keyof Overrides): boolean {
-    return overrides.some((override) =>
-        Object.prototype.hasOwnProperty.call(override, overridesKey),
-    );
-}
 
 /**
  *

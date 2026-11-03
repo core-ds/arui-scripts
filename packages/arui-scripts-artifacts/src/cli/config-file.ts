@@ -102,8 +102,8 @@ function mergeOptions(base: ArtifactsOptions, patch: ArtifactsOptions): Artifact
  * Сливает несколько конфигов в один: каждый следующий переопределяет предыдущие по тем же правилам,
  * что и команда переопределяет верхний уровень — секции по полям, `commands` по имени команды.
  *
- * Нужно тем, кто отдает CLI собственный конфиг (`-c`) и хочет доложить поверх пользовательский —
- * так делает arui-scripts, чтобы `arui-scripts-artifacts.ts` в корне проекта продолжал работать.
+ * Позволяет переиспользовать базовые настройки в нескольких конфигурациях сборки.
+ * Объединяет только переданные объекты, не загружает файлы конфигурации.
  */
 export function mergeConfigFiles(...configFiles: ArtifactsConfigFile[]): ArtifactsConfigFile {
     return configFiles.reduce<ArtifactsConfigFile>((base, patch) => {

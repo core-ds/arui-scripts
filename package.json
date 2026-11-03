@@ -15,6 +15,7 @@
         "npm-publish": "yarn workspaces foreach --all --no-private npm publish --access public --tolerate-republish && yarn changeset tag",
         "build": "turbo run build",
         "test": "turbo run build build:app test validate",
+        "test:start": "turbo run build --filter=example... && node packages/arui-scripts/test-start.js",
         "lint": "turbo run lint"
     },
     "prettier": "arui-presets-lint/prettier",
