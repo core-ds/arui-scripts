@@ -15,8 +15,8 @@ alpine-node-nginx
 ### Список доступных версий образа:
 
 - 22.23.4, 22.23.4-slim
-- 24.22.1, 24.22.1-slim
-- 26.12.1, 26.12.1-slim
+- 24.22.2, 24.22.2-slim
+- 26.13.0, 26.13.0-slim
 - nginx-1.27.1-slim
 
 Наиболее актуальный список тегов можно найти на [dockerhub](https://hub.docker.com/r/alfabankui/arui-scripts/tags).
@@ -41,11 +41,11 @@ alpine-node-nginx
 Если вы хотите собрать локально, выполните
 
 ```sh
-docker build --build-arg NODE_VERSION=24.22.1 --build-arg ALPINE_VERSION=3.23 -t alfabankui/arui-scripts:test .
+docker build --build-arg NODE_VERSION=24.22.2 --build-arg ALPINE_VERSION=3.23 -t alfabankui/arui-scripts:test .
 ```
 Или для slim версии:
 ```sh
-docker build --build-arg NODE_VERSION=24.22.1 --build-arg ALPINE_VERSION=3.23 -t alfabankui/arui-scripts:test -f Dockerfile-slim .
+docker build --build-arg NODE_VERSION=24.22.2 --build-arg ALPINE_VERSION=3.23 -t alfabankui/arui-scripts:test -f Dockerfile-slim .
 ```
 
 ### Локальная сборка на arm-процессорах
@@ -53,5 +53,5 @@ docker build --build-arg NODE_VERSION=24.22.1 --build-arg ALPINE_VERSION=3.23 -t
 его на наших серверах будет невозможно. Поэтому собирать нужно немного иначе:
 
 ```sh
-docker buildx build --platform linux/amd64 --build-arg NODE_VERSION=24.22.1 --build-arg ALPINE_VERSION=3.23 -t alfabankui/arui-scripts:test -f Dockerfile-slim --load .
+docker buildx build --platform linux/amd64 --build-arg NODE_VERSION=24.22.2 --build-arg ALPINE_VERSION=3.23 -t alfabankui/arui-scripts:test -f Dockerfile-slim --load .
 ```
