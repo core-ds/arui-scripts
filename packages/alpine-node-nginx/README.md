@@ -21,6 +21,14 @@ alpine-node-nginx
 
 Наиболее актуальный список тегов можно найти на [dockerhub](https://hub.docker.com/r/alfabankui/arui-scripts/tags).
 
+### Автоматическое обновление Node.js
+
+Workflow [Update Node.js versions](../../.github/workflows/update-node-versions.yml) ежедневно
+в 06:00 по Москве проверяет [официальный список релизов Node.js](https://nodejs.org/dist/index.json).
+При наличии обновлений он создает или обновляет один PR с версиями и связанными файлами.
+
+Обновляются только стабильные minor и patch-версии уже используемых веток Node.js.
+
 ### Отличия slim версии от полной
 В slim версии отсутствуют многочисленные модули nginx, которые обычно не нужны в проектах. Например:
 
