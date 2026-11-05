@@ -32,6 +32,12 @@ jobs:
       - name: Install Dependencies
         run: yarn install --immutable
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Wait for the default base image
+        run: node scripts/wait-for-base-image.mjs
+
       - name: Create Release Pull Request or Publish to npm
         id: changesets
         uses: changesets/action@v1
