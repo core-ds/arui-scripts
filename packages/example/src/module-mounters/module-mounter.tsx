@@ -21,7 +21,7 @@ const loader = createModuleLoader<MountableModule<void, BaseModuleState>>({
 export const ModuleMounter = () => {
     const { loadingState, targetElementRef } = useModuleMounter({
         loader,
-        useShadowDom: true,
+        useShadowDom: false,
     });
 
     return (

@@ -19,6 +19,7 @@
         "preset": "arui-scripts"
     },
     "dependencies": {
+        "@alfalab/core-components": "42.2.1",
         "@alfalab/scripts-modules": "workspace:*",
         "@alfalab/scripts-server": "workspace:*",
         "arui-scripts": "workspace:*",
