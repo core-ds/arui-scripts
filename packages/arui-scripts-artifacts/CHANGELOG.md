@@ -1,5 +1,11 @@
 # @alfalab/arui-scripts-artifacts
 
+## 1.0.3
+
+### Patch Changes
+
+-   [#650](https://github.com/core-ds/arui-scripts/pull/650) [`66a28ac5`](https://github.com/core-ds/arui-scripts/commit/66a28ac53fe92a29b34f579e479f26b0028d6486) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Обновление версии базового контейнера
+
 ## 1.0.2
 
 ### Patch Changes

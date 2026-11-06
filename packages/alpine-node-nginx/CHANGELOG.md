@@ -1,5 +1,11 @@
 # arui-scripts-docker
 
+## 15.3.0
+
+### Minor Changes
+
+-   [#649](https://github.com/core-ds/arui-scripts/pull/649) [`a222d241`](https://github.com/core-ds/arui-scripts/commit/a222d2414df0be2e6d7ed1868142bdeac7eae368) Thanks [@dmitrbrvsk](https://github.com/dmitrbrvsk)! - удалена повторная сборка nginx и удалены дублирующие debug бинарники из docker образов
+
 ## 15.2.3
 
 ### Patch Changes
