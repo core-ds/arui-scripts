@@ -1,0 +1,69 @@
+name: Update Node.js versions
+
+on:
+    schedule:
+        - cron: '0 3 * * *'
+    workflow_dispatch:
+        inputs:
+            dry-run:
+                description: Check available updates without creating a pull request
+                type: boolean
+                default: false
+permissions:
+    contents: read
+
+jobs:
+    update:
+        if: github.repository == 'core-ds/arui-scripts'
+        runs-on: ubuntu-latest
+        timeout-minutes: 15
+        concurrency:
+            group: update-node-versions-writer
+            cancel-in-progress: false
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  ref: master
+                  persist-credentials: false
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: '22.x'
+
+            - name: Check releases and update files
+              env:
+                  DRY_RUN: ${{ inputs.dry-run || false }}
+              run: |
+                  args=("--body-file=$RUNNER_TEMP/node-versions-pr.md")
+                  if [ "$DRY_RUN" = 'true' ]; then args+=(--dry-run); fi
+                  node scripts/update-node-versions.mjs "${args[@]}"
+
+            - name: Check automation credentials
+              if: ${{ !inputs.dry-run }}
+              env:
+                  GH_TOKEN: ${{ secrets.GH_TOKEN }}
+              run: |
+                  if [ -z "$GH_TOKEN" ]; then
+                    echo 'GH_TOKEN is required with contents, pull requests and workflows write access.' >&2
+                    exit 1
+                  fi
+
+            - name: Create or update pull request
+              if: ${{ !inputs.dry-run }}
+              uses: peter-evans/create-pull-request@v8
+              with:
+                  token: ${{ secrets.GH_TOKEN }}
+                  branch: automation/update-node-versions
+                  base: master
+                  delete-branch: true
+                  title: 'fix(node): update Node.js versions'
+                  commit-message: 'fix(node): update Node.js versions'
+                  body-path: ${{ runner.temp }}/node-versions-pr.md
+                  add-paths: |
+                      .github/workflows/alpine-node.yml
+                      packages/alpine-node-nginx/README.md
+                      packages/arui-scripts-artifacts/README.md
+                      packages/arui-scripts-artifacts/docs/migration.md
+                      packages/arui-scripts-artifacts/docs/settings.md
+                      packages/arui-scripts-artifacts/src/docker/constants.ts
+                      packages/arui-scripts-artifacts/src/config/__tests__/config.test.ts
+                      .changeset/automated-node-base-image.md
