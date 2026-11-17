@@ -1,12 +1,12 @@
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'node:events';
 
 const spawnMock = jest.fn();
 
-jest.mock('child_process', () => ({
+jest.mock('node:child_process', () => ({
     spawn: (...args: unknown[]) => spawnMock(...args),
 }));
 
-// eslint-disable-next-line import/first
+// eslint-disable-next-line import-x/first
 import { installDependencies, installLefthook } from '../install-dependencies';
 
 function fakeChild(exitCode: number) {

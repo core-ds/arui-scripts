@@ -3,7 +3,6 @@ import { type Command, CommanderError } from 'commander';
 import { commands } from '../commands-registry';
 import { createCli } from '../create-cli';
 
-// eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
 const { version } = require('../../../package.json');
 
 type Captured = { out: string; err: string };

@@ -1,10 +1,9 @@
-import { types } from 'util';
-
 import {
     type Compiler,
     type OptimizationSplitChunksCacheGroup,
     type RspackPluginInstance,
 } from '@rspack/core';
+import { types } from 'node:util';
 
 /**
  * Force remote entry not be affected by user's chunkSplit strategy,
@@ -25,7 +24,6 @@ export class TurnOffSplitRemoteEntry implements RspackPluginInstance {
             return;
         }
 
-        /* eslint-disable no-param-reassign */
         const applyPatch = (cacheGroup: OptimizationSplitChunksCacheGroup | false) => {
             if (typeof cacheGroup !== 'object' || types.isRegExp(cacheGroup)) {
                 return;
@@ -75,7 +73,6 @@ export class TurnOffSplitRemoteEntry implements RspackPluginInstance {
                 };
             }
         };
-        /* eslint-enable no-param-reassign */
 
         // patch splitChunk.chunks
         applyPatch(splitChunks);

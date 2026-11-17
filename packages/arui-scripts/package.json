@@ -151,6 +151,7 @@
         "@types/tar": "^4.0.5",
         "@types/webpack-bundle-analyzer": "4.7.0",
         "@types/webpack-node-externals": "^3.0.0",
+        "arui-presets-lint": "11.8.0",
         "babel-plugin-transform-import-meta": "^2.3.3",
         "type-fest": "2.19.0",
         "typescript": "6.0.2"
@@ -163,9 +164,12 @@
         "cli": "node build/bin/index.js",
         "test": "jest",
         "test:vitest": "vitest",
-        "lint:scripts": "arui-presets-lint scripts",
+        "lint:styles": "arui-presets-lint styles",
+        "lint:scripts": "yarn run -T lint:scripts packages/arui-scripts",
         "format": "arui-presets-lint format",
         "format:check": "arui-presets-lint format:check",
+        "lint:unused": "yarn run -T lint:unused --workspace packages/arui-scripts --cache-location node_modules/.cache/knip-arui-scripts",
+        "lint:secrets": "arui-presets-lint secretlint",
         "lint": "yarn lint:scripts && yarn format:check",
         "lint:fix": "yarn lint:scripts --fix && yarn format",
         "audit": "yarn npm audit --severity high --environment production"

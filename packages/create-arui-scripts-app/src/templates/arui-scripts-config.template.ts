@@ -2,7 +2,7 @@ import { type TemplateContext } from '../types';
 
 // Безопасная вставка строки в конфиг (одинарные кавычки как у prettier)
 function tsString(value: string): string {
-    return `'${value.replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`;
+    return `'${value.replaceAll('\\', '\\\\').replaceAll("'", String.raw`\'`)}'`;
 }
 
 export function aruiScriptsConfigTemplate(ctx: TemplateContext): string {

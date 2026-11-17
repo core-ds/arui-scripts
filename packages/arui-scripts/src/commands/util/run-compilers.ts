@@ -1,6 +1,5 @@
-import { spawn } from 'child_process';
-
 import fs from 'fs-extra';
+import { spawn } from 'node:child_process';
 
 import { configs } from '../../configs/app-configs';
 

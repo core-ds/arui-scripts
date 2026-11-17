@@ -1,6 +1,5 @@
-import path from 'path';
-
 import fs from 'fs-extra';
+import path from 'node:path';
 
 import { type RenderedTemplates, type ResolvedArtifactsConfig } from '../config/types';
 import { BASE_NGINX_CONFIG_FILENAME, NGINX_CONFIG_FILENAME } from '../nginx/constants';

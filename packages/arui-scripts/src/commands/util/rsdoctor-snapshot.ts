@@ -1,5 +1,3 @@
-import path from 'path';
-
 import {
     type Asset,
     type Compiler,
@@ -7,8 +5,8 @@ import {
     type RspackPluginInstance,
 } from '@rspack/core';
 import fs from 'fs-extra';
+import path from 'node:path';
 
-// eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
 const { dependencies } = require('../../../package.json') as {
     dependencies: Record<string, string>;
 };
@@ -39,13 +37,11 @@ type SnapshotOutput = {
 function keepSourceMaps(rsdoctor: RspackPluginInstance, sourceRoot: string): RspackPluginInstance {
     return {
         apply(compiler: Compiler) {
-            /* eslint-disable no-param-reassign */
             const { devtool } = compiler.options;
 
             compiler.options.devtool = false;
             rsdoctor.apply(compiler);
             compiler.options.devtool = devtool;
-            /* eslint-enable no-param-reassign */
 
             const { RawSource } = compiler.webpack.sources;
 
@@ -113,7 +109,6 @@ export async function enableRsdoctor(
     const bundles = configurations.map((config, index) => {
         const reportDir = path.join(directory, `client-${index}`);
 
-        // eslint-disable-next-line no-param-reassign
         config.plugins = [
             ...(config.plugins || []),
             keepSourceMaps(
@@ -161,7 +156,7 @@ export function normalizeWorkspacePaths(value: unknown, root: string): unknown {
                 }
 
                 if (item.startsWith(`${root}/`) || item.startsWith(`${root}\\`)) {
-                    return [key, `./${item.slice(root.length + 1).replace(/\\/g, '/')}`];
+                    return [key, `./${item.slice(root.length + 1).replaceAll('\\', '/')}`];
                 }
             }
 
@@ -183,7 +178,7 @@ export async function writeRsdoctorSnapshot({
             typeof report.data?.root !== 'string' ||
             !Array.isArray(report.data?.chunkGraph?.assets)
         ) {
-            throw new Error(`Invalid Rsdoctor data: ${file}`);
+            throw new TypeError(`Invalid Rsdoctor data: ${file}`);
         }
 
         // eslint-disable-next-line no-await-in-loop

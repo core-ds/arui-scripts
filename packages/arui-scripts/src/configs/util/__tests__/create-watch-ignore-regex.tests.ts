@@ -5,13 +5,13 @@ describe('createWatchIgnoreRegex', () => {
         const regex = createWatchIgnoreRegex(['build', 'node_modules']);
 
         expect('/project/build/index.js').toMatch(regex);
-        expect('C:\\project\\build\\index.js').toMatch(regex);
+        expect(String.raw`C:\project\build\index.js`).toMatch(regex);
         expect('build/index.js').toMatch(regex);
         expect('/build').toMatch(regex);
-        expect('\\build').toMatch(regex);
+        expect(String.raw`\build`).toMatch(regex);
 
         expect('/project/node_modules/package/index.js').toMatch(regex);
-        expect('C:\\project\\node_modules\\package\\index.js').toMatch(regex);
+        expect(String.raw`C:\project\node_modules\package\index.js`).toMatch(regex);
         expect('node_modules/package/index.js').toMatch(regex);
     });
 
@@ -39,10 +39,10 @@ describe('createWatchIgnoreRegex', () => {
         expect('/project/dist/bundle.js').toMatch(regex);
         expect('src/dist/output.js').toMatch(regex);
 
-        expect('C:\\project\\dist\\bundle.js').toMatch(regex);
-        expect('src\\dist\\output.js').toMatch(regex);
+        expect(String.raw`C:\project\dist\bundle.js`).toMatch(regex);
+        expect(String.raw`src\dist\output.js`).toMatch(regex);
 
-        expect('C:\\project/dist/bundle.js').toMatch(regex);
+        expect(String.raw`C:\project/dist/bundle.js`).toMatch(regex);
     });
 
     it('should escape special regex characters', () => {

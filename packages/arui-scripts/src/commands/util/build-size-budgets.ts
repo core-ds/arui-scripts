@@ -1,11 +1,10 @@
-import { readFile } from 'fs/promises';
-import path from 'path';
-import { promisify } from 'util';
-import { constants as zlibConstants, gzip } from 'zlib';
-
 import { type ChunkGroup, type Stats } from '@rspack/core';
 import chalk from 'chalk';
 import filesize from 'filesize';
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
+import { promisify } from 'node:util';
+import { constants as zlibConstants, gzip } from 'node:zlib';
 
 import {
     BUILD_SIZE_ASSET_TYPES,

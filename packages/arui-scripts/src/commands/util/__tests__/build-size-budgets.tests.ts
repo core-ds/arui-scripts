@@ -1,10 +1,9 @@
-import fs from 'fs/promises';
-import os from 'os';
-import path from 'path';
-import { constants as zlibConstants, gzipSync } from 'zlib';
-
 import { type Compiler, rspack, type Stats } from '@rspack/core';
 import filesize from 'filesize';
+import fs from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
+import { constants as zlibConstants, gzipSync } from 'node:zlib';
 
 import { BuildSizeBudgetError, checkBuildSizeBudgets } from '../build-size-budgets';
 
@@ -47,8 +46,12 @@ describe('build size budgets with real Rspack output', () => {
 
         stats = await new Promise<Stats>((resolve, reject) => {
             compiler.run((error, result) => {
-                if (error) return reject(error);
-                if (!result || result.hasErrors()) return reject(new Error(result?.toString()));
+                if (error) {
+                    return reject(error);
+                }
+                if (!result || result.hasErrors()) {
+                    return reject(new Error(result?.toString()));
+                }
 
                 return resolve(result);
             });
@@ -198,8 +201,11 @@ describe('build size budgets with real Rspack output', () => {
             expect(stats.compilation.warnings).toHaveLength(warnings);
             expect(stats.hasErrors()).toBe(false);
         } finally {
-            if (previousCI === undefined) delete process.env.CI;
-            else process.env.CI = previousCI;
+            if (previousCI === undefined) {
+                delete process.env.CI;
+            } else {
+                process.env.CI = previousCI;
+            }
         }
     });
 
@@ -253,7 +259,7 @@ describe('build size budgets with real Rspack output', () => {
         'prefers the emitted .gz size and caps units at MB (%i bytes)',
         async (emittedSize, expectedSize) => {
             const inMemory = await sizes(['main.js']);
-            const limit = 1_000;
+            const limit = 1000;
 
             expect(inMemory.gzip).not.toBe(emittedSize);
 

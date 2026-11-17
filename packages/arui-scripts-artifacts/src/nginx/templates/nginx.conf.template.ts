@@ -7,7 +7,7 @@ export function renderNginxConf(config: ResolvedArtifactsConfig): string {
     const { clientOnly, buildPath, serverPort, publicPath, nginx } = config;
     const { port, rootPath, enablePreviousVersionHeaders } = nginx;
 
-    return `client_max_body_size 20m;
+    return String.raw`client_max_body_size 20m;
 
 server {
     listen ${port};
@@ -42,7 +42,7 @@ server {
         }
     }
 
-    location ~ /${publicPath}.*\\.js$ {
+    location ~ /${publicPath}.*\.js$ {
         expires max;
         add_header Cache-Control public;
         root ${rootPath}/${buildPath};

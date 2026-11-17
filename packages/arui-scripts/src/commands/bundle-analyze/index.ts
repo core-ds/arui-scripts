@@ -37,7 +37,6 @@ const bundleAnalyzerStatsOptions: BundleAnalyzerStatsOptions = {
         ? rspackClientConfig
         : [rspackClientConfig];
 
-    /* eslint-disable no-param-reassign */
     const promises = clientRspackConfigs.map(async (rspackConfig, i) => {
         const tmpDir = await makeTmpDir(i.toString());
         const rspackStatsOptions: RspackOptionsNormalized['stats'] = {

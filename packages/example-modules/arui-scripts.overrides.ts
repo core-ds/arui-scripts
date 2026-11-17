@@ -1,6 +1,5 @@
 // TODO: remove eslint-disable and eslint-disable-next-line
-/* eslint-disable no-param-reassign */
-// eslint-disable-next-line import/no-extraneous-dependencies
+
 import { type RuleSetRule } from '@rspack/core';
 import { type OverrideFile } from 'arui-scripts';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -14,9 +13,9 @@ const overrides: OverrideFile = {
         const allConfigs = Array.isArray(config) ? config : [config];
 
         // Делаем стабильные имена классов css модулей для тестирования
-        // eslint-disable-next-line no-restricted-syntax
+
         for (const singleConfig of allConfigs) {
-            const cssModulesLoader = findLoader(singleConfig, '/\\.module\\.css$/');
+            const cssModulesLoader = findLoader(singleConfig, String.raw`/\.module\.css$/`);
 
             if (cssModulesLoader?.use && Array.isArray(cssModulesLoader.use)) {
                 const cssLoader = cssModulesLoader.use.find((loader) => {
@@ -50,14 +49,16 @@ const overrides: OverrideFile = {
         const allConfigs = Array.isArray(config) ? config : [config];
 
         return allConfigs.map((singleConfig) => {
-            singleConfig.optimization.minimize = false;
+            singleConfig.optimization = { ...singleConfig.optimization, minimize: false };
 
             return singleConfig;
         });
     },
     postcss: (config) => {
         const overridesConfig = config.map((name) => {
-            if (name !== 'postcss-mixins') return name;
+            if (name !== 'postcss-mixins') {
+                return name;
+            }
 
             return [
                 name,

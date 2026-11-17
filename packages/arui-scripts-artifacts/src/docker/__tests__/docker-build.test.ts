@@ -122,6 +122,6 @@ describe('shellQuote', () => {
     });
 
     it('should escape embedded single quotes', () => {
-        expect(shellQuote("it's")).toBe("'it'\\''s'");
+        expect(shellQuote("it's")).toBe(String.raw`'it'\''s'`);
     });
 });

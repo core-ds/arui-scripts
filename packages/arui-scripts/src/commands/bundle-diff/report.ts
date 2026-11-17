@@ -1,6 +1,5 @@
-import path from 'path';
-
 import fs from 'fs-extra';
+import path from 'node:path';
 
 import { generateArtifacts } from './artifacts';
 import { type BaselineIssue, createComment } from './comment';

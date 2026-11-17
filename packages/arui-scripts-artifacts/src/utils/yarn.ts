@@ -1,6 +1,5 @@
-import path from 'path';
-
 import fs from 'fs-extra';
+import path from 'node:path';
 import shell from 'shelljs';
 
 import { type YarnVersion } from '../config/types';

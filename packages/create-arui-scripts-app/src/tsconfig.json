@@ -1,0 +1,10 @@
+{
+    "extends": "../tsconfig.json",
+    "compilerOptions": {
+        "noEmit": true,
+        "types": ["jest", "node"],
+        "allowJs": true
+    },
+    "include": ["**/*.ts", "**/*.tsx", "**/*.js", "../global-definitions.d.ts"],
+    "exclude": []
+}

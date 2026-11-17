@@ -3,9 +3,9 @@
  * `standard-version` запускает этот скрипт как `postchangelog` хук.
  */
 
-import { execSync } from 'child_process';
-import { createReadStream, createWriteStream, promises } from 'fs';
-import * as readline from 'readline';
+import { execSync } from 'node:child_process';
+import { createReadStream, createWriteStream, promises } from 'node:fs';
+import * as readline from 'node:readline';
 
 import { configs } from '../../configs/app-configs';
 

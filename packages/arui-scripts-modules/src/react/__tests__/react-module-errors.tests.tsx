@@ -41,9 +41,13 @@ describe('Ошибки и очистка React-модуля', () => {
             function App() {
                 useModuleReady();
                 useEffect(() => {
-                    if (stage === 'effect') throw error;
+                    if (stage === 'effect') {
+                        throw error;
+                    }
                 }, []);
-                if (stage === 'render') throw error;
+                if (stage === 'render') {
+                    throw error;
+                }
 
                 return <span>ready</span>;
             }
@@ -65,7 +69,9 @@ describe('Ошибки и очистка React-модуля', () => {
         const error = new Error('update');
 
         function App({ runParams }: ReactModuleProps<boolean>) {
-            if (runParams) throw error;
+            if (runParams) {
+                throw error;
+            }
 
             return <span>ready</span>;
         }

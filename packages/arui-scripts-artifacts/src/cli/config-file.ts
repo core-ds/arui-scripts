@@ -19,8 +19,7 @@ export type ArtifactsConfigFile = ArtifactsOptions & {
 
 /** Конфиг может экспортировать объект или (в т.ч. асинхронную) функцию, возвращающую объект. */
 export type ArtifactsConfigFileExport =
-    | ArtifactsConfigFile
-    | (() => ArtifactsConfigFile | Promise<ArtifactsConfigFile>);
+    ArtifactsConfigFile | (() => ArtifactsConfigFile | Promise<ArtifactsConfigFile>);
 
 /**
  * Хелпер для типизации `arui-scripts-artifacts.ts`. Ничего не делает в рантайме — существует только

@@ -1,6 +1,3 @@
-import path from 'path';
-import * as zlib from 'zlib';
-
 import ReactRefreshTypeScript from 'react-refresh-typescript';
 import {
     type Configuration,
@@ -19,6 +16,8 @@ import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import CompressionPlugin from 'compression-webpack-plugin';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
+import path from 'node:path';
+import * as zlib from 'node:zlib';
 import { RspackManifestPlugin } from 'rspack-manifest-plugin';
 import { TsCheckerRspackPlugin } from 'ts-checker-rspack-plugin';
 import { WebpackDeduplicationPlugin } from 'webpack-deduplication-plugin';
@@ -86,7 +85,6 @@ function getMinimizeConfig(mode: 'dev' | 'prod') {
                 new CssMinimizerPlugin({
                     minimizerOptions: {
                         preset: (() => ({
-                            // eslint-disable-next-line global-require
                             plugins: [require('postcss-discard-duplicates')],
                             // некорректные типы у cssMinimizerPlugin
                         })) as any, // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -108,7 +106,7 @@ function getMinimizeConfig(mode: 'dev' | 'prod') {
  * @param entry Точка входа, любой валидный вход для rspack
  * @param configName Имя конфигурации, если не указано, то используется имя по умолчанию
  */
-// eslint-disable-next-line complexity
+
 export const createSingleClientRspackConfig = (
     mode: 'dev' | 'prod',
     entry: Entry,
@@ -138,7 +136,7 @@ export const createSingleClientRspackConfig = (
                 : `${configName ? `${configName}-` : ''}[name].[chunkhash:8].chunk.js`,
         // Point sourcemap entries to original disk location (format as URL on Windows)
         devtoolModuleFilenameTemplate: (info) =>
-            path.relative(configs.appSrc, info.absoluteResourcePath).replace(/\\/g, '/'),
+            path.relative(configs.appSrc, info.absoluteResourcePath).replaceAll('\\', '/'),
     },
     optimization: {
         ...getMinimizeConfig(mode),
@@ -371,7 +369,7 @@ export const createSingleClientRspackConfig = (
                 filename: '[file].gz',
                 algorithm: 'gzip',
                 test: /\.js$|\.css$|\.png$|\.svg$/,
-                threshold: 10240,
+                threshold: 10_240,
                 minRatio: 0.8,
             }),
         mode === 'prod' &&
@@ -385,7 +383,7 @@ export const createSingleClientRspackConfig = (
                         [zlib.constants.BROTLI_PARAM_QUALITY]: 11,
                     },
                 },
-                threshold: 10240,
+                threshold: 10_240,
                 minRatio: 0.8,
             }),
         // Ignore prop-types packages in production mode

@@ -1,7 +1,6 @@
-import path from 'path';
-
 import { type SDK } from '@rsdoctor/types';
 import fs from 'fs-extra';
+import path from 'node:path';
 
 import { type RsdoctorSnapshot, rsdoctorVersion } from '../util/rsdoctor-snapshot';
 
@@ -61,7 +60,7 @@ export async function readSnapshot(directory: string): Promise<Bundle[]> {
                 !Array.isArray(data?.moduleGraph?.modules) ||
                 !Array.isArray(data?.packageGraph?.packages)
             ) {
-                throw new Error(`Invalid Rsdoctor data: ${file}`);
+                throw new TypeError(`Invalid Rsdoctor data: ${file}`);
             }
 
             if (

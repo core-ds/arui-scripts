@@ -77,7 +77,9 @@ export function useModuleMounter<LoaderParams, RunParams, ServerState extends Ba
     optionsRef.current = { onReady, onError, readyTimeoutMs };
 
     useEffect(() => {
-        if (!mountTargetNode) return undefined;
+        if (!mountTargetNode) {
+            return undefined;
+        }
         setLoadingState('pending');
         const session = createModuleSession<RunParams, ServerState>({
             load: (abortSignal, onLoadError) =>

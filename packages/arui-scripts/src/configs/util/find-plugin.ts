@@ -1,5 +1,3 @@
-import { type Worker } from 'cluster';
-
 import { type ReactRefreshPluginOptions } from '@pmmmwh/react-refresh-webpack-plugin/types/lib/types';
 import {
     type BannerPluginArgument,
@@ -12,6 +10,7 @@ import type AssetsPlugin from 'assets-webpack-plugin';
 import type CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import type CompressionPlugin from 'compression-webpack-plugin';
 import type MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import { type Worker } from 'node:cluster';
 import { type RspackManifestPlugin } from 'rspack-manifest-plugin';
 import { type RunScriptWebpackPlugin } from 'run-script-webpack-plugin';
 import { type TsCheckerRspackPluginOptions } from 'ts-checker-rspack-plugin/lib/plugin-options';
@@ -110,7 +109,9 @@ export function createFindPluginFunction<Type extends 'client' | 'server'>() {
         config: Configuration,
         pluginName: PluginName,
     ) => {
-        if (!config.plugins || !pluginName) return [];
+        if (!config.plugins || !pluginName) {
+            return [];
+        }
 
         const result: Array<SelectedPluginsList<Type>[PluginName]> = [];
 

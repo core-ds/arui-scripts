@@ -1,7 +1,6 @@
-import path from 'path';
-
 import fs from 'fs-extra';
 import { createJiti } from 'jiti';
+import path from 'node:path';
 
 import { type ArtifactsConfigFile, type ArtifactsConfigFileExport } from './config-file';
 

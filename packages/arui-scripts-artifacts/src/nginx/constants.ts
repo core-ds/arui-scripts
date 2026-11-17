@@ -15,8 +15,8 @@ export const DEFAULT_NGINX_ROOT_PATH = '/src';
 /** Значения по умолчанию для базового конфига (http-блок). */
 export const DEFAULT_NGINX_BASE_CONF: ResolvedNginxBaseConf = {
     workerProcesses: 2,
-    workerRlimitNoFile: 20000,
-    workerConnections: 19000,
+    workerRlimitNoFile: 20_000,
+    workerConnections: 19_000,
     eventsUse: 'epoll',
     daemon: 'off',
 };

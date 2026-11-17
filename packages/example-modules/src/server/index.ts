@@ -1,7 +1,6 @@
-import path from 'path';
-
 import bodyParser from 'body-parser';
 import express from 'express';
+import path from 'node:path';
 
 import { readAssetsManifest } from '@alfalab/scripts-server';
 import { createGetModulesExpress } from '@alfalab/scripts-server/build/express';

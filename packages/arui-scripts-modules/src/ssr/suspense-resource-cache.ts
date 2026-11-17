@@ -45,14 +45,14 @@ export function readSuspenseResource<T>(
 
     if (entry.status === 'pending') {
         // бросаем промис — механизм Suspense, а не ошибка
-        // eslint-disable-next-line no-throw-literal, @typescript-eslint/no-throw-literal
+        // eslint-disable-next-line @typescript-eslint/only-throw-error
         throw entry.promise;
     }
 
     if (entry.status === 'error') {
         cache.delete(key);
         // пробрасываем исходную ошибку загрузки как есть
-        // eslint-disable-next-line no-throw-literal, @typescript-eslint/no-throw-literal
+
         throw entry.error;
     }
 

@@ -1,6 +1,6 @@
-import fs from 'fs';
-import os from 'os';
-import path from 'path';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 
 import { resolveArtifactsConfig, resolveCommandOptions } from '@alfalab/arui-scripts-artifacts';
 
@@ -65,7 +65,7 @@ it.each(['docker-build', 'docker-build:compiled', 'archive-build'])(
             "throw new Error('Standalone artifacts config must not be loaded');",
         );
         if (typeof artifactsConfig !== 'function') {
-            throw new Error('The built-in config must be evaluated lazily');
+            throw new TypeError('The built-in config must be evaluated lazily');
         }
         const configFile = await artifactsConfig();
         const options = resolveCommandOptions(command, configFile);

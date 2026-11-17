@@ -1,6 +1,6 @@
 // TODO: remove eslint-disable-next-line
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 
 import { getPolyfills } from '../util/get-polyfills';
 import { resolveNodeModuleRelativeTo } from '../util/resolve';
@@ -37,8 +37,7 @@ export function calculateDependentContext(config: AppConfigs, context: AppContex
         babelRuntimeVersion = JSON.parse(
             fs.readFileSync(pathToProjectBabelRuntime, 'utf8'),
         ).version;
-    } catch (e) {
-        // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
+    } catch {
         babelRuntimeVersion = require('@babel/runtime/package.json').version;
     }
 

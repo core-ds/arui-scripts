@@ -22,7 +22,6 @@ export function packageJsonTemplate(ctx: TemplateContext): string {
     }
 
     if (ctx.useLint) {
-        scripts['lint:styles'] = 'arui-presets-lint styles --max-warnings=0';
         scripts['lint:scripts'] = 'arui-presets-lint scripts --max-warnings=0';
         scripts.format = 'arui-presets-lint format';
         scripts['format:check'] = 'arui-presets-lint format:check';
@@ -30,9 +29,9 @@ export function packageJsonTemplate(ctx: TemplateContext): string {
         scripts['lint:unused:fix'] = 'arui-presets-lint knip --fix';
         scripts['lint:secrets'] = 'arui-presets-lint secretlint';
         scripts.lint =
-            'yarn lint:styles && yarn lint:scripts && yarn format:check && yarn lint:unused && yarn lint:secrets';
+            'arui-presets-lint styles --max-warnings=0 && yarn lint:scripts && yarn format:check && yarn lint:unused && yarn lint:secrets';
         scripts['lint:fix'] =
-            'yarn lint:styles --fix && yarn lint:scripts --fix && yarn format && yarn lint:secrets';
+            'arui-presets-lint styles --max-warnings=0 --fix && yarn lint:scripts --fix && yarn format && yarn lint:secrets';
     }
 
     if (ctx.e2eFramework === 'playwright') {

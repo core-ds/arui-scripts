@@ -24,7 +24,6 @@ describe('CustomEvent fallback', () => {
         });
         jest.resetModules();
 
-        // eslint-disable-next-line @typescript-eslint/no-var-requires,global-require
         const { CustomEvent } = require('../custom-event') as CustomEventModule;
         const event = new CustomEvent('test', { detail: 'value' });
 

@@ -22,13 +22,7 @@ export type ModuleLifecycleContext = {
 export type ModuleLoadErrorStage = 'fetch-manifest' | 'fetch-resources' | 'resolve-export';
 
 export type ModuleMounterErrorStage =
-    | ModuleLoadErrorStage
-    | 'mount'
-    | 'hydrate'
-    | 'update'
-    | 'runtime'
-    | 'ready-timeout'
-    | 'unmount';
+    ModuleLoadErrorStage | 'mount' | 'hydrate' | 'update' | 'runtime' | 'ready-timeout' | 'unmount';
 
 export type ModuleMounterError = { error: unknown; stage: ModuleMounterErrorStage };
 

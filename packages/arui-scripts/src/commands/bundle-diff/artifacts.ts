@@ -1,7 +1,6 @@
-import path from 'path';
-
 import { execute } from '@rsdoctor/cli';
 import fs from 'fs-extra';
+import path from 'node:path';
 
 import { type Bundle } from './snapshot';
 

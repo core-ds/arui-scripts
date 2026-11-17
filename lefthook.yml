@@ -4,9 +4,9 @@ extends:
 pre-commit:
   commands:
     run-test:
-      run: yarn turbo run lint build && yarn test:start
+      run: yarn build && yarn test:start
 
 pre-push:
   commands:
     run-test:
-      run: yarn turbo run lint build build:app test validate && yarn test:start
+      run: yarn test && yarn test:start

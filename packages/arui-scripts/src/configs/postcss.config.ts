@@ -1,5 +1,4 @@
-import path from 'path';
-
+import path from 'node:path';
 import { type PluginCreator } from 'postcss';
 
 import { postCssGlobalVariables } from '../plugins/postcss-global-variables/postcss-global-variables';

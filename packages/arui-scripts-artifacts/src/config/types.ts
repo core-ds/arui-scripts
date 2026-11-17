@@ -155,11 +155,7 @@ export type TemplateOverride = (
 export type TemplateRenderer = (config: ResolvedArtifactsConfig) => string;
 
 export type TemplateKey =
-    | 'dockerfile'
-    | 'dockerfileCompiled'
-    | 'nginxConf'
-    | 'baseNginxConf'
-    | 'startScript';
+    'dockerfile' | 'dockerfileCompiled' | 'nginxConf' | 'baseNginxConf' | 'startScript';
 
 /**
  * Кастомные рендереры шаблонов. Любой из них можно переопределить целиком.

@@ -21,7 +21,7 @@ function getModuleFederationContainerName() {
 }
 
 function getSeparateBuildRuntimeName() {
-    return `${getModuleFederationContainerName().replace(
+    return `${getModuleFederationContainerName().replaceAll(
         /\W/g,
         '_',
     )}_${MODULES_SEPARATE_BUILD_NAME}`;
@@ -31,7 +31,6 @@ export function patchMainRspackConfigForModules(
     rspackConf: rspack.Configuration,
     mode: 'consumer' | 'provider' | 'both',
 ) {
-    /* eslint-disable no-param-reassign */
     const isConsumer = mode === 'consumer' || mode === 'both';
     const isProvider = mode === 'provider' || mode === 'both';
 
@@ -95,7 +94,6 @@ export function patchMainRspackConfigForModules(
     );
 
     return rspackConf;
-    /* eslint-enable no-param-reassign */
 }
 
 function getModuleCssPlugins(isProvider: boolean): AttributeModuleCssPlugin[] {
@@ -142,8 +140,8 @@ export function getExposeLoadersFormCompatModules() {
 }
 
 function addCssPrefix(rspackConf: rspack.Configuration, cssPrefix: string) {
-    const cssRule = findLoader(rspackConf, '/\\.css$/');
-    const cssModulesRule = findLoader(rspackConf, '/\\.module\\.css$/');
+    const cssRule = findLoader(rspackConf, String.raw`/\.css$/`);
+    const cssModulesRule = findLoader(rspackConf, String.raw`/\.module\.css$/`);
 
     addPrefixCssRule(cssRule, cssPrefix);
     addPrefixCssRule(cssModulesRule, `:global(${cssPrefix})`);
@@ -184,7 +182,6 @@ export function patchRspackConfigForCompat(
     module: CompatModuleConfig,
     rspackConf: rspack.Configuration,
 ) {
-    /* eslint-disable no-param-reassign */
     rspackConf.externals = {
         ...((rspackConf.externals as Record<string, string>) || {}),
         ...(module.externals || {}),
@@ -203,5 +200,4 @@ export function patchRspackConfigForCompat(
     }
 
     return rspackConf;
-    /* eslint-enable no-param-reassign */
 }

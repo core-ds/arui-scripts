@@ -20,7 +20,6 @@ export function warnAboutDeprecations(config: AppContextWithConfigs) {
             'Правильный формат конфигурации можно посмотреть в документации rspack: https://rspack.dev/guide/features/dev-server#proxy',
         );
 
-        // eslint-disable-next-line no-param-reassign
         config.proxy = convertObjectProxyConfigurationToArray(config.proxy);
     }
 }

@@ -1,6 +1,5 @@
 // TODO: remove eslint-disable
-/* eslint-disable no-restricted-globals */
-/* eslint-disable import/no-default-export */
+
 import { type FactoryModule } from '@alfalab/scripts-modules';
 
 const factory: FactoryModule = (runParams, moduleState) => ({

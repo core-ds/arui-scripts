@@ -1,9 +1,8 @@
-/* eslint-disable global-require */
-/* eslint-disable import/no-extraneous-dependencies */
-/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable import-x/no-extraneous-dependencies */
+
 try {
     require('source-map-support').install();
-} catch (e) {
+} catch {
     console.error(
         'unable to install source map support. Please add `source-map-support` as a dependency.',
     );

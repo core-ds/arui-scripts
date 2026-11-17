@@ -11,5 +11,5 @@ export function shellQuote(value: string): string {
         return value;
     }
 
-    return `'${value.replace(/'/g, "'\\''")}'`;
+    return `'${value.replaceAll("'", String.raw`'\''`)}'`;
 }

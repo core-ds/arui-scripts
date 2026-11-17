@@ -1,7 +1,7 @@
 import { type TemplateContext } from '../types';
 
 function tsString(value: string): string {
-    return `'${value.replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`;
+    return `'${value.replaceAll('\\', '\\\\').replaceAll("'", String.raw`\'`)}'`;
 }
 
 export function appComponentTemplate(ctx: TemplateContext): string {

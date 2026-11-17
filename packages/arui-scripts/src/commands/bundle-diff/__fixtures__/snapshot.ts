@@ -1,6 +1,5 @@
-import path from 'path';
-
 import fs from 'fs-extra';
+import path from 'node:path';
 
 import { rsdoctorVersion } from '../../util/rsdoctor-snapshot';
 

@@ -1,0 +1,9 @@
+{
+    "extends": "./packages/arui-scripts/tsconfig.json",
+    "compilerOptions": {
+        "types": ["node"],
+        "skipLibCheck": true,
+        "noEmit": true
+    },
+    "include": ["eslint.config.mts", "knip.ts"]
+}

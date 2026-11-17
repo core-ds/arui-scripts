@@ -26,7 +26,7 @@ const VERSIONS = {
     playwrightTest: '^1.57.0',
     cypress: '^15.19.0',
     reactRouterDom: '^7.6.0',
-    aruiPresetsLint: '^11.0.0',
+    aruiPresetsLint: '^11.8.0',
 } as const;
 
 export function buildContext(answers: InitAnswers, aruiScriptsVersion: string): TemplateContext {

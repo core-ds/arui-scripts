@@ -1,9 +1,8 @@
-import fs from 'fs';
-import path from 'path';
-import { PassThrough } from 'stream';
-
 import React, { Suspense } from 'react';
 import { renderToPipeableStream } from 'react-dom/server';
+import fs from 'node:fs';
+import path from 'node:path';
+import { PassThrough } from 'node:stream';
 
 import {
     type BaseModuleState,
@@ -19,7 +18,7 @@ async function fileExists(filePath: string) {
         const res = await fs.promises.stat(filePath);
 
         return res.isFile();
-    } catch (e) {
+    } catch {
         return false;
     }
 }

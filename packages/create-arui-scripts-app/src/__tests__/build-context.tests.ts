@@ -98,7 +98,7 @@ describe('buildContext', () => {
         const withLint = buildContext({ ...base, useLint: true }, '1.0.0');
         const withoutLint = buildContext({ ...base, useLint: false }, '1.0.0');
 
-        expect(withLint.devDependencies['arui-presets-lint']).toBe('^11.0.0');
+        expect(withLint.devDependencies['arui-presets-lint']).toBe('^11.8.0');
         expect(withLint.useLint).toBe(true);
         expect(withoutLint.devDependencies).not.toHaveProperty('arui-presets-lint');
     });

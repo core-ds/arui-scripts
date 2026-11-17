@@ -1,5 +1,4 @@
-/* eslint-disable global-require */
-/* eslint import/no-dynamic-require: 0 */
+/* eslint import-x/no-dynamic-require: 0 */
 
 export type CliCommand = {
     name: string;
@@ -113,7 +112,7 @@ export const commands: CliCommand[] = [
             { flags: '--current-label <label>', description: 'Коммит текущей сборки' },
             { flags: '--baseline-label <label>', description: 'Ветка и коммит базовой сборки' },
         ],
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
+
         load: (options) => require('../commands/bundle-diff').run(options),
     },
 ];

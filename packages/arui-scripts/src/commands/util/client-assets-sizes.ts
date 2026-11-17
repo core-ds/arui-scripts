@@ -1,13 +1,12 @@
-import path from 'path';
-
 import { type Stats } from '@rspack/core';
 import chalk from 'chalk';
 import filesize from 'filesize';
+import path from 'node:path';
 
 import { configs } from '../../configs/app-configs';
 
 function removeFileNameHash(fileName: string) {
-    const parts = fileName.replace(/\\/g, '/').split('.');
+    const parts = fileName.replaceAll('\\', '/').split('.');
 
     const id = parts[0];
     const isChunk = fileName.includes('.chunk.');

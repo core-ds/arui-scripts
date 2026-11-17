@@ -1,7 +1,5 @@
-/* eslint-disable no-console */
-import path from 'path';
-
 import chalk from 'chalk';
+import path from 'node:path';
 import ora from 'ora';
 import prompts from 'prompts';
 
@@ -26,7 +24,6 @@ import {
     writeFiles,
 } from './write-files';
 
-// eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
 const { version: cliVersion } = require('../package.json');
 
 export type RunInitOptions = {

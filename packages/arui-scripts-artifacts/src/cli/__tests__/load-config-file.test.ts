@@ -1,6 +1,6 @@
-import fs from 'fs';
-import os from 'os';
-import path from 'path';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 
 import { resolveCommandOptions } from '../config-file';
 import { findConfigFile, loadConfigFile, resolveConfigFile } from '../load-config-file';

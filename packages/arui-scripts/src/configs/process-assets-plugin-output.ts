@@ -1,6 +1,5 @@
-import path from 'path';
-
 import { type Assets } from 'assets-webpack-plugin';
+import path from 'node:path';
 
 import { configs } from './app-configs';
 import { MODULES_ENTRY_NAME } from './modules';

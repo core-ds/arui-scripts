@@ -2,13 +2,10 @@
     --color-primary: red;
     --gap: 2px;
 }
-.primary {
-    color: color-mod(var(--color-primary) a(0.5));
-    margin-top: calc(var(--gap) * 2);
 
-    &__footer {
-        color: blue;
-    }
+.primary {
+    margin-top: calc(var(--gap) * 2);
+    color: color-mod(var(--color-primary) a(0.5));
 
     @media (min-width: 1024px) {
         color: coral;
@@ -17,6 +14,10 @@
     &:hover &__footer {
         color: green;
         animation: someRandomAnimation 1s ease-in-out infinite alternate;
+    }
+
+    &__footer {
+        color: blue;
     }
 
     &.leftBorder {

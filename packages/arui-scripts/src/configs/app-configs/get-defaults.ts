@@ -1,5 +1,5 @@
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 
 import { tryResolve } from '../util/resolve';
 
@@ -109,7 +109,7 @@ function getPackageJson() {
     const appPackage = JSON.parse(fs.readFileSync(path.join(CWD, 'package.json'), 'utf8'));
 
     if (appPackage['arui-scripts']) {
-        throw Error('arui-scripts in package.json is not supported. Use aruiScripts instead.');
+        throw new Error('arui-scripts in package.json is not supported. Use aruiScripts instead.');
     }
 
     return appPackage;
@@ -131,7 +131,7 @@ export function getDefaultAppContext(): AppContext {
     return {
         appPackage,
         name: appPackage.name,
-        normalizedName: appPackage.name.replace(/-/g, '_'), // для использования в качестве имени переменной
+        normalizedName: appPackage.name.replaceAll('-', '_'), // для использования в качестве имени переменной
         version: appPackage.version,
 
         // general paths

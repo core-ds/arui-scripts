@@ -18,7 +18,7 @@ export function getImageMinLoader() {
     ].filter(Boolean);
 
     return {
-        test: new RegExp(`\\.(${loaderExtensions.join('|')})$`),
+        test: new RegExp(String.raw`\.(${loaderExtensions.join('|')})$`),
         type: 'asset',
         // правило стоит раньше общих asset правил, поэтому порог инлайна должен быть тем же
         parser: {

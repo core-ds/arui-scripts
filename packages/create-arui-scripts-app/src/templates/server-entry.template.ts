@@ -39,13 +39,13 @@ export function serverEntryTemplate(ctx: TemplateContext): string {
     })();
 
     const handlerBody = ctx.useRtk
-        ? `            const assets = await readAssetsManifest();
+        ? String.raw`            const assets = await readAssetsManifest();
             const store = makeStore();
             const appHtml = renderToString(
                 ${appJsx},
             );
             // Экранируем символ "<", чтобы через состояние нельзя было внедрить теги в HTML
-            const preloadedState = JSON.stringify(store.getState()).replace(/</g, '\\\\u003c');
+            const preloadedState = JSON.stringify(store.getState()).replace(/</g, '\\u003c');
 
             return renderPage(appHtml, assets, preloadedState);`
         : `            const assets = await readAssetsManifest();

@@ -1,6 +1,3 @@
-import fs from 'fs';
-import path from 'path';
-
 import {
     BannerPlugin,
     type Configuration,
@@ -9,6 +6,8 @@ import {
     type RuleSetRule,
 } from '@rspack/core';
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
+import fs from 'node:fs';
+import path from 'node:path';
 import { RunScriptWebpackPlugin } from 'run-script-webpack-plugin';
 import nodeExternals from 'webpack-node-externals';
 
@@ -67,7 +66,7 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
         chunkFilename: '[name].js',
         // Point sourcemap entries to original disk location (format as URL on Windows)
         devtoolModuleFilenameTemplate: (info) =>
-            path.relative(configs.appSrc, info.absoluteResourcePath).replace(/\\/g, '/'),
+            path.relative(configs.appSrc, info.absoluteResourcePath).replaceAll('\\', '/'),
     },
     cache: mode === 'dev',
     externalsPresets: { node: true },

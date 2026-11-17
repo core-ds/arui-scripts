@@ -1,7 +1,6 @@
-import cluster, { type Worker } from 'cluster';
-import path from 'path';
-
 import { type Compiler } from '@rspack/core';
+import cluster, { type Worker } from 'node:cluster';
+import path from 'node:path';
 
 const defaultOptions = {
     script: 'server.js',
@@ -37,7 +36,7 @@ export class ReloadServerPlugin {
                     if (worker.process.pid) {
                         process.kill(worker.process.pid, 'SIGTERM');
                     }
-                } catch (e) {
+                } catch {
                     console.warn(`Unable to kill process #${worker.process.pid}`);
                 }
             });

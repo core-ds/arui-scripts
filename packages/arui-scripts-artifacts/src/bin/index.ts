@@ -1,7 +1,6 @@
 #! /usr/bin/env node
-import path from 'path';
-
 import fs from 'fs-extra';
+import path from 'node:path';
 
 import { resolveCommandOptions } from '../cli/config-file';
 import { createCli, extractConfigPath } from '../cli/create-cli';
@@ -12,7 +11,6 @@ import { BASE_NGINX_CONFIG_FILENAME, NGINX_CONFIG_FILENAME } from '../nginx/cons
 import { buildArtifact } from '../pipeline/build-artifact';
 import { START_SCRIPT_FILENAME } from '../start-script/constants';
 
-// eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
 const { version } = require('../../../package.json');
 
 /**

@@ -1,8 +1,7 @@
-import os from 'os';
-import path from 'path';
-
 import { type Configuration, rspack } from '@rspack/core';
 import fs from 'fs-extra';
+import os from 'node:os';
+import path from 'node:path';
 
 import {
     enableRsdoctor,
@@ -110,7 +109,7 @@ it('keeps emitted bundles and source maps identical to a regular build', async (
 
     expect(Object.keys(regularOutput).sort()).toEqual(['main.js', 'main.js.map']);
     expect(await readOutput()).toEqual(regularOutput);
-}, 30000);
+}, 30_000);
 
 it('lets Rsdoctor attribute bundled code to source modules', async () => {
     jest.spyOn(console, 'log').mockImplementation(() => undefined);
@@ -130,7 +129,7 @@ it('lets Rsdoctor attribute bundled code to source modules', async () => {
     );
 
     expect(greet.size.parsedSize).toBeGreaterThan(0);
-}, 30000);
+}, 30_000);
 
 it('normalizes different Jenkins workspaces identically and preserves external paths', () => {
     const report = (root: string) => ({
@@ -158,14 +157,17 @@ it('rejects ambiguous client configuration names', async () => {
 });
 
 it('normalizes Windows workspace paths and path fields nested in arrays', () => {
-    const root = 'C:\\jenkins\\workspace\\build-1';
+    const root = String.raw`C:\jenkins\workspace\build-1`;
     const input = {
         root,
         values: [
-            { file: `${root}\\src\\app.ts`, filename: `${root}\\src\\index.ts` },
-            { resource: `${root}\\styles\\main.css`, resolved: `${root}\\node_modules\\react` },
+            { file: String.raw`${root}\src\app.ts`, filename: String.raw`${root}\src\index.ts` },
+            {
+                resource: String.raw`${root}\styles\main.css`,
+                resolved: String.raw`${root}\node_modules\react`,
+            },
         ],
-        external: { path: 'D:\\shared\\lib.js' },
+        external: { path: String.raw`D:\shared\lib.js` },
     };
 
     expect(normalizeWorkspacePaths(input, root)).toEqual({
@@ -174,7 +176,7 @@ it('normalizes Windows workspace paths and path fields nested in arrays', () => 
             { file: './src/app.ts', filename: './src/index.ts' },
             { resource: './styles/main.css', resolved: './node_modules/react' },
         ],
-        external: { path: 'D:\\shared\\lib.js' },
+        external: { path: String.raw`D:\shared\lib.js` },
     });
     expect(input.root).toBe(root);
 });

@@ -1,0 +1,1008 @@
+{
+    "packages/arui-scripts-artifacts/src/bin/index.ts": {
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 2
+        }
+    },
+    "packages/arui-scripts-artifacts/src/cli/__tests__/cli.test.ts": {
+        "unicorn/no-array-for-each": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts-artifacts/src/cli/config-file.ts": {
+        "unicorn/no-array-for-each": {
+            "count": 2
+        }
+    },
+    "packages/arui-scripts-artifacts/src/cli/create-cli.ts": {
+        "unicorn/no-array-for-each": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts-artifacts/src/config/types.ts": {
+        "@typescript-eslint/no-redundant-type-constituents": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts-artifacts/src/docker/build-params.ts": {
+        "unicorn/no-array-for-each": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts-artifacts/src/docker/prepare-files.ts": {
+        "@typescript-eslint/await-thenable": {
+            "count": 1
+        },
+        "unicorn/prefer-ternary": {
+            "count": 1
+        },
+        "unicorn/text-encoding-identifier-case": {
+            "count": 4
+        }
+    },
+    "packages/arui-scripts-artifacts/src/utils/yarn.ts": {
+        "unicorn/prefer-split-limit": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts-modules/src/module-loader/__tests__/create-embedded-module-fetcher.tests.ts": {
+        "unicorn/prefer-dom-node-append": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts-modules/src/module-loader/__tests__/create-lazy-mounter.tests.tsx": {
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 5
+        }
+    },
+    "packages/arui-scripts-modules/src/module-loader/__tests__/create-module-loader.tests.ts": {
+        "@typescript-eslint/no-floating-promises": {
+            "count": 2
+        },
+        "unicorn/no-useless-undefined": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts-modules/src/module-loader/__tests__/create-server-state-module-fetcher.tests.ts": {
+        "@typescript-eslint/no-unnecessary-type-assertion": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts-modules/src/module-loader/__tests__/execute-module-factory.tests.ts": {
+        "@typescript-eslint/no-floating-promises": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts-modules/src/module-loader/__tests__/loader-lifecycle-errors.tests.ts": {
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 2
+        },
+        "@typescript-eslint/no-unsafe-call": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts-modules/src/module-loader/__tests__/module-lifecycle.tests.ts": {
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts-modules/src/module-loader/__tests__/module-session.tests.ts": {
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 1
+        },
+        "unicorn/no-useless-undefined": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts-modules/src/module-loader/__tests__/mounter-lifecycle.tests.tsx": {
+        "unicorn/no-array-for-each": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts-modules/src/module-loader/create-lazy-mounter.tsx": {
+        "@typescript-eslint/no-floating-promises": {
+            "count": 1
+        },
+        "unicorn/no-useless-undefined": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts-modules/src/module-loader/create-module-loader.ts": {
+        "@typescript-eslint/no-floating-promises": {
+            "count": 2
+        }
+    },
+    "packages/arui-scripts-modules/src/module-loader/hooks/__tests__/use-module-factory.tests.ts": {
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 2
+        }
+    },
+    "packages/arui-scripts-modules/src/module-loader/hooks/__tests__/use-module-loader.tests.ts": {
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 2
+        }
+    },
+    "packages/arui-scripts-modules/src/module-loader/hooks/__tests__/use-module-mount-target.tests.ts": {
+        "unicorn/better-dom-traversing": {
+            "count": 2
+        }
+    },
+    "packages/arui-scripts-modules/src/module-loader/hooks/__tests__/use-module-mounter.tests.ts": {
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 4
+        }
+    },
+    "packages/arui-scripts-modules/src/module-loader/hooks/use-module-factory.ts": {
+        "@typescript-eslint/await-thenable": {
+            "count": 1
+        },
+        "@typescript-eslint/no-floating-promises": {
+            "count": 1
+        },
+        "react-hooks/refs": {
+            "count": 4
+        }
+    },
+    "packages/arui-scripts-modules/src/module-loader/hooks/use-module-loader.ts": {
+        "@typescript-eslint/no-floating-promises": {
+            "count": 1
+        },
+        "react-hooks/refs": {
+            "count": 2
+        }
+    },
+    "packages/arui-scripts-modules/src/module-loader/hooks/use-module-mount-target.ts": {
+        "unicorn/prefer-dom-node-append": {
+            "count": 3
+        }
+    },
+    "packages/arui-scripts-modules/src/module-loader/hooks/use-module-mounter.ts": {
+        "react-hooks/refs": {
+            "count": 3
+        },
+        "react-hooks/set-state-in-effect": {
+            "count": 1
+        },
+        "unicorn/no-useless-undefined": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts-modules/src/module-loader/module-lifecycle.ts": {
+        "unicorn/no-array-for-each": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts-modules/src/module-loader/module-session.ts": {
+        "@typescript-eslint/no-floating-promises": {
+            "count": 1
+        },
+        "unicorn/no-array-for-each": {
+            "count": 1
+        },
+        "unicorn/require-css-escape": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts-modules/src/module-loader/utils/__tests__/dom-utils.test.ts": {
+        "@typescript-eslint/no-base-to-string": {
+            "count": 1
+        },
+        "unicorn/no-array-for-each": {
+            "count": 2
+        },
+        "unicorn/require-css-escape": {
+            "count": 2
+        }
+    },
+    "packages/arui-scripts-modules/src/module-loader/utils/__tests__/fetch-resources.tests.ts": {
+        "unicorn/prefer-dom-node-append": {
+            "count": 3
+        },
+        "unicorn/require-css-escape": {
+            "count": 3
+        }
+    },
+    "packages/arui-scripts-modules/src/module-loader/utils/__tests__/get-embedded-module-resources.tests.ts": {
+        "unicorn/prefer-dom-node-append": {
+            "count": 2
+        }
+    },
+    "packages/arui-scripts-modules/src/module-loader/utils/__tests__/get-module.tests.ts": {
+        "@typescript-eslint/unbound-method": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts-modules/src/module-loader/utils/__tests__/local-override.tests.ts": {
+        "@typescript-eslint/unbound-method": {
+            "count": 1
+        },
+        "unicorn/prefer-string-repeat": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts-modules/src/module-loader/utils/__tests__/serialize-for-html.tests.ts": {
+        "unicorn/prefer-code-point": {
+            "count": 2
+        }
+    },
+    "packages/arui-scripts-modules/src/module-loader/utils/dom-utils.ts": {
+        "unicorn/no-array-for-each": {
+            "count": 3
+        },
+        "unicorn/prefer-dom-node-append": {
+            "count": 1
+        },
+        "unicorn/prefer-dom-node-remove": {
+            "count": 1
+        },
+        "unicorn/prefer-prototype-methods": {
+            "count": 1
+        },
+        "unicorn/require-css-escape": {
+            "count": 2
+        }
+    },
+    "packages/arui-scripts-modules/src/module-loader/utils/fetch-app-manifest.ts": {
+        "unicorn/prefer-add-event-listener": {
+            "count": 2
+        }
+    },
+    "packages/arui-scripts-modules/src/module-loader/utils/fetch-resources.ts": {
+        "unicorn/no-array-for-each": {
+            "count": 3
+        },
+        "unicorn/prefer-logical-operator-over-ternary": {
+            "count": 1
+        },
+        "unicorn/require-css-escape": {
+            "count": 7
+        }
+    },
+    "packages/arui-scripts-modules/src/module-loader/utils/get-embedded-module-resources.ts": {
+        "unicorn/require-css-escape": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts-modules/src/module-loader/utils/modules-cache.ts": {
+        "unicorn/no-array-for-each": {
+            "count": 2
+        }
+    },
+    "packages/arui-scripts-modules/src/module-loader/utils/normalize-url-segment.ts": {
+        "unicorn/prefer-at": {
+            "count": 1
+        },
+        "unicorn/prefer-string-slice": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts-modules/src/module-loader/utils/serialize-for-html.ts": {
+        "unicorn/prefer-code-point": {
+            "count": 2
+        }
+    },
+    "packages/arui-scripts-modules/src/react/__tests__/create-react-module.tests.tsx": {
+        "@typescript-eslint/no-floating-promises": {
+            "count": 17
+        },
+        "@typescript-eslint/unbound-method": {
+            "count": 1
+        },
+        "unicorn/no-array-for-each": {
+            "count": 1
+        },
+        "unicorn/prefer-dom-node-append": {
+            "count": 2
+        }
+    },
+    "packages/arui-scripts-modules/src/react/__tests__/react-module-errors.tests.tsx": {
+        "@typescript-eslint/no-floating-promises": {
+            "count": 5
+        },
+        "unicorn/no-array-for-each": {
+            "count": 1
+        },
+        "unicorn/prefer-dom-node-append": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts-modules/src/react/__tests__/react-module-readiness.tests.tsx": {
+        "@typescript-eslint/no-floating-promises": {
+            "count": 3
+        },
+        "unicorn/prefer-dom-node-append": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts-modules/src/react/create-react-module.tsx": {
+        "@typescript-eslint/no-floating-promises": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts-modules/src/react/module-runtime.tsx": {
+        "@typescript-eslint/no-floating-promises": {
+            "count": 2
+        }
+    },
+    "packages/arui-scripts-modules/src/ssr/__tests__/create-ssr-mounter.tests.tsx": {
+        "@typescript-eslint/no-floating-promises": {
+            "count": 1
+        },
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 4
+        },
+        "@typescript-eslint/no-unsafe-call": {
+            "count": 3
+        },
+        "unicorn/dom-node-dataset": {
+            "count": 1
+        },
+        "unicorn/no-unreadable-array-destructuring": {
+            "count": 1
+        },
+        "unicorn/prefer-dom-node-append": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts-modules/src/ssr/__tests__/instance-id.tests.ts": {
+        "unicorn/no-useless-undefined": {
+            "count": 3
+        }
+    },
+    "packages/arui-scripts-modules/src/ssr/create-ssr-mounter.tsx": {
+        "@typescript-eslint/no-unnecessary-type-assertion": {
+            "count": 1
+        },
+        "unicorn/no-useless-undefined": {
+            "count": 1
+        },
+        "unicorn/require-css-escape": {
+            "count": 8
+        }
+    },
+    "packages/arui-scripts-modules/src/ssr/instance-id.ts": {
+        "unicorn/no-array-sort": {
+            "count": 1
+        },
+        "unicorn/prefer-code-point": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts-modules/src/ssr/request-context.tsx": {
+        "@typescript-eslint/prefer-optional-chain": {
+            "count": 1
+        },
+        "react-hooks/refs": {
+            "count": 7
+        }
+    },
+    "packages/arui-scripts-modules/src/ssr/suspense-resource-cache.ts": {
+        "@typescript-eslint/no-floating-promises": {
+            "count": 1
+        },
+        "@typescript-eslint/no-unnecessary-type-assertion": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts-server/src/__tests__/read-assets-manifest.tests.ts": {
+        "@typescript-eslint/no-unsafe-call": {
+            "count": 2
+        }
+    },
+    "packages/arui-scripts-server/src/express.ts": {
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts-server/src/hapi-16.ts": {
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts-server/src/hapi-20.ts": {
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts-server/src/modules/__tests__/create-get-modules-method.tests.ts": {
+        "unicorn/no-useless-undefined": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts-server/src/read-assets-manifest.ts": {
+        "unicorn/no-array-for-each": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts/src/bin/__tests__/create-cli.tests.ts": {
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 1
+        },
+        "unicorn/no-array-for-each": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts/src/bin/commands-registry.ts": {
+        "@typescript-eslint/no-unsafe-call": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts/src/bin/create-cli.ts": {
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 1
+        },
+        "unicorn/no-array-for-each": {
+            "count": 2
+        }
+    },
+    "packages/arui-scripts/src/commands/bundle-analyze/index.ts": {
+        "@typescript-eslint/no-unnecessary-type-assertion": {
+            "count": 2
+        },
+        "unicorn/no-console-spaces": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts/src/commands/bundle-diff/__tests__/index.tests.ts": {
+        "unicorn/no-useless-undefined": {
+            "count": 3
+        }
+    },
+    "packages/arui-scripts/src/commands/bundle-diff/__tests__/report.tests.ts": {
+        "unicorn/no-useless-undefined": {
+            "count": 2
+        }
+    },
+    "packages/arui-scripts/src/commands/bundle-diff/__tests__/snapshot.tests.ts": {
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 4
+        }
+    },
+    "packages/arui-scripts/src/commands/bundle-diff/artifacts.ts": {
+        "unicorn/no-array-for-each": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts/src/commands/bundle-diff/comment.ts": {
+        "unicorn/no-array-for-each": {
+            "count": 2
+        }
+    },
+    "packages/arui-scripts/src/commands/bundle-diff/snapshot.ts": {
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 3
+        },
+        "@typescript-eslint/no-unsafe-call": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts/src/commands/changelog/index.ts": {
+        "unicorn/text-encoding-identifier-case": {
+            "count": 3
+        }
+    },
+    "packages/arui-scripts/src/commands/ensure-yarn/index.ts": {
+        "@typescript-eslint/prefer-optional-chain": {
+            "count": 1
+        },
+        "unicorn/prefer-includes": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts/src/commands/start-prod/client.ts": {
+        "@typescript-eslint/no-floating-promises": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts/src/commands/start/client.ts": {
+        "@typescript-eslint/no-floating-promises": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts/src/commands/test/get-config.ts": {
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 3
+        }
+    },
+    "packages/arui-scripts/src/commands/test/index.ts": {
+        "@typescript-eslint/no-floating-promises": {
+            "count": 1
+        },
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts/src/commands/util/__tests__/build-size-budgets.tests.ts": {
+        "@typescript-eslint/no-base-to-string": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts/src/commands/util/__tests__/client-assets-sizes.tests.ts": {
+        "unicorn/no-useless-undefined": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts/src/commands/util/__tests__/rsdoctor-snapshot.tests.ts": {
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 2
+        },
+        "@typescript-eslint/no-unsafe-call": {
+            "count": 1
+        },
+        "unicorn/no-array-for-each": {
+            "count": 1
+        },
+        "unicorn/no-array-sort": {
+            "count": 1
+        },
+        "unicorn/no-useless-undefined": {
+            "count": 4
+        }
+    },
+    "packages/arui-scripts/src/commands/util/__tests__/run-compilers.tests.ts": {
+        "unicorn/no-useless-undefined": {
+            "count": 2
+        },
+        "unicorn/prefer-event-target": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts/src/commands/util/__tests__/typescript-watch.tests.ts": {
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 2
+        },
+        "@typescript-eslint/no-unsafe-call": {
+            "count": 4
+        }
+    },
+    "packages/arui-scripts/src/commands/util/build-size-budgets.ts": {
+        "unicorn/no-array-for-each": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts/src/commands/util/client-assets-sizes.ts": {
+        "unicorn/no-array-for-each": {
+            "count": 2
+        },
+        "unicorn/prefer-set-has": {
+            "count": 1
+        },
+        "unicorn/prefer-string-slice": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts/src/commands/util/format-rspack-messages.ts": {
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 2
+        },
+        "@typescript-eslint/no-unsafe-call": {
+            "count": 1
+        },
+        "@typescript-eslint/prefer-optional-chain": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts/src/commands/util/get-local-ident.ts": {
+        "unicorn/prefer-ternary": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts/src/commands/util/make-tmp-dir.ts": {
+        "unicorn/import-style": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts/src/commands/util/rsdoctor-snapshot.ts": {
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 2
+        },
+        "unicorn/no-array-for-each": {
+            "count": 2
+        }
+    },
+    "packages/arui-scripts/src/commands/util/run-artifacts-cli.ts": {
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts/src/commands/util/run-compilers.ts": {
+        "unicorn/no-array-for-each": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts/src/configs/__tests__/rspack-client-assets.tests.ts": {
+        "@typescript-eslint/no-base-to-string": {
+            "count": 1
+        },
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 1
+        },
+        "unicorn/no-useless-undefined": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts/src/configs/app-configs/__tests__/typescript.tests.ts": {
+        "unicorn/no-useless-undefined": {
+            "count": 2
+        }
+    },
+    "packages/arui-scripts/src/configs/app-configs/__tests__/update-with-env.tests.ts": {
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 2
+        }
+    },
+    "packages/arui-scripts/src/configs/app-configs/__tests__/update-with-package.tests.ts": {
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts/src/configs/app-configs/__tests__/update-with-presets.tests.ts": {
+        "unicorn/no-useless-undefined": {
+            "count": 2
+        }
+    },
+    "packages/arui-scripts/src/configs/app-configs/calculate-dependent-config.ts": {
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 2
+        },
+        "unicorn/no-array-for-each": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts/src/configs/app-configs/get-defaults.ts": {
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 10
+        },
+        "@typescript-eslint/no-unsafe-call": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts/src/configs/app-configs/index.ts": {
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 3
+        }
+    },
+    "packages/arui-scripts/src/configs/app-configs/read-config-file.ts": {
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 2
+        }
+    },
+    "packages/arui-scripts/src/configs/app-configs/update-with-config-file.ts": {
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts/src/configs/app-configs/update-with-env.ts": {
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts/src/configs/app-configs/update-with-package.ts": {
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts/src/configs/app-configs/update-with-presets.ts": {
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 3
+        }
+    },
+    "packages/arui-scripts/src/configs/app-configs/validate-build-size-budgets.ts": {
+        "unicorn/no-array-for-each": {
+            "count": 2
+        }
+    },
+    "packages/arui-scripts/src/configs/app-configs/validate-settings-keys.ts": {
+        "unicorn/no-array-for-each": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts/src/configs/app-configs/warn-about-deprecations.ts": {
+        "unicorn/no-array-for-each": {
+            "count": 2
+        },
+        "unicorn/no-console-spaces": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts/src/configs/client-env-config/client-config-plugin.ts": {
+        "@typescript-eslint/class-methods-use-this": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts/src/configs/jest/__tests__/settings.tests.ts": {
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 2
+        }
+    },
+    "packages/arui-scripts/src/configs/modules.ts": {
+        "@typescript-eslint/no-unnecessary-type-assertion": {
+            "count": 1
+        },
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 1
+        },
+        "unicorn/no-useless-fallback-in-spread": {
+            "count": 2
+        },
+        "unicorn/no-useless-undefined": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts/src/configs/process-assets-plugin-output.ts": {
+        "unicorn/no-array-for-each": {
+            "count": 2
+        }
+    },
+    "packages/arui-scripts/src/configs/rspack.client.ts": {
+        "@typescript-eslint/no-unnecessary-type-assertion": {
+            "count": 1
+        },
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 2
+        }
+    },
+    "packages/arui-scripts/src/configs/rspack.server.ts": {
+        "@typescript-eslint/no-unnecessary-type-assertion": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts/src/configs/util/__tests__/apply-overrides.tests.ts": {
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 4
+        },
+        "@typescript-eslint/no-unsafe-call": {
+            "count": 4
+        }
+    },
+    "packages/arui-scripts/src/configs/util/__tests__/load-config-file.tests.ts": {
+        "unicorn/no-array-for-each": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts/src/configs/util/apply-overrides.ts": {
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 2
+        },
+        "unicorn/no-array-for-each": {
+            "count": 2
+        }
+    },
+    "packages/arui-scripts/src/configs/util/compression-plugins-for-dictionaries.ts": {
+        "unicorn/prefer-string-slice": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts/src/configs/util/dcb-compression-plugin.ts": {
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 4
+        }
+    },
+    "packages/arui-scripts/src/configs/util/find-loader.ts": {
+        "@typescript-eslint/no-base-to-string": {
+            "count": 2
+        },
+        "@typescript-eslint/prefer-optional-chain": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts/src/configs/util/find-plugin.ts": {
+        "@typescript-eslint/no-redundant-type-constituents": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts/src/configs/util/node-assets-ignore.js": {
+        "unicorn/no-array-for-each": {
+            "count": 2
+        }
+    },
+    "packages/arui-scripts/src/configs/util/resolve.ts": {
+        "unicorn/no-useless-undefined": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts/src/configs/vitest/settings.ts": {
+        "unicorn/no-useless-undefined": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts/src/plugins/arui-runtime/arui-runtime-module.ts": {
+        "@typescript-eslint/class-methods-use-this": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts/src/plugins/arui-runtime/index.ts": {
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 3
+        },
+        "@typescript-eslint/no-unsafe-call": {
+            "count": 3
+        },
+        "@typescript-eslint/prefer-destructuring": {
+            "count": 1
+        },
+        "unicorn/dom-node-dataset": {
+            "count": 1
+        },
+        "unicorn/prefer-dom-node-append": {
+            "count": 3
+        }
+    },
+    "packages/arui-scripts/src/plugins/attribute-module-css.ts": {
+        "unicorn/no-array-for-each": {
+            "count": 5
+        }
+    },
+    "packages/arui-scripts/src/plugins/postcss-global-variables/postcss-global-variables.ts": {
+        "unicorn/no-array-for-each": {
+            "count": 2
+        }
+    },
+    "packages/arui-scripts/src/plugins/postcss-global-variables/utils/__tests__/add-global-variable.tests.ts": {
+        "unicorn/consistent-compound-words": {
+            "count": 2
+        }
+    },
+    "packages/arui-scripts/src/plugins/postcss-global-variables/utils/__tests__/parse-variables.tests.ts": {
+        "unicorn/no-array-for-each": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts/src/plugins/postcss-global-variables/utils/utils.ts": {
+        "@typescript-eslint/restrict-template-expressions": {
+            "count": 1
+        },
+        "unicorn/no-array-for-each": {
+            "count": 3
+        },
+        "unicorn/prefer-split-limit": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts/src/plugins/postcss-prefix-selector.ts": {
+        "@typescript-eslint/prefer-optional-chain": {
+            "count": 1
+        },
+        "unicorn/prefer-set-has": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts/src/plugins/reload-server-plugin.ts": {
+        "unicorn/no-array-for-each": {
+            "count": 1
+        },
+        "unicorn/prefer-class-fields": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts/test-start.js": {
+        "unicorn/prefer-single-call": {
+            "count": 1
+        }
+    },
+    "packages/arui-scripts/test-typescript.js": {
+        "unicorn/no-array-for-each": {
+            "count": 1
+        }
+    },
+    "packages/client-event-bus/src/custom-event.ts": {
+        "unicorn/no-useless-undefined": {
+            "count": 1
+        }
+    },
+    "packages/client-event-bus/src/use-event-bus-value.ts": {
+        "react-hooks/set-state-in-effect": {
+            "count": 1
+        }
+    },
+    "packages/create-arui-scripts-app/src/__tests__/install-dependencies.tests.ts": {
+        "unicorn/prefer-event-target": {
+            "count": 3
+        }
+    },
+    "packages/create-arui-scripts-app/src/__tests__/run.tests.ts": {
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 4
+        }
+    },
+    "packages/create-arui-scripts-app/src/create-program.ts": {
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 1
+        },
+        "unicorn/prefer-native-coercion-functions": {
+            "count": 2
+        }
+    },
+    "packages/create-arui-scripts-app/src/questions.ts": {
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 1
+        }
+    },
+    "packages/create-arui-scripts-app/src/run.ts": {
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 4
+        },
+        "unicorn/no-array-for-each": {
+            "count": 1
+        },
+        "unicorn/no-negated-condition": {
+            "count": 1
+        }
+    },
+    "packages/create-arui-scripts-app/src/templates/package-json.template.ts": {
+        "unicorn/no-array-sort": {
+            "count": 1
+        }
+    },
+    "packages/create-arui-scripts-app/src/write-files.ts": {
+        "unicorn/no-array-sort": {
+            "count": 1
+        }
+    },
+    "packages/example-modules/src/bootstrap.tsx": {
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 1
+        }
+    },
+    "packages/example-modules/src/client.tsx": {
+        "@typescript-eslint/no-floating-promises": {
+            "count": 1
+        }
+    },
+    "packages/example-modules/src/server/read-assets.ts": {
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 1
+        },
+        "@typescript-eslint/no-unsafe-call": {
+            "count": 2
+        },
+        "unicorn/no-array-for-each": {
+            "count": 1
+        }
+    },
+    "packages/example-modules/validate-build/build.spec.ts": {
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 17
+        },
+        "unicorn/text-encoding-identifier-case": {
+            "count": 6
+        }
+    },
+    "packages/example/src/__tests__/server.tests.ts": {
+        "@typescript-eslint/no-floating-promises": {
+            "count": 1
+        }
+    },
+    "packages/example/src/client.tsx": {
+        "@typescript-eslint/no-floating-promises": {
+            "count": 1
+        },
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 1
+        }
+    },
+    "packages/example/src/module-mounters/factory-compat-module-mounter.tsx": {
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 2
+        }
+    },
+    "packages/example/src/polyfills.js": {
+        "unicorn/no-empty-file": {
+            "count": 1
+        }
+    },
+    "packages/example/validate-build/build.spec.ts": {
+        "@typescript-eslint/no-unsafe-assignment": {
+            "count": 5
+        },
+        "@typescript-eslint/no-unsafe-call": {
+            "count": 1
+        },
+        "@typescript-eslint/prefer-promise-reject-errors": {
+            "count": 1
+        },
+        "unicorn/text-encoding-identifier-case": {
+            "count": 4
+        }
+    }
+}

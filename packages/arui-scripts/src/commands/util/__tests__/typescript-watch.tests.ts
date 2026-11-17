@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/no-var-requires, global-require */
-import fs from 'fs';
-import os from 'os';
-import path from 'path';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 
 const { checkTypeScriptWatch } = require('../../../../test-typescript-watch');
 
@@ -16,7 +15,7 @@ describe('TypeScript watch compatibility check', () => {
         script = path.join(project, 'watch.cjs');
         fs.writeFileSync(
             script,
-            `
+            String.raw`
             const fs = require('node:fs');
             const path = require('node:path');
             const mode = process.argv[2];
@@ -39,7 +38,7 @@ describe('TypeScript watch compatibility check', () => {
                     previous = content;
                     if (content.includes('wrong')) {
                         const output = mode === 'stderr' ? process.stderr : process.stdout;
-                        output.write('error TS2322: string is not assignable to number\\n');
+                        output.write('error TS2322: string is not assignable to number\n');
                     }
                 }
             }, 25);

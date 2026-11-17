@@ -1,6 +1,6 @@
 /** @type {import('jest').Config} */
 module.exports = {
-    testRegex: '.*\\.spec\\.ts$',
+    testRegex: String.raw`.*\.spec\.ts$`,
     moduleNameMapper: {
         '\\.css$': '<rootDir>/validate-build/style-mock.js',
     },

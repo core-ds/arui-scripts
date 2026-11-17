@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 // Мы используем эти настройки сразу в двух местах - в jest-presets и в настройках jest-а, которые мы загружаем в самих скриптах
 // jest-presets могут использоваться внешними утилитами, которые используют разработчики, настройки в скриптах
 // используются при запуске `arui-scripts test`. Посколько в jest жестко зафиксировано где именно должен лежать файл с пресетами
 // нам приходится отвязывать его от основного кода скриптов
-const fs = require('fs');
+const fs = require('node:fs');
 const { pathsToModuleNameMapper } = require('ts-jest');
 const { parse, printParseErrorCode } = require('jsonc-parser');
 const { swcJestConfig } = require('../swc');
@@ -11,7 +10,7 @@ const { swcJestConfig } = require('../swc');
 const { configs } = require('../app-configs');
 
 // Значения по умолчанию из самого jest, см. https://jestjs.io/docs/configuration#transformignorepatterns-arraystring
-const PNP_TRANSFORM_IGNORE_PATTERN = '\\.pnp\\.[^\\\\/]+$';
+const PNP_TRANSFORM_IGNORE_PATTERN = String.raw`\.pnp\.[^\\/]+$`;
 const DEFAULT_TRANSFORM_IGNORE_PATTERNS = ['/node_modules/', PNP_TRANSFORM_IGNORE_PATTERN];
 
 module.exports = {
@@ -86,13 +85,15 @@ function getTransformIgnorePatterns() {
         return DEFAULT_TRANSFORM_IGNORE_PATTERNS;
     }
 
-    const list = packages.map((name) => name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+    const list = packages
+        .map((name) => name.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`))
+        .join('|');
 
     // Игнорируем всё в node_modules, кроме путей, содержащих /node_modules/<пакет>/.
     // Вхождение ищется в любом месте пути, чтобы работали вложенные установки
     // вида node_modules/foo/node_modules/uuid.
     return [
-        `^(?!.*[\\\\/]node_modules[\\\\/](?:${list})[\\\\/]).*[\\\\/]node_modules[\\\\/]`,
+        String.raw`^(?!.*[\\/]node_modules[\\/](?:${list})[\\/]).*[\\/]node_modules[\\/]`,
         PNP_TRANSFORM_IGNORE_PATTERN,
     ];
 }

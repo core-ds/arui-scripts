@@ -1,5 +1,5 @@
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 
 import { configs } from '../app-configs';
 
@@ -15,7 +15,7 @@ export function compressionPluginsForDictionaries() {
             test: /\.js$|\.css$/,
             filename: ({ filename }) => `${filename}.${dictionaryName}.dcb`,
             algorithm: (input) => compressWithDcb(input, dictionaryContent),
-            threshold: 10240,
+            threshold: 10_240,
             minRatio: 0.8,
         });
     });
@@ -23,18 +23,21 @@ export function compressionPluginsForDictionaries() {
     const prevVersionPlugins = configs.compressionPreviousVersionPath.map((dictionaryPath) => {
         const dictionaries = fs.readdirSync(dictionaryPath);
 
-        const parsedDictionaries = dictionaries.reduce((map, current) => {
-            const parsed = parseFilename(current);
+        const parsedDictionaries = dictionaries.reduce(
+            (map, current) => {
+                const parsed = parseFilename(current);
 
-            return {
-                ...map,
-                [`${parsed.stableName}.${parsed.ext}`]: parsed,
-            };
-        }, {} as Record<string, ReturnType<typeof parseFilename>>);
+                return {
+                    ...map,
+                    [`${parsed.stableName}.${parsed.ext}`]: parsed,
+                };
+            },
+            {} as Record<string, ReturnType<typeof parseFilename>>,
+        );
 
         return new CustomCompressionPlugin({
             test: /\.js$|\.css$/,
-            threshold: 10240,
+            threshold: 10_240,
             minRatio: 0.8,
             filename: (pathData) => {
                 const parsedFilename = parseFilename(pathData.filename || '');
@@ -63,7 +66,7 @@ export function compressionPluginsForDictionaries() {
                     );
 
                     return await compressWithDcb(input, dictionaryContent);
-                } catch (e) {
+                } catch {
                     return input;
                 }
             },

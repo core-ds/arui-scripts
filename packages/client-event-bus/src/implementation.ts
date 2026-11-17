@@ -6,9 +6,9 @@ export type EventBusParams = {
     debugMode?: boolean;
 };
 
-export class EventBus<KnownEventTypes extends AbstractKnownEventTypes>
-    implements AbstractAppEventBus<KnownEventTypes>
-{
+export class EventBus<
+    KnownEventTypes extends AbstractKnownEventTypes,
+> implements AbstractAppEventBus<KnownEventTypes> {
     constructor({ targetNode = document, debugMode = false }: EventBusParams = {}) {
         this.debugMode = debugMode;
         this.targetNode = targetNode;
@@ -90,7 +90,7 @@ export function createBus(
     params: EventBusParams = {},
 ): EventBus<AbstractKnownEventTypes> {
     if (typeof window === 'undefined') {
-        throw new Error('Client event bus can only be created in a browser environment');
+        throw new TypeError('Client event bus can only be created in a browser environment');
     }
 
     if (!window.__alfa_event_buses) {

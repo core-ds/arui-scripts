@@ -24,7 +24,7 @@ const postCssPrefix: PluginCreator<PostCssPrefixOptions> = (options) => {
 
     return {
         postcssPlugin: '@alfalab/postcss-prefix-selector',
-        /* eslint-disable no-param-reassign */
+
         RootExit(root: RootWithVisitedRule) {
             if (root[VisitedRule]) {
                 return;
@@ -65,7 +65,6 @@ const postCssPrefix: PluginCreator<PostCssPrefixOptions> = (options) => {
                 });
             });
         },
-        /* eslint-enable no-param-reassign */
     };
 };
 

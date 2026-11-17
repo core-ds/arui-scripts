@@ -1,8 +1,8 @@
-import path from 'path';
-
 import React from 'react';
 import { renderToPipeableStream } from 'react-dom/server';
 import express from 'express';
+import { randomUUID } from 'node:crypto';
+import path from 'node:path';
 
 import { ModuleSsrRequestProvider } from '@alfalab/scripts-modules/ssr';
 import { readAssetsManifest } from '@alfalab/scripts-server';
@@ -78,7 +78,7 @@ app.get('/suspense', async (req, res) => {
 
     const { pipe, abort } = renderToPipeableStream(
         <AppHtml scripts={assets.js} styles={assets.css}>
-            <ModuleSsrRequestProvider requestId={crypto.randomUUID()}>
+            <ModuleSsrRequestProvider requestId={randomUUID()}>
                 <App />
             </ModuleSsrRequestProvider>
         </AppHtml>,
@@ -99,7 +99,7 @@ app.get('/suspense', async (req, res) => {
         },
     );
 
-    setTimeout(abort, 10000);
+    setTimeout(abort, 10_000);
 });
 
 app.listen(serverPort, () => {

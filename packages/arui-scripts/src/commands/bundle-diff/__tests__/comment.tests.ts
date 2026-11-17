@@ -41,13 +41,13 @@ it('escapes labels and configuration names without allowing extra Markdown lines
         ],
     });
 
-    expect(comment).toContain('Current: feature \\| injected \\|');
-    expect(comment).toContain('Baseline: target \\<script\\>');
+    expect(comment).toContain(String.raw`Current: feature \| injected \|`);
+    expect(comment).toContain(String.raw`Baseline: target \<script\>`);
     expect(comment).toContain(
-        '[📦 Bundle Diff Report: main\\](https://example.com)](client-0.html)',
+        String.raw`[📦 Bundle Diff Report: main\](https://example.com)](client-0.html)`,
     );
-    expect(comment).toContain('Новая клиентская конфигурация: new\\_\\*\\[client\\]');
-    expect(comment).toContain('Удаленная клиентская конфигурация: old\\|client');
+    expect(comment).toContain(String.raw`Новая клиентская конфигурация: new\_\*\[client\]`);
+    expect(comment).toContain(String.raw`Удаленная клиентская конфигурация: old\|client`);
     expect(comment).not.toContain('\n| injected |');
 });
 
