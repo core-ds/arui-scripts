@@ -174,8 +174,8 @@ export const mount: ModuleMountFunction<ModuleRunParams> = (targetNode, runParam
 ```tsx
 import { createModuleLoader, MountableModule, useModuleMounter } from '@alfalab/scripts-modules';
 
-// У нас возможности передать типы из приложения-модуля в приложение-хост
-// При желании вы можете вынести эти типы в общую библиотеку и использовать оттуда
+// Без генерации контрактов типы нужно описать вручную
+// или вынести в общую библиотеку. Автоматическая генерация описана ниже.
 type ModuleRunParams = {
     theme: string;
     width: number;
@@ -199,6 +199,56 @@ export const MyAwesomeComponent = () => {
     );
 }
 ```
+
+## Генерация пакета контрактов
+
+Пакет контрактов позволяет хосту использовать типы микрофронта без ручного копирования.
+
+### В микрофронте
+
+Укажите в конфиге, какие модули экспортировать, и задайте имя npm-пакета с их типами.
+
+```ts
+export default {
+    modules: {
+        shared: {},
+        exposes: { SomeWidget: './src/modules/some-widget/index' },
+        types: { packageName: '@team/some-widget-contracts' },
+    },
+};
+```
+
+`arui-scripts build` создаст пакет в `<buildPath>/module-contracts`. При стандартном `buildPath` опубликуйте его отдельной командой `npm publish ./.build/module-contracts`.
+
+По умолчанию версия берется из `package.json` микрофронта. Переопределить ее можно через `modules.types.version`. Сборка проверяет формат SemVer.
+
+### В хосте
+
+Установите пакет как `devDependency` и добавьте недостающие зависимости из его `peerDependencies`. Передайте `ModuleContracts` в `createTypedModuleLoader`.
+
+```tsx
+import type { ModuleContracts } from '@team/some-widget-contracts';
+import { createModuleFetcher, createTypedModuleLoader, useModuleMounter } from '@alfalab/scripts-modules';
+
+const createLoader = createTypedModuleLoader<ModuleContracts>();
+const loader = createLoader({
+    moduleId: 'SomeWidget',
+    hostAppId: 'some-host',
+    getModuleResources: createModuleFetcher({ baseUrl: '/some-widget' }),
+});
+
+export const SomeWidget = () => {
+    const { targetElementRef } = useModuleMounter({
+        loader,
+        runParams: { clientId: '123', width: 300 },
+    });
+    return <div ref={targetElementRef} />;
+};
+```
+
+TypeScript проверит `moduleId` и переданные `runParams`. Например, если `width` у микрофронта имеет тип `number`, строка `'300'` вызовет ошибку. Весь объект `runParams` можно опустить. Используйте версию контракта, соответствующую развернутому микрофронту.
+
+Для генерации нужен TypeScript 5.x или 6.x. Compat-модули и project references не поддерживаются. Чтобы отключить генерацию, задайте `modules.types: false`.
 
 :warning: **Внимание!** Модуль не будет обновляться при изменении runParams. Это осознанное решение, вы не должны относится к
 параметрам тут с той же легкостью, что и к prop-ам react-компонентов. Очень легко провести параллели между эти двумя

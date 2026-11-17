@@ -2,9 +2,11 @@ import { getProjectTypeScript } from '../util/typescript';
 
 import { type AppContextWithConfigs } from './types';
 import { validateBuildSizeBudgets } from './validate-build-size-budgets';
+import { validateModuleTypes } from './validate-module-types';
 
 export function validateConfig(config: AppContextWithConfigs) {
     validateBuildSizeBudgets(config.buildSizeBudgets);
+    validateModuleTypes(config);
 
     const tscSettings = (['codeLoader', 'jestCodeTransformer'] as const).filter(
         (key) => config[key] === 'tsc',
