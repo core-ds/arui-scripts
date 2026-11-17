@@ -34,6 +34,9 @@ const aruiScriptsConfig: PackageSettings = {
         },
     },
     modules: {
+        types: {
+            packageName: '@alfalab/example-module-contracts'
+        },
         shared: {
             react: '^17.0.0',
             'react-dom': '^17.0.0',

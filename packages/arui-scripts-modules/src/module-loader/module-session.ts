@@ -1,5 +1,6 @@
 import { MODULE_SSR_MODULE_ATTRIBUTE } from './utils/get-embedded-module-resources';
 import { unwrapDefaultExport } from './utils/unwrap-default-export';
+import { type ModuleExports } from './module-contract';
 import { createModuleLifecycle, reportModuleError } from './module-lifecycle';
 import {
     type ModuleMounterErrorStage,
@@ -12,7 +13,7 @@ type SessionParams<RunParams, ServerState extends BaseModuleState> = {
     load: (
         signal: AbortSignal,
         onLoadError: (stage: ModuleMounterErrorStage) => void,
-    ) => Promise<LoaderResult<MountableModule<RunParams, ServerState>>>;
+    ) => Promise<LoaderResult<ModuleExports<MountableModule<RunParams, ServerState>>>>;
     targetNode: HTMLElement;
     getRunParams: () => RunParams;
     getOptions: () => ModuleMounterOptions;
@@ -20,7 +21,7 @@ type SessionParams<RunParams, ServerState extends BaseModuleState> = {
 };
 
 export function resolveMountableModule<RunParams, ServerState extends BaseModuleState>(
-    exportedModule: MountableModule<RunParams, ServerState>,
+    exportedModule: ModuleExports<MountableModule<RunParams, ServerState>>,
 ) {
     const module = exportedModule && unwrapDefaultExport(exportedModule);
 
@@ -52,7 +53,9 @@ export function createModuleSession<RunParams, ServerState extends BaseModuleSta
     let stage: ModuleMounterErrorStage = 'resolve-export';
 
     async function run() {
-        let result: LoaderResult<MountableModule<RunParams, ServerState>> | undefined;
+        let result:
+            | LoaderResult<ModuleExports<MountableModule<RunParams, ServerState>>>
+            | undefined;
 
         try {
             result = await load(abortController.signal, (errorStage) => {

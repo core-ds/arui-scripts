@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 
 import { useModuleMountTarget } from './hooks/use-module-mount-target';
+import { type ModuleExports } from './module-contract';
 import { reportModuleError } from './module-lifecycle';
 import {
     createModuleSession,
@@ -19,7 +20,7 @@ type CreateLazyMounterParams<
     RunParams,
     ServerState extends BaseModuleState,
 > = ModuleMounterOptions & {
-    loader: Loader<LoaderParams, MountableModule<RunParams, ServerState>>;
+    loader: Loader<LoaderParams, ModuleExports<MountableModule<RunParams, ServerState>>>;
     /**
      * Параметры, которые будут переданы в загрузчик (и будут переданы на сервер модуля)
      */
@@ -58,7 +59,7 @@ export function createLazyMounter<
         }
 
         let loadStage: ModuleMounterErrorStage = 'resolve-export';
-        let result: LoaderResult<MountableModule<RunParams, ServerState>>;
+        let result: LoaderResult<ModuleExports<MountableModule<RunParams, ServerState>>>;
 
         try {
             result = await loader({

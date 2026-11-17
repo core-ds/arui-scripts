@@ -1,13 +1,20 @@
 import { unwrapDefaultExport } from './utils/unwrap-default-export';
+import { type ModuleExports } from './module-contract';
 import { type FactoryModule } from './module-types';
 import { type BaseModuleState } from './types';
+
+export type FactoryModuleExports<
+    Result,
+    RunParams,
+    ServerState extends BaseModuleState,
+> = ModuleExports<FactoryModule<Result, RunParams, ServerState>>;
 
 export async function executeModuleFactory<
     ModuleExportType,
     RunParams = undefined,
     ServerState extends BaseModuleState = BaseModuleState,
 >(
-    module: FactoryModule<ModuleExportType, RunParams, ServerState>,
+    module: FactoryModuleExports<ModuleExportType, RunParams, ServerState>,
     serverState: ServerState,
     runParams?: RunParams,
 ): Promise<ModuleExportType> {

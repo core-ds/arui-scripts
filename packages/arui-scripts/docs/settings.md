@@ -385,6 +385,8 @@ export default settings;
 #### modules
 Позволяет настроить работу с модулями. По умолчанию `{}`. Подробнее в разделе [модули](modules.md).
 
+`modules.types: { packageName: '@namespace/module-contracts', version?: string }` включает подготовку npm пакета деклараций из `modules.exposes` при production-сборке. `version` по умолчанию берется из `package.json` приложения. По умолчанию генерация выключена; `modules.types: false` явно отключает настройку из preset. Подробнее в разделе [генерация пакета контрактов](modules md#генерация-пакета-контрактов).
+
 #### compatModules
 Позволяет настроить работу с `compat` модулями. По умолчанию `{}`. Подробнее в разделе [модули](modules.md).
 

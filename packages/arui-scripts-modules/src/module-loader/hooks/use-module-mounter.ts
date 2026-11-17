@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
+import { type ModuleExports } from '../module-contract';
 import { createModuleSession } from '../module-session';
 import { type ModuleMounterOptions, type MountableModule } from '../module-types';
 import { type BaseModuleState, type Loader } from '../types';
@@ -15,7 +16,7 @@ export type UseModuleLoaderParams<
     /**
      * Загрузчик модуля
      */
-    loader: Loader<LoaderParams, MountableModule<RunParams, ServerState>>;
+    loader: Loader<LoaderParams, ModuleExports<MountableModule<RunParams, ServerState>>>;
     /**
      * Параметры, которые будут переданы в загрузчик (и будут переданы на сервер модуля)
      */
