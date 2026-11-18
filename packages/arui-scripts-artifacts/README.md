@@ -22,7 +22,7 @@ import { defineConfig } from '@alfalab/arui-scripts-artifacts';
 
 export default defineConfig({
     docker: {
-        baseImage: 'alfabankui/arui-scripts:24.22.2-slim',
+        baseImage: 'alfabankui/arui-scripts:24.22.3-slim',
         registry: 'registry.example.com',
     },
     nginx: {
