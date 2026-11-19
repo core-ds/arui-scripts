@@ -1,5 +1,11 @@
 # @alfalab/arui-scripts-artifacts
 
+## 1.0.4
+
+### Patch Changes
+
+-   [#656](https://github.com/core-ds/arui-scripts/pull/656) [`3bef7aee`](https://github.com/core-ds/arui-scripts/commit/3bef7aee84d1d85c3f8230d9d2fe5d2d09050a50) Thanks [@dmitrbrvsk](https://github.com/dmitrbrvsk)! - базовый докер образ по умолчанию обновлен до `alfabankui/arui-scripts:26.13.1-slim` (node.js 26 LTS)
+
 ## 1.0.3
 
 ### Patch Changes
