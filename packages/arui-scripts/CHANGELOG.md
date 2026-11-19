@@ -1,5 +1,12 @@
 # arui-scripts
 
+## 26.0.2
+
+### Patch Changes
+
+-   Updated dependencies [[`3bef7aee`](https://github.com/core-ds/arui-scripts/commit/3bef7aee84d1d85c3f8230d9d2fe5d2d09050a50)]:
+    -   @alfalab/arui-scripts-artifacts@1.0.4
+
 ## 26.0.1
 
 ### Patch Changes
