@@ -37,13 +37,17 @@ describe('Ошибки жизненного цикла загрузчика', ()
             const onError = jest.fn();
             const getModuleResources = jest.fn().mockResolvedValue(resources);
 
-            if (stage === 'fetch-manifest') getModuleResources.mockRejectedValueOnce(error);
-            if (stage === 'fetch-resources')
+            if (stage === 'fetch-manifest') {
+                getModuleResources.mockRejectedValueOnce(error);
+            }
+            if (stage === 'fetch-resources') {
                 (fetchResources as jest.Mock).mockRejectedValueOnce(error);
-            if (stage === 'resolve-export')
+            }
+            if (stage === 'resolve-export') {
                 (getCompatModule as jest.Mock).mockImplementationOnce(() => {
                     throw error;
                 });
+            }
             const moduleId = `failure-${stage}`;
             const loader = createModuleLoader({
                 moduleId,

@@ -17,7 +17,7 @@ export function updateWithEnv(config: AppConfigs) {
         return merge(config, envSettings);
     } catch (e) {
         console.error(e);
-        throw Error(
+        throw new Error(
             'Not valid JSON passed. Correct it. For example: ARUI_SCRIPTS_CONFIG="{"serverPort":3333}"',
         );
     }

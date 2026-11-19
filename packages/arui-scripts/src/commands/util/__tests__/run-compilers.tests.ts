@@ -1,9 +1,9 @@
-import { spawn } from 'child_process';
-import { EventEmitter } from 'events';
+import { spawn } from 'node:child_process';
+import { EventEmitter } from 'node:events';
 
 import { runCompilers } from '../run-compilers';
 
-jest.mock('child_process', () => ({ spawn: jest.fn() }));
+jest.mock('node:child_process', () => ({ spawn: jest.fn() }));
 jest.mock('fs-extra', () => ({ pathExistsSync: () => false, removeSync: jest.fn() }));
 jest.mock('../../../configs/app-configs', () => ({
     configs: { cwd: '/app', serverOutputPath: '/app/.build' },

@@ -8,7 +8,6 @@ export class RuntimeModule extends RsPackRuntimeModule {
         super('AruiRuntimeModule', RsPackRuntimeModule.STAGE_BASIC);
     }
 
-    // eslint-disable-next-line class-methods-use-this
     generate() {
         return Template.asString([
             "if (typeof __webpack_modules__ !== 'undefined' && typeof document !== 'undefined') {", // По какой-то причине вебпак пытается выполнить этот код не только в браузере, но и при сборке.

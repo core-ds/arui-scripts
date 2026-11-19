@@ -1,8 +1,6 @@
-import fs from 'fs';
-import path from 'path';
-
+import fs from 'node:fs';
+import path from 'node:path';
 import { type AtRule, Declaration, type Helpers, type Root, Rule } from 'postcss';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import mediaParser from 'postcss-media-query-parser';
 
 export const getMediaQueryName = (rule: AtRule) => rule.params.split(' ')[0];
@@ -32,7 +30,6 @@ export function parseImport(root: Root, postcssHelpers: Helpers, filePath: strin
 
 export const parseVariables = (importedFile: Root, parsedVariables: Record<string, string>) => {
     importedFile.walkDecls((decl) => {
-        // eslint-disable-next-line no-param-reassign
         parsedVariables[decl.prop] = decl.value;
     });
 };
@@ -41,7 +38,6 @@ export const parseMediaQuery = (importedFile: Root, parsedCustomMedia: Record<st
     importedFile.walkAtRules('custom-media', (mediaRule) => {
         const mediaName = getMediaQueryName(mediaRule);
 
-        // eslint-disable-next-line no-param-reassign
         parsedCustomMedia[mediaName] = mediaRule;
     });
 };

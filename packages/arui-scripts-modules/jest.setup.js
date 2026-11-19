@@ -1,20 +1,19 @@
-/* eslint-disable @typescript-eslint/no-var-requires, global-require */
 // jsdom не предоставляет TextEncoder/TextDecoder, которые нужны react-dom/server.
-const { TextEncoder, TextDecoder } = require('util');
+const { TextEncoder, TextDecoder } = require('node:util');
 
-if (typeof global.TextEncoder === 'undefined') {
+if (global.TextEncoder === undefined) {
     global.TextEncoder = TextEncoder;
 }
 
-if (typeof global.TextDecoder === 'undefined') {
+if (global.TextDecoder === undefined) {
     global.TextDecoder = TextDecoder;
 }
 
 // jsdom-окружение не пробрасывает setImmediate/clearImmediate, которые нужны react-dom/server.node.
-if (typeof global.setImmediate === 'undefined') {
+if (global.setImmediate === undefined) {
     global.setImmediate = (fn, ...args) => setTimeout(() => fn(...args), 0);
 }
 
-if (typeof global.clearImmediate === 'undefined') {
+if (global.clearImmediate === undefined) {
     global.clearImmediate = (id) => clearTimeout(id);
 }

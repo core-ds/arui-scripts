@@ -23,7 +23,7 @@ export function printBuildError(err: Error | null | undefined): void {
                     `\t${problemPath}:${line}${columnFormatted}`,
                 )}\n`,
             );
-        } catch (ignored) {
+        } catch {
             console.log('Failed to minify the bundle.', err);
         }
         console.log('Read more here: https://cra.link/failed-to-minify');

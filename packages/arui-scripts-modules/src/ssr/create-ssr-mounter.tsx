@@ -305,7 +305,9 @@ export function createSsrMounter<
                 `[${MODULE_SSR_MOUNT_ID_ATTRIBUTE}="${cssEscape(instanceId)}"]`,
             );
 
-            if (!target) return undefined;
+            if (!target) {
+                return undefined;
+            }
             const session = createModuleSession<RunParams, ModuleState>({
                 load: (abortSignal, onLoadError) =>
                     getClientLoader(instanceId)({
@@ -415,5 +417,5 @@ function cssEscape(value: string): string {
         return CSS.escape(value);
     }
 
-    return value.replace(/["\\]/g, '\\$&');
+    return value.replaceAll(/["\\]/g, String.raw`\$&`);
 }

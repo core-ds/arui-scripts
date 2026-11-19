@@ -192,7 +192,6 @@ function createContentFetcher(href: string, element: HTMLElement, abortSignal?: 
             throw new DOMException('The operation was aborted.');
         }
 
-        // eslint-disable-next-line no-param-reassign
         element.textContent = text;
 
         return element;

@@ -4,7 +4,7 @@ function isNativeCustomEventAvailable() {
         const p = new global.CustomEvent('cat', { detail: { foo: 'bar' } });
 
         return p.type === 'cat' && p.detail.foo === 'bar';
-    } catch (e) {
+    } catch {
         // just ignore it
     }
 

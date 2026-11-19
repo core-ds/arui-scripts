@@ -1,7 +1,6 @@
-import os from 'os';
-import path from 'path';
-
 import fs from 'fs-extra';
+import os from 'node:os';
+import path from 'node:path';
 
 import { createSnapshot } from '../__fixtures__/snapshot';
 import { IncompatibleSnapshotError, readSnapshot } from '../snapshot';

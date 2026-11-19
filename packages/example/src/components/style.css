@@ -1,18 +1,19 @@
 :root {
     --color-red: #f00;
 }
+
 body {
     background: aliceblue;
 }
 
 .btn {
-    border-radius: 5px;
-    border: 0;
     margin: 10px;
     padding: 15px;
     color: var(--color-red);
     background: linear-gradient(345deg, #aacac2, #3929bb);
     background-size: 400% 400%;
+    border: 0;
+    border-radius: 5px;
     animation: Insanity 2s ease infinite;
 }
 
@@ -20,9 +21,11 @@ body {
     0% {
         background-position: 0 50%;
     }
+
     50% {
         background-position: 100% 50%;
     }
+
     100% {
         background-position: 0 50%;
     }

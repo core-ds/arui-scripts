@@ -6,7 +6,7 @@ describe('validateBuildSizeBudgets', () => {
         undefined,
         {},
         { js: {} },
-        { js: { raw: 0, gzip: 409600 }, css: { gzip: 20480 } },
+        { js: { raw: 0, gzip: 409_600 }, css: { gzip: 20_480 } },
     ])('accepts %j', (value) => {
         expect(() => validateBuildSizeBudgets(value)).not.toThrow();
     });
@@ -24,7 +24,7 @@ describe('validateBuildSizeBudgets', () => {
         { js: { gzip: '400kb' } },
         { css: { raw: 1.5 } },
         { css: { raw: Infinity } },
-        { css: { raw: NaN } },
+        { css: { raw: Number.NaN } },
         { js: { raw: Number.MAX_SAFE_INTEGER + 1 } },
     ])('rejects invalid settings %j', (value) => {
         expect(() => validateBuildSizeBudgets(value)).toThrow('buildSizeBudgets');

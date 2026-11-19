@@ -1,6 +1,3 @@
-/* eslint-disable global-require */
-/* eslint-disable @typescript-eslint/no-var-requires */
-
 import chalk from 'chalk';
 import { Command } from 'commander';
 

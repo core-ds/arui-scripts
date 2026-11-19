@@ -1,5 +1,5 @@
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 
 import { configs } from '../app-configs';
 
@@ -9,7 +9,7 @@ export function replaceTemplateVariables(
     template: string,
     variables: Record<string, string | undefined>,
 ) {
-    return template.replace(/\$\{(\w+)}/g, (match, varName) => variables[varName] || '');
+    return template.replaceAll(/\$\{(\w+)}/g, (match, varName) => variables[varName] || '');
 }
 
 let cachedEnvConfig: string | null = null;

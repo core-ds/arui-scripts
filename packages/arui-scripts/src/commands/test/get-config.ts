@@ -1,10 +1,9 @@
-import fs from 'fs';
-import path from 'path';
-import { pathToFileURL } from 'url';
-
 import { replaceRootDirInPath } from 'jest-config';
 import Resolver from 'jest-resolve';
 import merge from 'lodash.merge';
+import fs from 'node:fs';
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 import { configs } from '../../configs/app-configs';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment

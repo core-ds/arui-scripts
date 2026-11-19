@@ -1,7 +1,6 @@
-import { types } from 'util';
-
 import { type Configuration, rspack, type Stats } from '@rspack/core';
 import { RspackDevServer } from '@rspack/dev-server';
+import { types } from 'node:util';
 
 import { devServerConfig } from '../../configs/dev-server';
 import { printCompilerOutput } from '../start/print-compiler-output';

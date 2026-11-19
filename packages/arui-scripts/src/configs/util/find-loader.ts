@@ -4,7 +4,7 @@ export function findLoader(config: Configuration, testRule: string): RuleSetRule
     for (const rule of config.module?.rules ?? []) {
         if (rule === '...' || !rule) {
             // Webpack имеет странный тип для rules, который позволяет в него положить строку '...'. Успокаиваем TS
-            // eslint-disable-next-line no-continue
+
             continue;
         }
 

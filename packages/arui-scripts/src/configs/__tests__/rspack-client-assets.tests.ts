@@ -1,7 +1,6 @@
-import path from 'path';
-
 import { type Configuration, CopyRspackPlugin, type RuleSetRule } from '@rspack/core';
 import ImageMinimizerPlugin from 'image-minimizer-webpack-plugin';
+import path from 'node:path';
 
 import { createClientRspackConfig } from '../rspack.client';
 

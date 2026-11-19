@@ -6,7 +6,6 @@ import { getEnvConfigContent } from './get-env-config';
 export class ClientConfigPlugin {
     protected cachedContent: string | null = null;
 
-    // eslint-disable-next-line class-methods-use-this
     apply(compiler: Compiler) {
         const pluginName = ClientConfigPlugin.name;
 

@@ -38,7 +38,7 @@ describe('Готовность React-модуля', () => {
                 useModuleReady();
                 if (!resolved) {
                     // Suspense ожидает Promise, а не объект ошибки.
-                    // eslint-disable-next-line @typescript-eslint/no-throw-literal
+                    // eslint-disable-next-line @typescript-eslint/only-throw-error
                     throw pending;
                 }
 

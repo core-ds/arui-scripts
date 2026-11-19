@@ -13,8 +13,8 @@ describe('serializeForHtml', () => {
         expect(result).not.toContain('<');
         expect(result).not.toContain('>');
         expect(result).not.toContain('&');
-        expect(result).toContain('\\u003c');
-        expect(result).toContain('\\u003e');
+        expect(result).toContain(String.raw`\u003c`);
+        expect(result).toContain(String.raw`\u003e`);
     });
 
     it('should keep the escaped value semantically identical after parsing', () => {
@@ -27,21 +27,21 @@ describe('serializeForHtml', () => {
         const result = serializeForHtml({ query: 'a=1&b=2' });
 
         expect(result).not.toContain('&');
-        expect(result).toContain('\\u0026');
+        expect(result).toContain(String.raw`\u0026`);
         expect(JSON.parse(result)).toEqual({ query: 'a=1&b=2' });
     });
 
     it('should escape line and paragraph separators U+2028/U+2029', () => {
-        const lineSeparator = String.fromCharCode(0x2028);
-        const paragraphSeparator = String.fromCharCode(0x2029);
+        const lineSeparator = String.fromCharCode(0x20_28);
+        const paragraphSeparator = String.fromCharCode(0x20_29);
         const value = { text: `line${lineSeparator}para${paragraphSeparator}end` };
 
         const result = serializeForHtml(value);
 
         expect(result).not.toContain(lineSeparator);
         expect(result).not.toContain(paragraphSeparator);
-        expect(result).toContain('\\u2028');
-        expect(result).toContain('\\u2029');
+        expect(result).toContain(String.raw`\u2028`);
+        expect(result).toContain(String.raw`\u2029`);
         expect(JSON.parse(result)).toEqual(value);
     });
 

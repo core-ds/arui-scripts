@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 
 import { loadConfigFile } from '../util/load-config-file';
 import { tryResolve } from '../util/resolve';

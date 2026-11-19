@@ -15,13 +15,13 @@ export function renderDockerfile(config: ResolvedArtifactsConfig): string {
         : '/src/nginx.conf';
 
     const nginxNonRootPart = runFromNonRootUser
-        ? `RUN chown -R nginx:nginx /src && \\
-       mkdir -p /var/lib/nginx && \\
-       chown -R nginx:nginx /var/lib/nginx && \\
-       chown -R nginx:nginx /var/log/nginx && \\
+        ? String.raw`RUN chown -R nginx:nginx /src && \
+       mkdir -p /var/lib/nginx && \
+       chown -R nginx:nginx /var/lib/nginx && \
+       chown -R nginx:nginx /var/log/nginx && \
        chown -R nginx:nginx /etc/nginx/conf.d
 
-   RUN touch /var/run/nginx.pid && \\
+   RUN touch /var/run/nginx.pid && \
        chown -R nginx:nginx /var/run/nginx.pid
 
    USER nginx`

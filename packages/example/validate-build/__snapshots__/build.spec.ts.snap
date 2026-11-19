@@ -11,12 +11,12 @@ exports[`client should create valid css 1`] = `
         font-weight:700;
         letter-spacing:1.25px;
         text-transform:uppercase;
+        padding-block:2px;
 
         padding-inline-start:12px;
-        padding-block:2px;
-        box-shadow:0 0 4px rgba(0, 0, 0, 0.02), 0 -2px 4px rgba(0, 0, 0, 0.04), 0 -2px 4px rgba(0, 0, 0, 0.16);
         color:rgb(236, 142, 133);
         background-color:#cd1501;
+        box-shadow:0 0 4px rgba(0, 0, 0, 0.02), 0 -2px 4px rgba(0, 0, 0, 0.04), 0 -2px 4px rgba(0, 0, 0, 0.16);
     }
 
 .styles-module-paragraph-xATBD{
@@ -25,12 +25,12 @@ exports[`client should create valid css 1`] = `
     font-weight:700;
     letter-spacing:1.25px;
     text-transform:uppercase;
+    padding-block:2px;
 
     padding-inline-start:12px;
-    padding-block:2px;
-    box-shadow:0 0 4px rgba(0, 0, 0, 0.02), 0 -2px 4px rgba(0, 0, 0, 0.04), 0 -2px 4px rgba(0, 0, 0, 0.16);
     color:rgb(236, 142, 133);
     background-color:#cd1501;
+    box-shadow:0 0 4px rgba(0, 0, 0, 0.02), 0 -2px 4px rgba(0, 0, 0, 0.04), 0 -2px 4px rgba(0, 0, 0, 0.16);
 }
 
 @media not screen and (min-width: 1024px){
@@ -56,13 +56,13 @@ body{
 }
 
 .btn{
-    border-radius:5px;
-    border:0;
     margin:10px;
     padding:15px;
     color:#f00;
     background:linear-gradient(345deg, #aacac2, #3929bb);
     background-size:400% 400%;
+    border:0;
+    border-radius:5px;
     animation:Insanity 2s ease infinite;
 }
 
@@ -70,9 +70,11 @@ body{
     0%{
         background-position:0 50%;
     }
+
     50%{
         background-position:100% 50%;
     }
+
     100%{
         background-position:0 50%;
     }

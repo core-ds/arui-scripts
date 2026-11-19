@@ -1,5 +1,5 @@
-import crypto from 'crypto';
-import path from 'path';
+import crypto from 'node:crypto';
+import path from 'node:path';
 
 type CssLoaderContext = {
     resourcePath: string;
@@ -20,9 +20,9 @@ export function getLocalIdent(
         .update(relativePath + localName)
         .digest('base64')
         .slice(0, 5)
-        .replace(/\+/g, '_')
-        .replace(/\//g, '_')
-        .replace(/=/g, '');
+        .replaceAll('+', '_')
+        .replaceAll('/', '_')
+        .replaceAll('=', '');
 
     let baseName: string;
 
@@ -34,5 +34,5 @@ export function getLocalIdent(
 
     const className = `${baseName}_${localName}__${hash}`;
 
-    return className.replace('.module_', '_').replace(/\./g, '_');
+    return className.replace('.module_', '_').replaceAll('.', '_');
 }

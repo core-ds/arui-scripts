@@ -1,6 +1,6 @@
-import fs from 'fs';
-import path from 'path';
-import { promisify } from 'util';
+import fs from 'node:fs';
+import path from 'node:path';
+import { promisify } from 'node:util';
 
 import { type AruiAppManifest } from '@alfalab/scripts-modules';
 
@@ -15,7 +15,9 @@ export async function getAppManifest(
 ) {
     const cached = appManifests.get(manifestPath);
 
-    if (cached) return cached;
+    if (cached) {
+        return cached;
+    }
 
     const fileContent = await readFile(manifestPath, 'utf8');
     const appManifest = JSON.parse(fileContent) as AruiAppManifest;
@@ -34,12 +36,18 @@ export async function readAssetsManifest(
     let cssArray: string[] = [];
 
     bundleNames.forEach((key) => {
-        if (!manifest[key]) return;
+        if (!manifest[key]) {
+            return;
+        }
 
         const { js, css } = manifest[key];
 
-        if (js) jsArray = jsArray.concat(js);
-        if (css) cssArray = cssArray.concat(css);
+        if (js) {
+            jsArray = jsArray.concat(js);
+        }
+        if (css) {
+            cssArray = cssArray.concat(css);
+        }
     });
 
     return {

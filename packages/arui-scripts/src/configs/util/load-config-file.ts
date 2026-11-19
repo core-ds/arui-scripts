@@ -9,6 +9,6 @@ export function loadConfigFile(filename: string) {
         return loadTypeScript(filename);
     }
 
-    // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
+    // eslint-disable-next-line import-x/no-dynamic-require
     return require(filename);
 }

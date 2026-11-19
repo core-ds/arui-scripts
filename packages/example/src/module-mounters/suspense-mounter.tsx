@@ -2,7 +2,7 @@ import React, { Suspense } from 'react';
 
 import { Spinner } from '@alfalab/core-components/spinner';
 import { Underlay } from '@alfalab/core-components/underlay';
-import { createServerStateModuleFetcher, type BaseModuleState } from '@alfalab/scripts-modules';
+import { type BaseModuleState, createServerStateModuleFetcher } from '@alfalab/scripts-modules';
 import { createSsrMounter } from '@alfalab/scripts-modules/ssr';
 
 type ModuleRunParams = {

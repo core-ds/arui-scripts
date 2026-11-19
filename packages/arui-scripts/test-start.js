@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-var-requires, no-await-in-loop */
+/* eslint-disable no-await-in-loop */
 // Startup and shutdown polling must await each check before trying again.
 const assert = require('node:assert/strict');
 const { spawn } = require('node:child_process');
@@ -9,7 +9,7 @@ const { stripVTControlCharacters } = require('node:util');
 const { setTimeout: delay } = require('node:timers/promises');
 
 const example = path.resolve(__dirname, '../example');
-const timeout = Number(process.env.START_SMOKE_TIMEOUT_MS || 45000);
+const timeout = Number(process.env.START_SMOKE_TIMEOUT_MS || 45_000);
 const controller = new AbortController();
 const { signal } = controller;
 
@@ -36,13 +36,17 @@ function groupExists(pid) {
 
         return true;
     } catch (error) {
-        if (error.code === 'ESRCH') return false;
+        if (error.code === 'ESRCH') {
+            return false;
+        }
         throw error;
     }
 }
 
 async function stop(child) {
-    if (!child?.pid || !groupExists(child.pid)) return;
+    if (!child?.pid || !groupExists(child.pid)) {
+        return;
+    }
 
     process.kill(-child.pid, 'SIGTERM');
     const deadline = Date.now() + 3000;
@@ -83,8 +87,9 @@ async function verifyHttp(origin, assetsPath) {
 }
 
 function assertRunning(child, childError, output) {
-    if (childError)
+    if (childError) {
         throw new Error(`Unable to start yarn: ${childError.message}`, { cause: childError });
+    }
     if (child.exitCode !== null || child.signalCode !== null) {
         throw new Error(
             `yarn start exited before readiness (${child.exitCode ?? child.signalCode})`,
@@ -140,7 +145,7 @@ async function main() {
         });
         const collect = (chunk) => {
             // Retain startup diagnostics, without printing successful compiler output in hooks.
-            output = (output + stripVTControlCharacters(chunk.toString())).slice(-131072);
+            output = (output + stripVTControlCharacters(chunk.toString())).slice(-131_072);
         };
 
         child.stdout.on('data', collect);
@@ -189,7 +194,9 @@ async function main() {
             await stop(child);
         } finally {
             await Promise.all(ports.map((port) => port.close()));
-            if (buildPath) await fs.rm(buildPath, { recursive: true, force: true });
+            if (buildPath) {
+                await fs.rm(buildPath, { recursive: true, force: true });
+            }
         }
     }
 }

@@ -14,7 +14,6 @@ if (process.env.NODE_ENV !== 'production' && module.hot) {
     }
 
     module.hot.accept('./components/app', () => {
-        // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
         const NextAppAssignments = require('./components/app').App;
 
         root.render(<NextAppAssignments />);

@@ -1,7 +1,6 @@
-import os from 'os';
-import path from 'path';
-
 import fs from 'fs-extra';
+import os from 'node:os';
+import path from 'node:path';
 import prompts from 'prompts';
 
 import { resolveCdPath, runInit } from '../run';

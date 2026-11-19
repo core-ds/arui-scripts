@@ -76,7 +76,9 @@ export function createModuleSession<RunParams, ServerState extends BaseModuleSta
                 );
             }
 
-            if (hydrate && !module.hydrate) targetNode.replaceChildren();
+            if (hydrate && !module.hydrate) {
+                targetNode.replaceChildren();
+            }
             lifecycle = createModuleLifecycle({
                 module,
                 targetNode,
@@ -85,7 +87,9 @@ export function createModuleSession<RunParams, ServerState extends BaseModuleSta
                 getOptions,
             });
         } catch (error) {
-            if (abortController.signal.aborted) return;
+            if (abortController.signal.aborted) {
+                return;
+            }
             abortController.abort();
             const cleanupErrors: unknown[] = [];
 

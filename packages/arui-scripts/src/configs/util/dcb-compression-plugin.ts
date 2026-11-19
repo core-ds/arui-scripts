@@ -1,5 +1,3 @@
-import crypto, { type Hash } from 'crypto';
-
 import {
     type Assets,
     type Compilation,
@@ -8,6 +6,7 @@ import {
     type RspackError,
 } from '@rspack/core';
 import { type Rules } from 'compression-webpack-plugin';
+import crypto, { type Hash } from 'node:crypto';
 import serialize from 'serialize-javascript';
 
 type DcbCompressionOptions = {

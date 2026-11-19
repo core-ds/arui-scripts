@@ -1,8 +1,8 @@
-import { readFile } from 'fs';
+import { readFile } from 'node:fs';
 
 import { readAssetsManifest } from '../read-assets-manifest';
 
-jest.mock('fs', () => ({
+jest.mock('node:fs', () => ({
     readFile: jest.fn(),
 }));
 

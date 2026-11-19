@@ -1,8 +1,7 @@
-import { spawnSync } from 'child_process';
-import fs from 'fs';
-import os from 'os';
-import path from 'path';
-
+import { spawnSync } from 'node:child_process';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import ts from 'typescript';
 
 describe.each(['6.0.2', '7.0.2'])('загрузка конфигурации в Node с TypeScript %s', (version) => {
@@ -49,7 +48,7 @@ describe.each(['6.0.2', '7.0.2'])('загрузка конфигурации в 
                     ...process.env,
                     NODE_PATH: require.resolve.paths('jiti')?.join(path.delimiter),
                 },
-                timeout: 30000,
+                timeout: 30_000,
             },
         );
 

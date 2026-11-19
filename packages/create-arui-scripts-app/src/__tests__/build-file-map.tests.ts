@@ -144,17 +144,17 @@ describe('buildFileMap', () => {
     it('экранирует dockerRegistry и presets в конфиге', () => {
         const config = map({
             dockerRegistry: "reg.io/org's",
-            presets: 'my-preset\\name',
+            presets: String.raw`my-preset\name`,
         })['arui-scripts.config.ts'];
 
-        expect(config).toContain("dockerRegistry: 'reg.io/org\\'s'");
-        expect(config).toContain("presets: 'my-preset\\\\name'");
+        expect(config).toContain(String.raw`dockerRegistry: 'reg.io/org\'s'`);
+        expect(config).toContain(String.raw`presets: 'my-preset\\name'`);
     });
 
     it('экранирует имя проекта в JSX', () => {
         const app = map({ name: "O'Reilly <App>" })['src/client/components/app.tsx'];
 
-        expect(app).toContain("const appName = 'O\\'Reilly <App>';");
+        expect(app).toContain(String.raw`const appName = 'O\'Reilly <App>';`);
         expect(app).toContain('{appName}');
     });
 
@@ -255,7 +255,11 @@ describe('buildFileMap', () => {
         expect(pkg.stylelint.extends).toBe('arui-presets-lint/stylelint');
         expect(pkg.commitlint.extends).toBe('./node_modules/arui-presets-lint/commitlint');
         expect(pkg.scripts.lint).toContain('yarn lint:scripts');
-        expect(pkg.scripts['lint:styles']).toBe('arui-presets-lint styles --max-warnings=0');
+        expect(pkg.scripts).not.toHaveProperty('lint:styles');
+        expect(pkg.scripts.lint).toContain('arui-presets-lint styles --max-warnings=0');
+        expect(pkg.scripts['lint:fix']).toContain(
+            'arui-presets-lint styles --max-warnings=0 --fix',
+        );
         expect(pkg.scripts['lint:scripts']).toBe('arui-presets-lint scripts --max-warnings=0');
         expect(pkg.devDependencies).toHaveProperty('arui-presets-lint');
         expect(files['README.md']).toContain('yarn lint');

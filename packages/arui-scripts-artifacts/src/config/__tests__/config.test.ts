@@ -110,8 +110,8 @@ describe('resolveArtifactsConfig', () => {
                 .nginx.baseConf,
         ).toEqual({
             workerProcesses: 4,
-            workerRlimitNoFile: 20000,
-            workerConnections: 19000,
+            workerRlimitNoFile: 20_000,
+            workerConnections: 19_000,
             eventsUse: 'epoll',
             daemon: 'off',
         });

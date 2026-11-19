@@ -1,5 +1,5 @@
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 
 import {
     renderServerStateModuleCompatHtml,
@@ -13,7 +13,7 @@ async function fileExists(filePath: string) {
         const res = await fs.promises.stat(filePath);
 
         return res.isFile();
-    } catch (e) {
+    } catch {
         return false;
     }
 }
@@ -124,7 +124,6 @@ describe('modules', () => {
             // css может быть строкой (compat) или массивом (css default-модулей)
             const cssFiles = Array.isArray(css) ? css : [css];
 
-            // eslint-disable-next-line no-restricted-syntax
             for (const cssFile of cssFiles) {
                 // eslint-disable-next-line no-await-in-loop
                 expect(await fileExists(path.join(BUILD_PATH, cssFile))).toBe(true);
@@ -149,7 +148,7 @@ describe('modules', () => {
         expect(assetsManifest.ServerStateModule.mode).toBe('default');
 
         // css привязанный к модулю должен реально существовать на диске
-        // eslint-disable-next-line no-restricted-syntax
+
         for (const cssFile of serverStateCss) {
             // eslint-disable-next-line no-await-in-loop
             expect(await fileExists(path.join(BUILD_PATH, cssFile))).toBe(true);

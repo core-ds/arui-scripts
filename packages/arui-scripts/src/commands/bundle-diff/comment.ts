@@ -43,7 +43,7 @@ export function formatChange(current: number, baseline: number): string {
 }
 
 function escapeMarkdown(text: string): string {
-    return text.replace(/[\\`*_{}[\]<>|]/g, '\\$&').replace(/[\r\n]/g, ' ');
+    return text.replaceAll(/[\\`*_{}[\]<>|]/g, String.raw`\$&`).replaceAll(/[\r\n]/g, ' ');
 }
 
 export function createComment(options: CommentOptions): string {

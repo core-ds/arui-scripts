@@ -1,14 +1,13 @@
-import path from 'path';
-
 import { type Configuration } from '@rspack/dev-server';
-import type http from 'http';
+import type http from 'node:http';
+import path from 'node:path';
 
 import { applyOverrides } from './util/apply-overrides';
 import { configs } from './app-configs';
 import { ENV_CONFIG_FILENAME } from './client-env-config';
 
 function getServerToClientProxyConfig(): NonNullable<Configuration['proxy']>[number] {
-    const assetsRoot = path.normalize(`/${configs.publicPath}`).replace(/\\/g, '/');
+    const assetsRoot = path.normalize(`/${configs.publicPath}`).replaceAll('\\', '/');
 
     return {
         target: `http://127.0.0.1:${configs.serverPort}`,
@@ -29,7 +28,6 @@ function getServerToClientProxyConfig(): NonNullable<Configuration['proxy']>[num
                                   typeof cspHeader === 'string' &&
                                   !cspHeader.includes('unsafe-eval')
                               ) {
-                                  // eslint-disable-next-line no-param-reassign
                                   proxyRes.headers['content-security-policy'] = cspHeader.replace(
                                       /script-src/,
                                       "script-src 'unsafe-eval'",
@@ -39,7 +37,6 @@ function getServerToClientProxyConfig(): NonNullable<Configuration['proxy']>[num
                           // если включен devServerCors, то нужно принудительно менять статус ответа на 200, чтобы
                           // браузер не отклонял ответы с CORS
                           if (configs.devServerCors && req.method === 'OPTIONS') {
-                              // eslint-disable-next-line no-param-reassign
                               proxyRes.statusCode = 200;
                           }
                       },

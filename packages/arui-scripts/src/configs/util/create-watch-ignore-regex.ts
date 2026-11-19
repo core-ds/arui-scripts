@@ -6,12 +6,12 @@ export function createWatchIgnoreRegex(paths: string[]): RegExp {
     const patterns = paths.map((p) => {
         const escaped = escapeRegExp(p);
 
-        return `(^|[\\\\/])${escaped}([\\\\/]|$)`;
+        return String.raw`(^|[\\/])${escaped}([\\/]|$)`;
     });
 
     return new RegExp(patterns.join('|'));
 }
 
 function escapeRegExp(str: string): string {
-    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return str.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
 }

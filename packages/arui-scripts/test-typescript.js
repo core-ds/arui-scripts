@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-var-requires, global-require */
 const assert = require('node:assert/strict');
 const { spawnSync } = require('node:child_process');
 const fs = require('node:fs');
@@ -100,7 +99,9 @@ async function main() {
             const { errors } = stats.toJson({ all: false, errors: true });
 
             assert.equal(stats.hasErrors(), !valid, JSON.stringify(errors));
-            if (!valid) assert(errors.some((error) => /TS2322/.test(error.message)));
+            if (!valid) {
+                assert(errors.some((error) => /TS2322/.test(error.message)));
+            }
         } finally {
             await new Promise((resolve, reject) => {
                 compiler.close((error) => (error ? reject(error) : resolve()));
@@ -126,7 +127,7 @@ async function main() {
             '--config',
             JSON.stringify({ ...jestSettings, rootDir: project, cache: false }),
         ],
-        { encoding: 'utf8', timeout: 30000 },
+        { encoding: 'utf8', timeout: 30_000 },
     );
 
     assert.equal(jestResult.status, 0, `${jestResult.stdout}\n${jestResult.stderr}`);

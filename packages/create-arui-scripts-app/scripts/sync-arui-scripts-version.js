@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-/* eslint-disable @typescript-eslint/no-var-requires, global-require, no-console */
-const fs = require('fs');
-const path = require('path');
+
+const fs = require('node:fs');
+const path = require('node:path');
 
 const aruiScriptsPkg = require('../../arui-scripts/package.json');
 

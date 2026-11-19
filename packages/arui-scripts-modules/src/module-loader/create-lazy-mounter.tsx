@@ -120,7 +120,9 @@ export function createLazyMounter<
             const remountParams = module.update ? undefined : runParams;
 
             useEffect(() => {
-                if (!mountTargetNode || failedRef.current) return undefined;
+                if (!mountTargetNode || failedRef.current) {
+                    return undefined;
+                }
                 const session = createModuleSession<RunParams, ServerState>({
                     load: async () => {
                         activeInstances += 1;

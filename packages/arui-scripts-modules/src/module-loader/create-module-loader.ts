@@ -38,10 +38,7 @@ export type ModuleLoaderHookWithModule<
     module: ModuleExportType,
 ) => Promise<void> | void;
 export type ModuleLoaderLoadingStage =
-    | 'fetch-manifest'
-    | 'fetch-resources'
-    | 'resolve-export'
-    | 'mount';
+    'fetch-manifest' | 'fetch-resources' | 'resolve-export' | 'mount';
 export type ModuleLoaderErrorHook = (
     moduleId: string,
     stage: ModuleLoaderLoadingStage,

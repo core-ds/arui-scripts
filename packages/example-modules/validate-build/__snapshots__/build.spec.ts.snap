@@ -11,12 +11,12 @@ exports[`modules should create valid css for ModuleCompat 1`] = `
         font-weight:700;
         letter-spacing:1.25px;
         text-transform:uppercase;
+        padding-block:2px;
 
         padding-inline-start:12px;
-        padding-block:2px;
-        box-shadow:0 0 4px rgba(0, 0, 0, 0.02), 0 -2px 4px rgba(0, 0, 0, 0.04), 0 -2px 4px rgba(0, 0, 0, 0.16);
         color:rgb(236, 142, 133);
         background-color:#cd1501;
+        box-shadow:0 0 4px rgba(0, 0, 0, 0.02), 0 -2px 4px rgba(0, 0, 0, 0.04), 0 -2px 4px rgba(0, 0, 0, 0.16);
     }
 
 .module-ModuleCompat .styles-module-paragraph-UdpKs{
@@ -25,22 +25,18 @@ exports[`modules should create valid css for ModuleCompat 1`] = `
     font-weight:700;
     letter-spacing:1.25px;
     text-transform:uppercase;
+    padding-block:2px;
 
     padding-inline-start:12px;
-    padding-block:2px;
-    box-shadow:0 0 4px rgba(0, 0, 0, 0.02), 0 -2px 4px rgba(0, 0, 0, 0.04), 0 -2px 4px rgba(0, 0, 0, 0.16);
     color:rgb(236, 142, 133);
     background-color:#cd1501;
+    box-shadow:0 0 4px rgba(0, 0, 0, 0.02), 0 -2px 4px rgba(0, 0, 0, 0.04), 0 -2px 4px rgba(0, 0, 0, 0.16);
 }
 
 .module-ModuleCompat .primary{
-    color:rgba(255, 0, 0, 0.5);
     margin-top:4px;
+    color:rgba(255, 0, 0, 0.5);
 }
-
-    .module-ModuleCompat .primary__footer{
-        color:blue;
-    }
 
     @media (min-width: 1024px){.module-ModuleCompat .primary{
         color:coral
@@ -50,6 +46,10 @@ exports[`modules should create valid css for ModuleCompat 1`] = `
     .module-ModuleCompat .primary:hover .primary__footer{
         color:green;
         animation:someRandomAnimation 1s ease-in-out infinite alternate;
+    }
+
+    .module-ModuleCompat .primary__footer{
+        color:blue;
     }
 
     @media (min-width: 1280px){

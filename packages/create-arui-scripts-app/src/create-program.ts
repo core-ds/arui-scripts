@@ -4,7 +4,6 @@ import { type CliFlags } from './defaults';
 import { runInit } from './run';
 import { type CodeLoader, type E2eFramework, type TestRunner } from './types';
 
-// eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
 const { version } = require('../package.json');
 
 export type InitHandler = (dir: string | undefined, flags: CliFlags) => Promise<void>;

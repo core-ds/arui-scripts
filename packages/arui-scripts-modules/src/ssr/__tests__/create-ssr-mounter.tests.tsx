@@ -1,18 +1,17 @@
-import { Writable } from 'stream';
-
 import React, { Suspense } from 'react';
 import { hydrateRoot } from 'react-dom/client';
 import { type renderToPipeableStream as RenderToPipeableStream } from 'react-dom/server';
 import { act, waitFor } from '@testing-library/react';
+import { Writable } from 'node:stream';
 
 import { type ModuleResources } from '../../module-loader/types';
 import { createSsrMounter } from '../create-ssr-mounter';
 import { ModuleSsrRequestProvider } from '../request-context';
 
 // В jsdom `react-dom/server` резолвится в browser-сборку без renderToPipeableStream — берём node-сборку.
-const { renderToPipeableStream } =
-    // eslint-disable-next-line @typescript-eslint/no-var-requires, global-require
-    require('react-dom/server.node') as { renderToPipeableStream: typeof RenderToPipeableStream };
+const { renderToPipeableStream } = require('react-dom/server.node') as {
+    renderToPipeableStream: typeof RenderToPipeableStream;
+};
 
 const MODULE_ID = 'ServerStateModule';
 const INSTANCE_ID = 'i1';
@@ -562,7 +561,6 @@ describe('createSsrMounter', () => {
 
 // Небольшой помощник: синхронно рендерит клиентский компонент, пробрасывая ошибки рендера.
 function renderToStaticClient(element: React.ReactElement) {
-    // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
     const { renderToStaticMarkup } = require('react-dom/server');
 
     return renderToStaticMarkup(element);

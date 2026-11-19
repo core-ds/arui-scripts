@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 
 import { exec, shellQuote } from '@alfalab/arui-scripts-artifacts';
 
@@ -16,7 +16,7 @@ const ARTIFACTS_CONFIG_PATH = require.resolve('./arui-scripts-artifacts');
  */
 function getArtifactsCliPath(): string {
     const packageJsonPath = require.resolve('@alfalab/arui-scripts-artifacts/package.json');
-    // eslint-disable-next-line global-require, import/no-dynamic-require, @typescript-eslint/no-var-requires
+    // eslint-disable-next-line import-x/no-dynamic-require
     const { bin } = require(packageJsonPath);
 
     return path.join(

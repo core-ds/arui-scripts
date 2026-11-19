@@ -1,8 +1,8 @@
-import { Buffer } from 'buffer';
+import { Buffer } from 'node:buffer';
 
 import { compressWithDcb } from '../compress-with-dcb';
 
-jest.mock('crypto', () => ({
+jest.mock('node:crypto', () => ({
     createHash: jest.fn(() => ({
         update: jest.fn().mockReturnThis(),
         digest: jest.fn().mockReturnValue(Buffer.from('mock-hash')),
