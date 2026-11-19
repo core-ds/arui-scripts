@@ -6,7 +6,7 @@ ARG NODE_BASE_IMAGE=node
 # this is a build container, target one is in the end
 
 FROM alpine:${ALPINE_VERSION}
-ENV NGINX_VERSION 1.31.8
+ENV NGINX_VERSION 1.31.9
 ENV NGX_BROTLI_COMMIT a754fdac434936b28760c88c21c7400ab4310854
 ENV NGINX_CONFIG "\
     		--prefix=/etc/nginx \
