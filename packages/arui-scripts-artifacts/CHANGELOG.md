@@ -1,5 +1,14 @@
 # @alfalab/arui-scripts-artifacts
 
+## 1.0.3
+
+### Patch Changes
+
+-   [#650](https://github.com/core-ds/arui-scripts/pull/650) [`66a28ac5`](https://github.com/core-ds/arui-scripts/commit/66a28ac53fe92a29b34f579e479f26b0028d6486) Thanks [@heymdall-legal](https://github.com/heymdall-legal)! - Обновление версии базового контейнера
+
+-   [#654](https://github.com/core-ds/arui-scripts/pull/654) [`44bac9b1`](https://github.com/core-ds/arui-scripts/commit/44bac9b132c1661b533b209f8335ac4e16fb1ac2) Thanks [@dmitrbrvsk](https://github.com/dmitrbrvsk)! - обновлены базовые докер образы с исправлениями безопасности Node.js
+    https://nodejs.org/en/blog/vulnerability/november-2026-security-releases
+
 ## 1.0.2
 
 ### Patch Changes
