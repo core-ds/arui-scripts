@@ -76,6 +76,7 @@ describe.each(['6.0.2', '7.0.2'])('загрузка конфигурации в 
             'util/resolve.ts',
             'util/get-polyfills.ts',
             'util/apply-overrides.ts',
+            'cache/settings.ts',
         ];
 
         // Compile the scripts themselves as in the package build. Project TS files are

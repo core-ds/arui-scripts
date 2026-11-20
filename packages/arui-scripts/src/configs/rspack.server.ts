@@ -21,6 +21,7 @@ import { getEntry } from './util/get-entry';
 import { configs } from './app-configs';
 import { babelDependencies } from './babel-dependencies';
 import { config as babelConf } from './babel-server';
+import { getRspackCache } from './persistent-cache';
 import { serverPostcssConfig as postcssConf } from './postcss';
 import { serverExternalsExemptions } from './server-externals-exemptions';
 import { swcServerConfig } from './swc';
@@ -69,7 +70,7 @@ export const createServerConfig = (mode: 'dev' | 'prod'): Configuration => ({
         devtoolModuleFilenameTemplate: (info) =>
             path.relative(configs.appSrc, info.absoluteResourcePath).replace(/\\/g, '/'),
     },
-    cache: mode === 'dev',
+    cache: getRspackCache(mode, 'server'),
     externalsPresets: { node: true },
     externals: [
         nodeExternals({

@@ -39,7 +39,11 @@ describe('build client', () => {
         jest.clearAllMocks();
         jest.spyOn(console, 'log').mockImplementation(() => undefined);
         exitSpy = jest.spyOn(process, 'exit').mockImplementation((() => undefined) as never);
-        mockBuild.mockResolvedValue({ stats, warnings: [] });
+        mockBuild.mockImplementation(async (_config, beforeClose) => {
+            await beforeClose({ stats, warnings: [] });
+
+            return { warnings: [] };
+        });
     });
 
     afterEach(() => {

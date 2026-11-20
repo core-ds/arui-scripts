@@ -42,32 +42,35 @@ async function main() {
             process.env.ARUI_SCRIPTS_RSDOCTOR_OUTPUT,
             configs.appSrc,
         );
-        const { stats, warnings } = await build(rspackClientConfig);
 
-        if (warnings.length) {
-            console.log(chalk.yellow('Client compiled with warnings.\n'));
-            console.log(warnings.join('\n\n'));
-            console.log(
-                `Search for the ${chalk.underline(
-                    chalk.yellow('keywords'),
-                )} to learn more about each warning.`,
-            );
-            console.log(
-                `To ignore, add ${chalk.cyan('// eslint-disable-next-line')} to the line before.`,
-            );
-        } else {
-            console.log(chalk.green('Client compiled successfully.\n'));
-        }
-
-        if (Array.isArray(rspackClientConfig)) {
-            for (const [index, conf] of rspackClientConfig.entries()) {
-                // measure builds sequentially to bound gzip memory use
-                // eslint-disable-next-line no-await-in-loop
-                await printOutputSizes(conf, (stats as MultiStats).stats[index]);
+        await build(rspackClientConfig, async ({ stats, warnings }) => {
+            if (warnings.length) {
+                console.log(chalk.yellow('Client compiled with warnings.\n'));
+                console.log(warnings.join('\n\n'));
+                console.log(
+                    `Search for the ${chalk.underline(
+                        chalk.yellow('keywords'),
+                    )} to learn more about each warning.`,
+                );
+                console.log(
+                    `To ignore, add ${chalk.cyan(
+                        '// eslint-disable-next-line',
+                    )} to the line before.`,
+                );
+            } else {
+                console.log(chalk.green('Client compiled successfully.\n'));
             }
-        } else {
-            await printOutputSizes(rspackClientConfig, stats as Stats);
-        }
+
+            if (Array.isArray(rspackClientConfig)) {
+                for (const [index, conf] of rspackClientConfig.entries()) {
+                    // measure builds sequentially to bound gzip memory use
+                    // eslint-disable-next-line no-await-in-loop
+                    await printOutputSizes(conf, (stats as MultiStats).stats[index]);
+                }
+            } else {
+                await printOutputSizes(rspackClientConfig, stats as Stats);
+            }
+        });
 
         if (snapshot) {
             await writeRsdoctorSnapshot(snapshot);

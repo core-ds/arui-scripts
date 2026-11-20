@@ -1,6 +1,11 @@
 export type { OverrideFile } from './configs/util/apply-overrides';
 
-export type { AppConfigs, CompatModuleConfig, PackageSettings } from './configs/app-configs/types';
+export type {
+    AppConfigs,
+    CompatModuleConfig,
+    PackageSettings,
+    PersistentCacheSettings,
+} from './configs/app-configs/types';
 
 /**
  * Утилиты сборки docker-образа, привязанные к глобальному конфигу arui-scripts.

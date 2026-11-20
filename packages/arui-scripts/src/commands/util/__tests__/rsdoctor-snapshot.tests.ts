@@ -68,9 +68,12 @@ function compile(config: Configuration): Promise<void> {
 
     return new Promise((resolve, reject) => {
         compiler.run((error, stats) => {
-            compiler.close(() => {
-                if (error || stats?.hasErrors()) {
-                    reject(error ?? new Error(stats?.toString()));
+            // Native statistics must be read before closing the compiler.
+            const compilationError = stats?.hasErrors() ? new Error(stats.toString()) : undefined;
+
+            compiler.close((closeError) => {
+                if (error || compilationError || closeError) {
+                    reject(error ?? compilationError ?? closeError);
                 } else {
                     resolve();
                 }

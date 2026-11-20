@@ -1,9 +1,13 @@
+import { cacheDirectory, cacheSettings } from '../cache/settings';
 import { getProjectTypeScript } from '../util/typescript';
 
 import { type AppContextWithConfigs } from './types';
 import { validateBuildSizeBudgets } from './validate-build-size-budgets';
 
 export function validateConfig(config: AppContextWithConfigs) {
+    if (cacheSettings(config)) {
+        cacheDirectory(config);
+    }
     validateBuildSizeBudgets(config.buildSizeBudgets);
 
     const tscSettings = (['codeLoader', 'jestCodeTransformer'] as const).filter(

@@ -18,14 +18,27 @@ function createFakeProcess(): FakeProcess {
 describe('runCompilers', () => {
     const spawnMock = spawn as jest.Mock;
     let exitSpy: jest.SpyInstance;
+    let signalListeners: Map<'SIGINT' | 'SIGTERM', NodeJS.SignalsListener[]>;
 
     beforeEach(() => {
+        jest.useFakeTimers();
+        signalListeners = new Map([
+            ['SIGINT', process.listeners('SIGINT')],
+            ['SIGTERM', process.listeners('SIGTERM')],
+        ]);
         spawnMock.mockReset();
         exitSpy = jest.spyOn(process, 'exit').mockImplementation((() => undefined) as never);
         jest.spyOn(console, 'error').mockImplementation(() => undefined);
     });
 
     afterEach(() => {
+        signalListeners.forEach((listeners, signal) => {
+            process.listeners(signal).forEach((listener) => {
+                if (!listeners.includes(listener)) process.removeListener(signal, listener);
+            });
+        });
+        jest.clearAllTimers();
+        jest.useRealTimers();
         jest.restoreAllMocks();
     });
 
@@ -56,6 +69,9 @@ describe('runCompilers', () => {
 
         expect(processes[0].kill).toHaveBeenCalled();
         expect(processes[1].kill).toHaveBeenCalled();
+        expect(exitSpy).not.toHaveBeenCalled();
+        processes[0].emit('close', -2);
+        processes[1].emit('close', null, 'SIGTERM');
         expect(exitSpy).toHaveBeenCalledWith(1);
     });
 
@@ -80,7 +96,6 @@ describe('runCompilers', () => {
         runCompilers(['client.js']);
         compiler.emit('close', null, 'SIGABRT');
 
-        expect(compiler.kill).toHaveBeenCalled();
         expect(exitSpy).toHaveBeenCalledWith(1);
         expect(exitSpy).not.toHaveBeenCalledWith(0);
         expect(exitSpy).not.toHaveBeenCalledWith(null);
@@ -96,5 +111,19 @@ describe('runCompilers', () => {
 
         expect(compiler.kill).not.toHaveBeenCalled();
         expect(exitSpy).not.toHaveBeenCalled();
+    });
+
+    it('waits for all children to flush their caches on SIGTERM', () => {
+        const processes = [createFakeProcess(), createFakeProcess()];
+
+        spawnMock.mockImplementation(() => processes[spawnMock.mock.calls.length - 1]);
+        runCompilers(['client.js', 'server.js']);
+        process.emit('SIGTERM');
+        processes.forEach((child) => expect(child.kill).toHaveBeenCalledWith('SIGTERM'));
+        expect(exitSpy).not.toHaveBeenCalled();
+        processes[0].emit('close', 0);
+        expect(exitSpy).not.toHaveBeenCalled();
+        processes[1].emit('close', 0);
+        expect(exitSpy).toHaveBeenCalledWith(0);
     });
 });

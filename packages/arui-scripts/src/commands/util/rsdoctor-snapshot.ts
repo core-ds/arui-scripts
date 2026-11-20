@@ -111,6 +111,9 @@ export async function enableRsdoctor(
     const { RsdoctorRspackPlugin } = await import('@rsdoctor/rspack-plugin');
 
     const bundles = configurations.map((config, index) => {
+        // Rsdoctor needs fresh attribution data even when application compilation is cached.
+        // eslint-disable-next-line no-param-reassign
+        config.cache = false;
         const reportDir = path.join(directory, `client-${index}`);
 
         // eslint-disable-next-line no-param-reassign

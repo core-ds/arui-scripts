@@ -19,6 +19,9 @@ yarn start
 CLI `arui-scripts` поддерживает глобальные флаги `--help`, `--version` и справку по командам
 `arui-scripts <команда> --help`. Подробнее в [CLI](docs/cli.md).
 
+Для повторных запусков dev и production-сборок можно включить [постоянный кеш Rspack](docs/persistent-cache.md)
+настройкой `persistentCache: true`. По умолчанию он выключен. В документации есть пример подключения к Jenkins.
+
 Команду `bundle-diff` можно запускать локально или в CI/CD.
 
 Для анализа изменений клиентских бандлов необходимы snapshot двух production сборок:

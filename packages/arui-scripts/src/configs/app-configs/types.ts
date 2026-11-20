@@ -61,6 +61,7 @@ export type AppConfigs = {
     /** Значение 'tsc' deprecated; поддерживается только с TypeScript <7. Используйте 'swc' или 'babel'. */
     codeLoader: 'babel' | 'tsc' | 'swc';
     experimentalReactCompiler: 'disabled' | ReactCompilerOptions;
+    persistentCache: boolean | PersistentCacheSettings;
     installServerSourceMaps: boolean;
     disableDevRspackTypecheck: boolean;
     /** Значение 'tsc' deprecated; поддерживается только с TypeScript <7. Используйте 'swc' или 'babel'. */
@@ -114,6 +115,17 @@ export type AppConfigs = {
         shareScope?: string;
     } | null;
     nodeExternals?: Omit<NodeExternals.Options, 'allowlist'>;
+};
+
+export type PersistentCacheSettings = {
+    compression?: boolean;
+    modes?: Array<'dev' | 'production'>;
+    directory?: string;
+    version?: string;
+    buildDependencies?: string[];
+    env?: string[];
+    portable?: boolean;
+    readonly?: boolean;
 };
 
 export type ModuleConfigBase = {

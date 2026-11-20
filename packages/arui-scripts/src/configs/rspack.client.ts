@@ -32,6 +32,7 @@ import { checkNodeVersion } from './util/check-node-version';
 import { compressionPluginsForDictionaries } from './util/compression-plugins-for-dictionaries';
 import { createWatchIgnoreRegex } from './util/create-watch-ignore-regex';
 import { type Entry, getEntry } from './util/get-entry';
+import { withPersistentCompression } from './util/persistent-compression-plugin';
 import { configs } from './app-configs';
 import { babelClientConfig as babelConf } from './babel-client';
 import { babelDependencies } from './babel-dependencies';
@@ -41,6 +42,7 @@ import {
     patchMainRspackConfigForModules,
     patchRspackConfigForCompat,
 } from './modules';
+import { getRspackCache } from './persistent-cache';
 import { postcssConfig as postcssConf } from './postcss';
 import { processAssetsPluginOutput } from './process-assets-plugin-output';
 import { swcClientConfig } from './swc';
@@ -196,7 +198,7 @@ export const createSingleClientRspackConfig = (
         tsConfig: configs.tsconfig ? { configFile: configs.tsconfig } : undefined,
     },
     resolveLoader: {},
-    cache: mode === 'dev',
+    cache: getRspackCache(mode, 'client'),
     module: {
         rules: [
             {
@@ -367,27 +369,31 @@ export const createSingleClientRspackConfig = (
         // production plugins:
         mode === 'prod' && new RspackManifestPlugin({}),
         mode === 'prod' &&
-            new CompressionPlugin({
-                filename: '[file].gz',
-                algorithm: 'gzip',
-                test: /\.js$|\.css$|\.png$|\.svg$/,
-                threshold: 10240,
-                minRatio: 0.8,
-            }),
+            withPersistentCompression(
+                new CompressionPlugin({
+                    filename: '[file].gz',
+                    algorithm: 'gzip',
+                    test: /\.js$|\.css$|\.png$|\.svg$/,
+                    threshold: 10240,
+                    minRatio: 0.8,
+                }),
+            ),
         mode === 'prod' &&
             checkNodeVersion(10) &&
-            new CompressionPlugin<zlib.BrotliOptions>({
-                filename: '[file].br',
-                algorithm: 'brotliCompress',
-                test: /\.(js|css|html|svg|dict)$/,
-                compressionOptions: {
-                    params: {
-                        [zlib.constants.BROTLI_PARAM_QUALITY]: 11,
+            withPersistentCompression(
+                new CompressionPlugin<zlib.BrotliOptions>({
+                    filename: '[file].br',
+                    algorithm: 'brotliCompress',
+                    test: /\.(js|css|html|svg|dict)$/,
+                    compressionOptions: {
+                        params: {
+                            [zlib.constants.BROTLI_PARAM_QUALITY]: 11,
+                        },
                     },
-                },
-                threshold: 10240,
-                minRatio: 0.8,
-            }),
+                    threshold: 10240,
+                    minRatio: 0.8,
+                }),
+            ),
         // Ignore prop-types packages in production mode
         // This should works fine, since proptypes usage should be eliminated in production mode
         mode === 'prod' &&
