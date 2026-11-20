@@ -18752,6 +18752,7 @@ __metadata:
     "@changesets/cli": "npm:^2.26.2"
     arui-presets-lint: "npm:8.8.1"
     conventional-changelog-cli: "npm:3.0.0"
+    eslint: "npm:8.57.1"
     turbo: "npm:2.9.14"
   languageName: unknown
   linkType: soft
