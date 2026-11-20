@@ -5,6 +5,7 @@
     "typings": "./build/index.d.ts",
     "exports": {
         ".": "./build/index.js",
+        "./helpers": "./build/helpers/index.js",
         "./vitest": "./build/configs/vitest/config.js",
         "./jest-preset": "./jest-preset.js",
         "./jest-preset.js": "./jest-preset.js",

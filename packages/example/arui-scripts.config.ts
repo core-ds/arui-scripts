@@ -1,4 +1,5 @@
 import { type PackageSettings } from 'arui-scripts';
+import { createSharedGroup } from 'arui-scripts/helpers';
 
 const aruiScriptsConfig: PackageSettings = {
     presets: './presets',
@@ -17,16 +18,14 @@ const aruiScriptsConfig: PackageSettings = {
         },
     },
     modules: {
-        shared: {
-            react: {
-                eager: true,
-                requiredVersion: '^18.0.0',
+        shared: createSharedGroup({
+            packageJson: require.resolve('./package.json'),
+            runtime: ['react', 'react-dom'],
+            libraries: {
+                '@alfalab/core-components/': { requiredVersion: '42.2.1' },
             },
-            'react-dom': {
-                eager: true,
-                requiredVersion: '^18.0.0',
-            },
-        },
+            eager: true,
+        }),
     },
     experimentalReactCompiler: {
         target: '18',
