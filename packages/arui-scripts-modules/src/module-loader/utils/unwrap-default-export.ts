@@ -1,7 +1,7 @@
-type ModuleWithDefaultField<T> = {
-    default: T;
-};
+import { type ModuleExports } from '../module-contract';
 
-export function unwrapDefaultExport<ModuleExportType>(module: ModuleExportType): ModuleExportType {
-    return (module as ModuleWithDefaultField<ModuleExportType>).default ?? module;
+export function unwrapDefaultExport<ModuleExportType>(
+    module: ModuleExports<ModuleExportType>,
+): ModuleExportType {
+    return module.default ?? (module as ModuleExportType);
 }

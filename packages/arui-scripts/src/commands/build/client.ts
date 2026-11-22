@@ -6,6 +6,7 @@ import { rspackClientConfig } from '../../configs/rspack.client.prod';
 import { BuildSizeBudgetError, checkBuildSizeBudgets } from '../util/build-size-budgets';
 import { printAssetsSizes } from '../util/client-assets-sizes';
 import { loadBrowserslist } from '../util/load-browserslist';
+import { buildModuleContracts } from '../util/module-contracts/build-module-contracts';
 import { printBuildError } from '../util/print-build-error';
 import { enableRsdoctor, writeRsdoctorSnapshot } from '../util/rsdoctor-snapshot';
 
@@ -72,6 +73,8 @@ async function main() {
         if (snapshot) {
             await writeRsdoctorSnapshot(snapshot);
         }
+
+        buildModuleContracts(configs);
     } catch (err) {
         if (err instanceof BuildSizeBudgetError) {
             process.exit(1);

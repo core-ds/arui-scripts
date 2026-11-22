@@ -7249,6 +7249,7 @@ __metadata:
   dependencies:
     "@alfalab/arui-scripts-artifacts": "workspace:^"
     "@alfalab/postcss-custom-properties": "npm:^9.1.2"
+    "@alfalab/scripts-modules": "workspace:*"
     "@babel/core": "npm:7.29.7"
     "@babel/plugin-proposal-decorators": "npm:^7.29.7"
     "@babel/plugin-proposal-export-default-from": "npm:^7.29.7"

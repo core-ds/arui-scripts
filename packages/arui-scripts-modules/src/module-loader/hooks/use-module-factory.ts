@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
-import { executeModuleFactory } from '../execute-module-factory';
-import { type FactoryModule } from '../module-types';
+import { executeModuleFactory, type FactoryModuleExports } from '../execute-module-factory';
 import { type BaseModuleState, type Loader } from '../types';
 
 import { type LoadingState } from './types';
@@ -17,7 +16,7 @@ export type UseModuleFactoryParams<
     /**
      * Загрузчик модуля
      */
-    loader: Loader<LoaderParams, FactoryModule<ModuleExportType, RunParams, ServerState>>;
+    loader: Loader<LoaderParams, FactoryModuleExports<ModuleExportType, RunParams, ServerState>>;
     /**
      * Параметры, которые будут переданы в загрузчик (и будут переданы на сервер модуля)
      */
@@ -40,7 +39,7 @@ export type UseModuleFactoryResult<ModuleExportType> = {
     /**
      * Экспорт модуля
      */
-    module: ModuleExportType | undefined;
+    module: Awaited<ModuleExportType> | undefined;
 };
 
 export function useModuleFactory<
@@ -62,7 +61,7 @@ export function useModuleFactory<
     RunParams
 >): UseModuleFactoryResult<ModuleExportType> {
     const [loadingState, setLoadingState] = useState<LoadingState>('unknown');
-    const [module, setModule] = useState<ModuleExportType | undefined>();
+    const [module, setModule] = useState<Awaited<ModuleExportType> | undefined>();
     // Мы не хотим чтобы изменение этих параметров тригерило ререндер и перемонтирование модуля,
     // но не хотим ломать правила хуков
     const loaderParamsRef = useRef(loaderParams);

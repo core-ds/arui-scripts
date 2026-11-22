@@ -2,9 +2,11 @@ import 'abortcontroller-polyfill/dist/abortcontroller-polyfill-only';
 
 export * from './types';
 export * from './module-types';
+export * from './module-contract';
 export * from './hooks/types';
 
 export { createModuleLoader } from './create-module-loader';
+export { createTypedModuleLoader } from './create-typed-module-loader';
 export { createModuleFetcher } from './create-module-fetcher';
 export { createServerStateModuleFetcher } from './create-server-state-module-fetcher';
 export { createEmbeddedModuleFetcher } from './create-embedded-module-fetcher';

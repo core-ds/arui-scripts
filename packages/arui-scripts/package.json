@@ -136,6 +136,7 @@
         "webpack-node-externals": "3.0.0"
     },
     "devDependencies": {
+        "@alfalab/scripts-modules": "workspace:*",
         "@rsdoctor/types": "1.6.4",
         "@types/assets-webpack-plugin": "6.1.2",
         "@types/case-sensitive-paths-webpack-plugin": "2.1.6",

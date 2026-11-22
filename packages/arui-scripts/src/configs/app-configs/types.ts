@@ -111,9 +111,16 @@ export type AppConfigs = {
         shared: Shared;
         exposes?: Record<string, string>;
         options?: ModuleConfigBase;
+        // генерация npm пакета типов из modules.exposes
+        types?: false | ModuleTypesConfig;
         shareScope?: string;
     } | null;
     nodeExternals?: Omit<NodeExternals.Options, 'allowlist'>;
+};
+
+export type ModuleTypesConfig = {
+    packageName: string;
+    version?: string;
 };
 
 export type ModuleConfigBase = {
