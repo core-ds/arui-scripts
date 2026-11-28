@@ -17,7 +17,7 @@ alpine-node-nginx
 - 22.23.5, 22.23.5-slim
 - 24.22.3, 24.22.3-slim
 - 26.13.1, 26.13.1-slim
-- nginx-1.31.9-slim
+- nginx-1.31.10-slim
 
 Наиболее актуальный список тегов можно найти на [dockerhub](https://hub.docker.com/r/alfabankui/arui-scripts/tags).
 
